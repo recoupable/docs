@@ -19,6 +19,8 @@
               "index",
               "quickstart",
               "mcp",
+              "sdk",
+              "authentication",
               "cli",
               "api-reference/sandboxes/create"
             ]
