@@ -20,8 +20,8 @@
               "quickstart",
               "mcp",
               "sdk",
-              "authentication",
               "cli",
+              "authentication",
               "api-reference/sandboxes/create"
             ]
           }
