@@ -21,6 +21,7 @@
               "mcp",
               "sdk",
               "authentication",
+              "cli",
               "api-reference/sandboxes/create"
             ]
           }
@@ -71,6 +72,13 @@
               "api-reference/accounts/create",
               "api-reference/accounts/update",
               "api-reference/accounts/add-artist"
+            ]
+          },
+          {
+            "group": "Admins",
+            "pages": [
+              "api-reference/admins/check",
+              "api-reference/admins/sandboxes"
             ]
           },
           {
@@ -274,15 +282,15 @@
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
   },
   "footer": {
     "socials": {
