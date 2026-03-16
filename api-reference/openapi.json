@@ -217,7 +217,8 @@
             "description": "Filter runs by account ID. When provided, returns runs tagged with account:<account_id>. Only applicable for organization API keys (returns runs for the specified org member) or admin accounts. Personal API keys may only query their own account.",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
