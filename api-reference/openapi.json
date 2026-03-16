@@ -4074,6 +4074,83 @@
           }
         }
       }
+    },
+    "/api/admins/emails": {
+      "get": {
+        "description": "Returns all Resend emails sent for a given account, including HTML content. Useful for inspecting what pulse emails were delivered. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "query",
+            "description": "The account ID to fetch emails for.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Emails retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminEmailsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing account_id query parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - authenticated account is not a Recoup admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -10235,6 +10312,72 @@
               ]
             },
             "description": "List of accounts using this org repo as a submodule, with account_id, email, and repo_url"
+          }
+        }
+      },
+      "AdminEmailsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "emails"
+        ],
+        "description": "Response containing Resend emails sent for an account",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "emails": {
+            "type": "array",
+            "description": "List of emails sent for the account, ordered by created_at descending",
+            "items": {
+              "$ref": "#/components/schemas/PulseEmailRow"
+            }
+          }
+        }
+      },
+      "PulseEmailRow": {
+        "type": "object",
+        "required": [
+          "id",
+          "created_at"
+        ],
+        "description": "A single email record from Resend",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The Resend email ID"
+          },
+          "subject": {
+            "type": "string",
+            "nullable": true,
+            "description": "Email subject line"
+          },
+          "to": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Recipient email addresses"
+          },
+          "from": {
+            "type": "string",
+            "nullable": true,
+            "description": "Sender email address"
+          },
+          "html": {
+            "type": "string",
+            "nullable": true,
+            "description": "HTML content of the email"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the email was created"
           }
         }
       },
