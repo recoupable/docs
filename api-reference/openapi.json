@@ -10359,7 +10359,7 @@
           "created_at",
           "last_event"
         ],
-        "description": "A single email record from Resend (full GetEmailResponseSuccess). See https://resend.com/docs/api-reference/emails/retrieve-email for the source of truth.",
+        "description": "A single email record from Resend (full GetEmailResponseSuccess). See [Resend API docs](https://resend.com/docs/api-reference/emails/retrieve-email) for the source of truth.",
         "properties": {
           "id": {
             "type": "string",
