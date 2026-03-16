@@ -3998,6 +3998,62 @@
           }
         }
       }
+    },
+    "/api/admins/sandboxes/orgs": {
+      "get": {
+        "description": "Returns commit statistics for each repository in the recoupable GitHub organization. Each item includes the repo name, URL, total commit count, latest 5 commit messages, earliest and latest commit timestamps, and the number of account repos that have this org repo installed as a submodule. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
+        "parameters": [],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Org repo statistics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSandboxOrgsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - authenticated account is not a Recoup admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -10083,6 +10139,68 @@
             "items": {
               "$ref": "#/components/schemas/AccountSandboxRow"
             }
+          }
+        }
+      },
+      "OrgRepoRow": {
+        "type": "object",
+        "required": ["repo_name", "repo_url", "total_commits", "latest_commit_messages", "earliest_committed_at", "latest_committed_at", "account_repo_count"],
+        "description": "Commit statistics for a single GitHub org repository",
+        "properties": {
+          "repo_name": {
+            "type": "string",
+            "description": "Repository name",
+            "example": "chat"
+          },
+          "repo_url": {
+            "type": "string",
+            "description": "Full GitHub HTML URL of the repository",
+            "example": "https://github.com/recoupable/chat"
+          },
+          "total_commits": {
+            "type": "integer",
+            "description": "Total number of commits in the repository",
+            "example": 142
+          },
+          "latest_commit_messages": {
+            "type": "array",
+            "description": "Messages from the 5 most recent commits",
+            "items": { "type": "string" },
+            "example": ["fix: resolve auth bug", "feat: add new dashboard"]
+          },
+          "earliest_committed_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of the earliest (first) commit",
+            "example": "2024-01-15T10:00:00Z"
+          },
+          "latest_committed_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of the most recent commit",
+            "example": "2026-03-16T09:00:00Z"
+          },
+          "account_repo_count": {
+            "type": "integer",
+            "description": "Number of account repos that have this org repo installed as a submodule",
+            "example": 3
+          }
+        }
+      },
+      "AdminSandboxOrgsResponse": {
+        "type": "object",
+        "required": ["status", "repos"],
+        "description": "Response containing commit statistics for all org repositories",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"],
+            "description": "Status of the request"
+          },
+          "repos": {
+            "type": "array",
+            "description": "List of org repos with their commit statistics, ordered by total_commits descending",
+            "items": { "$ref": "#/components/schemas/OrgRepoRow" }
           }
         }
       }

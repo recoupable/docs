@@ -77,7 +77,8 @@
             "group": "Admins",
             "pages": [
               "api-reference/admins/check",
-              "api-reference/admins/sandboxes"
+              "api-reference/admins/sandboxes",
+              "api-reference/admins/sandboxes-orgs"
             ]
           },
           {
