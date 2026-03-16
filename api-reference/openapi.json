@@ -10353,18 +10353,21 @@
         "type": "object",
         "required": [
           "id",
-          "created_at"
+          "from",
+          "to",
+          "subject",
+          "created_at",
+          "last_event"
         ],
-        "description": "A single email record from Resend",
+        "description": "A single email record from Resend (full GetEmailResponseSuccess)",
         "properties": {
           "id": {
             "type": "string",
             "description": "The Resend email ID"
           },
-          "subject": {
+          "from": {
             "type": "string",
-            "nullable": true,
-            "description": "Email subject line"
+            "description": "Sender email address"
           },
           "to": {
             "type": "array",
@@ -10373,20 +10376,88 @@
             },
             "description": "Recipient email addresses"
           },
-          "from": {
-            "type": "string",
+          "cc": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
             "nullable": true,
-            "description": "Sender email address"
+            "description": "CC recipient email addresses"
+          },
+          "bcc": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "description": "BCC recipient email addresses"
+          },
+          "reply_to": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "description": "Reply-to email addresses"
+          },
+          "subject": {
+            "type": "string",
+            "description": "Email subject line"
           },
           "html": {
             "type": "string",
             "nullable": true,
             "description": "HTML content of the email"
           },
+          "text": {
+            "type": "string",
+            "nullable": true,
+            "description": "Plain text content of the email"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
             "description": "Timestamp when the email was created"
+          },
+          "scheduled_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Scheduled send time, if any"
+          },
+          "last_event": {
+            "type": "string",
+            "enum": [
+              "bounced",
+              "canceled",
+              "clicked",
+              "complained",
+              "delivered",
+              "delivery_delayed",
+              "failed",
+              "opened",
+              "queued",
+              "scheduled",
+              "sent"
+            ],
+            "description": "Most recent delivery event for this email"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              },
+              "required": ["name", "value"]
+            },
+            "nullable": true,
+            "description": "Custom tags attached to the email"
           }
         }
       },
