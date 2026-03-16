@@ -4077,16 +4077,25 @@
     },
     "/api/admins/emails": {
       "get": {
-        "description": "Returns all Resend emails sent for a given account, including HTML content. Useful for inspecting what pulse emails were delivered. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
+        "description": "Returns Resend emails including HTML content. Provide either account_id (returns all emails for an account) or email_id (returns a single email by Resend ID). Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
         "parameters": [
           {
             "name": "account_id",
             "in": "query",
-            "description": "The account ID to fetch emails for.",
-            "required": true,
+            "description": "The account ID to fetch all emails for. Required if email_id is not provided.",
+            "required": false,
             "schema": {
               "type": "string",
               "format": "uuid"
+            }
+          },
+          {
+            "name": "email_id",
+            "in": "query",
+            "description": "A Resend email ID to fetch a single email. Required if account_id is not provided.",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -4110,7 +4119,7 @@
             }
           },
           "400": {
-            "description": "Bad request - missing account_id query parameter",
+            "description": "Bad request - must provide either account_id or email_id",
             "content": {
               "application/json": {
                 "schema": {
