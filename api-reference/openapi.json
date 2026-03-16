@@ -257,7 +257,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
