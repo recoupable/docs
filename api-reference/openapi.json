@@ -4074,6 +4074,92 @@
           }
         }
       }
+    },
+    "/api/admins/emails": {
+      "get": {
+        "description": "Returns Resend emails including HTML content. Provide either account_id (returns all emails for an account) or email_id (returns a single email by Resend ID). Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token. Email response shape matches the [Resend Retrieve Email API](https://resend.com/docs/api-reference/emails/retrieve-email).",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "query",
+            "description": "The account ID to fetch all emails for. Required if email_id is not provided.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "email_id",
+            "in": "query",
+            "description": "A Resend email ID to fetch a single email. Required if account_id is not provided.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Emails retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminEmailsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - must provide either account_id or email_id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - authenticated account is not a Recoup admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -10235,6 +10321,143 @@
               ]
             },
             "description": "List of accounts using this org repo as a submodule, with account_id, email, and repo_url"
+          }
+        }
+      },
+      "AdminEmailsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "emails"
+        ],
+        "description": "Response containing Resend emails sent for an account",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "emails": {
+            "type": "array",
+            "description": "List of emails sent for the account, ordered by created_at descending",
+            "items": {
+              "$ref": "#/components/schemas/PulseEmailRow"
+            }
+          }
+        }
+      },
+      "PulseEmailRow": {
+        "type": "object",
+        "required": [
+          "id",
+          "from",
+          "to",
+          "subject",
+          "created_at",
+          "last_event"
+        ],
+        "description": "A single email record from Resend (full GetEmailResponseSuccess). See [Resend API docs](https://resend.com/docs/api-reference/emails/retrieve-email) for the source of truth.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The Resend email ID"
+          },
+          "from": {
+            "type": "string",
+            "description": "Sender email address"
+          },
+          "to": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Recipient email addresses"
+          },
+          "cc": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "description": "CC recipient email addresses"
+          },
+          "bcc": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "description": "BCC recipient email addresses"
+          },
+          "reply_to": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "description": "Reply-to email addresses"
+          },
+          "subject": {
+            "type": "string",
+            "description": "Email subject line"
+          },
+          "html": {
+            "type": "string",
+            "nullable": true,
+            "description": "HTML content of the email"
+          },
+          "text": {
+            "type": "string",
+            "nullable": true,
+            "description": "Plain text content of the email"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the email was created"
+          },
+          "scheduled_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Scheduled send time, if any"
+          },
+          "last_event": {
+            "type": "string",
+            "enum": [
+              "bounced",
+              "canceled",
+              "clicked",
+              "complained",
+              "delivered",
+              "delivery_delayed",
+              "failed",
+              "opened",
+              "queued",
+              "scheduled",
+              "sent"
+            ],
+            "description": "Most recent delivery event for this email"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              },
+              "required": ["name", "value"]
+            },
+            "nullable": true,
+            "description": "Custom tags attached to the email"
           }
         }
       },
