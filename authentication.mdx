@@ -18,7 +18,7 @@ Providing both headers in the same request will result in a `401` error.
 
 ## API Keys
 
-API keys are the primary way to authenticate programmatic access to the Recoup API.
+API keys are the primary way to authenticate programmatic access to the Recoup API. All API keys are **personal keys** — they are always tied to the account that created them.
 
 ### Creating an API Key
 
@@ -39,6 +39,17 @@ curl -X GET "https://api.recoupable.com/api/tasks" \
   -H "x-api-key: YOUR_API_KEY"
 ```
 
+### Access to Organizations
+
+If your account belongs to one or more organizations, your API key can access data across those organizations by passing an `account_id` parameter on supported endpoints. This lets you filter to any account within an organization your key has access to.
+
+- **No org membership** — the key can only access its own account's data
+- **Org member** — the key can pass `account_id` to filter to any account within that organization
+
+<Info>
+Org membership is determined by the `account_organization_ids` table. An account gains access to an org when it is added as a member.
+</Info>
+
 ---
 
 ## Access Tokens (Privy)
@@ -54,62 +65,22 @@ The API validates the token against Privy, extracts the user's email, and resolv
 
 ---
 
-## Personal vs. Organization API Keys
-
-API keys inherit the type of account they were created under.
-
-### Personal API Keys
-
-- Created by a standard user account
-- Can only access **your own account's data**
-- `orgId` is `null` on the resolved auth context
-
-### Organization API Keys
-
-- Created by an organization account (an account that has members)
-- Can access data for **any member account** within the organization
-- `orgId` is set to the organization's account ID
-
-<Info>
-An account is recognized as an organization when it has at least one member in the `account_organization_ids` table.
-</Info>
-
----
-
-## How We Determine Key Type at Creation
-
-When a key is created under an account, the API checks whether that account has any organization members:
-
-```
-Has members in account_organization_ids?
-  ├── Yes → Organization API Key (orgId = accountId)
-  └── No  → Personal API Key    (orgId = null)
-```
-
-This check happens at **authentication time** (not creation time), so key behavior automatically reflects the current state of the account.
-
----
-
 ## How We Verify Access on API Calls
 
 Every authenticated request goes through `validateAuthContext`, which enforces the following access rules:
 
-### Personal API Key or Bearer Token
+### API Key or Bearer Token
 
-Can only access their **own account**. Attempting to pass an `account_id` belonging to another account returns `403 Forbidden`.
-
-### Organization API Key
-
-Can access **any account that is a member of the organization**:
+By default, requests access the key owner's own account. When `account_id` is provided:
 
 ```
 Request includes account_id override?
   ├── Same as key owner → Allowed (self-access)
-  ├── Is a member of the org → Allowed
-  └── Not a member → 403 Forbidden
+  ├── Key owner is a member of an org that contains account_id → Allowed
+  └── No matching org membership → 403 Forbidden
 ```
 
-Membership is verified by querying the `account_organization_ids` table for a record linking the target account to the organization.
+Membership is verified by querying the `account_organization_ids` table for a record linking the key owner's account to the target account's organization.
 
 <Note>
 The Recoup internal admin organization has universal access to all accounts.
