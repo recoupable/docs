@@ -4202,7 +4202,7 @@
                     "total",
                     "total_new",
                     "total_active",
-                    "total_privy_users",
+                    "total_privy_accounts",
                     "logins"
                   ],
                   "properties": {
@@ -4228,9 +4228,9 @@
                       "description": "Number of accounts with a verified linked account (latest_verified_at) within the requested period",
                       "example": 30
                     },
-                    "total_privy_users": {
+                    "total_privy_accounts": {
                       "type": "integer",
-                      "description": "Total number of users in Privy across all time (not filtered by period)",
+                      "description": "Total number of accounts in Privy across all time (not filtered by period)",
                       "example": 1500
                     },
                     "logins": {
