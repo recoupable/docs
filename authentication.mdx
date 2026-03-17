@@ -47,7 +47,7 @@ If your account belongs to one or more organizations, your API key can access da
 - **Org member** — the key can pass `account_id` to filter to any account within that organization
 
 <Info>
-Org membership is determined by the `account_organization_ids` table. An account gains access to an org when it is added as a member.
+Org membership is determined by the account's [organizations](/api-reference/organizations/list). An account gains access to an org when it is added as a member.
 </Info>
 
 ---
@@ -80,7 +80,7 @@ Request includes account_id override?
   └── No matching org membership → 403 Forbidden
 ```
 
-Membership is verified by querying the `account_organization_ids` table for a record linking the key owner's account to the target account's organization.
+Membership is verified by checking the key owner's [organizations](/api-reference/organizations/list) for a record linking the account to the target account's organization.
 
 <Note>
 The Recoup internal admin organization has universal access to all accounts.
