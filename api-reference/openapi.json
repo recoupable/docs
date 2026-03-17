@@ -4163,7 +4163,7 @@
     },
     "/api/admins/privy": {
       "get": {
-        "description": "Returns Privy login statistics for a given time period. Results include counts for new accounts (created_at), active accounts (latest_verified_at), total Privy users across all time, and the full, unmodified Privy user objects. See [Privy User object documentation](https://docs.privy.io/api-reference/users/get-all) for the complete type definition. Defaults to period=all (no date filter). Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
+        "description": "Returns Privy login statistics for a given time period. Results include counts for new accounts (created_at), active accounts (latest_verified_at), total Privy accounts across all time, and the full, unmodified Privy account objects. See [Privy User object documentation](https://docs.privy.io/api-reference/users/get-all) for the complete type definition. Defaults to period=all (no date filter). Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
         "parameters": [
           {
             "name": "period",
@@ -4215,7 +4215,7 @@
                     },
                     "total": {
                       "type": "integer",
-                      "description": "Number of Privy user objects returned in the logins array for the requested period",
+                      "description": "Number of Privy account objects returned in the logins array for the requested period",
                       "example": 42
                     },
                     "total_new": {
@@ -4235,7 +4235,7 @@
                     },
                     "logins": {
                       "type": "array",
-                      "description": "Full, unmodified Privy user objects. See [Privy User object docs](https://docs.privy.io/api-reference/users/get-all) for the complete type definition.",
+                      "description": "Full, unmodified Privy account objects. See [Privy User object docs](https://docs.privy.io/api-reference/users/get-all) for the complete type definition.",
                       "items": {
                         "type": "object"
                       }
