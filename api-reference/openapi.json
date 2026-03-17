@@ -4201,7 +4201,6 @@
                     "status",
                     "total",
                     "total_new",
-                    "total_active",
                     "logins"
                   ],
                   "properties": {
@@ -4214,18 +4213,13 @@
                     },
                     "total": {
                       "type": "integer",
-                      "description": "Total number of accounts in Privy across all time (not filtered by period)",
-                      "example": 42
+                      "description": "Number of accounts active (latest_verified_at) within the requested period",
+                      "example": 30
                     },
                     "total_new": {
                       "type": "integer",
                       "description": "Number of accounts created (created_at) within the requested period",
                       "example": 15
-                    },
-                    "total_active": {
-                      "type": "integer",
-                      "description": "Total number of accounts matching either new or active criteria in the requested period",
-                      "example": 30
                     },
                     "logins": {
                       "type": "array",
