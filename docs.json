@@ -79,7 +79,8 @@
               "api-reference/admins/check",
               "api-reference/admins/sandboxes",
               "api-reference/admins/sandboxes-orgs",
-              "api-reference/admins/emails"
+              "api-reference/admins/emails",
+              "api-reference/admins/privy"
             ]
           },
           {
