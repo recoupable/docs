@@ -4163,21 +4163,22 @@
     },
     "/api/admins/privy": {
       "get": {
-        "description": "Returns Privy login statistics for a given time period. Each login represents a user account created in Privy (i.e., their first authentication). Results include a total count and the full, unmodified Privy user objects. See [Privy User object documentation](https://docs.privy.io/api-reference/users/get-all) for the complete type definition. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
+        "description": "Returns Privy login statistics for a given time period. Results include counts for new accounts (created_at), active accounts (latest_verified_at), total Privy accounts across all time, and the full, unmodified Privy account objects. See [Privy User object documentation](https://docs.privy.io/api-reference/users/get-all) for the complete type definition. Defaults to period=all (no date filter). Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
         "parameters": [
           {
             "name": "period",
             "in": "query",
-            "description": "Time period to filter logins. One of: daily (last 24 hours), weekly (last 7 days), monthly (last 30 days). Defaults to daily.",
+            "description": "Time period to filter logins. One of: all (no date filter), daily (last 24 hours), weekly (last 7 days), monthly (last 30 days). Defaults to all.",
             "required": false,
             "schema": {
               "type": "string",
               "enum": [
+                "all",
                 "daily",
                 "weekly",
                 "monthly"
               ],
-              "default": "daily"
+              "default": "all"
             }
           }
         ],
@@ -4199,6 +4200,8 @@
                   "required": [
                     "status",
                     "total",
+                    "total_new",
+                    "total_active",
                     "logins"
                   ],
                   "properties": {
@@ -4211,12 +4214,22 @@
                     },
                     "total": {
                       "type": "integer",
-                      "description": "Total number of logins in the requested period",
+                      "description": "Total number of accounts in Privy across all time (not filtered by period)",
                       "example": 42
+                    },
+                    "total_new": {
+                      "type": "integer",
+                      "description": "Number of accounts created (created_at) within the requested period",
+                      "example": 15
+                    },
+                    "total_active": {
+                      "type": "integer",
+                      "description": "Total number of accounts matching either new or active criteria in the requested period",
+                      "example": 30
                     },
                     "logins": {
                       "type": "array",
-                      "description": "Full, unmodified Privy user objects. See [Privy User object docs](https://docs.privy.io/api-reference/users/get-all) for the complete type definition.",
+                      "description": "Full, unmodified Privy account objects. See [Privy User object docs](https://docs.privy.io/api-reference/users/get-all) for the complete type definition.",
                       "items": {
                         "type": "object"
                       }
