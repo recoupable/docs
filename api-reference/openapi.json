@@ -4160,6 +4160,104 @@
           }
         }
       }
+    },
+    "/api/admins/privy": {
+      "get": {
+        "description": "Returns Privy login statistics for a given time period. Each login represents a user account created in Privy (i.e., their first authentication). Results include a total count and the full, unmodified Privy user objects. See [Privy User object documentation](https://docs.privy.io/api-reference/users/get-all) for the complete type definition. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "description": "Time period to filter logins. One of: daily (last 24 hours), weekly (last 7 days), monthly (last 30 days). Defaults to daily.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "daily",
+                "weekly",
+                "monthly"
+              ],
+              "default": "daily"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Privy login statistics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "total",
+                    "logins"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success"
+                      ],
+                      "description": "Status of the request"
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total number of logins in the requested period",
+                      "example": 42
+                    },
+                    "logins": {
+                      "type": "array",
+                      "description": "Full, unmodified Privy user objects. See [Privy User object docs](https://docs.privy.io/api-reference/users/get-all) for the complete type definition.",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - authenticated account is not a Recoup admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -10454,7 +10552,10 @@
                   "type": "string"
                 }
               },
-              "required": ["name", "value"]
+              "required": [
+                "name",
+                "value"
+              ]
             },
             "nullable": true,
             "description": "Custom tags attached to the email"
