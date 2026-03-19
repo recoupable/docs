@@ -188,7 +188,7 @@
     },
     "/api/tasks/runs": {
       "get": {
-        "description": "Returns an array of task runs. When runId is provided, the array contains that single run. When omitted, returns recent runs for the authenticated account. Use account_id (org API keys or admin only) to query runs for a specific account.",
+        "description": "Returns an array of task runs. When runId is provided, the array contains that single run. When omitted, returns recent runs for the authenticated account. Use account_id to query runs for a specific account within your organizations.",
         "parameters": [
           {
             "name": "runId",
@@ -214,7 +214,7 @@
           {
             "name": "account_id",
             "in": "query",
-            "description": "Filter runs by account ID. When provided, returns runs tagged with account:<account_id>. Only applicable to accounts the provided API Key has access to - keys can filter to any account within their organizations.",
+            "description": "Filter runs by account ID. When provided, returns runs tagged with account:<account_id>. Only applicable when the authenticated account has access to multiple accounts via organization membership.",
             "required": false,
             "schema": {
               "type": "string",
@@ -460,7 +460,7 @@
           {
             "name": "account_id",
             "in": "query",
-            "description": "Filter to a specific account's artists. Only applicable to accounts the provided API Key has access to - keys can filter to any account within their organizations.",
+            "description": "Filter to a specific account's artists. Only applicable when the authenticated account has access to multiple accounts via organization membership.",
             "required": false,
             "schema": {
               "type": "string",
@@ -1081,7 +1081,7 @@
           {
             "name": "account_id",
             "in": "query",
-            "description": "Filter to a specific account. Only applicable to accounts the provided API Key has access to - keys can filter to any account within their organizations.",
+            "description": "Filter to a specific account. Only applicable when the authenticated account has access to multiple accounts via organization membership.",
             "required": false,
             "schema": {
               "type": "string",
@@ -1121,7 +1121,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - account_id is not a member of the organization or personal key tried to filter by account_id",
+            "description": "Forbidden - account_id is not a member of the organization or account tried to filter by an account_id they don't have access to",
             "content": {
               "application/json": {
                 "schema": {
@@ -1407,7 +1407,7 @@
           {
             "name": "account_id",
             "in": "query",
-            "description": "Filter to a specific account. Only applicable to accounts the provided API Key has access to - keys can filter to any account within their organizations.",
+            "description": "Filter to a specific account. Only applicable when the authenticated account has access to multiple accounts via organization membership.",
             "required": false,
             "schema": {
               "type": "string",
@@ -1447,7 +1447,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - account_id is not a member of the organization or personal key tried to filter by account_id",
+            "description": "Forbidden - account_id is not a member of the organization or account tried to filter by an account_id they don't have access to",
             "content": {
               "application/json": {
                 "schema": {
@@ -2040,7 +2040,7 @@
           {
             "name": "account_id",
             "in": "query",
-            "description": "Filter to a specific account. Only applicable to accounts the provided API Key has access to - keys can filter to any account within their organizations.",
+            "description": "Filter to a specific account. Only applicable when the authenticated account has access to multiple accounts via organization membership.",
             "required": false,
             "schema": {
               "type": "string",
@@ -2070,7 +2070,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - account_id is not a member of the organization or personal key tried to filter by account_id",
+            "description": "Forbidden - account_id is not a member of the organization or account tried to filter by an account_id they don't have access to",
             "content": {
               "application/json": {
                 "schema": {
@@ -2126,7 +2126,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - account_id is not a member of the organization or personal key tried to use account_id",
+            "description": "Forbidden - account_id is not a member of the organization or account tried to use an account_id they don't have access to",
             "content": {
               "application/json": {
                 "schema": {
@@ -2182,7 +2182,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - account_id is not a member of the organization or personal key tried to use account_id",
+            "description": "Forbidden - account_id is not a member of the organization or account tried to use an account_id they don't have access to",
             "content": {
               "application/json": {
                 "schema": {
@@ -2238,7 +2238,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - account_id is not a member of the organization or personal key tried to use account_id",
+            "description": "Forbidden - account_id is not a member of the organization or account tried to use an account_id they don't have access to",
             "content": {
               "application/json": {
                 "schema": {
@@ -3239,7 +3239,7 @@
           {
             "name": "account_id",
             "in": "query",
-            "description": "Filter to a specific account. Only applicable to accounts the provided API Key has access to - keys can filter to any account within their organizations.",
+            "description": "Filter to a specific account. Only applicable when the authenticated account has access to multiple accounts via organization membership.",
             "required": false,
             "schema": {
               "type": "string",
@@ -3292,7 +3292,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - account_id is not a member of the organization or personal key tried to filter by account_id",
+            "description": "Forbidden - account_id is not a member of the organization or account tried to filter by an account_id they don't have access to",
             "content": {
               "application/json": {
                 "schema": {
@@ -4337,7 +4337,7 @@
           "account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the account to send the notification for. Only applicable to accounts the provided API Key has access to - keys can specify an account_id for any account within their organizations. If not provided, sends the notification for the API key's own account."
+            "description": "UUID of the account to send the notification for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, sends the notification for the API key's own account."
           }
         }
       },
@@ -5138,7 +5138,7 @@
           "account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the account to create the artist for. Only applicable to accounts the provided API Key has access to - keys can specify an account_id for any account within their organizations. If not provided, the artist is created for the API key's own account."
+            "description": "UUID of the account to create the artist for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, the artist is created for the API key's own account."
           },
           "organization_id": {
             "type": "string",
@@ -5853,7 +5853,7 @@
           "accountId": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the account to create the chat for. Only applicable to accounts the provided API Key has access to - keys can specify an accountId for any account within their organizations. If not provided, the chat is created for the API key's own account."
+            "description": "UUID of the account to create the chat for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, the chat is created for the API key's own account."
           },
           "topic": {
             "type": "string",
@@ -6351,7 +6351,7 @@
           "account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the account to create the workspace for. Only applicable to accounts the provided API Key has access to - keys can specify an account_id for any account within their organizations. If not provided, the workspace is created for the API key's own account."
+            "description": "UUID of the account to create the workspace for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, the workspace is created for the API key's own account."
           },
           "organization_id": {
             "type": "string",
@@ -9004,7 +9004,7 @@
           "account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the account to create the sandbox for. Only applicable to accounts the provided API Key has access to - keys can specify an account_id for any account within their organizations. If not provided, creates the sandbox for the API key's own account."
+            "description": "UUID of the account to create the sandbox for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, creates the sandbox for the API key's own account."
           }
         }
       },
@@ -9141,7 +9141,7 @@
           "account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the account to set up the sandbox for. Only applicable to accounts the provided API Key has access to - keys can specify an account_id for any account within their organizations. If not provided, sets up the sandbox for the API key's own account."
+            "description": "UUID of the account to set up the sandbox for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, sets up the sandbox for the API key's own account."
           }
         }
       },
@@ -9172,7 +9172,7 @@
           "account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the account to delete the sandbox for. Only applicable to accounts the provided API Key has access to - keys can specify an account_id for any account within their organizations. If not provided, deletes the sandbox for the API key's own account."
+            "description": "UUID of the account to delete the sandbox for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, deletes the sandbox for the API key's own account."
           }
         }
       },
@@ -9219,7 +9219,7 @@
           "account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the account to update the snapshot for. Only applicable to accounts the provided API Key has access to - keys can specify an account_id for any account within their organizations. If not provided, updates the snapshot for the API key's own account."
+            "description": "UUID of the account to update the snapshot for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, updates the snapshot for the API key's own account."
           }
         }
       },
@@ -9329,7 +9329,7 @@
             "items": {
               "$ref": "#/components/schemas/Pulse"
             },
-            "description": "Array of pulse objects. For personal keys, contains one pulse. For org keys, contains pulses for all accounts in the organization."
+            "description": "Array of pulse objects. Contains pulses for the authenticated account. If the account has access to organizations, all organization accounts are included."
           },
           "error": {
             "type": "string",
@@ -9351,7 +9351,7 @@
           "account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the account to update the pulse for. Only applicable to accounts the provided API Key has access to - keys can specify an account_id for any account within their organizations. If not provided, updates the pulse for the API key's own account."
+            "description": "UUID of the account to update the pulse for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, updates the pulse for the API key's own account."
           }
         }
       },
