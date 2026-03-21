@@ -21,7 +21,7 @@
   "paths": {
     "/api/tasks": {
       "get": {
-        "description": "Retrieve scheduled tasks from the database. Tasks have cron-based execution schedules. Supports filtering by id, account_id, or artist_account_id.",
+        "description": "Retrieve scheduled tasks. When fetching a single task by id, the response includes recent_runs (last 5 runs from Trigger.dev) and upcoming (next scheduled run times) sourced directly from the Trigger.dev API. Supports filtering by id, account_id, or artist_account_id.",
         "parameters": [
           {
             "name": "id",
@@ -4611,6 +4611,21 @@
             "type": "string",
             "nullable": true,
             "description": "Identifier for the trigger schedule associated with this task"
+          },
+          "recent_runs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TaskRun"
+            },
+            "description": "Last 5 runs for this task, sourced from Trigger.dev. Only included when fetching a single task by id."
+          },
+          "upcoming": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Next scheduled run times, sourced from the latest Trigger.dev run payload. Only included when fetching a single task by id."
           }
         }
       },
@@ -10597,6 +10612,49 @@
             "items": {
               "$ref": "#/components/schemas/OrgRepoRow"
             }
+          }
+        }
+      },
+      "TaskRun": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Trigger.dev run ID (e.g. run_abc123)"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "EXECUTING",
+              "COMPLETED",
+              "FAILED",
+              "CANCELLED",
+              "TIMED_OUT"
+            ],
+            "description": "Run execution status"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the run was created"
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "When the run started executing"
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "When the run finished"
+          },
+          "durationMs": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Run duration in milliseconds"
           }
         }
       }
