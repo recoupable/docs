@@ -21,7 +21,7 @@
   "paths": {
     "/api/tasks": {
       "get": {
-        "description": "Retrieve scheduled tasks from the database. Tasks have cron-based execution schedules. Supports filtering by id, account_id, or artist_account_id.",
+        "description": "Retrieve scheduled tasks. The response includes recent_runs (last 5 runs) and upcoming (next scheduled run times) sourced directly from the Trigger.dev API. Supports filtering by id, account_id, or artist_account_id.",
         "parameters": [
           {
             "name": "id",
@@ -4611,6 +4611,21 @@
             "type": "string",
             "nullable": true,
             "description": "Identifier for the trigger schedule associated with this task"
+          },
+          "recent_runs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TaskRunResponse"
+            },
+            "description": "Last 5 runs for this task, sourced from the Trigger.dev API."
+          },
+          "upcoming": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Next scheduled run times, sourced from the latest Trigger.dev run payload."
           }
         }
       },
