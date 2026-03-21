@@ -4615,7 +4615,7 @@
           "recent_runs": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/TaskRun"
+              "$ref": "#/components/schemas/TaskRunResponse"
             },
             "description": "Last 5 runs for this task, sourced from the Trigger.dev API."
           },
@@ -10612,55 +10612,6 @@
             "items": {
               "$ref": "#/components/schemas/OrgRepoRow"
             }
-          }
-        }
-      },
-      "TaskRun": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Trigger.dev run ID (e.g. run_abc123)"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "PENDING_VERSION",
-              "DELAYED",
-              "QUEUED",
-              "EXECUTING",
-              "REATTEMPTING",
-              "FROZEN",
-              "COMPLETED",
-              "FAILED",
-              "CANCELED",
-              "CRASHED",
-              "INTERRUPTED",
-              "SYSTEM_FAILURE"
-            ],
-            "description": "Run execution status"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "When the run was created"
-          },
-          "startedAt": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true,
-            "description": "When the run started executing"
-          },
-          "finishedAt": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true,
-            "description": "When the run finished"
-          },
-          "durationMs": {
-            "type": "integer",
-            "nullable": true,
-            "description": "Run duration in milliseconds"
           }
         }
       }
