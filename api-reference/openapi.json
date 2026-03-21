@@ -21,7 +21,7 @@
   "paths": {
     "/api/tasks": {
       "get": {
-        "description": "Retrieve scheduled tasks. When fetching a single task by id, the response includes recent_runs (last 5 runs from Trigger.dev) and upcoming (next scheduled run times) sourced directly from the Trigger.dev API. Supports filtering by id, account_id, or artist_account_id.",
+        "description": "Retrieve scheduled tasks. The response includes recent_runs (last 5 runs) and upcoming (next scheduled run times) sourced directly from the Trigger.dev API. Supports filtering by id, account_id, or artist_account_id.",
         "parameters": [
           {
             "name": "id",
@@ -4617,7 +4617,7 @@
             "items": {
               "$ref": "#/components/schemas/TaskRun"
             },
-            "description": "Last 5 runs for this task, sourced from Trigger.dev. Only included when fetching a single task by id."
+            "description": "Last 5 runs for this task, sourced from the Trigger.dev API."
           },
           "upcoming": {
             "type": "array",
@@ -4625,7 +4625,7 @@
               "type": "string",
               "format": "date-time"
             },
-            "description": "Next scheduled run times, sourced from the latest Trigger.dev run payload. Only included when fetching a single task by id."
+            "description": "Next scheduled run times, sourced from the latest Trigger.dev run payload."
           }
         }
       },
