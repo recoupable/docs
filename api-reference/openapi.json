@@ -10625,12 +10625,18 @@
           "status": {
             "type": "string",
             "enum": [
+              "PENDING_VERSION",
+              "DELAYED",
               "QUEUED",
               "EXECUTING",
+              "REATTEMPTING",
+              "FROZEN",
               "COMPLETED",
               "FAILED",
-              "CANCELLED",
-              "TIMED_OUT"
+              "CANCELED",
+              "CRASHED",
+              "INTERRUPTED",
+              "SYSTEM_FAILURE"
             ],
             "description": "Run execution status"
           },
