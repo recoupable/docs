@@ -4161,9 +4161,9 @@
         }
       }
     },
-    "/api/admins/coding-agent/slack-tags": {
+    "/api/admins/coding/slack": {
       "get": {
-        "description": "Returns a list of Slack mentions of the Recoup Coding Agent bot, pulled directly from the Slack API as the source of truth. Each entry includes the tagger's user information, the prompt they sent, the timestamp, and the channel. Supports optional time-period filtering. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
+        "description": "Returns a list of Slack mentions of the Recoup Coding Agent bot, pulled directly from the Slack API as the source of truth. Each entry includes the tagger's information, the prompt they sent, the timestamp, and the channel. Supports optional time-period filtering. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
         "parameters": [
           {
             "name": "period",
@@ -4209,7 +4209,7 @@
                         "properties": {
                           "user_id": {
                             "type": "string",
-                            "description": "Slack user ID of the person who tagged the agent",
+                            "description": "Slack ID of the person who tagged the agent",
                             "example": "U012AB3CD"
                           },
                           "user_name": {
@@ -4218,9 +4218,8 @@
                             "example": "Jane Smith"
                           },
                           "user_avatar": {
-                            "type": "string",
-                            "nullable": true,
-                            "description": "URL of the user's Slack avatar",
+                            "type": ["string", "null"],
+                            "description": "URL of the Slack avatar",
                             "example": "https://avatars.slack-edge.com/..."
                           },
                           "prompt": {
