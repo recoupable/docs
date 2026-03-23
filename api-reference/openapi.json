@@ -4242,6 +4242,16 @@
                             "type": "string",
                             "description": "Human-readable name of the Slack channel",
                             "example": "dev-team"
+                          },
+                          "pull_requests": {
+                            "type": "array",
+                            "description": "GitHub pull request URLs opened by the Coding Agent in response to this prompt, parsed from bot replies in the Slack thread",
+                            "items": {
+                              "type": "string",
+                              "format": "uri",
+                              "example": "https://github.com/recoupable-com/api/pull/42"
+                            },
+                            "example": ["https://github.com/recoupable-com/api/pull/42"]
                           }
                         }
                       }
