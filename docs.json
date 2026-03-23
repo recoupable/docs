@@ -81,7 +81,8 @@
               "api-reference/admins/sandboxes-orgs",
               "api-reference/admins/emails",
               "api-reference/admins/privy",
-              "api-reference/admins/coding-agent-slack-tags"
+              "api-reference/admins/coding-agent-slack-tags",
+              "api-reference/admins/coding-pr"
             ]
           },
           {
