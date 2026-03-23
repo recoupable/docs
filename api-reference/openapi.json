@@ -4290,7 +4290,7 @@
     },
     "/api/admins/coding/pr": {
       "get": {
-        "description": "Returns the merged status for each provided GitHub pull request URL. Accepts one or more `pull_requests` query parameters containing GitHub PR URLs. Uses the GitHub REST API to check whether each pull request has been merged. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
+        "description": "Returns the status (open, closed, or merged) for each provided GitHub pull request URL. Accepts one or more `pull_requests` query parameters containing GitHub PR URLs. Uses the GitHub REST API to check each pull request's state. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
         "parameters": [
           {
             "name": "pull_requests",
@@ -4329,10 +4329,10 @@
                     },
                     "pull_requests": {
                       "type": "array",
-                      "description": "Merged status for each provided pull request URL",
+                      "description": "Status for each provided pull request URL",
                       "items": {
                         "type": "object",
-                        "required": ["url", "merged"],
+                        "required": ["url", "status"],
                         "properties": {
                           "url": {
                             "type": "string",
@@ -4340,10 +4340,11 @@
                             "description": "The GitHub pull request URL",
                             "example": "https://github.com/recoupable/api/pull/42"
                           },
-                          "merged": {
-                            "type": "boolean",
-                            "description": "Whether the pull request has been merged",
-                            "example": true
+                          "status": {
+                            "type": "string",
+                            "enum": ["open", "closed", "merged"],
+                            "description": "The current status of the pull request",
+                            "example": "merged"
                           }
                         }
                       }
