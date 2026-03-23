@@ -4288,6 +4288,106 @@
         }
       }
     },
+    "/api/admins/coding/pr": {
+      "get": {
+        "description": "Returns the merged status for each provided GitHub pull request URL. Accepts one or more `pull_requests` query parameters containing GitHub PR URLs. Uses the GitHub REST API to check whether each pull request has been merged. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
+        "parameters": [
+          {
+            "name": "pull_requests",
+            "in": "query",
+            "description": "One or more GitHub pull request URLs to check. Repeat this parameter for each URL. Example: ?pull_requests=https://github.com/org/repo/pull/1&pull_requests=https://github.com/org/repo/pull/2",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uri"
+              },
+              "minItems": 1
+            },
+            "style": "form",
+            "explode": true
+          }
+        ],
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
+        "responses": {
+          "200": {
+            "description": "PR merged status retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["status", "pull_requests"],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": ["success"],
+                      "description": "Status of the request"
+                    },
+                    "pull_requests": {
+                      "type": "array",
+                      "description": "Merged status for each provided pull request URL",
+                      "items": {
+                        "type": "object",
+                        "required": ["url", "merged"],
+                        "properties": {
+                          "url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "The GitHub pull request URL",
+                            "example": "https://github.com/recoupable/api/pull/42"
+                          },
+                          "merged": {
+                            "type": "boolean",
+                            "description": "Whether the pull request has been merged",
+                            "example": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid pull_requests parameter",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - authenticated account is not a Recoup admin",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admins/privy": {
       "get": {
         "description": "Returns Privy login statistics for a given time period. Results include counts for new accounts (created_at), active accounts (latest_verified_at), total Privy accounts across all time, and the full, unmodified Privy account objects. See [Privy User object documentation](https://docs.privy.io/api-reference/users/get-all) for the complete type definition. Defaults to period=all (no date filter). Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
