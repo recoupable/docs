@@ -2367,6 +2367,84 @@
         }
       }
     },
+    "/api/sandboxes/files": {
+      "post": {
+        "description": "Upload one or more files to the authenticated account's GitHub org submodule repository. Resolves the target path through git submodules (e.g. `.openclaw/workspace/orgs/myorg/`) and commits each file directly to GitHub. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["files", "folder"],
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": { "type": "string", "format": "binary" },
+                    "description": "One or more files to upload."
+                  },
+                  "folder": {
+                    "type": "string",
+                    "description": "Target folder path within the repository (e.g. `.openclaw/workspace/orgs/myorg`).",
+                    "example": ".openclaw/workspace/orgs/myorg"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Files uploaded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "uploaded": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "path": { "type": "string", "description": "File path in the repository." },
+                          "success": { "type": "boolean" },
+                          "error": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing folder or no files provided",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SandboxErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SandboxErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - no snapshot or GitHub repository for account",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SandboxErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/x/search": {
       "get": {
         "servers": [
