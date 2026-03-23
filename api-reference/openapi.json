@@ -4161,6 +4161,124 @@
         }
       }
     },
+    "/api/admins/coding-agent/slack-tags": {
+      "get": {
+        "description": "Returns a list of Slack mentions of the Recoup Coding Agent bot, pulled directly from the Slack API as the source of truth. Each entry includes the tagger's user information, the prompt they sent, the timestamp, and the channel. Supports optional time-period filtering. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "description": "Time period to filter tags. One of: all (no date filter), daily (last 24 hours), weekly (last 7 days), monthly (last 30 days). Defaults to all.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["all", "daily", "weekly", "monthly"],
+              "default": "all"
+            }
+          }
+        ],
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
+        "responses": {
+          "200": {
+            "description": "Slack tag analytics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["status", "total", "tags"],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": ["success"],
+                      "description": "Status of the request"
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total number of times the Coding Agent was tagged in the requested period",
+                      "example": 42
+                    },
+                    "tags": {
+                      "type": "array",
+                      "description": "List of Slack tag events",
+                      "items": {
+                        "type": "object",
+                        "required": ["user_id", "user_name", "prompt", "timestamp", "channel_id", "channel_name"],
+                        "properties": {
+                          "user_id": {
+                            "type": "string",
+                            "description": "Slack user ID of the person who tagged the agent",
+                            "example": "U012AB3CD"
+                          },
+                          "user_name": {
+                            "type": "string",
+                            "description": "Display name of the person who tagged the agent",
+                            "example": "Jane Smith"
+                          },
+                          "user_avatar": {
+                            "type": "string",
+                            "nullable": true,
+                            "description": "URL of the user's Slack avatar",
+                            "example": "https://avatars.slack-edge.com/..."
+                          },
+                          "prompt": {
+                            "type": "string",
+                            "description": "The text of the message sent to the agent",
+                            "example": "add dark mode support to the settings page"
+                          },
+                          "timestamp": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "ISO 8601 timestamp of the tag event",
+                            "example": "2024-01-15T10:30:00.000Z"
+                          },
+                          "channel_id": {
+                            "type": "string",
+                            "description": "Slack channel ID where the tag occurred",
+                            "example": "C012AB3CD"
+                          },
+                          "channel_name": {
+                            "type": "string",
+                            "description": "Human-readable name of the Slack channel",
+                            "example": "dev-team"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - authenticated account is not a Recoup admin",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admins/privy": {
       "get": {
         "description": "Returns Privy login statistics for a given time period. Results include counts for new accounts (created_at), active accounts (latest_verified_at), total Privy accounts across all time, and the full, unmodified Privy account objects. See [Privy User object documentation](https://docs.privy.io/api-reference/users/get-all) for the complete type definition. Defaults to period=all (no date filter). Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
