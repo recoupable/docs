@@ -1,45 +1,39 @@
 ---
-title: "MCP"
-description: "Connect AI agents to the Recoup platform using the Model Context Protocol (MCP) server."
+title: "MCP Servers"
+description: "Connect AI agents to the Recoup platform using the Model Context Protocol (MCP)."
 ---
 
-The Recoup API exposes an [MCP](https://modelcontextprotocol.io/) server that AI agents can connect to for tool use. The server is available at:
+Recoup exposes two MCP servers: one for **searching these docs**, and one for **calling Recoup tools** from your AI agent.
+
+---
+
+## 1. Docs Search MCP
+
+Every page in these docs includes an **MCP** button in the contextual menu (top-right of each page). Clicking it gives you a ready-to-use config snippet to add the Recoup docs as an MCP source in Claude, Cursor, VS Code, or any MCP-compatible client.
+
+This server is powered by Mintlify and lets AI assistants search and read the Recoup API documentation directly — useful for building integrations or answering questions about the API.
+
+---
+
+## 2. Recoup API MCP Server
+
+The Recoup API exposes an MCP server that AI agents can connect to for tool use. The server is available at:
 
 ```
 https://recoup-api.vercel.app/mcp
 ```
 
-## Authentication
+### Authentication
 
-All MCP tools require an API key. Pass it as a Bearer token in the `Authorization` header when connecting to the MCP server.
+All tools require an API key passed as a Bearer token:
 
-You can get a key from the [API Keys page](https://chat.recoupable.com/keys).
+```
+Authorization: Bearer <YOUR_API_KEY>
+```
 
-## Tools
+Get a key from the [API Keys page](https://chat.recoupable.com/keys).
 
-### prompt_sandbox
-
-Send a prompt to OpenClaw running in a persistent per-account sandbox. The sandbox is reused across calls — if one is already running it picks up where you left off, otherwise a new one is created from the account's latest snapshot.
-
-Returns raw `stdout` and `stderr` from the command. The sandbox stays alive after each prompt for follow-up interactions.
-
-**Input schema:**
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `prompt` | `string` | Yes | The prompt to send to OpenClaw in the sandbox. |
-
-**Response fields:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `sandboxId` | `string` | The Vercel Sandbox ID. |
-| `stdout` | `string` | Standard output from the command. |
-| `stderr` | `string` | Standard error from the command. |
-| `exitCode` | `number` | Process exit code (`0` = success). |
-| `created` | `boolean` | `true` if a new sandbox was created, `false` if an existing one was reused. |
-
-**Example usage (TypeScript with MCP SDK):**
+### Connecting
 
 ```typescript
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
@@ -52,7 +46,150 @@ const transport = new StreamableHTTPClientTransport(
 
 const client = new Client({ name: "my-agent", version: "1.0.0" });
 await client.connect(transport);
+```
 
+---
+
+### Tool Reference
+
+#### Artists
+
+| Tool | Description |
+|------|-------------|
+| `create_new_artist` | Create a new artist account. |
+| `get_artist_socials` | Get all social profiles linked to an artist. |
+| `update_artist_socials` | Set social profile URLs for an artist (platform auto-detected). |
+| `artist_deep_research` | Run comprehensive research on an artist across platforms. |
+| `update_account_info` | Update an artist's profile info (name, image, instructions, knowledge base). |
+
+#### Chats
+
+| Tool | Description |
+|------|-------------|
+| `get_chats` | List chat conversations, optionally filtered by account or artist. |
+| `compact_chats` | Summarize one or more chat conversations into concise notes. |
+
+#### Tasks
+
+| Tool | Description |
+|------|-------------|
+| `get_tasks` | List scheduled tasks, optionally filtered by account, artist, or enabled status. |
+| `create_task` | Create a new scheduled task. |
+| `update_task` | Update an existing task. |
+| `delete_task` | Delete a task by ID. |
+| `get_task_run_status` | Get the status of a Trigger.dev background task run. |
+
+#### Pulses
+
+| Tool | Description |
+|------|-------------|
+| `get_pulses` | Get pulse statuses for accounts. |
+| `update_pulse` | Enable or disable the pulse for the authenticated account. |
+
+#### Catalogs & Songs
+
+| Tool | Description |
+|------|-------------|
+| `select_catalogs` | List catalogs for an account. Call this first before recommending songs. |
+| `select_catalog_songs` | Find songs from a catalog matching given criteria. |
+| `insert_catalog_songs` | Add songs to a catalog by ISRC in batch. |
+
+#### Spotify
+
+| Tool | Description |
+|------|-------------|
+| `get_spotify_search` | Search Spotify for artists, albums, tracks, playlists, shows, or episodes. |
+| `get_spotify_artist_albums` | Get an artist's albums from Spotify. |
+| `get_spotify_artist_top_tracks` | Get an artist's top tracks by market. |
+| `get_spotify_album` | Get details for a single Spotify album. |
+| `spotify_deep_research` | Deep-research an artist using their Spotify ID. |
+
+#### YouTube
+
+| Tool | Description |
+|------|-------------|
+| `youtube_login` | Check YouTube authentication status for an artist. |
+| `get_youtube_channels` | Get YouTube channel info for an artist. |
+| `get_youtube_channel_video_list` | List videos from a YouTube channel's uploads playlist. |
+| `get_youtube_revenue` | Get estimated YouTube revenue data for a date range. |
+| `set_youtube_thumbnail` | Set a custom thumbnail for a YouTube video. |
+
+#### Search & Research
+
+| Tool | Description |
+|------|-------------|
+| `search_web` | Search the web for real-time information via Perplexity. |
+| `search_google_images` | Search Google Images for photos or visual content. |
+| `web_deep_research` | Deep web research using Perplexity's `sonar-deep-research` model. |
+
+#### Images
+
+| Tool | Description |
+|------|-------------|
+| `generate_image` | Generate an image from a text prompt. |
+| `edit_image` | Edit an existing image using a text prompt. |
+
+#### Video
+
+| Tool | Description |
+|------|-------------|
+| `generate_sora_2_video` | Generate a video from a text prompt using OpenAI Sora 2. |
+| `retrieve_sora_2_video` | Get the status and details of a video generation job. |
+| `retrieve_sora_2_video_content` | Download the rendered video content. |
+
+#### Audio
+
+| Tool | Description |
+|------|-------------|
+| `transcribe_audio` | Transcribe an audio file using OpenAI Whisper (MP3, WAV, M4A, WebM). |
+| `analyze_music` | Analyze a track using the Music Flamingo model (mood tags, metadata, sync briefs, etc.). |
+
+#### Files & Knowledge
+
+| Tool | Description |
+|------|-------------|
+| `create_knowledge_base` | Save a plain-text knowledge base entry to an artist's permanent storage. |
+| `generate_txt_file` | Create a downloadable TXT file stored on Arweave. |
+
+#### Communication
+
+| Tool | Description |
+|------|-------------|
+| `send_email` | Send an email via the Resend API. |
+| `contact_team` | Send a support message to the Recoup team. |
+
+#### Segments
+
+| Tool | Description |
+|------|-------------|
+| `create_segments` | Analyze fan data and generate audience segments for an artist. |
+
+#### Sandboxes
+
+| Tool | Description |
+|------|-------------|
+| `prompt_sandbox` | Run an OpenClaw prompt inside a persistent per-account sandbox. Returns `stdout`, `stderr`, `exitCode`, and the sandbox ID. |
+
+#### Utilities
+
+| Tool | Description |
+|------|-------------|
+| `get_local_time` | Get the current date and time for a given IANA timezone. |
+
+---
+
+### Example: calling a tool
+
+```typescript
+const result = await client.callTool({
+  name: "search_web",
+  arguments: { query: "top hip hop releases this week", max_results: 5 },
+});
+
+console.log(result.content);
+```
+
+```typescript
 const result = await client.callTool({
   name: "prompt_sandbox",
   arguments: { prompt: "list all files in the orgs directory" },
@@ -60,19 +197,3 @@ const result = await client.callTool({
 
 console.log(result.content);
 ```
-
-### run_sandbox_command
-
-Create a sandbox and run a shell command or OpenClaw prompt in it. Unlike `prompt_sandbox`, this creates a **new sandbox each call** and runs the command asynchronously via a background task. Returns a sandbox ID and run ID to track progress.
-
-See [`POST /api/sandboxes`](/api-reference/sandboxes/create) for the equivalent REST endpoint.
-
-**Input schema:**
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `command` | `string` | No | Shell command to run. Cannot be used with `prompt`. |
-| `args` | `string[]` | No | Arguments for the command. |
-| `cwd` | `string` | No | Working directory for the command. |
-| `prompt` | `string` | No | OpenClaw prompt. Cannot be used with `command`. |
-| `account_id` | `string` | No | Target a specific account (org API keys only). |
