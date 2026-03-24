@@ -71,7 +71,7 @@ The content agent follows the same pattern as the coding agent bot:
 2. **Mention handler** parses the command, calls [`GET /api/content/validate`](/api-reference/content/validate) to check artist readiness
 3. **Content creation** triggered via [`POST /api/content/create`](/api-reference/content/create) — returns `runIds`
 4. **Poll task** (`poll-content-run`) monitors the Trigger.dev runs every 30 seconds (up to 30 minutes)
-5. **Callback** → `POST /api/content-agent/callback` receives results and posts video URLs back to the Slack thread
+5. **Callback** → [`POST /api/content-agent/callback`](/api-reference/content-agent/callback) receives results and posts video URLs back to the Slack thread
 
 ### API Endpoints Used
 
@@ -80,7 +80,7 @@ The content agent follows the same pattern as the coding agent bot:
 | [`GET /api/content/validate`](/api-reference/content/validate) | Before triggering | Checks if the artist has required assets |
 | [`POST /api/content/create`](/api-reference/content/create) | On mention | Triggers the video generation pipeline |
 | [`GET /api/content/templates`](/api-reference/content/templates) | Reference | Lists available content templates |
-| `POST /api/content-agent/callback` | After completion | Internal — receives poll results |
+| [`POST /api/content-agent/callback`](/api-reference/content-agent/callback) | After completion | Internal — receives poll results |
 
 ## Setup
 
@@ -103,6 +103,7 @@ The content agent follows the same pattern as the coding agent bot:
 | `SLACK_CONTENT_BOT_TOKEN` | API (Vercel) | Bot OAuth token (`xoxb-...`) from Slack app |
 | `SLACK_CONTENT_SIGNING_SECRET` | API (Vercel) | Signing secret from Slack app **Basic Information** |
 | `CONTENT_AGENT_CALLBACK_SECRET` | API + Tasks | Shared secret for callback authentication (generate a random string) |
+| `RECOUP_API_KEY` | API + Tasks | Recoup API key for authenticating pipeline requests |
 | `RECOUP_API_BASE_URL` | Tasks (Trigger.dev) | API base URL (e.g., `https://recoup-api.vercel.app`) |
 
 ### 3. Verify
