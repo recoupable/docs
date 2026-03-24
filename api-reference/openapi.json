@@ -4500,6 +4500,146 @@
           }
         }
       }
+    },
+    "/api/content-agent/{platform}": {
+      "post": {
+        "description": "Webhook endpoint for the Recoup Content Agent Slack bot. Receives @mention events from Slack and triggers content generation for the mentioned artist. The bot parses the mention text for `<artist_account_id> [template] [batch=N] [lipsync]`, validates the artist, calls POST /api/content/create, and starts a background polling task that reports results back to the Slack thread.\n\nFor Slack, also handles `url_verification` challenges during app setup.",
+        "parameters": [
+          {
+            "name": "platform",
+            "in": "path",
+            "description": "Chat platform identifier. Currently supports `slack`.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["slack"]
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Slack Events API payload (app_mention event or url_verification challenge)",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Slack Events API envelope — the shape depends on the event type"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Event processed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown platform"
+          }
+        }
+      }
+    },
+    "/api/content-agent/callback": {
+      "post": {
+        "description": "Internal callback endpoint for the `poll-content-run` Trigger.dev task. Receives content generation results and posts them back to the originating Slack thread. Authenticated via the `x-callback-secret` header.\n\nThis endpoint is not intended for external use — it is called automatically by the polling task when content runs complete, fail, or time out.",
+        "requestBody": {
+          "description": "Content generation results from the polling task",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["threadId", "status"],
+                "properties": {
+                  "threadId": {
+                    "type": "string",
+                    "description": "Chat SDK thread identifier for the originating Slack thread"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": ["completed", "failed", "timeout"],
+                    "description": "Overall status of the content generation batch"
+                  },
+                  "results": {
+                    "type": "array",
+                    "description": "Per-run results",
+                    "items": {
+                      "type": "object",
+                      "required": ["runId", "status"],
+                      "properties": {
+                        "runId": {
+                          "type": "string",
+                          "description": "Trigger.dev run ID"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": ["completed", "failed", "timeout"]
+                        },
+                        "videoUrl": {
+                          "type": "string",
+                          "description": "URL of the generated video (when completed)"
+                        },
+                        "captionText": {
+                          "type": "string",
+                          "description": "Generated caption text (when completed)"
+                        },
+                        "error": {
+                          "type": "string",
+                          "description": "Error message (when failed)"
+                        }
+                      }
+                    }
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "Optional human-readable message"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Callback processed and results posted to Slack",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid callback secret"
+          },
+          "400": {
+            "description": "Invalid request body"
+          }
+        },
+        "security": [
+          {
+            "callbackSecret": []
+          }
+        ]
+      }
     }
   },
   "components": {

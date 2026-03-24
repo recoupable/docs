@@ -1,0 +1,129 @@
+---
+title: 'Content Agent'
+description: 'Generate artist videos from Slack with the Recoup Content Agent bot'
+---
+
+## Overview
+
+The **Recoup Content Agent** is a Slack bot that generates social-ready artist videos on @mention. It plugs into the existing [content creation pipeline](/api-reference/content/create) and delivers results directly in your Slack thread.
+
+## How It Works
+
+```
+User mentions bot in Slack
+    ↓
+@RecoupContentAgent <artist_account_id> [template] [batch=N] [lipsync]
+    ↓
+Bot validates the artist and sends an immediate acknowledgment
+    ↓
+Triggers the content creation pipeline (POST /api/content/create)
+    ↓
+Background task polls for completion (~5-10 min)
+    ↓
+Bot replies in-thread with the generated video URL(s)
+```
+
+### @Mention Syntax
+
+```
+@RecoupContentAgent <artist_account_id> [template] [batch=N] [lipsync]
+```
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `artist_account_id` | Yes | UUID of the artist account |
+| `template` | No | Content template name (defaults to `artist-caption-bedroom`) |
+| `batch=N` | No | Number of videos to generate (1-30, default 1) |
+| `lipsync` | No | Enable lipsync mode (audio baked into video) |
+
+### Examples
+
+**Basic — single video with default template:**
+```
+@RecoupContentAgent abc-123-uuid
+```
+
+**Custom template:**
+```
+@RecoupContentAgent abc-123-uuid artist-caption-bedroom
+```
+
+**Batch with lipsync:**
+```
+@RecoupContentAgent abc-123-uuid batch=3 lipsync
+```
+
+## Architecture
+
+The content agent follows the same pattern as the coding agent bot:
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| Slack webhook | `POST /api/content-agent/slack` | Receives @mention events |
+| Callback endpoint | `POST /api/content-agent/callback` | Receives polling results |
+| Bot singleton | `lib/content-agent/bot.ts` | Chat SDK with Slack adapter + Redis state |
+| Mention handler | `lib/content-agent/handlers/` | Parses args, validates artist, triggers pipeline |
+| Poll task | `poll-content-run` (Trigger.dev) | Monitors content runs, posts results via callback |
+
+### Data Flow
+
+1. **Slack event** → `POST /api/content-agent/slack` handles the webhook
+2. **Mention handler** parses the command, calls [`GET /api/content/validate`](/api-reference/content/validate) to check artist readiness
+3. **Content creation** triggered via [`POST /api/content/create`](/api-reference/content/create) — returns `runIds`
+4. **Poll task** (`poll-content-run`) monitors the Trigger.dev runs every 30 seconds (up to 30 minutes)
+5. **Callback** → [`POST /api/content-agent/callback`](/api-reference/content-agent/callback) receives results and posts video URLs back to the Slack thread
+
+### API Endpoints Used
+
+| Endpoint | When | Purpose |
+|----------|------|---------|
+| [`GET /api/content/validate`](/api-reference/content/validate) | Before triggering | Checks if the artist has required assets |
+| [`POST /api/content/create`](/api-reference/content/create) | On mention | Triggers the video generation pipeline |
+| [`GET /api/content/templates`](/api-reference/content/templates) | Reference | Lists available content templates |
+| [`POST /api/content-agent/callback`](/api-reference/content-agent/callback) | After completion | Internal — receives poll results |
+
+## Setup
+
+### 1. Create a Slack App
+
+1. Go to [api.slack.com/apps](https://api.slack.com/apps) and create a new app
+2. Under **OAuth & Permissions**, add bot scopes:
+   - `chat:write` — post messages
+   - `app_mentions:read` — receive @mention events
+3. Under **Event Subscriptions**:
+   - Enable events
+   - Set the request URL to `https://recoup-api.vercel.app/api/content-agent/slack`
+   - Subscribe to `app_mention` bot event
+4. Install the app to your workspace
+
+### 2. Configure Environment Variables
+
+| Variable | Where | Description |
+|----------|-------|-------------|
+| `SLACK_CONTENT_BOT_TOKEN` | API (Vercel) | Bot OAuth token (`xoxb-...`) from Slack app |
+| `SLACK_CONTENT_SIGNING_SECRET` | API (Vercel) | Signing secret from Slack app **Basic Information** |
+| `CONTENT_AGENT_CALLBACK_SECRET` | API + Tasks | Shared secret for callback authentication (generate a random string) |
+| `RECOUP_API_KEY` | API + Tasks | Recoup API key for authenticating pipeline requests |
+| `RECOUP_API_BASE_URL` | Tasks (Trigger.dev) | API base URL (e.g., `https://recoup-api.vercel.app`) |
+
+### 3. Verify
+
+Mention the bot in any Slack channel where it's been added:
+
+```
+@RecoupContentAgent <your-artist-account-id>
+```
+
+You should see:
+1. An immediate acknowledgment message
+2. A video URL reply in the thread after ~5-10 minutes
+
+## Troubleshooting
+
+| Issue | Cause | Fix |
+|-------|-------|-----|
+| No response from bot | Event subscription URL not configured | Check Slack app Event Subscriptions |
+| "Artist not found" | Invalid `artist_account_id` | Verify the UUID exists in the platform |
+| "No GitHub repository found" | Artist missing repo config | Ensure the artist account has a linked GitHub repo |
+| Timeout after 30 min | Pipeline took too long | Check Trigger.dev dashboard for the failed run |
+| "Unsupported template" | Invalid template name | Use [`GET /api/content/templates`](/api-reference/content/templates) to list available templates |
