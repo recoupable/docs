@@ -1,71 +1,72 @@
 ---
 title: "Recoup API Documentation"
-description: "Use the Recoup API to build your record label."
+description: "Build AI-powered tools for the music industry — artist analytics, fan segmentation, chat agents, and task automation."
 ---
 
 # Welcome to the Recoup API
 
-Use the Recoup API to build your record label. Access artist analytics, fan segmentation, AI-powered chat, and task automation to power your music business.
+Recoup is an AI agent platform for record labels, artists, and managers. Use the API to build intelligent automations, fan-facing experiences, and data-driven workflows on top of Recoup infrastructure.
 
-## What is Recoup?
+## Choose your integration path
 
-Recoup is an AI agent platform for smarter song rollouts, unforgettable fan experiences, and lasting artist growth. Empowering music executives with actionable insights and next-gen tools.
-
-This is where record labels, musicians, and managers start to build on Recoup AI technology like chat, tasks, agents, and more.
-
-## Get Started
-
-<CardGroup cols={2}>
+<CardGroup cols={3}>
   <Card
-    title="Quickstart"
-    icon="rocket"
+    title="REST API"
+    icon="code"
     href="/quickstart"
   >
-    Get your API key and make your first request in minutes.
+    Make HTTP requests with your API key. Best for server-side integrations and custom tooling.
   </Card>
   <Card
-    title="API Reference"
-    icon="code"
-    href="/api-reference/introduction"
+    title="MCP Server"
+    icon="robot"
+    href="/mcp"
   >
-    Explore all available endpoints and integrations.
+    Connect AI agents (Claude, Cursor, VS Code) directly to Recoup tools via the Model Context Protocol.
+  </Card>
+  <Card
+    title="CLI"
+    icon="terminal"
+    href="/cli"
+  >
+    Run Recoup commands from your terminal. Useful for scripting and local development.
   </Card>
 </CardGroup>
 
-## Key Capabilities
+## What you can build
 
 <CardGroup cols={2}>
   <Card
-    title="Chat API"
-    icon="comments"
-    href="/api-reference/chat/chats"
-  >
-    AI-powered conversations with artist context. Stream responses or generate complete messages.
-  </Card>
-  <Card
-    title="Artist Analytics"
+    title="Artist Intelligence"
     icon="chart-line"
     href="/api-reference/artist/profile"
   >
-    Comprehensive artist profiles with social metrics, follower counts, and engagement data across platforms.
+    Pull social metrics, follower counts, and engagement data across Spotify, Instagram, X, and YouTube.
+  </Card>
+  <Card
+    title="AI Chat Agents"
+    icon="comments"
+    href="/api-reference/chat/chats"
+  >
+    Build streaming AI conversations with full artist context and persistent memory.
   </Card>
   <Card
     title="Fan Segmentation"
     icon="users"
     href="/api-reference/segment/fans"
   >
-    Organize and analyze fan bases by demographics, engagement levels, and behavior patterns.
+    Segment audiences by demographics, engagement, and behavior for targeted campaigns.
   </Card>
   <Card
-    title="Task Management"
+    title="Automated Tasks"
     icon="list-check"
     href="/api-reference/tasks/get"
   >
-    Schedule and automate recurring tasks with cron-based scheduling and AI-powered execution.
+    Schedule recurring AI-powered jobs — daily reports, fan outreach, content generation, and more.
   </Card>
 </CardGroup>
 
-## Platform Integrations
+## Platform integrations
 
 <CardGroup cols={3}>
   <Card
@@ -73,30 +74,30 @@ This is where record labels, musicians, and managers start to build on Recoup AI
     icon="spotify"
     href="/api-reference/spotify/search"
   >
-    Search artists, albums, and tracks.
+    Search artists, albums, tracks. Pull top tracks and revenue data.
   </Card>
   <Card
     title="Instagram"
     icon="instagram"
     href="/api-reference/instagram/profiles"
   >
-    Scrape profiles and comments.
+    Scrape profiles and comments for fan intelligence.
   </Card>
   <Card
     title="X (Twitter)"
     icon="x-twitter"
     href="/api-reference/x/search"
   >
-    Search tweets and trending topics.
+    Search tweets and trending topics in real time.
   </Card>
 </CardGroup>
 
-## Need Help?
+## Need help?
 
 <Card
   title="Contact Support"
   icon="envelope"
   href="mailto:agent@recoupable.com"
 >
-  Reach out to our team for assistance with the Recoup API.
+  Reach out to our team at agent@recoupable.com
 </Card>
