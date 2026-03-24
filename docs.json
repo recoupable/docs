@@ -23,6 +23,12 @@
               "authentication",
               "api-reference/sandboxes/create"
             ]
+          },
+          {
+            "group": "Agents",
+            "pages": [
+              "content-agent"
+            ]
           }
         ]
       },
@@ -242,6 +248,13 @@
               "api-reference/content/templates",
               "api-reference/content/validate",
               "api-reference/content/estimate"
+            ]
+          },
+          {
+            "group": "Content Agent",
+            "pages": [
+              "api-reference/content-agent/webhook",
+              "api-reference/content-agent/callback"
             ]
           }
         ]
