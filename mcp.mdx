@@ -3,11 +3,24 @@ title: "MCP Servers"
 description: "Connect AI agents to the Recoup platform using the Model Context Protocol (MCP)."
 ---
 
-Recoup exposes two MCP servers: one for **searching these docs**, and one for **calling Recoup tools** from your AI agent.
+<Info>
+  [MCP (Model Context Protocol)](https://modelcontextprotocol.io) is an open standard that lets AI assistants connect to external tools and data sources. Recoup exposes two MCP servers you can use today.
+</Info>
+
+## Choose your MCP server
+
+<CardGroup cols={2}>
+  <Card title="Docs Search" icon="book" href="#docs-search-mcp">
+    Search and read the Recoup API docs directly from your AI assistant — powered by Mintlify.
+  </Card>
+  <Card title="Recoup API Tools" icon="bolt" href="#recoup-api-mcp-server">
+    Call 40+ Recoup tools (artists, Spotify, video, search, sandboxes, and more) from your AI agent.
+  </Card>
+</CardGroup>
 
 ---
 
-## 1. Docs Search MCP
+## Docs Search MCP
 
 Every page in these docs includes an **MCP** button in the contextual menu (top-right of each page). Clicking it gives you a ready-to-use config snippet to add the Recoup docs as an MCP source in Claude, Cursor, VS Code, or any MCP-compatible client.
 
@@ -15,240 +28,150 @@ This server is powered by Mintlify and lets AI assistants search and read the Re
 
 ---
 
-## 2. Recoup API MCP Server
+## Recoup API MCP Server
 
-The Recoup API exposes an MCP server that AI agents can connect to for tool use. The server is available at:
+The Recoup API exposes an MCP server that AI agents can connect to for tool use:
 
 ```
 https://recoup-api.vercel.app/mcp
 ```
 
-### Get an API key
+### Setup
 
-Get your key from the [API Keys page](https://chat.recoupable.com/keys). All tools require your key as a Bearer token.
+<Steps>
+  <Step title="Get an API key">
+    Go to the [API Keys page](https://chat.recoupable.com/keys), sign in, and create a new key.
+
+    <Warning>
+      Copy your key immediately — it is only shown once and cannot be retrieved after creation.
+    </Warning>
+  </Step>
+  <Step title="Connect your client">
+    Pick your AI client below and paste the config, replacing `YOUR_API_KEY` with your actual key.
+
+    <Tabs>
+      <Tab title="Claude Desktop">
+        Add to your `claude_desktop_config.json` (found at `~/Library/Application Support/Claude/` on macOS):
+
+        ```json
+        {
+          "mcpServers": {
+            "recoup": {
+              "command": "npx",
+              "args": [
+                "-y",
+                "mcp-remote",
+                "https://recoup-api.vercel.app/mcp",
+                "--header",
+                "Authorization:${AUTH_HEADER}"
+              ],
+              "env": {
+                "AUTH_HEADER": "Bearer YOUR_API_KEY"
+              }
+            }
+          }
+        }
+        ```
+      </Tab>
+      <Tab title="Cursor">
+        Add to `.cursor/mcp.json` in your project root, or `~/.cursor/mcp.json` globally:
+
+        ```json
+        {
+          "mcpServers": {
+            "recoup": {
+              "url": "https://recoup-api.vercel.app/mcp",
+              "headers": {
+                "Authorization": "Bearer YOUR_API_KEY"
+              }
+            }
+          }
+        }
+        ```
+      </Tab>
+      <Tab title="VS Code">
+        Add to `.vscode/mcp.json` in your project, or to your user settings:
+
+        ```json
+        {
+          "servers": {
+            "recoup": {
+              "type": "http",
+              "url": "https://recoup-api.vercel.app/mcp",
+              "headers": {
+                "Authorization": "Bearer YOUR_API_KEY"
+              }
+            }
+          }
+        }
+        ```
+      </Tab>
+      <Tab title="TypeScript SDK">
+        Install the MCP SDK and connect programmatically:
+
+        ```typescript
+        import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+        import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+
+        const transport = new StreamableHTTPClientTransport(
+          new URL("https://recoup-api.vercel.app/mcp"),
+          { requestInit: { headers: { Authorization: `Bearer ${RECOUP_API_KEY}` } } },
+        );
+
+        const client = new Client({ name: "my-agent", version: "1.0.0" });
+        await client.connect(transport);
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+  <Step title="Call a tool">
+    Once connected, your AI agent can call any Recoup tool. Here are two examples using the TypeScript SDK:
+
+    <CodeGroup>
+
+    ```typescript Search the web
+    const result = await client.callTool({
+      name: "search_web",
+      arguments: { query: "top hip hop releases this week", max_results: 5 },
+    });
+    console.log(result.content);
+    ```
+
+    ```typescript Run a sandbox prompt
+    const result = await client.callTool({
+      name: "prompt_sandbox",
+      arguments: { prompt: "list all files in the orgs directory" },
+    });
+    console.log(result.content);
+    ```
+
+    </CodeGroup>
+  </Step>
+</Steps>
 
 ---
 
-### Connect with Claude Desktop
+## Available tools
 
-Add this to your `claude_desktop_config.json` (found at `~/Library/Application Support/Claude/` on macOS):
+The Recoup MCP server exposes 40+ tools across these categories. See the [full tool reference](/mcp-tools) for details on every tool.
 
-```json
-{
-  "mcpServers": {
-    "recoup": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "mcp-remote",
-        "https://recoup-api.vercel.app/mcp",
-        "--header",
-        "Authorization:${AUTH_HEADER}"
-      ],
-      "env": {
-        "AUTH_HEADER": "Bearer YOUR_API_KEY"
-      }
-    }
-  }
-}
-```
-
-### Connect with Cursor
-
-Add this to `.cursor/mcp.json` in your project root, or to `~/.cursor/mcp.json` globally:
-
-```json
-{
-  "mcpServers": {
-    "recoup": {
-      "url": "https://recoup-api.vercel.app/mcp",
-      "headers": {
-        "Authorization": "Bearer YOUR_API_KEY"
-      }
-    }
-  }
-}
-```
-
-### Connect with VS Code
-
-Add this to `.vscode/mcp.json` in your project, or to your user settings:
-
-```json
-{
-  "servers": {
-    "recoup": {
-      "type": "http",
-      "url": "https://recoup-api.vercel.app/mcp",
-      "headers": {
-        "Authorization": "Bearer YOUR_API_KEY"
-      }
-    }
-  }
-}
-```
-
-### Connect programmatically (TypeScript SDK)
-
-```typescript
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
-
-const transport = new StreamableHTTPClientTransport(
-  new URL("https://recoup-api.vercel.app/mcp"),
-  { requestInit: { headers: { Authorization: `Bearer ${RECOUP_API_KEY}` } } },
-);
-
-const client = new Client({ name: "my-agent", version: "1.0.0" });
-await client.connect(transport);
-```
-
----
-
-### Example: calling a tool
-
-```typescript
-// Search for artist info
-const result = await client.callTool({
-  name: "search_web",
-  arguments: { query: "top hip hop releases this week", max_results: 5 },
-});
-console.log(result.content);
-```
-
-```typescript
-// Run a prompt in a persistent sandbox
-const result = await client.callTool({
-  name: "prompt_sandbox",
-  arguments: { prompt: "list all files in the orgs directory" },
-});
-console.log(result.content);
-```
-
----
-
-### Tool Reference
-
-#### Artists
-
-| Tool | Description |
-|------|-------------|
-| `create_new_artist` | Create a new artist account. |
-| `get_artist_socials` | Get all social profiles linked to an artist. |
-| `update_artist_socials` | Set social profile URLs for an artist (platform auto-detected). |
-| `artist_deep_research` | Run comprehensive research on an artist across platforms. |
-| `update_account_info` | Update an artist's profile info (name, image, instructions, knowledge base). |
-
-#### Chats
-
-| Tool | Description |
-|------|-------------|
-| `get_chats` | List chat conversations, optionally filtered by account or artist. |
-| `compact_chats` | Summarize one or more chat conversations into concise notes. |
-
-#### Tasks
-
-| Tool | Description |
-|------|-------------|
-| `get_tasks` | List scheduled tasks, optionally filtered by account, artist, or enabled status. |
-| `create_task` | Create a new scheduled task. |
-| `update_task` | Update an existing task. |
-| `delete_task` | Delete a task by ID. |
-| `get_task_run_status` | Get the status of a Trigger.dev background task run. |
-
-#### Pulses
-
-| Tool | Description |
-|------|-------------|
-| `get_pulses` | Get pulse statuses for accounts. |
-| `update_pulse` | Enable or disable the pulse for the authenticated account. |
-
-#### Catalogs & Songs
-
-| Tool | Description |
-|------|-------------|
-| `select_catalogs` | List catalogs for an account. Call this first before recommending songs. |
-| `select_catalog_songs` | Find songs from a catalog matching given criteria. |
-| `insert_catalog_songs` | Add songs to a catalog by ISRC in batch. |
-
-#### Spotify
-
-| Tool | Description |
-|------|-------------|
-| `get_spotify_search` | Search Spotify for artists, albums, tracks, playlists, shows, or episodes. |
-| `get_spotify_artist_albums` | Get an artist's albums from Spotify. |
-| `get_spotify_artist_top_tracks` | Get an artist's top tracks by market. |
-| `get_spotify_album` | Get details for a single Spotify album. |
-| `spotify_deep_research` | Deep-research an artist using their Spotify ID. |
-
-#### YouTube
-
-| Tool | Description |
-|------|-------------|
-| `youtube_login` | Check YouTube authentication status for an artist. |
-| `get_youtube_channels` | Get YouTube channel info for an artist. |
-| `get_youtube_channel_video_list` | List videos from a YouTube channel's uploads playlist. |
-| `get_youtube_revenue` | Get estimated YouTube revenue data for a date range. |
-| `set_youtube_thumbnail` | Set a custom thumbnail for a YouTube video. |
-
-#### Search & Research
-
-| Tool | Description |
-|------|-------------|
-| `search_web` | Search the web for real-time information via Perplexity. |
-| `search_google_images` | Search Google Images for photos or visual content. |
-| `web_deep_research` | Deep web research using Perplexity's `sonar-deep-research` model. |
-
-#### Images
-
-| Tool | Description |
-|------|-------------|
-| `generate_image` | Generate an image from a text prompt. |
-| `edit_image` | Edit an existing image using a text prompt. |
-
-#### Video
-
-| Tool | Description |
-|------|-------------|
-| `generate_sora_2_video` | Generate a video from a text prompt using OpenAI Sora 2. |
-| `retrieve_sora_2_video` | Get the status and details of a video generation job. |
-| `retrieve_sora_2_video_content` | Download the rendered video content. |
-
-#### Audio
-
-| Tool | Description |
-|------|-------------|
-| `transcribe_audio` | Transcribe an audio file using OpenAI Whisper (MP3, WAV, M4A, WebM). |
-| `analyze_music` | Analyze a track using the Music Flamingo model (mood tags, metadata, sync briefs, etc.). |
-
-#### Files & Knowledge
-
-| Tool | Description |
-|------|-------------|
-| `create_knowledge_base` | Save a plain-text knowledge base entry to an artist's permanent storage. |
-| `generate_txt_file` | Create a downloadable TXT file stored on Arweave. |
-
-#### Communication
-
-| Tool | Description |
-|------|-------------|
-| `send_email` | Send an email via the Resend API. |
-| `contact_team` | Send a support message to the Recoup team. |
-
-#### Segments
-
-| Tool | Description |
-|------|-------------|
-| `create_segments` | Analyze fan data and generate audience segments for an artist. |
-
-#### Sandboxes
-
-| Tool | Description |
-|------|-------------|
-| `prompt_sandbox` | Run an OpenClaw prompt inside a persistent per-account sandbox. Returns `stdout`, `stderr`, `exitCode`, and the sandbox ID. |
-
-#### Utilities
-
-| Tool | Description |
-|------|-------------|
-| `get_local_time` | Get the current date and time for a given IANA timezone. |
+<CardGroup cols={3}>
+  <Card title="Artists" icon="user" href="/mcp-tools#artists">
+    Create artists, manage socials, run deep research.
+  </Card>
+  <Card title="Spotify" icon="spotify" href="/mcp-tools#spotify">
+    Search, top tracks, albums, and deep research.
+  </Card>
+  <Card title="YouTube" icon="youtube" href="/mcp-tools#youtube">
+    Channels, videos, revenue, and thumbnails.
+  </Card>
+  <Card title="Search & Research" icon="magnifying-glass" href="/mcp-tools#search--research">
+    Web search, image search, and deep research.
+  </Card>
+  <Card title="Images & Video" icon="image" href="/mcp-tools#images">
+    Generate and edit images, create Sora 2 videos.
+  </Card>
+  <Card title="Sandboxes" icon="terminal" href="/mcp-tools#sandboxes">
+    Run prompts in persistent per-account sandboxes.
+  </Card>
+</CardGroup>
