@@ -26,7 +26,7 @@ Search Spotify for an artist — this works immediately with no additional setup
 <CodeGroup>
 
 ```bash cURL
-curl "https://api.recoupable.com/api/spotify/search?query=Drake&type=artist" \
+curl "https://api.recoupable.com/api/spotify/search?q=Drake&type=artist" \
   -H "x-api-key: YOUR_API_KEY"
 ```
 
@@ -35,7 +35,7 @@ import requests
 
 response = requests.get(
     "https://api.recoupable.com/api/spotify/search",
-    params={"query": "Drake", "type": "artist"},
+    params={"q": "Drake", "type": "artist"},
     headers={"x-api-key": "YOUR_API_KEY"},
 )
 print(response.json())
@@ -43,7 +43,7 @@ print(response.json())
 
 ```javascript JavaScript
 const response = await fetch(
-  "https://api.recoupable.com/api/spotify/search?query=Drake&type=artist",
+  "https://api.recoupable.com/api/spotify/search?q=Drake&type=artist",
   { headers: { "x-api-key": "YOUR_API_KEY" } }
 );
 const data = await response.json();
