@@ -18,9 +18,10 @@
             "pages": [
               "index",
               "quickstart",
-              "cli",
-              "mcp",
               "authentication",
+              "mcp",
+              "mcp-tools",
+              "cli",
               "api-reference/sandboxes/create"
             ]
           },

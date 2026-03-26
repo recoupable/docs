@@ -1,78 +1,177 @@
 ---
-title: "MCP"
-description: "Connect AI agents to the Recoup platform using the Model Context Protocol (MCP) server."
+title: "MCP Servers"
+description: "Connect AI agents to the Recoup platform using the Model Context Protocol (MCP)."
 ---
 
-The Recoup API exposes an [MCP](https://modelcontextprotocol.io/) server that AI agents can connect to for tool use. The server is available at:
+<Info>
+  [MCP (Model Context Protocol)](https://modelcontextprotocol.io) is an open standard that lets AI assistants connect to external tools and data sources. Recoup exposes two MCP servers you can use today.
+</Info>
+
+## Choose your MCP server
+
+<CardGroup cols={2}>
+  <Card title="Docs Search" icon="book" href="#docs-search-mcp">
+    Search and read the Recoup API docs directly from your AI assistant — powered by Mintlify.
+  </Card>
+  <Card title="Recoup API Tools" icon="bolt" href="#recoup-api-mcp-server">
+    Call 40+ Recoup tools (artists, Spotify, video, search, sandboxes, and more) from your AI agent.
+  </Card>
+</CardGroup>
+
+---
+
+## Docs Search MCP
+
+Every page in these docs includes an **MCP** button in the contextual menu (top-right of each page). Clicking it gives you a ready-to-use config snippet to add the Recoup docs as an MCP source in Claude, Cursor, VS Code, or any MCP-compatible client.
+
+This server is powered by Mintlify and lets AI assistants search and read the Recoup API documentation directly — useful for building integrations or answering questions about the API.
+
+---
+
+## Recoup API MCP Server
+
+The Recoup API exposes an MCP server that AI agents can connect to for tool use:
 
 ```
 https://recoup-api.vercel.app/mcp
 ```
 
-## Authentication
+### Setup
 
-All MCP tools require an API key. Pass it as a Bearer token in the `Authorization` header when connecting to the MCP server.
+<Steps>
+  <Step title="Get an API key">
+    Go to the [API Keys page](https://chat.recoupable.com/keys), sign in, and create a new key.
 
-You can get a key from the [API Keys page](https://chat.recoupable.com/keys).
+    <Warning>
+      Copy your key immediately — it is only shown once and cannot be retrieved after creation.
+    </Warning>
+  </Step>
+  <Step title="Connect your client">
+    Pick your AI client below and paste the config, replacing `YOUR_API_KEY` with your actual key.
 
-## Tools
+    <Tabs>
+      <Tab title="Claude Desktop">
+        Add to your `claude_desktop_config.json` (found at `~/Library/Application Support/Claude/` on macOS):
 
-### prompt_sandbox
+        ```json
+        {
+          "mcpServers": {
+            "recoup": {
+              "command": "npx",
+              "args": [
+                "-y",
+                "mcp-remote",
+                "https://recoup-api.vercel.app/mcp",
+                "--header",
+                "Authorization:${AUTH_HEADER}"
+              ],
+              "env": {
+                "AUTH_HEADER": "Bearer YOUR_API_KEY"
+              }
+            }
+          }
+        }
+        ```
+      </Tab>
+      <Tab title="Cursor">
+        Add to `.cursor/mcp.json` in your project root, or `~/.cursor/mcp.json` globally:
 
-Send a prompt to OpenClaw running in a persistent per-account sandbox. The sandbox is reused across calls — if one is already running it picks up where you left off, otherwise a new one is created from the account's latest snapshot.
+        ```json
+        {
+          "mcpServers": {
+            "recoup": {
+              "url": "https://recoup-api.vercel.app/mcp",
+              "headers": {
+                "Authorization": "Bearer YOUR_API_KEY"
+              }
+            }
+          }
+        }
+        ```
+      </Tab>
+      <Tab title="VS Code">
+        Add to `.vscode/mcp.json` in your project, or to your user settings:
 
-Returns raw `stdout` and `stderr` from the command. The sandbox stays alive after each prompt for follow-up interactions.
+        ```json
+        {
+          "servers": {
+            "recoup": {
+              "type": "http",
+              "url": "https://recoup-api.vercel.app/mcp",
+              "headers": {
+                "Authorization": "Bearer YOUR_API_KEY"
+              }
+            }
+          }
+        }
+        ```
+      </Tab>
+      <Tab title="TypeScript SDK">
+        Install the MCP SDK and connect programmatically:
 
-**Input schema:**
+        ```typescript
+        import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+        import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `prompt` | `string` | Yes | The prompt to send to OpenClaw in the sandbox. |
+        const transport = new StreamableHTTPClientTransport(
+          new URL("https://recoup-api.vercel.app/mcp"),
+          { requestInit: { headers: { Authorization: `Bearer ${RECOUP_API_KEY}` } } },
+        );
 
-**Response fields:**
+        const client = new Client({ name: "my-agent", version: "1.0.0" });
+        await client.connect(transport);
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+  <Step title="Call a tool">
+    Once connected, your AI agent can call any Recoup tool. Here are two examples using the TypeScript SDK:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `sandboxId` | `string` | The Vercel Sandbox ID. |
-| `stdout` | `string` | Standard output from the command. |
-| `stderr` | `string` | Standard error from the command. |
-| `exitCode` | `number` | Process exit code (`0` = success). |
-| `created` | `boolean` | `true` if a new sandbox was created, `false` if an existing one was reused. |
+    <CodeGroup>
 
-**Example usage (TypeScript with MCP SDK):**
+    ```typescript Search the web
+    const result = await client.callTool({
+      name: "search_web",
+      arguments: { query: "top hip hop releases this week", max_results: 5 },
+    });
+    console.log(result.content);
+    ```
 
-```typescript
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+    ```typescript Run a sandbox prompt
+    const result = await client.callTool({
+      name: "prompt_sandbox",
+      arguments: { prompt: "list all files in the orgs directory" },
+    });
+    console.log(result.content);
+    ```
 
-const transport = new StreamableHTTPClientTransport(
-  new URL("https://recoup-api.vercel.app/mcp"),
-  { requestInit: { headers: { Authorization: `Bearer ${RECOUP_API_KEY}` } } },
-);
+    </CodeGroup>
+  </Step>
+</Steps>
 
-const client = new Client({ name: "my-agent", version: "1.0.0" });
-await client.connect(transport);
+---
 
-const result = await client.callTool({
-  name: "prompt_sandbox",
-  arguments: { prompt: "list all files in the orgs directory" },
-});
+## Available tools
 
-console.log(result.content);
-```
+The Recoup MCP server exposes 40+ tools across these categories. See the [full tool reference](/mcp-tools) for details on every tool.
 
-### run_sandbox_command
-
-Create a sandbox and run a shell command or OpenClaw prompt in it. Unlike `prompt_sandbox`, this creates a **new sandbox each call** and runs the command asynchronously via a background task. Returns a sandbox ID and run ID to track progress.
-
-See [`POST /api/sandboxes`](/api-reference/sandboxes/create) for the equivalent REST endpoint.
-
-**Input schema:**
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `command` | `string` | No | Shell command to run. Cannot be used with `prompt`. |
-| `args` | `string[]` | No | Arguments for the command. |
-| `cwd` | `string` | No | Working directory for the command. |
-| `prompt` | `string` | No | OpenClaw prompt. Cannot be used with `command`. |
-| `account_id` | `string` | No | Target a specific account (org API keys only). |
+<CardGroup cols={3}>
+  <Card title="Artists" icon="user" href="/mcp-tools#artists">
+    Create artists, manage socials, run deep research.
+  </Card>
+  <Card title="Spotify" icon="spotify" href="/mcp-tools#spotify">
+    Search, top tracks, albums, and deep research.
+  </Card>
+  <Card title="YouTube" icon="youtube" href="/mcp-tools#youtube">
+    Channels, videos, revenue, and thumbnails.
+  </Card>
+  <Card title="Search & Research" icon="magnifying-glass" href="/mcp-tools#search--research">
+    Web search, image search, and deep research.
+  </Card>
+  <Card title="Images & Video" icon="image" href="/mcp-tools#images">
+    Generate and edit images, create Sora 2 videos.
+  </Card>
+  <Card title="Sandboxes" icon="terminal" href="/mcp-tools#sandboxes">
+    Run prompts in persistent per-account sandboxes.
+  </Card>
+</CardGroup>

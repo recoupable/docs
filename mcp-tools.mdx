@@ -1,0 +1,136 @@
+---
+title: "MCP Tool Reference"
+description: "Complete list of tools available through the Recoup MCP server."
+---
+
+Every tool listed here is callable through the [Recoup MCP server](/mcp). Connect your AI agent, then call any tool by name.
+
+<Info>
+  All tools require a valid API key. Get yours from the [API Keys page](https://chat.recoupable.com/keys).
+</Info>
+
+---
+
+## Artists
+
+| Tool | Description |
+|------|-------------|
+| `create_new_artist` | Create a new artist account. |
+| `get_artist_socials` | Get all social profiles linked to an artist. |
+| `update_artist_socials` | Set social profile URLs for an artist (platform auto-detected). |
+| `artist_deep_research` | Run comprehensive research on an artist across platforms. |
+| `update_account_info` | Update an artist's profile info (name, image, instructions, knowledge base). |
+
+## Chats
+
+| Tool | Description |
+|------|-------------|
+| `get_chats` | List chat conversations, optionally filtered by account or artist. |
+| `compact_chats` | Summarize one or more chat conversations into concise notes. |
+
+## Tasks
+
+| Tool | Description |
+|------|-------------|
+| `get_tasks` | List scheduled tasks, optionally filtered by account, artist, or enabled status. |
+| `create_task` | Create a new scheduled task. |
+| `update_task` | Update an existing task. |
+| `delete_task` | Delete a task by ID. |
+| `get_task_run_status` | Get the status of a Trigger.dev background task run. |
+
+## Pulses
+
+| Tool | Description |
+|------|-------------|
+| `get_pulses` | Get pulse statuses for accounts. |
+| `update_pulse` | Enable or disable the pulse for the authenticated account. |
+
+## Catalogs & Songs
+
+| Tool | Description |
+|------|-------------|
+| `select_catalogs` | List catalogs for an account. Call this first before recommending songs. |
+| `select_catalog_songs` | Find songs from a catalog matching given criteria. |
+| `insert_catalog_songs` | Add songs to a catalog by ISRC in batch. |
+
+## Spotify
+
+| Tool | Description |
+|------|-------------|
+| `get_spotify_search` | Search Spotify for artists, albums, tracks, playlists, shows, or episodes. |
+| `get_spotify_artist_albums` | Get an artist's albums from Spotify. |
+| `get_spotify_artist_top_tracks` | Get an artist's top tracks by market. |
+| `get_spotify_album` | Get details for a single Spotify album. |
+| `spotify_deep_research` | Deep-research an artist using their Spotify ID. |
+
+## YouTube
+
+| Tool | Description |
+|------|-------------|
+| `youtube_login` | Check YouTube authentication status for an artist. |
+| `get_youtube_channels` | Get YouTube channel info for an artist. |
+| `get_youtube_channel_video_list` | List videos from a YouTube channel's uploads playlist. |
+| `get_youtube_revenue` | Get estimated YouTube revenue data for a date range. |
+| `set_youtube_thumbnail` | Set a custom thumbnail for a YouTube video. |
+
+## Search & Research
+
+| Tool | Description |
+|------|-------------|
+| `search_web` | Search the web for real-time information via Perplexity. |
+| `search_google_images` | Search Google Images for photos or visual content. |
+| `web_deep_research` | Deep web research using Perplexity's `sonar-deep-research` model. |
+
+## Images
+
+| Tool | Description |
+|------|-------------|
+| `generate_image` | Generate an image from a text prompt. |
+| `edit_image` | Edit an existing image using a text prompt. |
+
+## Video
+
+| Tool | Description |
+|------|-------------|
+| `generate_sora_2_video` | Generate a video from a text prompt using OpenAI Sora 2. |
+| `retrieve_sora_2_video` | Get the status and details of a video generation job. |
+| `retrieve_sora_2_video_content` | Download the rendered video content. |
+
+## Audio
+
+| Tool | Description |
+|------|-------------|
+| `transcribe_audio` | Transcribe an audio file using OpenAI Whisper (MP3, WAV, M4A, WebM). |
+| `analyze_music` | Analyze a track using the Music Flamingo model (mood tags, metadata, sync briefs, etc.). |
+
+## Files & Knowledge
+
+| Tool | Description |
+|------|-------------|
+| `create_knowledge_base` | Save a plain-text knowledge base entry to an artist's permanent storage. |
+| `generate_txt_file` | Create a downloadable TXT file stored on Arweave. |
+
+## Communication
+
+| Tool | Description |
+|------|-------------|
+| `send_email` | Send an email via the Resend API. |
+| `contact_team` | Send a support message to the Recoup team. |
+
+## Segments
+
+| Tool | Description |
+|------|-------------|
+| `create_segments` | Analyze fan data and generate audience segments for an artist. |
+
+## Sandboxes
+
+| Tool | Description |
+|------|-------------|
+| `prompt_sandbox` | Run an OpenClaw prompt inside a persistent per-account sandbox. Returns `stdout`, `stderr`, `exitCode`, and the sandbox ID. |
+
+## Utilities
+
+| Tool | Description |
+|------|-------------|
+| `get_local_time` | Get the current date and time for a given IANA timezone. |
