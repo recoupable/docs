@@ -4163,7 +4163,7 @@
     },
     "/api/admins/coding/slack": {
       "get": {
-        "description": "Returns a list of Slack mentions of the Recoup Coding Agent bot, pulled directly from the Slack API as the source of truth. Each entry includes the tagger's information, the prompt they sent, the timestamp, and the channel. Supports optional time-period filtering. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
+        "description": "Returns a list of Slack mentions of the Recoup Coding Agent bot, pulled directly from the Slack API as the source of truth. Each entry includes the tagger's information, the prompt they sent, the timestamp, the channel, and any GitHub pull request URLs opened in response. Also returns aggregate pull request statistics. Supports optional time-period filtering. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
         "parameters": [
           {
             "name": "period",
@@ -4188,7 +4188,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["status", "total", "tags"],
+                  "required": ["status", "total", "total_pull_requests", "tags_with_pull_requests", "tags"],
                   "properties": {
                     "status": {
                       "type": "string",
@@ -4198,7 +4198,17 @@
                     "total": {
                       "type": "integer",
                       "description": "Total number of times the Coding Agent was tagged in the requested period",
-                      "example": 42
+                      "example": 134
+                    },
+                    "total_pull_requests": {
+                      "type": "integer",
+                      "description": "Total number of pull requests opened by the Coding Agent across all tags in the requested period",
+                      "example": 121
+                    },
+                    "tags_with_pull_requests": {
+                      "type": "integer",
+                      "description": "Number of tags that resulted in at least one pull request being opened",
+                      "example": 84
                     },
                     "tags": {
                       "type": "array",
@@ -4249,9 +4259,9 @@
                             "items": {
                               "type": "string",
                               "format": "uri",
-                              "example": "https://github.com/recoupable-com/api/pull/42"
+                              "example": "https://github.com/recoupable/api/pull/42"
                             },
-                            "example": ["https://github.com/recoupable-com/api/pull/42"]
+                            "example": ["https://github.com/recoupable/api/pull/42"]
                           }
                         }
                       }
