@@ -10084,6 +10084,14 @@
             "description": "Number of videos to generate in parallel. Each video independently selects a random reference image, song clip, and mood variation. The response always returns `runIds` as an array. Defaults to `1`.",
             "default": 1,
             "example": 1
+          },
+          "songs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Optional list of song slugs to restrict which songs the pipeline picks from. When omitted, all songs in the artist's `songs/` directory are eligible. Song slugs match the filename without extension (e.g. `\"hiccups\"` for `hiccups.mp3`). Useful for targeting a specific release — pass all track slugs from an EP or album.",
+            "example": ["hiccups", "adhd"]
           }
         },
         "required": [
