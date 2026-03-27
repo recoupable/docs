@@ -2369,12 +2369,12 @@
     },
     "/api/sandboxes/files": {
       "post": {
-        "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Files are committed to the specified directory path within the repository. Supports submodule resolution — if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Accepts an array of file URLs and commits each file to the specified directory path within the repository. Supports submodule resolution — if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
         "requestBody": {
-          "description": "Multipart form data containing files and target path",
+          "description": "JSON body containing file URLs and target path",
           "required": true,
           "content": {
-            "multipart/form-data": {
+            "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UploadSandboxFilesRequest"
               }
@@ -9748,10 +9748,23 @@
           "files": {
             "type": "array",
             "items": {
-              "type": "string",
-              "format": "binary"
+              "type": "object",
+              "required": ["url", "name"],
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "The URL of the file to upload",
+                  "example": "https://example.com/files/album-cover.png"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The filename to use when committing to the repository",
+                  "example": "album-cover.png"
+                }
+              }
             },
-            "description": "One or more files to upload"
+            "description": "Array of files to upload, each with a URL and target filename"
           },
           "message": {
             "type": "string",
