@@ -2369,9 +2369,9 @@
     },
     "/api/sandboxes/files": {
       "post": {
-        "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Files should first be uploaded to temporary blob storage (e.g., Vercel Blob), then the blob URLs are passed to this endpoint. The API downloads each file from its blob URL, commits it to the specified directory path within the repository, and deletes the blob after successful commit. Supports submodule resolution \u2014 if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Accepts an array of file URLs and commits each file to the specified directory path within the repository. Supports submodule resolution — if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
         "requestBody": {
-          "description": "JSON body containing blob URLs and target path",
+          "description": "JSON body containing file URLs and target path",
           "required": true,
           "content": {
             "application/json": {
@@ -4240,23 +4240,14 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "all",
-                "daily",
-                "weekly",
-                "monthly"
-              ],
+              "enum": ["all", "daily", "weekly", "monthly"],
               "default": "all"
             }
           }
         ],
         "security": [
-          {
-            "apiKeyAuth": []
-          },
-          {
-            "bearerAuth": []
-          }
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
         ],
         "responses": {
           "200": {
@@ -4265,19 +4256,11 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": [
-                    "status",
-                    "total",
-                    "total_pull_requests",
-                    "tags_with_pull_requests",
-                    "tags"
-                  ],
+                  "required": ["status", "total", "total_pull_requests", "tags_with_pull_requests", "tags"],
                   "properties": {
                     "status": {
                       "type": "string",
-                      "enum": [
-                        "success"
-                      ],
+                      "enum": ["success"],
                       "description": "Status of the request"
                     },
                     "total": {
@@ -4300,14 +4283,7 @@
                       "description": "List of Slack tag events",
                       "items": {
                         "type": "object",
-                        "required": [
-                          "user_id",
-                          "user_name",
-                          "prompt",
-                          "timestamp",
-                          "channel_id",
-                          "channel_name"
-                        ],
+                        "required": ["user_id", "user_name", "prompt", "timestamp", "channel_id", "channel_name"],
                         "properties": {
                           "user_id": {
                             "type": "string",
@@ -4320,10 +4296,7 @@
                             "example": "Jane Smith"
                           },
                           "user_avatar": {
-                            "type": [
-                              "string",
-                              "null"
-                            ],
+                            "type": ["string", "null"],
                             "description": "URL of the Slack avatar",
                             "example": "https://avatars.slack-edge.com/..."
                           },
@@ -4356,9 +4329,7 @@
                               "format": "uri",
                               "example": "https://github.com/recoupable/api/pull/42"
                             },
-                            "example": [
-                              "https://github.com/recoupable/api/pull/42"
-                            ]
+                            "example": ["https://github.com/recoupable/api/pull/42"]
                           }
                         }
                       }
@@ -4372,9 +4343,7 @@
             "description": "Unauthorized - missing or invalid credentials",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccountErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
               }
             }
           },
@@ -4382,9 +4351,7 @@
             "description": "Forbidden - authenticated account is not a Recoup admin",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccountErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
               }
             }
           },
@@ -4392,9 +4359,7 @@
             "description": "Internal server error",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccountErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
               }
             }
           }
@@ -4412,23 +4377,14 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "all",
-                "daily",
-                "weekly",
-                "monthly"
-              ],
+              "enum": ["all", "daily", "weekly", "monthly"],
               "default": "all"
             }
           }
         ],
         "security": [
-          {
-            "apiKeyAuth": []
-          },
-          {
-            "bearerAuth": []
-          }
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
         ],
         "responses": {
           "200": {
@@ -4437,19 +4393,11 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": [
-                    "status",
-                    "total",
-                    "total_videos",
-                    "tags_with_videos",
-                    "tags"
-                  ],
+                  "required": ["status", "total", "total_videos", "tags_with_videos", "tags"],
                   "properties": {
                     "status": {
                       "type": "string",
-                      "enum": [
-                        "success"
-                      ],
+                      "enum": ["success"],
                       "description": "Status of the request"
                     },
                     "total": {
@@ -4472,14 +4420,7 @@
                       "description": "List of Slack tag events",
                       "items": {
                         "type": "object",
-                        "required": [
-                          "user_id",
-                          "user_name",
-                          "prompt",
-                          "timestamp",
-                          "channel_id",
-                          "channel_name"
-                        ],
+                        "required": ["user_id", "user_name", "prompt", "timestamp", "channel_id", "channel_name"],
                         "properties": {
                           "user_id": {
                             "type": "string",
@@ -4492,10 +4433,7 @@
                             "example": "Jane Smith"
                           },
                           "user_avatar": {
-                            "type": [
-                              "string",
-                              "null"
-                            ],
+                            "type": ["string", "null"],
                             "description": "URL of the Slack avatar",
                             "example": "https://avatars.slack-edge.com/..."
                           },
@@ -4528,9 +4466,7 @@
                               "format": "uri",
                               "example": "https://recoupable.com/v/abc123"
                             },
-                            "example": [
-                              "https://recoupable.com/v/abc123"
-                            ]
+                            "example": ["https://recoupable.com/v/abc123"]
                           }
                         }
                       }
@@ -4544,9 +4480,7 @@
             "description": "Unauthorized - missing or invalid credentials",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccountErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
               }
             }
           },
@@ -4554,9 +4488,7 @@
             "description": "Forbidden - authenticated account is not a Recoup admin",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccountErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
               }
             }
           },
@@ -4564,9 +4496,7 @@
             "description": "Internal server error",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccountErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
               }
             }
           }
@@ -4596,12 +4526,8 @@
           }
         ],
         "security": [
-          {
-            "apiKeyAuth": []
-          },
-          {
-            "bearerAuth": []
-          }
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
         ],
         "responses": {
           "200": {
@@ -4610,16 +4536,11 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": [
-                    "status",
-                    "pull_requests"
-                  ],
+                  "required": ["status", "pull_requests"],
                   "properties": {
                     "status": {
                       "type": "string",
-                      "enum": [
-                        "success"
-                      ],
+                      "enum": ["success"],
                       "description": "Status of the request"
                     },
                     "pull_requests": {
@@ -4627,10 +4548,7 @@
                       "description": "Status for each provided pull request URL",
                       "items": {
                         "type": "object",
-                        "required": [
-                          "url",
-                          "status"
-                        ],
+                        "required": ["url", "status"],
                         "properties": {
                           "url": {
                             "type": "string",
@@ -4640,11 +4558,7 @@
                           },
                           "status": {
                             "type": "string",
-                            "enum": [
-                              "open",
-                              "closed",
-                              "merged"
-                            ],
+                            "enum": ["open", "closed", "merged"],
                             "description": "The current status of the pull request",
                             "example": "merged"
                           }
@@ -4660,9 +4574,7 @@
             "description": "Bad request - missing or invalid pull_requests parameter",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccountErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
               }
             }
           },
@@ -4670,9 +4582,7 @@
             "description": "Unauthorized - missing or invalid credentials",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccountErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
               }
             }
           },
@@ -4680,9 +4590,7 @@
             "description": "Forbidden - authenticated account is not a Recoup admin",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccountErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
               }
             }
           },
@@ -4690,9 +4598,7 @@
             "description": "Internal server error",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccountErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
               }
             }
           }
@@ -4821,9 +4727,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "slack"
-              ]
+              "enum": ["slack"]
             }
           }
         ],
@@ -4834,7 +4738,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Slack Events API envelope \u2014 the shape depends on the event type"
+                "description": "Slack Events API envelope — the shape depends on the event type"
               }
             }
           }
@@ -4863,7 +4767,7 @@
     },
     "/api/content-agent/callback": {
       "post": {
-        "description": "Internal callback endpoint for the `poll-content-run` Trigger.dev task. Receives content generation results and posts them back to the originating Slack thread. Authenticated via the `x-callback-secret` header.\n\nThis endpoint is not intended for external use \u2014 it is called automatically by the polling task when content runs complete, fail, or time out.",
+        "description": "Internal callback endpoint for the `poll-content-run` Trigger.dev task. Receives content generation results and posts them back to the originating Slack thread. Authenticated via the `x-callback-secret` header.\n\nThis endpoint is not intended for external use — it is called automatically by the polling task when content runs complete, fail, or time out.",
         "requestBody": {
           "description": "Content generation results from the polling task",
           "required": true,
@@ -4871,10 +4775,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "threadId",
-                  "status"
-                ],
+                "required": ["threadId", "status"],
                 "properties": {
                   "threadId": {
                     "type": "string",
@@ -4882,11 +4783,7 @@
                   },
                   "status": {
                     "type": "string",
-                    "enum": [
-                      "completed",
-                      "failed",
-                      "timeout"
-                    ],
+                    "enum": ["completed", "failed", "timeout"],
                     "description": "Overall status of the content generation batch"
                   },
                   "results": {
@@ -4894,10 +4791,7 @@
                     "description": "Per-run results",
                     "items": {
                       "type": "object",
-                      "required": [
-                        "runId",
-                        "status"
-                      ],
+                      "required": ["runId", "status"],
                       "properties": {
                         "runId": {
                           "type": "string",
@@ -4905,11 +4799,7 @@
                         },
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "completed",
-                            "failed",
-                            "timeout"
-                          ]
+                          "enum": ["completed", "failed", "timeout"]
                         },
                         "videoUrl": {
                           "type": "string",
@@ -9859,16 +9749,13 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": [
-                "url",
-                "name"
-              ],
+              "required": ["url", "name"],
               "properties": {
                 "url": {
                   "type": "string",
                   "format": "uri",
-                  "description": "The blob URL where the file is temporarily stored",
-                  "example": "https://abc123.public.blob.vercel-storage.com/image-xyz.png"
+                  "description": "The URL of the file to upload",
+                  "example": "https://example.com/files/album-cover.png"
                 },
                 "name": {
                   "type": "string",
@@ -9877,7 +9764,7 @@
                 }
               }
             },
-            "description": "Array of files to upload, each with a temporary blob URL and target filename"
+            "description": "Array of files to upload, each with a URL and target filename"
           },
           "message": {
             "type": "string",
