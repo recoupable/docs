@@ -2369,7 +2369,7 @@
     },
     "/api/sandboxes/files": {
       "post": {
-        "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Accepts an array of file URLs and commits each file to the specified directory path within the repository. Supports submodule resolution — if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Accepts an array of file URLs and commits each file to the specified directory path within the repository. Supports submodule resolution \u2014 if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
         "requestBody": {
           "description": "JSON body containing file URLs and target path",
           "required": true,
@@ -4240,14 +4240,23 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": ["all", "daily", "weekly", "monthly"],
+              "enum": [
+                "all",
+                "daily",
+                "weekly",
+                "monthly"
+              ],
               "default": "all"
             }
           }
         ],
         "security": [
-          { "apiKeyAuth": [] },
-          { "bearerAuth": [] }
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
         ],
         "responses": {
           "200": {
@@ -4256,11 +4265,19 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["status", "total", "total_pull_requests", "tags_with_pull_requests", "tags"],
+                  "required": [
+                    "status",
+                    "total",
+                    "total_pull_requests",
+                    "tags_with_pull_requests",
+                    "tags"
+                  ],
                   "properties": {
                     "status": {
                       "type": "string",
-                      "enum": ["success"],
+                      "enum": [
+                        "success"
+                      ],
                       "description": "Status of the request"
                     },
                     "total": {
@@ -4283,7 +4300,14 @@
                       "description": "List of Slack tag events",
                       "items": {
                         "type": "object",
-                        "required": ["user_id", "user_name", "prompt", "timestamp", "channel_id", "channel_name"],
+                        "required": [
+                          "user_id",
+                          "user_name",
+                          "prompt",
+                          "timestamp",
+                          "channel_id",
+                          "channel_name"
+                        ],
                         "properties": {
                           "user_id": {
                             "type": "string",
@@ -4296,7 +4320,10 @@
                             "example": "Jane Smith"
                           },
                           "user_avatar": {
-                            "type": ["string", "null"],
+                            "type": [
+                              "string",
+                              "null"
+                            ],
                             "description": "URL of the Slack avatar",
                             "example": "https://avatars.slack-edge.com/..."
                           },
@@ -4329,7 +4356,9 @@
                               "format": "uri",
                               "example": "https://github.com/recoupable/api/pull/42"
                             },
-                            "example": ["https://github.com/recoupable/api/pull/42"]
+                            "example": [
+                              "https://github.com/recoupable/api/pull/42"
+                            ]
                           }
                         }
                       }
@@ -4343,7 +4372,9 @@
             "description": "Unauthorized - missing or invalid credentials",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
               }
             }
           },
@@ -4351,7 +4382,9 @@
             "description": "Forbidden - authenticated account is not a Recoup admin",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
               }
             }
           },
@@ -4359,7 +4392,9 @@
             "description": "Internal server error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
               }
             }
           }
@@ -4377,14 +4412,23 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": ["all", "daily", "weekly", "monthly"],
+              "enum": [
+                "all",
+                "daily",
+                "weekly",
+                "monthly"
+              ],
               "default": "all"
             }
           }
         ],
         "security": [
-          { "apiKeyAuth": [] },
-          { "bearerAuth": [] }
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
         ],
         "responses": {
           "200": {
@@ -4393,11 +4437,19 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["status", "total", "total_videos", "tags_with_videos", "tags"],
+                  "required": [
+                    "status",
+                    "total",
+                    "total_videos",
+                    "tags_with_videos",
+                    "tags"
+                  ],
                   "properties": {
                     "status": {
                       "type": "string",
-                      "enum": ["success"],
+                      "enum": [
+                        "success"
+                      ],
                       "description": "Status of the request"
                     },
                     "total": {
@@ -4420,7 +4472,14 @@
                       "description": "List of Slack tag events",
                       "items": {
                         "type": "object",
-                        "required": ["user_id", "user_name", "prompt", "timestamp", "channel_id", "channel_name"],
+                        "required": [
+                          "user_id",
+                          "user_name",
+                          "prompt",
+                          "timestamp",
+                          "channel_id",
+                          "channel_name"
+                        ],
                         "properties": {
                           "user_id": {
                             "type": "string",
@@ -4433,7 +4492,10 @@
                             "example": "Jane Smith"
                           },
                           "user_avatar": {
-                            "type": ["string", "null"],
+                            "type": [
+                              "string",
+                              "null"
+                            ],
                             "description": "URL of the Slack avatar",
                             "example": "https://avatars.slack-edge.com/..."
                           },
@@ -4466,7 +4528,9 @@
                               "format": "uri",
                               "example": "https://recoupable.com/v/abc123"
                             },
-                            "example": ["https://recoupable.com/v/abc123"]
+                            "example": [
+                              "https://recoupable.com/v/abc123"
+                            ]
                           }
                         }
                       }
@@ -4480,7 +4544,9 @@
             "description": "Unauthorized - missing or invalid credentials",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
               }
             }
           },
@@ -4488,7 +4554,9 @@
             "description": "Forbidden - authenticated account is not a Recoup admin",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
               }
             }
           },
@@ -4496,7 +4564,9 @@
             "description": "Internal server error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
               }
             }
           }
@@ -4526,8 +4596,12 @@
           }
         ],
         "security": [
-          { "apiKeyAuth": [] },
-          { "bearerAuth": [] }
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
         ],
         "responses": {
           "200": {
@@ -4536,11 +4610,16 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["status", "pull_requests"],
+                  "required": [
+                    "status",
+                    "pull_requests"
+                  ],
                   "properties": {
                     "status": {
                       "type": "string",
-                      "enum": ["success"],
+                      "enum": [
+                        "success"
+                      ],
                       "description": "Status of the request"
                     },
                     "pull_requests": {
@@ -4548,7 +4627,10 @@
                       "description": "Status for each provided pull request URL",
                       "items": {
                         "type": "object",
-                        "required": ["url", "status"],
+                        "required": [
+                          "url",
+                          "status"
+                        ],
                         "properties": {
                           "url": {
                             "type": "string",
@@ -4558,7 +4640,11 @@
                           },
                           "status": {
                             "type": "string",
-                            "enum": ["open", "closed", "merged"],
+                            "enum": [
+                              "open",
+                              "closed",
+                              "merged"
+                            ],
                             "description": "The current status of the pull request",
                             "example": "merged"
                           }
@@ -4574,7 +4660,9 @@
             "description": "Bad request - missing or invalid pull_requests parameter",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
               }
             }
           },
@@ -4582,7 +4670,9 @@
             "description": "Unauthorized - missing or invalid credentials",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
               }
             }
           },
@@ -4590,7 +4680,9 @@
             "description": "Forbidden - authenticated account is not a Recoup admin",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
               }
             }
           },
@@ -4598,7 +4690,9 @@
             "description": "Internal server error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
               }
             }
           }
@@ -4727,7 +4821,9 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": ["slack"]
+              "enum": [
+                "slack"
+              ]
             }
           }
         ],
@@ -4738,7 +4834,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Slack Events API envelope — the shape depends on the event type"
+                "description": "Slack Events API envelope \u2014 the shape depends on the event type"
               }
             }
           }
@@ -4767,7 +4863,7 @@
     },
     "/api/content-agent/callback": {
       "post": {
-        "description": "Internal callback endpoint for the `poll-content-run` Trigger.dev task. Receives content generation results and posts them back to the originating Slack thread. Authenticated via the `x-callback-secret` header.\n\nThis endpoint is not intended for external use — it is called automatically by the polling task when content runs complete, fail, or time out.",
+        "description": "Internal callback endpoint for the `poll-content-run` Trigger.dev task. Receives content generation results and posts them back to the originating Slack thread. Authenticated via the `x-callback-secret` header.\n\nThis endpoint is not intended for external use \u2014 it is called automatically by the polling task when content runs complete, fail, or time out.",
         "requestBody": {
           "description": "Content generation results from the polling task",
           "required": true,
@@ -4775,7 +4871,10 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["threadId", "status"],
+                "required": [
+                  "threadId",
+                  "status"
+                ],
                 "properties": {
                   "threadId": {
                     "type": "string",
@@ -4783,7 +4882,11 @@
                   },
                   "status": {
                     "type": "string",
-                    "enum": ["completed", "failed", "timeout"],
+                    "enum": [
+                      "completed",
+                      "failed",
+                      "timeout"
+                    ],
                     "description": "Overall status of the content generation batch"
                   },
                   "results": {
@@ -4791,7 +4894,10 @@
                     "description": "Per-run results",
                     "items": {
                       "type": "object",
-                      "required": ["runId", "status"],
+                      "required": [
+                        "runId",
+                        "status"
+                      ],
                       "properties": {
                         "runId": {
                           "type": "string",
@@ -4799,7 +4905,11 @@
                         },
                         "status": {
                           "type": "string",
-                          "enum": ["completed", "failed", "timeout"]
+                          "enum": [
+                            "completed",
+                            "failed",
+                            "timeout"
+                          ]
                         },
                         "videoUrl": {
                           "type": "string",
@@ -4858,14 +4968,16 @@
     },
     "/api/research/search": {
       "get": {
-        "description": "Search for artists by name. Returns matching results with IDs you can use in all other research endpoints.",
+        "description": "Search for artists by name. Returns matching results with profile summaries.",
         "parameters": [
           {
             "name": "q",
             "in": "query",
             "required": true,
             "description": "Artist name to search for.",
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "type",
@@ -4874,7 +4986,14 @@
             "description": "Entity type to search for.",
             "schema": {
               "type": "string",
-              "enum": ["artists", "tracks", "albums", "playlists", "curators", "stations"],
+              "enum": [
+                "artists",
+                "tracks",
+                "albums",
+                "playlists",
+                "curators",
+                "stations"
+              ],
               "default": "artists"
             }
           },
@@ -4883,7 +5002,10 @@
             "in": "query",
             "required": false,
             "description": "Maximum number of results.",
-            "schema": { "type": "integer", "default": 10 }
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
           }
         ],
         "responses": {
@@ -4891,24 +5013,30 @@
             "description": "Search results",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ResearchSearchResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchSearchResponse"
+                }
               }
             }
           },
-          "402": { "description": "Insufficient credits" }
+          "402": {
+            "description": "Insufficient credits"
+          }
         }
       }
     },
     "/api/research/artist/{id}": {
       "get": {
-        "description": "Get a full artist profile — bio, genres, social URLs, label, career stage, and basic metrics.",
+        "description": "Get a full artist profile \u2014 bio, genres, social URLs, label, career stage, and basic metrics.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "Artist ID (returned by the search endpoint).",
-            "schema": { "type": "integer" }
+            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search.",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -4916,7 +5044,9 @@
             "description": "Artist profile",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
               }
             }
           }
@@ -4925,14 +5055,16 @@
     },
     "/api/research/artist/{id}/stat/{source}": {
       "get": {
-        "description": "Get platform-specific metrics for an artist over time — followers, listeners, views, engagement. Supports 14 platforms.",
+        "description": "Get platform-specific metrics for an artist over time \u2014 followers, listeners, views, engagement. Supports 14 platforms.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "Artist ID (returned by the search endpoint).",
-            "schema": { "type": "integer" }
+            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search.",
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "source",
@@ -4941,7 +5073,22 @@
             "description": "Platform to get metrics for.",
             "schema": {
               "type": "string",
-              "enum": ["spotify", "instagram", "tiktok", "twitter", "facebook", "youtube_channel", "youtube_artist", "soundcloud", "deezer", "twitch", "line", "melon", "wikipedia", "bandsintown"]
+              "enum": [
+                "spotify",
+                "instagram",
+                "tiktok",
+                "twitter",
+                "facebook",
+                "youtube_channel",
+                "youtube_artist",
+                "soundcloud",
+                "deezer",
+                "twitch",
+                "line",
+                "melon",
+                "wikipedia",
+                "bandsintown"
+              ]
             }
           }
         ],
@@ -4950,7 +5097,9 @@
             "description": "Platform metrics over time",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
               }
             }
           }
@@ -4965,7 +5114,10 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer" }
+            "schema": {
+              "type": "string"
+            },
+            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search."
           }
         ],
         "responses": {
@@ -4973,7 +5125,9 @@
             "description": "Top listener cities",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
               }
             }
           }
@@ -4982,13 +5136,16 @@
     },
     "/api/research/artist/{id}/{platform}-audience-stats": {
       "get": {
-        "description": "Get audience demographics for an artist on a specific platform — age, gender, and country breakdown.",
+        "description": "Get audience demographics for an artist on a specific platform \u2014 age, gender, and country breakdown.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer" }
+            "schema": {
+              "type": "string"
+            },
+            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search."
           },
           {
             "name": "platform",
@@ -4997,7 +5154,11 @@
             "description": "Platform to get audience demographics for.",
             "schema": {
               "type": "string",
-              "enum": ["instagram", "tiktok", "youtube"]
+              "enum": [
+                "instagram",
+                "tiktok",
+                "youtube"
+              ]
             }
           }
         ],
@@ -5006,7 +5167,9 @@
             "description": "Audience demographics",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
               }
             }
           }
@@ -5021,13 +5184,19 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer" }
+            "schema": {
+              "type": "string"
+            },
+            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search."
           },
           {
             "name": "limit",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "default": 10 }
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
           }
         ],
         "responses": {
@@ -5035,7 +5204,9 @@
             "description": "Similar artists with overlap scores",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
               }
             }
           }
@@ -5044,13 +5215,16 @@
     },
     "/api/research/artist/{id}/{platform}/{status}/playlists": {
       "get": {
-        "description": "Get an artist's playlist placements — editorial, algorithmic, and indie playlists across platforms.",
+        "description": "Get an artist's playlist placements \u2014 editorial, algorithmic, and indie playlists across platforms.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer" }
+            "schema": {
+              "type": "string"
+            },
+            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search."
           },
           {
             "name": "platform",
@@ -5058,7 +5232,13 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": ["spotify", "applemusic", "deezer", "amazon", "youtube"],
+              "enum": [
+                "spotify",
+                "applemusic",
+                "deezer",
+                "amazon",
+                "youtube"
+              ],
               "default": "spotify"
             }
           },
@@ -5068,7 +5248,10 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": ["current", "past"],
+              "enum": [
+                "current",
+                "past"
+              ],
               "default": "current"
             }
           },
@@ -5076,14 +5259,19 @@
             "name": "limit",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "default": 20 }
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
           },
           {
             "name": "sort",
             "in": "query",
             "required": false,
             "description": "Sort results by this field.",
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -5091,7 +5279,9 @@
             "description": "Playlist placements",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
               }
             }
           }
@@ -5100,13 +5290,16 @@
     },
     "/api/research/artist/{id}/albums": {
       "get": {
-        "description": "Get an artist's full discography — albums, EPs, and singles with release dates.",
+        "description": "Get an artist's full discography \u2014 albums, EPs, and singles with release dates.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer" }
+            "schema": {
+              "type": "string"
+            },
+            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search."
           }
         ],
         "responses": {
@@ -5114,7 +5307,9 @@
             "description": "Artist albums",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
               }
             }
           }
@@ -5129,7 +5324,10 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer" }
+            "schema": {
+              "type": "string"
+            },
+            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search."
           }
         ],
         "responses": {
@@ -5137,7 +5335,9 @@
             "description": "Artist tracks",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
               }
             }
           }
@@ -5146,13 +5346,16 @@
     },
     "/api/research/artist/{id}/career": {
       "get": {
-        "description": "Get an artist's career timeline — key milestones, trajectory, and career stage.",
+        "description": "Get an artist's career timeline \u2014 key milestones, trajectory, and career stage.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer" }
+            "schema": {
+              "type": "string"
+            },
+            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search."
           }
         ],
         "responses": {
@@ -5160,7 +5363,9 @@
             "description": "Career timeline",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
               }
             }
           }
@@ -5169,13 +5374,16 @@
     },
     "/api/research/artist/{id}/noteworthy-insights": {
       "get": {
-        "description": "Get AI-generated insights about an artist — automatically surfaced trends, milestones, and observations.",
+        "description": "Get AI-generated insights about an artist \u2014 automatically surfaced trends, milestones, and observations.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer" }
+            "schema": {
+              "type": "string"
+            },
+            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search."
           }
         ],
         "responses": {
@@ -5183,7 +5391,9 @@
             "description": "AI-generated insights",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
               }
             }
           }
@@ -5192,46 +5402,59 @@
     },
     "/api/research/artist/list/filter": {
       "get": {
-        "description": "Discover artists by criteria — filter by country, genre, listener count, follower count, growth rate, and more.",
+        "description": "Discover artists by criteria \u2014 filter by country, genre, listener count, follower count, growth rate, and more.",
         "parameters": [
           {
             "name": "country",
             "in": "query",
             "required": false,
             "description": "ISO country code (e.g., US, BR, GB).",
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "genre",
             "in": "query",
             "required": false,
             "description": "Genre ID (use GET /api/research/genre to list).",
-            "schema": { "type": "integer" }
+            "schema": {
+              "type": "integer"
+            }
           },
           {
             "name": "sp_monthly_listeners_min",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer" }
+            "schema": {
+              "type": "integer"
+            }
           },
           {
             "name": "sp_monthly_listeners_max",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer" }
+            "schema": {
+              "type": "integer"
+            }
           },
           {
             "name": "sort",
             "in": "query",
             "required": false,
             "description": "Sort field (e.g., weekly_diff.sp_monthly_listeners).",
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "limit",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "default": 20 }
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
           }
         ],
         "responses": {
@@ -5239,7 +5462,9 @@
             "description": "Filtered artist list",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
               }
             }
           }
@@ -5254,7 +5479,9 @@
             "description": "Genre list",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
               }
             }
           }
@@ -5269,7 +5496,9 @@
             "description": "Festival list",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
               }
             }
           }
@@ -5283,7 +5512,9 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/ResearchWebRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/ResearchWebRequest"
+              }
             }
           }
         },
@@ -5292,7 +5523,9 @@
             "description": "Web search results",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ResearchWebResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchWebResponse"
+                }
               }
             }
           }
@@ -5306,7 +5539,9 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/ResearchDeepRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/ResearchDeepRequest"
+              }
             }
           }
         },
@@ -5315,7 +5550,9 @@
             "description": "Deep research report with citations",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ResearchDeepResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchDeepResponse"
+                }
               }
             }
           }
@@ -10215,7 +10452,10 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": ["url", "name"],
+              "required": [
+                "url",
+                "name"
+              ],
               "properties": {
                 "url": {
                   "type": "string",
@@ -11743,7 +11983,10 @@
         "properties": {
           "status": {
             "type": "string",
-            "enum": ["success", "error"]
+            "enum": [
+              "success",
+              "error"
+            ]
           },
           "results": {
             "type": "array",
@@ -11761,12 +12004,14 @@
       },
       "ResearchWebRequest": {
         "type": "object",
-        "required": ["query"],
+        "required": [
+          "query"
+        ],
         "description": "Request body for web research.",
         "properties": {
           "query": {
             "type": "string",
-            "description": "The search query — what you want to find on the web."
+            "description": "The search query \u2014 what you want to find on the web."
           },
           "max_results": {
             "type": "integer",
@@ -11789,7 +12034,10 @@
         "properties": {
           "status": {
             "type": "string",
-            "enum": ["success", "error"]
+            "enum": [
+              "success",
+              "error"
+            ]
           },
           "results": {
             "type": "array",
@@ -11797,9 +12045,15 @@
             "items": {
               "type": "object",
               "properties": {
-                "title": { "type": "string" },
-                "url": { "type": "string" },
-                "content": { "type": "string" }
+                "title": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string"
+                }
               }
             }
           },
@@ -11811,12 +12065,14 @@
       },
       "ResearchDeepRequest": {
         "type": "object",
-        "required": ["query"],
+        "required": [
+          "query"
+        ],
         "description": "Request body for deep research. Performs comprehensive multi-source analysis.",
         "properties": {
           "query": {
             "type": "string",
-            "description": "The research question — be specific and detailed for best results."
+            "description": "The research question \u2014 be specific and detailed for best results."
           }
         }
       },
@@ -11826,7 +12082,10 @@
         "properties": {
           "status": {
             "type": "string",
-            "enum": ["success", "error"]
+            "enum": [
+              "success",
+              "error"
+            ]
           },
           "content": {
             "type": "string",

@@ -125,9 +125,9 @@ recoup tasks status --run <runId> --json
 
 Music industry research — streaming metrics, audience demographics, playlist placements, competitive analysis, and web intelligence. All data is accessed through your `RECOUP_API_KEY`.
 
-### Search for an artist
+Every research command accepts an **artist name** or a **Recoup artist ID** (UUID). The API resolves the artist automatically. If the name is ambiguous (multiple matches), the API returns the top results for disambiguation.
 
-Find an artist in the music industry database. Returns an ID you can use with all other research commands.
+### Search for an artist
 
 ```bash
 recoup research "Drake"
@@ -137,27 +137,26 @@ recoup research "Phoebe Bridgers" --json
 ### Artist profile and career
 
 ```bash
-recoup research profile <id>
-recoup research career <id>
-recoup research insights <id>
-recoup research profile <id> --json
+recoup research profile "Drake"
+recoup research career "Drake"
+recoup research insights "Drake"
 ```
 
 | Subcommand | Description | API endpoint |
 |------------|-------------|-------------|
-| `profile <id>` | Full artist profile — bio, genres, social URLs, label | [`GET /api/research/artist/{id}`](/api-reference/research/profile) |
-| `career <id>` | Career timeline and key milestones | [`GET /api/research/artist/{id}/career`](/api-reference/research/career) |
-| `insights <id>` | AI-generated observations and trends | [`GET /api/research/artist/{id}/noteworthy-insights`](/api-reference/research/insights) |
+| `profile` | Full artist profile — bio, genres, social URLs, label | [`GET /api/research/artist/{id}`](/api-reference/research/profile) |
+| `career` | Career timeline and key milestones | [`GET /api/research/artist/{id}/career`](/api-reference/research/career) |
+| `insights` | AI-generated observations and trends | [`GET /api/research/artist/{id}/noteworthy-insights`](/api-reference/research/insights) |
 
 ### Streaming and social metrics
 
 Get platform-specific metrics over time. Supports 14 platforms.
 
 ```bash
-recoup research metrics <id> --source spotify
-recoup research metrics <id> --source instagram
-recoup research metrics <id> --source tiktok
-recoup research metrics <id> --source youtube_channel
+recoup research metrics "Drake" --source spotify
+recoup research metrics "Drake" --source instagram
+recoup research metrics "Drake" --source tiktok
+recoup research metrics "Drake" --source youtube_channel
 ```
 
 Valid `--source` values: `spotify`, `instagram`, `tiktok`, `twitter`, `facebook`, `youtube_channel`, `youtube_artist`, `soundcloud`, `deezer`, `twitch`, `line`, `melon`, `wikipedia`, `bandsintown`.
@@ -167,22 +166,22 @@ See [`GET /api/research/artist/{id}/stat/{source}`](/api-reference/research/metr
 ### Audience and geography
 
 ```bash
-recoup research audience <id>
-recoup research audience <id> --platform tiktok
-recoup research audience <id> --platform youtube
-recoup research cities <id>
+recoup research audience "Drake"
+recoup research audience "Drake" --platform tiktok
+recoup research audience "Drake" --platform youtube
+recoup research cities "Drake"
 ```
 
 | Subcommand | Description | API endpoint |
 |------------|-------------|-------------|
-| `audience <id>` | Age, gender, country breakdown (Instagram default) | [`GET /api/research/artist/{id}/{platform}-audience-stats`](/api-reference/research/audience) |
-| `cities <id>` | Top cities by listener concentration | [`GET /api/research/artist/{id}/where-people-listen`](/api-reference/research/cities) |
+| `audience` | Age, gender, country breakdown (Instagram default) | [`GET /api/research/artist/{id}/{platform}-audience-stats`](/api-reference/research/audience) |
+| `cities` | Top cities by listener concentration | [`GET /api/research/artist/{id}/where-people-listen`](/api-reference/research/cities) |
 
 ### Competitive landscape
 
 ```bash
-recoup research similar <id>
-recoup research similar <id> --audience high --genre high --limit 20
+recoup research similar "Drake"
+recoup research similar "Drake" --audience high --genre high --limit 20
 ```
 
 Configuration options: `--audience`, `--genre`, `--mood`, `--musicality` (values: `high`, `medium`, `low`).
@@ -192,11 +191,11 @@ See [`GET /api/research/artist/{id}/neighboring-artists`](/api-reference/researc
 ### Playlists
 
 ```bash
-recoup research playlists <id>
-recoup research playlists <id> --platform applemusic
-recoup research playlists <id> --editorial
-recoup research playlists <id> --status past --since 2025-01-01
-recoup research playlists <id> --sort followers --limit 50
+recoup research playlists "Drake"
+recoup research playlists "Drake" --platform applemusic
+recoup research playlists "Drake" --editorial
+recoup research playlists "Drake" --status past --since 2025-01-01
+recoup research playlists "Drake" --sort followers --limit 50
 ```
 
 | Flag | Description |
@@ -213,8 +212,8 @@ See [`GET /api/research/artist/{id}/{platform}/{status}/playlists`](/api-referen
 ### Discography
 
 ```bash
-recoup research albums <id>
-recoup research tracks <id>
+recoup research albums "Drake"
+recoup research tracks "Drake"
 ```
 
 ### Discover artists
@@ -266,21 +265,25 @@ recoup research report "Tell me everything about Phoebe Bridgers — bio, stream
 
 See [`POST /api/research/deep`](/api-reference/research/deep).
 
+### Using Recoup artist IDs
+
+If the artist is already on your Recoup roster, you can pass their Recoup artist ID (UUID) instead of a name. The API resolves it automatically.
+
+```bash
+recoup research metrics de05ba8c-7e29-4f1a-93a7-3635653599f6 --source spotify
+```
+
 ### Workflow example: full artist research
 
 ```bash
-# 1. Find the artist
-recoup research "Phoebe Bridgers" --json
-# → { id: 241089, name: "Phoebe Bridgers", ... }
+# Pull structured data (all by name, run in parallel)
+recoup research metrics "Phoebe Bridgers" --source spotify --json
+recoup research audience "Phoebe Bridgers" --json
+recoup research cities "Phoebe Bridgers" --json
+recoup research similar "Phoebe Bridgers" --audience high --genre high --json
+recoup research playlists "Phoebe Bridgers" --editorial --json
 
-# 2. Pull structured data (run in parallel)
-recoup research metrics 241089 --source spotify --json
-recoup research audience 241089 --json
-recoup research cities 241089 --json
-recoup research similar 241089 --audience high --genre high --json
-recoup research playlists 241089 --editorial --json
-
-# 3. Add web context
+# Add web context
 recoup research web "Phoebe Bridgers biography career milestones" --json
 recoup research web "Phoebe Bridgers fan community brand partnerships" --json
 ```
