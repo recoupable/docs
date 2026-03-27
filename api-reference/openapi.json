@@ -5043,7 +5043,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                  "$ref": "#/components/schemas/ResearchLookupResponse"
                 }
               }
             }
@@ -5071,7 +5071,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                  "$ref": "#/components/schemas/ResearchProfileResponse"
                 }
               }
             }
@@ -5124,7 +5124,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                  "$ref": "#/components/schemas/ResearchMetricsResponse"
                 }
               }
             }
@@ -5167,7 +5167,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                  "$ref": "#/components/schemas/ResearchAudienceResponse"
                 }
               }
             }
@@ -5195,7 +5195,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                  "$ref": "#/components/schemas/ResearchCitiesResponse"
                 }
               }
             }
@@ -5288,7 +5288,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                  "$ref": "#/components/schemas/ResearchSimilarResponse"
                 }
               }
             }
@@ -5316,7 +5316,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                  "$ref": "#/components/schemas/ResearchUrlsResponse"
                 }
               }
             }
@@ -5344,7 +5344,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                  "$ref": "#/components/schemas/ResearchInstagramPostsResponse"
                 }
               }
             }
@@ -5438,7 +5438,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                  "$ref": "#/components/schemas/ResearchPlaylistsResponse"
                 }
               }
             }
@@ -5466,7 +5466,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                  "$ref": "#/components/schemas/ResearchAlbumsResponse"
                 }
               }
             }
@@ -5494,7 +5494,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                  "$ref": "#/components/schemas/ResearchTracksResponse"
                 }
               }
             }
@@ -5522,7 +5522,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                  "$ref": "#/components/schemas/ResearchTrackResponse"
                 }
               }
             }
@@ -5550,7 +5550,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                  "$ref": "#/components/schemas/ResearchCareerResponse"
                 }
               }
             }
@@ -5578,7 +5578,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                  "$ref": "#/components/schemas/ResearchInsightsResponse"
                 }
               }
             }
@@ -5621,7 +5621,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                  "$ref": "#/components/schemas/ResearchPlaylistResponse"
                 }
               }
             }
@@ -5664,7 +5664,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                  "$ref": "#/components/schemas/ResearchCuratorResponse"
                 }
               }
             }
@@ -5735,7 +5735,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                  "$ref": "#/components/schemas/ResearchDiscoverResponse"
                 }
               }
             }
@@ -5752,7 +5752,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                  "$ref": "#/components/schemas/ResearchGenresResponse"
                 }
               }
             }
@@ -5769,7 +5769,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                  "$ref": "#/components/schemas/ResearchFestivalsResponse"
                 }
               }
             }
@@ -12251,7 +12251,6 @@
       },
       "ResearchSearchResponse": {
         "type": "object",
-        "description": "Search results for artists, tracks, or other entities.",
         "properties": {
           "status": {
             "type": "string",
@@ -12262,17 +12261,12 @@
           },
           "results": {
             "type": "array",
-            "description": "Matching results with IDs, names, images, and basic metadata. Use the returned ID for all other research endpoints.",
+            "description": "Matching artists with IDs, names, and basic metadata.",
             "items": {
-              "type": "object"
+              "$ref": "#/components/schemas/ResearchSearchResult"
             }
           }
         }
-      },
-      "ResearchProxyResponse": {
-        "type": "object",
-        "description": "Response shape varies by endpoint. All responses are JSON objects. Concrete schemas will be added after the API implementation is complete.",
-        "properties": {}
       },
       "ResearchWebRequest": {
         "type": "object",
@@ -12372,6 +12366,486 @@
             }
           }
         }
+      },
+      "ResearchSearchResult": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "description": "Internal ID for use with other research endpoints."
+          },
+          "spotify_id": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchProfileResponse": {
+        "type": "object",
+        "description": "Full artist profile \u2014 bio, genres, social links, label, images, and basic stats.",
+        "additionalProperties": true
+      },
+      "ResearchMetricsResponse": {
+        "type": "object",
+        "description": "Time-series metrics for a specific platform. Shape varies by source \u2014 typically an array of data points with timestamps and values (followers, listeners, views, etc.).",
+        "additionalProperties": true
+      },
+      "ResearchAudienceResponse": {
+        "type": "object",
+        "description": "Audience demographics breakdown \u2014 age ranges, gender split, and country distribution for the specified platform.",
+        "additionalProperties": true
+      },
+      "ResearchCitiesEntry": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "City name."
+          },
+          "country": {
+            "type": "string",
+            "description": "ISO country code."
+          },
+          "listeners": {
+            "type": "integer",
+            "description": "Listener count in this city."
+          }
+        }
+      },
+      "ResearchCitiesResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "cities": {
+            "type": "array",
+            "description": "Cities ranked by listener concentration.",
+            "items": {
+              "$ref": "#/components/schemas/ResearchCitiesEntry"
+            }
+          }
+        }
+      },
+      "ResearchSimilarArtist": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "similarity": {
+            "type": "number",
+            "description": "Similarity score (0-1)."
+          },
+          "career_stage": {
+            "type": "string",
+            "description": "undiscovered, developing, mid-level, mainstream, superstar, or legendary."
+          },
+          "recent_momentum": {
+            "type": "string",
+            "description": "decline, gradual decline, steady, growth, or explosive growth."
+          },
+          "sp_followers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "sp_monthly_listeners": {
+            "type": "integer",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchSimilarResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchSimilarArtist"
+            }
+          },
+          "total": {
+            "type": "integer"
+          }
+        }
+      },
+      "ResearchUrlEntry": {
+        "type": "object",
+        "properties": {
+          "domain": {
+            "type": "string",
+            "description": "Platform name (e.g., spotify, instagram)."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "ResearchUrlsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "urls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchUrlEntry"
+            }
+          }
+        }
+      },
+      "ResearchInstagramPostsResponse": {
+        "type": "object",
+        "description": "Top Instagram posts and reels sorted by engagement.",
+        "additionalProperties": true
+      },
+      "ResearchPlaylistPlacement": {
+        "type": "object",
+        "properties": {
+          "playlist_name": {
+            "type": "string"
+          },
+          "track_name": {
+            "type": "string"
+          },
+          "position": {
+            "type": "integer",
+            "nullable": true
+          },
+          "peak_position": {
+            "type": "integer",
+            "nullable": true
+          },
+          "followers": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Playlist follower count."
+          },
+          "added_at": {
+            "type": "string",
+            "nullable": true,
+            "description": "When the track was added."
+          },
+          "removed_at": {
+            "type": "string",
+            "nullable": true,
+            "description": "When the track was removed (past placements only)."
+          },
+          "curator_name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchPlaylistsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "placements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchPlaylistPlacement"
+            }
+          }
+        }
+      },
+      "ResearchAlbum": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "release_date": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchAlbumsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "albums": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchAlbum"
+            }
+          }
+        }
+      },
+      "ResearchTrackItem": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "album_names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchTracksResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "tracks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchTrackItem"
+            }
+          }
+        }
+      },
+      "ResearchTrackResponse": {
+        "type": "object",
+        "description": "Track metadata \u2014 title, artist, album, release date, popularity, and platform IDs.",
+        "additionalProperties": true
+      },
+      "ResearchCareerResponse": {
+        "type": "object",
+        "description": "Career timeline \u2014 milestones, trajectory, and career stage history.",
+        "additionalProperties": true
+      },
+      "ResearchInsight": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "The insight text."
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchInsightsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "insights": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchInsight"
+            }
+          }
+        }
+      },
+      "ResearchPlaylistResponse": {
+        "type": "object",
+        "description": "Playlist metadata \u2014 name, description, follower count, track count, and curator info.",
+        "additionalProperties": true
+      },
+      "ResearchCuratorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "num_playlists": {
+            "type": "integer",
+            "nullable": true
+          },
+          "followers": {
+            "type": "integer",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchDiscoverArtist": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "sp_monthly_listeners": {
+            "type": "integer",
+            "nullable": true
+          },
+          "sp_followers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "tiktok_followers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "ins_followers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true,
+            "description": "ISO country code."
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchDiscoverResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchDiscoverArtist"
+            }
+          }
+        }
+      },
+      "ResearchGenre": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          }
+        }
+      },
+      "ResearchGenresResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchGenre"
+            }
+          }
+        }
+      },
+      "ResearchFestival": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchFestivalsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "festivals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchFestival"
+            }
+          }
+        }
+      },
+      "ResearchLookupResponse": {
+        "type": "object",
+        "description": "Artist profile resolved from a platform URL or ID.",
+        "additionalProperties": true
       }
     },
     "securitySchemes": {
