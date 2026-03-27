@@ -155,9 +155,9 @@ recoup research insights "Drake"
 
 | Subcommand | Description | API endpoint |
 |------------|-------------|-------------|
-| `profile` | Full artist profile — bio, genres, social URLs, label | [`GET /api/research/artist/{id}`](/api-reference/research/profile) |
-| `career` | Career timeline and key milestones | [`GET /api/research/artist/{id}/career`](/api-reference/research/career) |
-| `insights` | AI-generated observations and trends | [`GET /api/research/artist/{id}/noteworthy-insights`](/api-reference/research/insights) |
+| `profile` | Full artist profile — bio, genres, social URLs, label | [`GET /api/research/profile`](/api-reference/research/profile) |
+| `career` | Career timeline and key milestones | [`GET /api/research/career`](/api-reference/research/career) |
+| `insights` | AI-generated observations and trends | [`GET /api/research/insights`](/api-reference/research/insights) |
 
 ### Streaming and social metrics
 
@@ -172,7 +172,7 @@ recoup research metrics "Drake" --source youtube_channel
 
 Valid `--source` values: `spotify`, `instagram`, `tiktok`, `twitter`, `facebook`, `youtube_channel`, `youtube_artist`, `soundcloud`, `deezer`, `twitch`, `line`, `melon`, `wikipedia`, `bandsintown`.
 
-See [`GET /api/research/artist/{id}/stat/{source}`](/api-reference/research/metrics).
+See [`GET /api/research/metrics`](/api-reference/research/metrics).
 
 ### Audience and geography
 
@@ -185,8 +185,8 @@ recoup research cities "Drake"
 
 | Subcommand | Description | API endpoint |
 |------------|-------------|-------------|
-| `audience` | Age, gender, country breakdown (Instagram default) | [`GET /api/research/artist/{id}/{platform}-audience-stats`](/api-reference/research/audience) |
-| `cities` | Top cities by listener concentration | [`GET /api/research/artist/{id}/where-people-listen`](/api-reference/research/cities) |
+| `audience` | Age, gender, country breakdown. `--platform`: `instagram` (default), `tiktok`, `youtube` | [`GET /api/research/audience`](/api-reference/research/audience) |
+| `cities` | Top cities by listener concentration | [`GET /api/research/cities`](/api-reference/research/cities) |
 
 ### Social URLs
 
@@ -196,7 +196,7 @@ Get all social and streaming links for an artist.
 recoup research urls "Drake"
 ```
 
-See [`GET /api/research/artist/{id}/urls`](/api-reference/research/urls).
+See [`GET /api/research/urls`](/api-reference/research/urls).
 
 ### Instagram posts
 
@@ -206,7 +206,7 @@ Get an artist's top Instagram posts and reels by engagement.
 recoup research instagram-posts "Drake"
 ```
 
-See [`GET /api/research/artist/{id}/instagram-posts`](/api-reference/research/instagram-posts).
+See [`GET /api/research/instagram-posts`](/api-reference/research/instagram-posts).
 
 ### Competitive landscape
 
@@ -217,7 +217,7 @@ recoup research similar "Drake" --audience high --genre high --limit 20
 
 Configuration options: `--audience`, `--genre`, `--mood`, `--musicality` (values: `high`, `medium`, `low`).
 
-See [`GET /api/research/artist/{id}/neighboring-artists`](/api-reference/research/similar).
+See [`GET /api/research/similar`](/api-reference/research/similar).
 
 ### Playlists
 
@@ -238,7 +238,7 @@ recoup research playlists "Drake" --sort followers --limit 50
 | `--sort <field>` | Sort results (e.g., `followers`) |
 | `--limit <n>` | Max results |
 
-See [`GET /api/research/artist/{id}/{platform}/{status}/playlists`](/api-reference/research/playlists).
+See [`GET /api/research/playlists`](/api-reference/research/playlists).
 
 ### Discography
 
@@ -287,7 +287,7 @@ recoup research discover --tiktok-followers 1000000 10000000 --spotify-listeners
 | `--tiktok-followers <min> <max>` | TikTok follower range |
 | `--sort <field>` | Sort field (e.g., `weekly_diff.sp_monthly_listeners`) |
 
-See [`GET /api/research/artist/list/filter`](/api-reference/research/discover).
+See [`GET /api/research/discover`](/api-reference/research/discover).
 
 ### Reference data
 

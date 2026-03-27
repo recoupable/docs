@@ -4858,7 +4858,8 @@
           "404": {
             "description": "Unknown platform"
           }
-        }
+        },
+        "security": []
       }
     },
     "/api/content-agent/callback": {
@@ -5148,7 +5149,7 @@
             "name": "platform",
             "in": "query",
             "required": false,
-            "description": "Platform to get demographics for.",
+            "description": "Platform to get demographics for. Defaults to instagram.",
             "schema": {
               "type": "string",
               "enum": [
@@ -5744,7 +5745,7 @@
     },
     "/api/research/genres": {
       "get": {
-        "description": "List all available genre IDs and names. Use these IDs with the discover endpoint.",
+        "description": "List all available genre IDs and names. Use these IDs with the discover endpoint at GET /api/research/discover.",
         "responses": {
           "200": {
             "description": "Genre list",
@@ -12383,6 +12384,12 @@
         "in": "header",
         "name": "x-api-key",
         "description": "Your Recoup API key. [Learn more](/quickstart#api-keys)."
+      },
+      "callbackSecret": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-callback-secret",
+        "description": "Shared secret used by internal Trigger.dev callback requests."
       }
     }
   }
