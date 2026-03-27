@@ -4858,7 +4858,7 @@
     },
     "/api/research/search": {
       "get": {
-        "description": "Search the music industry database for artists by name. Returns matching artists with IDs you can use in all other research endpoints. Costs 5 credits per call.",
+        "description": "Search for artists by name. Returns matching results with IDs you can use in all other research endpoints.",
         "parameters": [
           {
             "name": "q",
@@ -4901,13 +4901,13 @@
     },
     "/api/research/artist/{id}": {
       "get": {
-        "description": "Get a full artist profile from the music industry database — bio, genres, social URLs, label, career stage, and basic metrics. Costs 5 credits.",
+        "description": "Get a full artist profile — bio, genres, social URLs, label, career stage, and basic metrics.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "Artist ID from the music industry database (returned by search).",
+            "description": "Artist ID (returned by the search endpoint).",
             "schema": { "type": "integer" }
           }
         ],
@@ -4925,13 +4925,13 @@
     },
     "/api/research/artist/{id}/stat/{source}": {
       "get": {
-        "description": "Get platform-specific metrics for an artist over time — followers, listeners, views, engagement. Supports 14 platforms. Costs 5 credits.",
+        "description": "Get platform-specific metrics for an artist over time — followers, listeners, views, engagement. Supports 14 platforms.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "Artist ID from the music industry database.",
+            "description": "Artist ID (returned by the search endpoint).",
             "schema": { "type": "integer" }
           },
           {
@@ -4959,7 +4959,7 @@
     },
     "/api/research/artist/{id}/where-people-listen": {
       "get": {
-        "description": "Get the top cities where an artist's fans listen, ranked by listener concentration. Costs 5 credits.",
+        "description": "Get the top cities where an artist's fans listen, ranked by listener concentration.",
         "parameters": [
           {
             "name": "id",
@@ -4982,7 +4982,7 @@
     },
     "/api/research/artist/{id}/{platform}-audience-stats": {
       "get": {
-        "description": "Get audience demographics for an artist on a specific platform — age, gender, and country breakdown. Costs 5 credits.",
+        "description": "Get audience demographics for an artist on a specific platform — age, gender, and country breakdown.",
         "parameters": [
           {
             "name": "id",
@@ -5015,7 +5015,7 @@
     },
     "/api/research/artist/{id}/neighboring-artists": {
       "get": {
-        "description": "Find similar artists based on audience overlap, genre, mood, and musicality. Use for competitive analysis and collaboration discovery. Costs 5 credits.",
+        "description": "Find similar artists based on audience overlap, genre, mood, and musicality. Use for competitive analysis and collaboration discovery.",
         "parameters": [
           {
             "name": "id",
@@ -5044,7 +5044,7 @@
     },
     "/api/research/artist/{id}/{platform}/{status}/playlists": {
       "get": {
-        "description": "Get an artist's playlist placements — editorial, algorithmic, and indie playlists across platforms. Costs 5 credits.",
+        "description": "Get an artist's playlist placements — editorial, algorithmic, and indie playlists across platforms.",
         "parameters": [
           {
             "name": "id",
@@ -5100,7 +5100,7 @@
     },
     "/api/research/artist/{id}/albums": {
       "get": {
-        "description": "Get an artist's full discography — albums, EPs, and singles with release dates. Costs 5 credits.",
+        "description": "Get an artist's full discography — albums, EPs, and singles with release dates.",
         "parameters": [
           {
             "name": "id",
@@ -5123,7 +5123,7 @@
     },
     "/api/research/artist/{id}/tracks": {
       "get": {
-        "description": "Get all tracks by an artist with popularity data. Costs 5 credits.",
+        "description": "Get all tracks by an artist with popularity data.",
         "parameters": [
           {
             "name": "id",
@@ -5146,7 +5146,7 @@
     },
     "/api/research/artist/{id}/career": {
       "get": {
-        "description": "Get an artist's career timeline — key milestones, trajectory, and career stage. Costs 5 credits.",
+        "description": "Get an artist's career timeline — key milestones, trajectory, and career stage.",
         "parameters": [
           {
             "name": "id",
@@ -5169,7 +5169,7 @@
     },
     "/api/research/artist/{id}/noteworthy-insights": {
       "get": {
-        "description": "Get AI-generated insights about an artist — automatically surfaced trends, milestones, and observations. Costs 5 credits.",
+        "description": "Get AI-generated insights about an artist — automatically surfaced trends, milestones, and observations.",
         "parameters": [
           {
             "name": "id",
@@ -5192,7 +5192,7 @@
     },
     "/api/research/artist/list/filter": {
       "get": {
-        "description": "Discover artists by criteria — filter by country, genre, listener count, follower count, growth rate, and more. Costs 5 credits.",
+        "description": "Discover artists by criteria — filter by country, genre, listener count, follower count, growth rate, and more.",
         "parameters": [
           {
             "name": "country",
@@ -5248,7 +5248,7 @@
     },
     "/api/research/genre": {
       "get": {
-        "description": "List all available genre IDs and names. Use these IDs with the discover endpoint. Costs 5 credits.",
+        "description": "List all available genre IDs and names. Use these IDs with the discover endpoint.",
         "responses": {
           "200": {
             "description": "Genre list",
@@ -5263,7 +5263,7 @@
     },
     "/api/research/festival/list": {
       "get": {
-        "description": "List music festivals. Costs 5 credits.",
+        "description": "List music festivals.",
         "responses": {
           "200": {
             "description": "Festival list",
@@ -5278,7 +5278,7 @@
     },
     "/api/research/web": {
       "post": {
-        "description": "Search the web for real-time information. Returns ranked results with titles, URLs, and content snippets. Use for narrative context, press coverage, and cultural research that structured data endpoints don't cover. Costs 5 credits.",
+        "description": "Search the web for real-time information. Returns ranked results with titles, URLs, and content snippets. Use for narrative context, press coverage, and cultural research that structured data endpoints don't cover.",
         "requestBody": {
           "required": true,
           "content": {
@@ -5301,7 +5301,7 @@
     },
     "/api/research/deep": {
       "post": {
-        "description": "Perform deep, comprehensive research on a topic. Browses multiple sources extensively and returns a cited report. Use for full artist deep dives, competitive analysis, and any research requiring synthesis across many sources. Costs 25 credits.",
+        "description": "Perform deep, comprehensive research on a topic. Browses multiple sources extensively and returns a cited report. Use for full artist deep dives, competitive analysis, and any research requiring synthesis across many sources.",
         "requestBody": {
           "required": true,
           "content": {
@@ -11736,11 +11736,10 @@
             }
           }
         }
-      }
-    },
-    "ResearchSearchResponse": {
+      },
+      "ResearchSearchResponse": {
         "type": "object",
-        "description": "Response from searching the music industry database for artists, tracks, or other entities.",
+        "description": "Search results for artists, tracks, or other entities.",
         "properties": {
           "status": {
             "type": "string",
@@ -11748,7 +11747,7 @@
           },
           "results": {
             "type": "array",
-            "description": "Array of matching entities with IDs, names, images, and basic metadata. Use the returned ID for subsequent research commands.",
+            "description": "Matching results with IDs, names, images, and basic metadata. Use the returned ID for all other research endpoints.",
             "items": {
               "type": "object"
             }
@@ -11757,7 +11756,7 @@
       },
       "ResearchProxyResponse": {
         "type": "object",
-        "description": "Proxied response from the music industry data provider. The shape depends on the specific endpoint called. All responses are JSON.",
+        "description": "Response shape depends on the specific endpoint called. All responses are JSON.",
         "properties": {}
       },
       "ResearchWebRequest": {
@@ -11842,8 +11841,9 @@
             }
           }
         }
-      },
-      "securitySchemes": {
+      }
+    },
+    "securitySchemes": {
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer"
