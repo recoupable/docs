@@ -5558,6 +5558,204 @@
           }
         }
       }
+    },
+    "/api/research/artist/{id}/urls": {
+      "get": {
+        "description": "Get all social and streaming URLs for an artist \u2014 Spotify, Instagram, TikTok, YouTube, Twitter, SoundCloud, and more.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Social and streaming URLs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/artist/{id}/instagram-posts": {
+      "get": {
+        "description": "Get an artist's top Instagram posts and reels \u2014 sorted by engagement.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Top Instagram posts and reels",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/lookup": {
+      "get": {
+        "description": "Look up an artist by a platform URL or ID \u2014 Spotify URL, Spotify ID, Apple Music URL, etc. Returns the artist profile.",
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "required": true,
+            "description": "Platform URL or ID (e.g., Spotify artist URL, Spotify ID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist profile matching the platform URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/track/{id}": {
+      "get": {
+        "description": "Get track metadata \u2014 title, artist, album, release date, popularity, and platform IDs.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Track name, Spotify URL, or numeric ID from a previous search.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Track metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/playlist/{platform}/{id}": {
+      "get": {
+        "description": "Get playlist metadata \u2014 name, description, follower count, track count, and curator info.",
+        "parameters": [
+          {
+            "name": "platform",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "spotify",
+                "applemusic",
+                "deezer",
+                "amazon",
+                "youtube"
+              ]
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Playlist ID on the platform.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Playlist metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/curator/{platform}/{id}": {
+      "get": {
+        "description": "Get curator profile \u2014 who curates a playlist, their other playlists, and follower reach.",
+        "parameters": [
+          {
+            "name": "platform",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "spotify",
+                "applemusic",
+                "deezer",
+                "amazon",
+                "youtube"
+              ]
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Curator ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Curator profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {

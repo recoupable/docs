@@ -134,6 +134,17 @@ recoup research "Drake"
 recoup research "Phoebe Bridgers" --json
 ```
 
+### Lookup by platform URL
+
+Find an artist from a Spotify URL, Apple Music link, or any platform ID.
+
+```bash
+recoup research lookup "https://open.spotify.com/artist/3TVXtAsR1Inumwj472S9r4"
+recoup research lookup "3TVXtAsR1Inumwj472S9r4"
+```
+
+See [`GET /api/research/lookup`](/api-reference/research/lookup).
+
 ### Artist profile and career
 
 ```bash
@@ -177,6 +188,26 @@ recoup research cities "Drake"
 | `audience` | Age, gender, country breakdown (Instagram default) | [`GET /api/research/artist/{id}/{platform}-audience-stats`](/api-reference/research/audience) |
 | `cities` | Top cities by listener concentration | [`GET /api/research/artist/{id}/where-people-listen`](/api-reference/research/cities) |
 
+### Social URLs
+
+Get all social and streaming links for an artist.
+
+```bash
+recoup research urls "Drake"
+```
+
+See [`GET /api/research/artist/{id}/urls`](/api-reference/research/urls).
+
+### Instagram posts
+
+Get an artist's top Instagram posts and reels by engagement.
+
+```bash
+recoup research instagram-posts "Drake"
+```
+
+See [`GET /api/research/artist/{id}/instagram-posts`](/api-reference/research/instagram-posts).
+
 ### Competitive landscape
 
 ```bash
@@ -215,6 +246,28 @@ See [`GET /api/research/artist/{id}/{platform}/{status}/playlists`](/api-referen
 recoup research albums "Drake"
 recoup research tracks "Drake"
 ```
+
+### Track details
+
+Get metadata for a specific track — look up by name or Spotify URL.
+
+```bash
+recoup research track "God's Plan"
+recoup research track "https://open.spotify.com/track/2grjqo0Frpf2..."
+```
+
+See [`GET /api/research/track/{id}`](/api-reference/research/track).
+
+### Playlist and curator details
+
+Get metadata for a specific playlist or its curator.
+
+```bash
+recoup research playlist spotify 37i9dQZF1DXcBWIGoYBM5M
+recoup research curator spotify 1
+```
+
+See [`GET /api/research/playlist/{platform}/{id}`](/api-reference/research/playlist) and [`GET /api/research/curator/{platform}/{id}`](/api-reference/research/curator).
 
 ### Discover artists
 
