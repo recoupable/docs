@@ -4966,7 +4966,7 @@
         ]
       }
     },
-    "/api/research/search": {
+    "/api/research": {
       "get": {
         "description": "Search for artists by name. Returns matching results with profile summaries.",
         "parameters": [
@@ -4983,7 +4983,7 @@
             "name": "type",
             "in": "query",
             "required": false,
-            "description": "Entity type to search for.",
+            "description": "Entity type.",
             "schema": {
               "type": "string",
               "enum": [
@@ -5018,22 +5018,47 @@
                 }
               }
             }
-          },
-          "402": {
-            "description": "Insufficient credits"
           }
         }
       }
     },
-    "/api/research/artist/{id}": {
+    "/api/research/lookup": {
+      "get": {
+        "description": "Look up an artist by a platform URL or ID \u2014 Spotify URL, Spotify ID, Apple Music URL, etc.",
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "required": true,
+            "description": "Platform URL or ID (e.g., Spotify artist URL, Spotify ID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist profile matching the platform URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/profile": {
       "get": {
         "description": "Get a full artist profile \u2014 bio, genres, social URLs, label, career stage, and basic metrics.",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
+            "name": "artist",
+            "in": "query",
             "required": true,
-            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search.",
+            "description": "Artist name or Recoup artist ID (UUID).",
             "schema": {
               "type": "string"
             }
@@ -5053,22 +5078,22 @@
         }
       }
     },
-    "/api/research/artist/{id}/stat/{source}": {
+    "/api/research/metrics": {
       "get": {
         "description": "Get platform-specific metrics for an artist over time \u2014 followers, listeners, views, engagement. Supports 14 platforms.",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
+            "name": "artist",
+            "in": "query",
             "required": true,
-            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search.",
+            "description": "Artist name or Recoup artist ID (UUID).",
             "schema": {
               "type": "string"
             }
           },
           {
             "name": "source",
-            "in": "path",
+            "in": "query",
             "required": true,
             "description": "Platform to get metrics for.",
             "schema": {
@@ -5106,59 +5131,32 @@
         }
       }
     },
-    "/api/research/artist/{id}/where-people-listen": {
-      "get": {
-        "description": "Get the top cities where an artist's fans listen, ranked by listener concentration.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Top listener cities",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/research/artist/{id}/{platform}-audience-stats": {
+    "/api/research/audience": {
       "get": {
         "description": "Get audience demographics for an artist on a specific platform \u2014 age, gender, and country breakdown.",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
+            "name": "artist",
+            "in": "query",
             "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
             "schema": {
               "type": "string"
-            },
-            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search."
+            }
           },
           {
             "name": "platform",
-            "in": "path",
-            "required": true,
-            "description": "Platform to get audience demographics for.",
+            "in": "query",
+            "required": false,
+            "description": "Platform to get demographics for.",
             "schema": {
               "type": "string",
               "enum": [
                 "instagram",
                 "tiktok",
                 "youtube"
-              ]
+              ],
+              "default": "instagram"
             }
           }
         ],
@@ -5176,18 +5174,102 @@
         }
       }
     },
-    "/api/research/artist/{id}/neighboring-artists": {
+    "/api/research/cities": {
+      "get": {
+        "description": "Get the top cities where an artist's fans listen, ranked by listener concentration.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Top listener cities",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/similar": {
       "get": {
         "description": "Find similar artists based on audience overlap, genre, mood, and musicality. Use for competitive analysis and collaboration discovery.",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
+            "name": "artist",
+            "in": "query",
             "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
             "schema": {
               "type": "string"
-            },
-            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search."
+            }
+          },
+          {
+            "name": "audience",
+            "in": "query",
+            "required": false,
+            "description": "Audience overlap weight.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "high",
+                "medium",
+                "low"
+              ]
+            }
+          },
+          {
+            "name": "genre",
+            "in": "query",
+            "required": false,
+            "description": "Genre similarity weight.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "high",
+                "medium",
+                "low"
+              ]
+            }
+          },
+          {
+            "name": "mood",
+            "in": "query",
+            "required": false,
+            "description": "Mood similarity weight.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "high",
+                "medium",
+                "low"
+              ]
+            }
+          },
+          {
+            "name": "musicality",
+            "in": "query",
+            "required": false,
+            "description": "Musicality similarity weight.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "high",
+                "medium",
+                "low"
+              ]
+            }
           },
           {
             "name": "limit",
@@ -5213,23 +5295,79 @@
         }
       }
     },
-    "/api/research/artist/{id}/{platform}/{status}/playlists": {
+    "/api/research/urls": {
+      "get": {
+        "description": "Get all social and streaming URLs for an artist \u2014 Spotify, Instagram, TikTok, YouTube, Twitter, SoundCloud, and more.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Social and streaming URLs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/instagram-posts": {
+      "get": {
+        "description": "Get an artist's top Instagram posts and reels, sorted by engagement.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Top Instagram posts and reels",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/playlists": {
       "get": {
         "description": "Get an artist's playlist placements \u2014 editorial, algorithmic, and indie playlists across platforms.",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
+            "name": "artist",
+            "in": "query",
             "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
             "schema": {
               "type": "string"
-            },
-            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search."
+            }
           },
           {
             "name": "platform",
-            "in": "path",
-            "required": true,
+            "in": "query",
+            "required": false,
             "schema": {
               "type": "string",
               "enum": [
@@ -5244,8 +5382,8 @@
           },
           {
             "name": "status",
-            "in": "path",
-            "required": true,
+            "in": "query",
+            "required": false,
             "schema": {
               "type": "string",
               "enum": [
@@ -5256,12 +5394,22 @@
             }
           },
           {
-            "name": "limit",
+            "name": "editorial",
             "in": "query",
             "required": false,
+            "description": "Only editorial playlists.",
             "schema": {
-              "type": "integer",
-              "default": 20
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "required": false,
+            "description": "Filter by date (YYYY-MM-DD).",
+            "schema": {
+              "type": "string",
+              "format": "date"
             }
           },
           {
@@ -5271,6 +5419,15 @@
             "description": "Sort results by this field.",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20
             }
           }
         ],
@@ -5288,18 +5445,18 @@
         }
       }
     },
-    "/api/research/artist/{id}/albums": {
+    "/api/research/albums": {
       "get": {
         "description": "Get an artist's full discography \u2014 albums, EPs, and singles with release dates.",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
+            "name": "artist",
+            "in": "query",
             "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
             "schema": {
               "type": "string"
-            },
-            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search."
+            }
           }
         ],
         "responses": {
@@ -5316,18 +5473,18 @@
         }
       }
     },
-    "/api/research/artist/{id}/tracks": {
+    "/api/research/tracks": {
       "get": {
         "description": "Get all tracks by an artist with popularity data.",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
+            "name": "artist",
+            "in": "query",
             "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
             "schema": {
               "type": "string"
-            },
-            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search."
+            }
           }
         ],
         "responses": {
@@ -5344,18 +5501,46 @@
         }
       }
     },
-    "/api/research/artist/{id}/career": {
+    "/api/research/track": {
+      "get": {
+        "description": "Get track metadata \u2014 title, artist, album, release date, popularity, and platform IDs.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Track name or Spotify URL.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Track metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/career": {
       "get": {
         "description": "Get an artist's career timeline \u2014 key milestones, trajectory, and career stage.",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
+            "name": "artist",
+            "in": "query",
             "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
             "schema": {
               "type": "string"
-            },
-            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search."
+            }
           }
         ],
         "responses": {
@@ -5372,18 +5557,18 @@
         }
       }
     },
-    "/api/research/artist/{id}/noteworthy-insights": {
+    "/api/research/insights": {
       "get": {
         "description": "Get AI-generated insights about an artist \u2014 automatically surfaced trends, milestones, and observations.",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
+            "name": "artist",
+            "in": "query",
             "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
             "schema": {
               "type": "string"
-            },
-            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search."
+            }
           }
         ],
         "responses": {
@@ -5400,7 +5585,93 @@
         }
       }
     },
-    "/api/research/artist/list/filter": {
+    "/api/research/playlist": {
+      "get": {
+        "description": "Get playlist metadata \u2014 name, description, follower count, track count, and curator info.",
+        "parameters": [
+          {
+            "name": "platform",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "spotify",
+                "applemusic",
+                "deezer",
+                "amazon",
+                "youtube"
+              ]
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "Playlist ID on the platform.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Playlist metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/curator": {
+      "get": {
+        "description": "Get curator profile \u2014 who curates a playlist, their other playlists, and follower reach.",
+        "parameters": [
+          {
+            "name": "platform",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "spotify",
+                "applemusic",
+                "deezer",
+                "amazon",
+                "youtube"
+              ]
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "Curator ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Curator profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProxyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/discover": {
       "get": {
         "description": "Discover artists by criteria \u2014 filter by country, genre, listener count, follower count, growth rate, and more.",
         "parameters": [
@@ -5417,7 +5688,7 @@
             "name": "genre",
             "in": "query",
             "required": false,
-            "description": "Genre ID (use GET /api/research/genre to list).",
+            "description": "Genre ID (use GET /api/research/genres to list).",
             "schema": {
               "type": "integer"
             }
@@ -5471,7 +5742,7 @@
         }
       }
     },
-    "/api/research/genre": {
+    "/api/research/genres": {
       "get": {
         "description": "List all available genre IDs and names. Use these IDs with the discover endpoint.",
         "responses": {
@@ -5488,7 +5759,7 @@
         }
       }
     },
-    "/api/research/festival/list": {
+    "/api/research/festivals": {
       "get": {
         "description": "List music festivals.",
         "responses": {
@@ -5552,204 +5823,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchDeepResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/research/artist/{id}/urls": {
-      "get": {
-        "description": "Get all social and streaming URLs for an artist \u2014 Spotify, Instagram, TikTok, YouTube, Twitter, SoundCloud, and more.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search.",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Social and streaming URLs",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/research/artist/{id}/instagram-posts": {
-      "get": {
-        "description": "Get an artist's top Instagram posts and reels \u2014 sorted by engagement.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Artist name, Recoup artist ID (UUID), or numeric ID from a previous search.",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Top Instagram posts and reels",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/research/lookup": {
-      "get": {
-        "description": "Look up an artist by a platform URL or ID \u2014 Spotify URL, Spotify ID, Apple Music URL, etc. Returns the artist profile.",
-        "parameters": [
-          {
-            "name": "url",
-            "in": "query",
-            "required": true,
-            "description": "Platform URL or ID (e.g., Spotify artist URL, Spotify ID).",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Artist profile matching the platform URL",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/research/track/{id}": {
-      "get": {
-        "description": "Get track metadata \u2014 title, artist, album, release date, popularity, and platform IDs.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Track name, Spotify URL, or numeric ID from a previous search.",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Track metadata",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/research/playlist/{platform}/{id}": {
-      "get": {
-        "description": "Get playlist metadata \u2014 name, description, follower count, track count, and curator info.",
-        "parameters": [
-          {
-            "name": "platform",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "spotify",
-                "applemusic",
-                "deezer",
-                "amazon",
-                "youtube"
-              ]
-            }
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Playlist ID on the platform.",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Playlist metadata",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/research/curator/{platform}/{id}": {
-      "get": {
-        "description": "Get curator profile \u2014 who curates a playlist, their other playlists, and follower reach.",
-        "parameters": [
-          {
-            "name": "platform",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "spotify",
-                "applemusic",
-                "deezer",
-                "amazon",
-                "youtube"
-              ]
-            }
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Curator ID.",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Curator profile",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResearchProxyResponse"
                 }
               }
             }
