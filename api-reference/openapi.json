@@ -5756,6 +5756,50 @@
           }
         }
       }
+    },
+    "/api/research/templates": {
+      "get": {
+        "description": "List all available research templates. Each template is a multi-step research workflow that answers a specific strategic question \u2014 playlist pitching targets, tour routing, competitive analysis, collaboration opportunities, and more.",
+        "responses": {
+          "200": {
+            "description": "Available research templates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchTemplatesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/run": {
+      "post": {
+        "description": "Run a research template against an artist. The API executes the full multi-step workflow \u2014 gathering data from multiple endpoints, cross-referencing results, and synthesizing a report that answers the template's strategic question. Returns the completed analysis.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchRunRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Completed research report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchRunResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -12296,6 +12340,111 @@
               "type": "string",
               "format": "uri"
             }
+          }
+        }
+      },
+      "ResearchTemplate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Template identifier used in the run endpoint."
+          },
+          "question": {
+            "type": "string",
+            "description": "The strategic question this template answers."
+          },
+          "description": {
+            "type": "string",
+            "description": "What the template does and what data it gathers."
+          },
+          "steps": {
+            "type": "integer",
+            "description": "Number of API calls the template makes."
+          },
+          "output": {
+            "type": "string",
+            "description": "What the final report contains."
+          }
+        }
+      },
+      "ResearchTemplatesResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "templates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchTemplate"
+            }
+          }
+        }
+      },
+      "ResearchRunRequest": {
+        "type": "object",
+        "required": [
+          "template",
+          "artist"
+        ],
+        "properties": {
+          "template": {
+            "type": "string",
+            "description": "Template name to run.",
+            "enum": [
+              "full-report",
+              "playlist-pitching",
+              "tiktok-pipeline",
+              "tour-routing",
+              "discovery",
+              "catalog-optimization",
+              "competitive-analysis",
+              "viral-autopsy",
+              "market-expansion",
+              "collaboration-finder",
+              "release-timing"
+            ]
+          },
+          "artist": {
+            "type": "string",
+            "description": "Artist name or Recoup artist ID (UUID)."
+          }
+        }
+      },
+      "ResearchRunResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "template": {
+            "type": "string",
+            "description": "Template that was run."
+          },
+          "artist": {
+            "type": "string",
+            "description": "Artist that was researched."
+          },
+          "question": {
+            "type": "string",
+            "description": "The strategic question answered."
+          },
+          "report": {
+            "type": "string",
+            "description": "The synthesized research report as markdown."
+          },
+          "data": {
+            "type": "object",
+            "description": "Raw data from each step, keyed by step name."
           }
         }
       }

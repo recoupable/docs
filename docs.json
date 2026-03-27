@@ -150,6 +150,8 @@
           {
             "group": "Research",
             "pages": [
+              "api-reference/research/templates",
+              "api-reference/research/run",
               "api-reference/research/search",
               "api-reference/research/lookup",
               "api-reference/research/profile",
