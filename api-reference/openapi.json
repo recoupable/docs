@@ -2367,6 +2367,74 @@
         }
       }
     },
+    "/api/sandboxes/files": {
+      "post": {
+        "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Files are committed to the specified directory path within the repository. Supports submodule resolution — if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "requestBody": {
+          "description": "Multipart form data containing files and target path",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadSandboxFilesRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Files uploaded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadSandboxFilesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing files or invalid path",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account does not have access",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - no snapshot or no github_repo configured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/x/search": {
       "get": {
         "servers": [
@@ -9663,6 +9731,65 @@
           "content": {
             "type": "string",
             "description": "The raw text content of the file"
+          }
+        }
+      },
+      "UploadSandboxFilesRequest": {
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "The target directory path within the repository to upload files to. Defaults to the repository root if omitted.",
+            "example": "assets/images"
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            },
+            "description": "One or more files to upload"
+          },
+          "message": {
+            "type": "string",
+            "description": "Optional commit message. Defaults to 'Upload files via API'.",
+            "example": "Add new album artwork"
+          }
+        }
+      },
+      "UploadSandboxFilesResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "uploaded"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the operation"
+          },
+          "uploaded": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "description": "The full path of the uploaded file in the repository"
+                },
+                "sha": {
+                  "type": "string",
+                  "description": "The git SHA of the created/updated file"
+                }
+              }
+            },
+            "description": "Array of uploaded file details"
           }
         }
       },
