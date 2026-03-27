@@ -127,51 +127,6 @@ Music industry research — streaming metrics, audience demographics, playlist p
 
 Artist-scoped commands (like `metrics`, `audience`, `similar`) accept an **artist name** or a **Recoup artist ID** (UUID). The API resolves the artist automatically. If the name is ambiguous (multiple matches), the API returns the top results for disambiguation.
 
-### Templates
-
-List available research templates — pre-built multi-step workflows that answer specific strategic questions.
-
-```bash
-recoup research templates
-recoup research templates --json
-```
-
-See [`GET /api/research/templates`](/api-reference/research/templates).
-
-### Run a template
-
-Run a research template against an artist. The API executes the full workflow — gathering data, cross-referencing, and synthesizing a report.
-
-```bash
-recoup research run full-report "Drake"
-recoup research run playlist-pitching "Phoebe Bridgers"
-recoup research run tiktok-pipeline "Ice Spice"
-recoup research run tour-routing "Phoebe Bridgers"
-recoup research run competitive-analysis "Drake"
-recoup research run collaboration-finder "Drake"
-recoup research run catalog-optimization "Drake"
-recoup research run market-expansion "Drake"
-recoup research run release-timing "Drake"
-recoup research run viral-autopsy "Drake"
-recoup research run discovery "Ice Spice"
-```
-
-| Template | Question it answers |
-|----------|-------------------|
-| `full-report` | Complete artist intelligence — bio, metrics, fans, competition, opportunities |
-| `playlist-pitching` | Which playlist curators should I pitch to? |
-| `tiktok-pipeline` | Is TikTok virality translating to Spotify growth? |
-| `tour-routing` | Where should this artist tour next? |
-| `discovery` | Find emerging artists in this genre before they blow up |
-| `catalog-optimization` | Which songs should we push and where? |
-| `competitive-analysis` | How does our roster compare to competitors? |
-| `viral-autopsy` | Why did this song go viral? Can we replicate it? |
-| `market-expansion` | Which new markets should we focus on? |
-| `collaboration-finder` | Which artists should we collaborate with? |
-| `release-timing` | When should we release, and how should we roll it out? |
-
-See [`POST /api/research/run`](/api-reference/research/run).
-
 ### Search for an artist
 
 ```bash
