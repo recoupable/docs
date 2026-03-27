@@ -12271,7 +12271,7 @@
       },
       "ResearchProxyResponse": {
         "type": "object",
-        "description": "Response shape depends on the specific endpoint called. All responses are JSON.",
+        "description": "Response shape varies by endpoint. All responses are JSON objects. Concrete schemas will be added after the API implementation is complete.",
         "properties": {}
       },
       "ResearchWebRequest": {
