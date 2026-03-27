@@ -121,6 +121,174 @@ recoup tasks status --run <runId> --json
 |------|----------|-------------|
 | `--run <id>` | Yes | Trigger.dev run ID |
 
+## research
+
+Music industry research — streaming metrics, audience demographics, playlist placements, competitive analysis, and web intelligence. All data is provider-agnostic and accessed through your `RECOUP_API_KEY`.
+
+Every structured data command costs 5 credits. Web search costs 5 credits. Deep research costs 25 credits.
+
+### Search for an artist
+
+Find an artist in the music industry database. Returns an ID you can use with all other research commands.
+
+```bash
+recoup research "Drake"
+recoup research "Phoebe Bridgers" --json
+```
+
+### Artist profile and career
+
+```bash
+recoup research profile <id>
+recoup research career <id>
+recoup research insights <id>
+recoup research profile <id> --json
+```
+
+| Subcommand | Description | API endpoint |
+|------------|-------------|-------------|
+| `profile <id>` | Full artist profile — bio, genres, social URLs, label | [`GET /api/research/artist/{id}`](/api-reference/research/profile) |
+| `career <id>` | Career timeline and key milestones | [`GET /api/research/artist/{id}/career`](/api-reference/research/career) |
+| `insights <id>` | AI-generated observations and trends | [`GET /api/research/artist/{id}/noteworthy-insights`](/api-reference/research/insights) |
+
+### Streaming and social metrics
+
+Get platform-specific metrics over time. Supports 14 platforms.
+
+```bash
+recoup research metrics <id> --source spotify
+recoup research metrics <id> --source instagram
+recoup research metrics <id> --source tiktok
+recoup research metrics <id> --source youtube_channel
+```
+
+Valid `--source` values: `spotify`, `instagram`, `tiktok`, `twitter`, `facebook`, `youtube_channel`, `youtube_artist`, `soundcloud`, `deezer`, `twitch`, `line`, `melon`, `wikipedia`, `bandsintown`.
+
+See [`GET /api/research/artist/{id}/stat/{source}`](/api-reference/research/metrics).
+
+### Audience and geography
+
+```bash
+recoup research audience <id>
+recoup research audience <id> --platform tiktok
+recoup research audience <id> --platform youtube
+recoup research cities <id>
+```
+
+| Subcommand | Description | API endpoint |
+|------------|-------------|-------------|
+| `audience <id>` | Age, gender, country breakdown (Instagram default) | [`GET /api/research/artist/{id}/{platform}-audience-stats`](/api-reference/research/audience) |
+| `cities <id>` | Top cities by listener concentration | [`GET /api/research/artist/{id}/where-people-listen`](/api-reference/research/cities) |
+
+### Competitive landscape
+
+```bash
+recoup research similar <id>
+recoup research similar <id> --audience high --genre high --limit 20
+```
+
+Configuration options: `--audience`, `--genre`, `--mood`, `--musicality` (values: `high`, `medium`, `low`).
+
+See [`GET /api/research/artist/{id}/neighboring-artists`](/api-reference/research/similar).
+
+### Playlists
+
+```bash
+recoup research playlists <id>
+recoup research playlists <id> --platform applemusic
+recoup research playlists <id> --editorial
+recoup research playlists <id> --status past --since 2025-01-01
+recoup research playlists <id> --sort followers --limit 50
+```
+
+| Flag | Description |
+|------|-------------|
+| `--platform <p>` | `spotify` (default), `applemusic`, `deezer`, `amazon`, `youtube` |
+| `--editorial` | Only editorial playlists |
+| `--status <s>` | `current` (default) or `past` |
+| `--since <date>` | Filter by date (YYYY-MM-DD) |
+| `--sort <field>` | Sort results (e.g., `followers`) |
+| `--limit <n>` | Max results |
+
+See [`GET /api/research/artist/{id}/{platform}/{status}/playlists`](/api-reference/research/playlists).
+
+### Discography
+
+```bash
+recoup research albums <id>
+recoup research tracks <id>
+```
+
+### Discover artists
+
+Find artists by criteria — country, genre, listener ranges, growth rate.
+
+```bash
+recoup research discover --country US --spotify-listeners 100000 500000
+recoup research discover --genre 86 --sort weekly_diff.sp_monthly_listeners
+recoup research discover --tiktok-followers 1000000 10000000 --spotify-listeners 0 100000
+```
+
+| Flag | Description |
+|------|-------------|
+| `--country <code>` | ISO country code (US, BR, GB, etc.) |
+| `--genre <id>` | Genre ID (use `recoup research genres` to list) |
+| `--spotify-listeners <min> <max>` | Monthly listener range |
+| `--tiktok-followers <min> <max>` | TikTok follower range |
+| `--sort <field>` | Sort field (e.g., `weekly_diff.sp_monthly_listeners`) |
+
+See [`GET /api/research/artist/list/filter`](/api-reference/research/discover).
+
+### Reference data
+
+```bash
+recoup research genres
+recoup research festivals
+```
+
+### Web research
+
+Search the web for narrative context, press coverage, and cultural information that structured data doesn't cover.
+
+```bash
+recoup research web "Drake brand partnerships sync licensing"
+recoup research web "Phoebe Bridgers fan community psychographics"
+```
+
+See [`POST /api/research/web`](/api-reference/research/web).
+
+### Deep research report
+
+Comprehensive multi-source research that synthesizes information from across the web into a cited report.
+
+```bash
+recoup research report "Drake"
+recoup research report "Tell me everything about Phoebe Bridgers — bio, streaming metrics, fan base, competitive landscape, and revenue opportunities"
+```
+
+See [`POST /api/research/deep`](/api-reference/research/deep).
+
+### Workflow example: full artist research
+
+```bash
+# 1. Find the artist
+recoup research "Phoebe Bridgers" --json
+# → { id: 241089, name: "Phoebe Bridgers", ... }
+
+# 2. Pull structured data (run in parallel)
+recoup research metrics 241089 --source spotify --json
+recoup research audience 241089 --json
+recoup research cities 241089 --json
+recoup research similar 241089 --audience high --genre high --json
+recoup research playlists 241089 --editorial --json
+
+# 3. Add web context
+recoup research web "Phoebe Bridgers biography career milestones" --json
+recoup research web "Phoebe Bridgers fan community brand partnerships" --json
+```
+
+---
+
 ## content
 
 Content-creation pipeline commands. Generate AI-powered social videos for artists.

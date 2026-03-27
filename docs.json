@@ -148,6 +148,27 @@
             ]
           },
           {
+            "group": "Research",
+            "pages": [
+              "api-reference/research/search",
+              "api-reference/research/profile",
+              "api-reference/research/metrics",
+              "api-reference/research/audience",
+              "api-reference/research/cities",
+              "api-reference/research/similar",
+              "api-reference/research/playlists",
+              "api-reference/research/albums",
+              "api-reference/research/tracks",
+              "api-reference/research/career",
+              "api-reference/research/insights",
+              "api-reference/research/discover",
+              "api-reference/research/genres",
+              "api-reference/research/festivals",
+              "api-reference/research/web",
+              "api-reference/research/deep"
+            ]
+          },
+          {
             "group": "Spotify",
             "pages": [
               "api-reference/spotify/search",

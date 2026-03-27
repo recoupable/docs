@@ -4855,6 +4855,472 @@
           }
         ]
       }
+    },
+    "/api/research/search": {
+      "get": {
+        "description": "Search the music industry database for artists by name. Returns matching artists with IDs you can use in all other research endpoints. Costs 5 credits per call.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Artist name to search for.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "description": "Entity type to search for.",
+            "schema": {
+              "type": "string",
+              "enum": ["artists", "tracks", "albums", "playlists", "curators", "stations"],
+              "default": "artists"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Maximum number of results.",
+            "schema": { "type": "integer", "default": 10 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ResearchSearchResponse" }
+              }
+            }
+          },
+          "402": { "description": "Insufficient credits" }
+        }
+      }
+    },
+    "/api/research/artist/{id}": {
+      "get": {
+        "description": "Get a full artist profile from the music industry database — bio, genres, social URLs, label, career stage, and basic metrics. Costs 5 credits.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Artist ID from the music industry database (returned by search).",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist profile",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/artist/{id}/stat/{source}": {
+      "get": {
+        "description": "Get platform-specific metrics for an artist over time — followers, listeners, views, engagement. Supports 14 platforms. Costs 5 credits.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Artist ID from the music industry database.",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "source",
+            "in": "path",
+            "required": true,
+            "description": "Platform to get metrics for.",
+            "schema": {
+              "type": "string",
+              "enum": ["spotify", "instagram", "tiktok", "twitter", "facebook", "youtube_channel", "youtube_artist", "soundcloud", "deezer", "twitch", "line", "melon", "wikipedia", "bandsintown"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Platform metrics over time",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/artist/{id}/where-people-listen": {
+      "get": {
+        "description": "Get the top cities where an artist's fans listen, ranked by listener concentration. Costs 5 credits.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Top listener cities",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/artist/{id}/{platform}-audience-stats": {
+      "get": {
+        "description": "Get audience demographics for an artist on a specific platform — age, gender, and country breakdown. Costs 5 credits.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "platform",
+            "in": "path",
+            "required": true,
+            "description": "Platform to get audience demographics for.",
+            "schema": {
+              "type": "string",
+              "enum": ["instagram", "tiktok", "youtube"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Audience demographics",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/artist/{id}/neighboring-artists": {
+      "get": {
+        "description": "Find similar artists based on audience overlap, genre, mood, and musicality. Use for competitive analysis and collaboration discovery. Costs 5 credits.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 10 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Similar artists with overlap scores",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/artist/{id}/{platform}/{status}/playlists": {
+      "get": {
+        "description": "Get an artist's playlist placements — editorial, algorithmic, and indie playlists across platforms. Costs 5 credits.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "platform",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["spotify", "applemusic", "deezer", "amazon", "youtube"],
+              "default": "spotify"
+            }
+          },
+          {
+            "name": "status",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["current", "past"],
+              "default": "current"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 20 }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Sort results by this field.",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Playlist placements",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/artist/{id}/albums": {
+      "get": {
+        "description": "Get an artist's full discography — albums, EPs, and singles with release dates. Costs 5 credits.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist albums",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/artist/{id}/tracks": {
+      "get": {
+        "description": "Get all tracks by an artist with popularity data. Costs 5 credits.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist tracks",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/artist/{id}/career": {
+      "get": {
+        "description": "Get an artist's career timeline — key milestones, trajectory, and career stage. Costs 5 credits.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Career timeline",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/artist/{id}/noteworthy-insights": {
+      "get": {
+        "description": "Get AI-generated insights about an artist — automatically surfaced trends, milestones, and observations. Costs 5 credits.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "AI-generated insights",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/artist/list/filter": {
+      "get": {
+        "description": "Discover artists by criteria — filter by country, genre, listener count, follower count, growth rate, and more. Costs 5 credits.",
+        "parameters": [
+          {
+            "name": "country",
+            "in": "query",
+            "required": false,
+            "description": "ISO country code (e.g., US, BR, GB).",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "genre",
+            "in": "query",
+            "required": false,
+            "description": "Genre ID (use GET /api/research/genre to list).",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "sp_monthly_listeners_min",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "sp_monthly_listeners_max",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Sort field (e.g., weekly_diff.sp_monthly_listeners).",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 20 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Filtered artist list",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/genre": {
+      "get": {
+        "description": "List all available genre IDs and names. Use these IDs with the discover endpoint. Costs 5 credits.",
+        "responses": {
+          "200": {
+            "description": "Genre list",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/festival/list": {
+      "get": {
+        "description": "List music festivals. Costs 5 credits.",
+        "responses": {
+          "200": {
+            "description": "Festival list",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ResearchProxyResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/web": {
+      "post": {
+        "description": "Search the web for real-time information. Returns ranked results with titles, URLs, and content snippets. Use for narrative context, press coverage, and cultural research that structured data endpoints don't cover. Costs 5 credits.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ResearchWebRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Web search results",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ResearchWebResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/deep": {
+      "post": {
+        "description": "Perform deep, comprehensive research on a topic. Browses multiple sources extensively and returns a cited report. Use for full artist deep dives, competitive analysis, and any research requiring synthesis across many sources. Costs 25 credits.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ResearchDeepRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Deep research report with citations",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ResearchDeepResponse" }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -11272,7 +11738,112 @@
         }
       }
     },
-    "securitySchemes": {
+    "ResearchSearchResponse": {
+        "type": "object",
+        "description": "Response from searching the music industry database for artists, tracks, or other entities.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "results": {
+            "type": "array",
+            "description": "Array of matching entities with IDs, names, images, and basic metadata. Use the returned ID for subsequent research commands.",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "ResearchProxyResponse": {
+        "type": "object",
+        "description": "Proxied response from the music industry data provider. The shape depends on the specific endpoint called. All responses are JSON.",
+        "properties": {}
+      },
+      "ResearchWebRequest": {
+        "type": "object",
+        "required": ["query"],
+        "description": "Request body for web research.",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "The search query — what you want to find on the web."
+          },
+          "max_results": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20,
+            "default": 10,
+            "description": "Maximum number of results to return."
+          },
+          "country": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2,
+            "description": "ISO country code for regional results (e.g., 'US', 'GB')."
+          }
+        }
+      },
+      "ResearchWebResponse": {
+        "type": "object",
+        "description": "Web search results with titles, URLs, and content snippets.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "results": {
+            "type": "array",
+            "description": "Ranked web search results.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": { "type": "string" },
+                "url": { "type": "string" },
+                "content": { "type": "string" }
+              }
+            }
+          },
+          "formatted": {
+            "type": "string",
+            "description": "Results formatted as markdown for easy reading."
+          }
+        }
+      },
+      "ResearchDeepRequest": {
+        "type": "object",
+        "required": ["query"],
+        "description": "Request body for deep research. Performs comprehensive multi-source analysis.",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "The research question — be specific and detailed for best results."
+          }
+        }
+      },
+      "ResearchDeepResponse": {
+        "type": "object",
+        "description": "Comprehensive research report with citations.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "content": {
+            "type": "string",
+            "description": "The full research report as markdown."
+          },
+          "citations": {
+            "type": "array",
+            "description": "Source URLs cited in the report.",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          }
+        }
+      },
+      "securitySchemes": {
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer"
