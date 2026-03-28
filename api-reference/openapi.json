@@ -5603,7 +5603,8 @@
                 "amazon",
                 "youtube"
               ]
-            }
+            },
+            "description": "Streaming platform."
           },
           {
             "name": "id",
@@ -5646,7 +5647,8 @@
                 "amazon",
                 "youtube"
               ]
-            }
+            },
+            "description": "Streaming platform."
           },
           {
             "name": "id",
