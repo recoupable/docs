@@ -318,6 +318,42 @@ recoup research report "Tell me everything about Phoebe Bridgers — bio, stream
 
 See [`POST /api/research/deep`](/api-reference/research/deep).
 
+### People search
+
+Search for people in the music industry — artists, managers, A&R reps, producers. Returns profiles with LinkedIn data.
+
+```bash
+recoup research people "A&R reps at Atlantic Records"
+recoup research people "music managers in Los Angeles R&B"
+```
+
+See [`POST /api/research/people`](/api-reference/research/people).
+
+### Extract URL
+
+Extract clean markdown content from any public URL. Handles JavaScript-heavy pages and PDFs.
+
+```bash
+recoup research extract "https://en.wikipedia.org/wiki/Kaash_Paige" --objective "biography and discography"
+recoup research extract "https://open.spotify.com/artist/..." --full-content
+```
+
+Accepts up to 10 URLs per call.
+
+See [`POST /api/research/extract`](/api-reference/research/extract).
+
+### Enrich
+
+Get structured data about any entity from web research. Provide a description and a JSON schema — get typed data back with citations.
+
+```bash
+recoup research enrich "Kaash Paige R&B artist" --schema '{"properties": {"real_name": {"type": "string"}, "label": {"type": "string"}, "hometown": {"type": "string"}}}'
+```
+
+Processors: `base` (fast, default), `core` (balanced), `ultra` (comprehensive).
+
+See [`POST /api/research/enrich`](/api-reference/research/enrich).
+
 ### Using Recoup artist IDs
 
 Artist IDs are supported on artist-scoped commands (see the note above). Example:

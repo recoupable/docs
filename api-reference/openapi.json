@@ -5832,6 +5832,87 @@
           }
         }
       }
+    },
+    "/api/research/people": {
+      "post": {
+        "description": "Search for people in the music industry \u2014 artists, managers, A&R reps, producers. Returns multi-source profiles including LinkedIn data.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchPeopleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "People search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchPeopleResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/extract": {
+      "post": {
+        "description": "Extract clean markdown content from one or more public URLs. Handles JavaScript-heavy pages and PDFs. Returns focused excerpts aligned to an objective, or full page content.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchExtractRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Extracted content from URLs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchExtractResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/enrich": {
+      "post": {
+        "description": "Enrich an entity with structured data from web research. Provide a description of who or what to research and a JSON schema defining the fields to extract. Returns typed data with citations.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchEnrichRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Structured enrichment data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchEnrichResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -12848,6 +12929,220 @@
         "type": "object",
         "description": "Artist profile resolved from a platform URL or ID.",
         "additionalProperties": true
+      },
+      "ResearchPeopleRequest": {
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Natural language search for people (e.g., \"A&R reps at Atlantic Records\")."
+          },
+          "num_results": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 10,
+            "description": "Number of results to return."
+          }
+        }
+      },
+      "ResearchPeopleResult": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Person name and role."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Profile URL (often LinkedIn)."
+          },
+          "highlights": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Key excerpts from the profile."
+          },
+          "summary": {
+            "type": "string",
+            "nullable": true,
+            "description": "Brief summary of the person."
+          }
+        }
+      },
+      "ResearchPeopleResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchPeopleResult"
+            }
+          }
+        }
+      },
+      "ResearchExtractRequest": {
+        "type": "object",
+        "required": [
+          "urls"
+        ],
+        "properties": {
+          "urls": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
+            "maxItems": 10,
+            "description": "URLs to extract content from (max 10)."
+          },
+          "objective": {
+            "type": "string",
+            "description": "What information to focus on (optional, max 3000 chars)."
+          },
+          "full_content": {
+            "type": "boolean",
+            "default": false,
+            "description": "Return full page content instead of focused excerpts."
+          }
+        }
+      },
+      "ResearchExtractResult": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "publish_date": {
+            "type": "string",
+            "nullable": true,
+            "description": "Publish date in YYYY-MM-DD format."
+          },
+          "excerpts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "description": "Focused excerpts as markdown."
+          },
+          "full_content": {
+            "type": "string",
+            "nullable": true,
+            "description": "Full page content as markdown."
+          }
+        }
+      },
+      "ResearchExtractResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchExtractResult"
+            }
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "URLs that failed to extract."
+          }
+        }
+      },
+      "ResearchEnrichRequest": {
+        "type": "object",
+        "required": [
+          "input",
+          "schema"
+        ],
+        "properties": {
+          "input": {
+            "type": "string",
+            "description": "What to research (e.g., \"Kaash Paige R&B artist from Dallas Texas\")."
+          },
+          "schema": {
+            "type": "object",
+            "description": "JSON schema defining the fields to extract.",
+            "additionalProperties": true
+          },
+          "processor": {
+            "type": "string",
+            "enum": [
+              "base",
+              "core",
+              "ultra"
+            ],
+            "default": "base",
+            "description": "Research depth: base (fast), core (balanced), ultra (comprehensive)."
+          }
+        }
+      },
+      "ResearchEnrichResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "output": {
+            "type": "object",
+            "description": "Structured data matching the provided schema.",
+            "additionalProperties": true
+          },
+          "research_basis": {
+            "type": "object",
+            "properties": {
+              "citations": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "field": {
+                      "type": "string",
+                      "description": "Which output field this citation supports."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "securitySchemes": {
