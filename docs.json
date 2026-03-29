@@ -174,7 +174,12 @@
               "api-reference/research/deep",
               "api-reference/research/people",
               "api-reference/research/extract",
-              "api-reference/research/enrich"
+              "api-reference/research/enrich",
+              "api-reference/research/milestones",
+              "api-reference/research/venues",
+              "api-reference/research/rank",
+              "api-reference/research/charts",
+              "api-reference/research/radio"
             ]
           },
           {

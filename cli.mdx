@@ -289,6 +289,69 @@ recoup research discover --tiktok-followers 1000000 10000000 --spotify-listeners
 
 See [`GET /api/research/discover`](/api-reference/research/discover).
 
+### Milestones
+
+Get an artist's activity feed — playlist adds, chart entries, and notable events.
+
+```bash
+recoup research milestones "Drake"
+recoup research milestones "Drake" --json
+```
+
+See [`GET /api/research/milestones`](/api-reference/research/milestones).
+
+### Venues
+
+Get venues an artist has performed at, including capacity and location.
+
+```bash
+recoup research venues "Drake"
+recoup research venues "Drake" --json
+```
+
+See [`GET /api/research/venues`](/api-reference/research/venues).
+
+### Rank
+
+Get an artist's global Chartmetric ranking.
+
+```bash
+recoup research rank "Drake"
+recoup research rank "Drake" --json
+```
+
+See [`GET /api/research/rank`](/api-reference/research/rank).
+
+### Charts
+
+Get global chart positions for a platform. NOT artist-scoped — returns the full chart.
+
+```bash
+recoup research charts --platform spotify
+recoup research charts --platform spotify --country US
+recoup research charts --platform applemusic --country GB --interval weekly --json
+```
+
+| Flag | Required | Description |
+|------|----------|-------------|
+| `--platform <name>` | Yes | Chart platform (spotify, applemusic, tiktok, youtube, itunes, shazam) |
+| `--country <code>` | No | ISO country code (US, GB, DE, etc.) |
+| `--interval <interval>` | No | Time interval (e.g. daily, weekly) |
+| `--type <type>` | No | Chart type (varies by platform) |
+
+See [`GET /api/research/charts`](/api-reference/research/charts).
+
+### Radio stations
+
+List radio stations tracked by Chartmetric.
+
+```bash
+recoup research radio
+recoup research radio --json
+```
+
+See [`GET /api/research/radio`](/api-reference/research/radio).
+
 ### Reference data
 
 ```bash

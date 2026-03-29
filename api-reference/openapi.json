@@ -5779,6 +5779,172 @@
         }
       }
     },
+    "/api/research/milestones": {
+      "get": {
+        "description": "Get an artist's activity feed — playlist adds, chart entries, and other notable events. Each milestone includes a date, summary, platform, track name, and star rating.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Milestone list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchMilestonesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/venues": {
+      "get": {
+        "description": "Get venues an artist has performed at, including capacity and location data.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Venue list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchVenuesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/rank": {
+      "get": {
+        "description": "Get an artist's global Chartmetric ranking as a single integer value.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist rank",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchRankResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/charts": {
+      "get": {
+        "description": "Get global chart positions for a platform — Spotify, Apple Music, TikTok, YouTube, iTunes, Shazam, etc. NOT artist-scoped. Returns ranked entries with track and artist info.",
+        "parameters": [
+          {
+            "name": "platform",
+            "in": "query",
+            "required": true,
+            "description": "Chart platform: spotify, applemusic, tiktok, youtube, itunes, shazam, etc.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "required": false,
+            "description": "Two-letter country code (e.g. US, GB, DE).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "interval",
+            "in": "query",
+            "required": false,
+            "description": "Time interval (e.g. daily, weekly).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "description": "Chart type (varies by platform).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "latest",
+            "in": "query",
+            "required": false,
+            "description": "Return only the latest chart.",
+            "schema": {
+              "type": "string",
+              "default": "true"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chart data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchChartsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/radio": {
+      "get": {
+        "description": "List radio stations tracked by Chartmetric. NOT artist-scoped. Returns station names, formats, and markets.",
+        "responses": {
+          "200": {
+            "description": "Radio station list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchRadioResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/research/web": {
       "post": {
         "description": "Search the web for real-time information. Returns ranked results with titles, URLs, and content snippets. Use for narrative context, press coverage, and cultural research that structured data endpoints don't cover.",
@@ -12921,6 +13087,136 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ResearchFestival"
+            }
+          }
+        }
+      },
+      "ResearchMilestone": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "Date of the milestone event."
+          },
+          "summary": {
+            "type": "string",
+            "description": "Human-readable description of the event."
+          },
+          "platform": {
+            "type": "string",
+            "description": "Platform where the event occurred (e.g. spotify, apple_music)."
+          },
+          "track_name": {
+            "type": "string",
+            "description": "Name of the track involved, if any."
+          },
+          "stars": {
+            "type": "integer",
+            "description": "Importance rating (1-5 stars)."
+          }
+        }
+      },
+      "ResearchMilestonesResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "milestones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchMilestone"
+            }
+          }
+        }
+      },
+      "ResearchVenue": {
+        "type": "object",
+        "properties": {
+          "venue_name": {
+            "type": "string",
+            "description": "Name of the venue."
+          },
+          "venue_capacity": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Venue capacity (seats or standing)."
+          },
+          "city_name": {
+            "type": "string",
+            "description": "City where the venue is located."
+          },
+          "country": {
+            "type": "string",
+            "description": "Two-letter country code."
+          },
+          "events": {
+            "type": "array",
+            "description": "Events the artist performed at this venue.",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        }
+      },
+      "ResearchVenuesResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "venues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchVenue"
+            }
+          }
+        }
+      },
+      "ResearchRankResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "rank": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Global Chartmetric artist rank."
+          }
+        }
+      },
+      "ResearchChartsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "data": {
+            "type": "object",
+            "description": "Chart data — structure varies by platform.",
+            "additionalProperties": true
+          }
+        }
+      },
+      "ResearchRadioResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"]
+          },
+          "stations": {
+            "type": "array",
+            "description": "Radio stations tracked by Chartmetric.",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
             }
           }
         }
