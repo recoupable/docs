@@ -3,7 +3,7 @@ title: "How It Works"
 description: "Agents, sandboxes, context, and the architecture behind Recoup."
 ---
 
-Recoup is a system, not a tool. You give it artist context. It deploys agents that run your music operations autonomously.
+General purpose AI tools don't know the artist, the catalog, the audience, or the history. Recoup does. You give it artist context — songs, brand voice, audience data, release history — and it deploys agents that run operations using that context. That's the edge: every feature is so context-aware that you'd never go back to ChatGPT or doing it by hand.
 
 ## The Three Layers
 
@@ -26,7 +26,7 @@ Recoup is a system, not a tool. You give it artist context. It deploys agents th
 
 **Agents** do the work. They create content, research audiences, generate reports, manage releases, and post to social platforms. Each agent is purpose-built for a specific job.
 
-**Context** is what makes the output yours. Every agent reads your artist files — songs, face guide, brand voice, audience data — before it creates anything. The agent doesn't guess. It reads your docs.
+**Context** is the entire edge. Every agent reads the artist's files before it does anything — songs, face guide, brand voice, audience data, release history. This is why Recoup output doesn't sound like generic AI. The agent knows the artist the way a dedicated manager would.
 
 ## Agents
 
@@ -91,12 +91,14 @@ Results (metrics, reports, optimizations)
 | **Slack** | Team-based content operations, batch workflows | [Content Agent](/content-agent) |
 | **Web App** | Visual interface, chat, artist management | [chat.recoupable.com](https://chat.recoupable.com) |
 
-## What Makes Recoup Different
+## Why not ChatGPT
 
-| Them | Us |
-|------|------|
-| Chatbot that suggests | System that executes |
-| Generic AI tools adapted for music | Built for music — releases, fans, workflows |
-| Manual operation required | Agents run autonomously with your context |
-| One interface, one capability | Multiple entry points, one system |
-| Point solutions (analytics OR content OR scheduling) | Full stack — create, distribute, measure, improve |
+General purpose agents can generate a marketing plan for any artist. Recoup agents generate a marketing plan for *your* artist — using their actual songs, their real audience data, their brand voice, their release history.
+
+| Generic AI | Recoup |
+|------------|--------|
+| Knows nothing about the artist | Reads `artist.md`, `audience.md`, songs, face guide before every action |
+| Suggests a plan | Creates the assets, schedules the posts, tracks the results |
+| One conversation, then gone | Persistent sandbox — picks up where it left off |
+| You copy-paste between tools | API, MCP, CLI, Slack — one system, every entry point |
+| Same output for every artist | Context-aware output that sounds like the artist, not like AI |
