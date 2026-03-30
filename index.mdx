@@ -1,17 +1,114 @@
 ---
-title: "Recoup API Documentation"
-description: "Use the Recoup API to build your record label."
+title: "Recoup"
+description: "Run your music business with agents. API, MCP, and CLI for autonomous music operations."
 ---
 
-# Welcome to the Recoup API
+# Run Your Music Business with Agents
 
-Use the Recoup API to build your record label. Access artist analytics, fan segmentation, AI-powered chat, and task automation to power your music business.
+Recoup deploys AI agents that handle the work of running a music business — release strategy, content creation, audience research, marketing, and operations. One system. Multiple entry points.
 
-## What is Recoup?
+<CardGroup cols={3}>
+  <Card
+    title="For AI tools"
+    icon="robot"
+  >
+    **MCP**
 
-Recoup is an AI agent platform for smarter song rollouts, unforgettable fan experiences, and lasting artist growth. Empowering music executives with actionable insights and next-gen tools.
+    Connect Claude, Cursor, or any MCP client to 40+ music-industry tools.
 
-This is where record labels, musicians, and managers start to build on Recoup AI technology like chat, tasks, agents, and more.
+    ```bash
+    https://recoup-api.vercel.app/mcp
+    ```
+
+    [MCP setup →](/mcp)
+  </Card>
+  <Card
+    title="For developers"
+    icon="code"
+  >
+    **REST API**
+
+    Programmatic access to agents, artists, content, analytics, and tasks.
+
+    ```bash
+    https://api.recoupable.com/api
+    ```
+
+    [API reference →](/api-reference/introduction)
+  </Card>
+  <Card
+    title="For your terminal"
+    icon="terminal"
+  >
+    **CLI**
+
+    Same capabilities as the app. From your terminal.
+
+    ```bash
+    npm install -g @recoupable/cli
+    ```
+
+    [CLI docs →](/cli)
+  </Card>
+</CardGroup>
+
+## What Recoup Does
+
+Recoup is the platform that enables autonomous music businesses. The agents don't just suggest — they create content, analyze audiences, manage releases, and post across platforms.
+
+<CardGroup cols={2}>
+  <Card
+    title="Content Creation"
+    icon="video"
+    href="/api-reference/content/create"
+  >
+    Generate social-ready videos from artist context — songs, face guide, brand docs. 22 videos in one session, zero manual editing.
+  </Card>
+  <Card
+    title="Audience Research"
+    icon="users"
+    href="/api-reference/artist/profile"
+  >
+    Cross-platform fan data. Spotify, Instagram, TikTok, YouTube, X. Demographics, engagement, behavior patterns.
+  </Card>
+  <Card
+    title="Chat Agents"
+    icon="comments"
+    href="/api-reference/chat/chats"
+  >
+    Conversational AI with deep artist context. Tell the agent what you need in plain language. It acts.
+  </Card>
+  <Card
+    title="Automated Tasks"
+    icon="clock"
+    href="/api-reference/tasks/get"
+  >
+    Scheduled operations — daily reports, batch content runs, social monitoring. Runs in the background.
+  </Card>
+</CardGroup>
+
+## Who It's For
+
+<CardGroup cols={3}>
+  <Card
+    title="Artists"
+    icon="microphone"
+  >
+    Run your career without a team. Agents handle marketing, content, and fan engagement so you stay in the studio.
+  </Card>
+  <Card
+    title="Labels & Managers"
+    icon="building"
+  >
+    Scale operations without scaling headcount. Standardize execution across your roster with context-aware agents.
+  </Card>
+  <Card
+    title="Developers"
+    icon="laptop-code"
+  >
+    Build on music-specific agent infrastructure. REST API, MCP server, CLI, webhooks.
+  </Card>
+</CardGroup>
 
 ## Get Started
 
@@ -21,82 +118,22 @@ This is where record labels, musicians, and managers start to build on Recoup AI
     icon="rocket"
     href="/quickstart"
   >
-    Get your API key and make your first request in minutes.
+    Get your API key and make your first request in 5 minutes.
   </Card>
   <Card
-    title="API Reference"
-    icon="code"
-    href="/api-reference/introduction"
+    title="How It Works"
+    icon="diagram-project"
+    href="/how-it-works"
   >
-    Explore all available endpoints and integrations.
-  </Card>
-</CardGroup>
-
-## Key Capabilities
-
-<CardGroup cols={2}>
-  <Card
-    title="Chat API"
-    icon="comments"
-    href="/api-reference/chat/chats"
-  >
-    AI-powered conversations with artist context. Stream responses or generate complete messages.
-  </Card>
-  <Card
-    title="Artist Analytics"
-    icon="chart-line"
-    href="/api-reference/artist/profile"
-  >
-    Comprehensive artist profiles with social metrics, follower counts, and engagement data across platforms.
-  </Card>
-  <Card
-    title="Fan Segmentation"
-    icon="users"
-    href="/api-reference/segment/fans"
-  >
-    Organize and analyze fan bases by demographics, engagement levels, and behavior patterns.
-  </Card>
-  <Card
-    title="Task Management"
-    icon="list-check"
-    href="/api-reference/tasks/get"
-  >
-    Schedule and automate recurring tasks with cron-based scheduling and AI-powered execution.
+    Understand agents, sandboxes, and the platform architecture.
   </Card>
 </CardGroup>
 
 ## Platform Integrations
 
-<CardGroup cols={3}>
-  <Card
-    title="Spotify"
-    icon="spotify"
-    href="/api-reference/spotify/search"
-  >
-    Search artists, albums, and tracks.
-  </Card>
-  <Card
-    title="Instagram"
-    icon="instagram"
-    href="/api-reference/instagram/profiles"
-  >
-    Scrape profiles and comments.
-  </Card>
-  <Card
-    title="X (Twitter)"
-    icon="x-twitter"
-    href="/api-reference/x/search"
-  >
-    Search tweets and trending topics.
-  </Card>
+<CardGroup cols={4}>
+  <Card title="Spotify" icon="spotify" href="/api-reference/spotify/search" />
+  <Card title="Instagram" icon="instagram" href="/api-reference/instagram/profiles" />
+  <Card title="X (Twitter)" icon="x-twitter" href="/api-reference/x/search" />
+  <Card title="YouTube" icon="youtube" href="/api-reference/artist/socials" />
 </CardGroup>
-
-## Need Help?
-
-<Card
-  title="Contact Support"
-  icon="envelope"
-  href="mailto:agent@recoupable.com"
->
-  Reach out to our team for assistance with the Recoup API.
-</Card>

@@ -1,9 +1,16 @@
 ---
 title: "CLI"
-description: "Install and use the Recoup CLI to interact with the platform from your terminal."
+description: "Install and use the Recoup CLI for terminal-based music operations."
 ---
 
-The Recoup CLI (`@recoupable/cli`) is a command-line wrapper around the Recoup API. It's available as a global npm package and is pre-installed in sandbox environments.
+The Recoup CLI (`@recoupable/cli`) gives you the full platform from your terminal. Manage artists, generate content, check task status, and automate workflows.
+
+The default flow is:
+
+1. Authenticate with `recoup whoami`
+2. Browse your roster with `recoup artists list`
+3. Create content with `recoup content create`
+4. Monitor with `recoup tasks status`
 
 ## Installation
 
@@ -13,19 +20,17 @@ npm install -g @recoupable/cli
 
 ## Authentication
 
-Set your API key as an environment variable. You can get a key from the [API Keys page](https://chat.recoupable.com/keys).
+Set your API key as an environment variable. Get one from the [API Keys page](https://chat.recoupable.com/keys).
 
 ```bash
 export RECOUP_API_KEY=your-api-key
 ```
 
-Verify it works:
+Verify your session:
 
 ```bash
 recoup whoami
 ```
-
-## Configuration
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
@@ -34,18 +39,86 @@ recoup whoami
 
 All commands support `--json` for machine-readable output and `--help` for usage info.
 
-## whoami
+## Content creation workflow
 
-Show the authenticated account. See [`GET /api/accounts/id`](/api-reference/accounts/id).
+This is the primary workflow for generating social-ready artist videos.
+
+### Step 1: Check available templates
 
 ```bash
-recoup whoami
-recoup whoami --json
+recoup content templates
 ```
 
-## orgs
+### Step 2: Validate artist readiness
 
-Manage organizations. See [`GET /api/organizations`](/api-reference/organizations/list).
+Before creating content, verify the artist has the required assets (songs, face guide, brand docs).
+
+```bash
+recoup content validate --artist <artistAccountId>
+```
+
+### Step 3: Estimate cost
+
+Preview cost and duration without starting a run.
+
+```bash
+recoup content estimate --artist <artistAccountId>
+recoup content estimate --artist <artistAccountId> --template artist-caption-bedroom
+```
+
+### Step 4: Create content
+
+Trigger the full pipeline. Returns a run ID for tracking.
+
+```bash
+recoup content create --artist <artistAccountId>
+recoup content create --artist <artistAccountId> --template artist-caption-bedroom --lipsync
+recoup content create --artist <artistAccountId> --songs hiccups,adhd --batch 3
+```
+
+| Flag | Required | Description |
+|------|----------|-------------|
+| `--artist <id>` | Yes | Artist account ID |
+| `--template <name>` | No | Template name (default: random) |
+| `--lipsync` | No | Enable lipsync mode |
+| `--upscale` | No | Enable upscaling |
+| `--caption-length <n>` | No | Max caption length in characters |
+| `--songs <slugs>` | No | Comma-separated song slugs to limit clip selection |
+
+### Step 5: Monitor the run
+
+```bash
+recoup tasks status --run <runId>
+recoup tasks status --run <runId> --json
+```
+
+### End-to-end example
+
+```bash
+recoup content templates
+recoup content validate --artist abc-123-uuid
+recoup content estimate --artist abc-123-uuid --template artist-caption-bedroom
+recoup content create --artist abc-123-uuid --template artist-caption-bedroom --lipsync
+recoup tasks status --run run_abc123
+```
+
+## Artist management
+
+```bash
+# List all artists on your account
+recoup artists list
+
+# Filter by organization
+recoup artists list --org <orgId>
+
+# Filter by specific account
+recoup artists list --account <accountId>
+
+# JSON output for scripting
+recoup artists list --json
+```
+
+## Organizations
 
 ```bash
 recoup orgs list
@@ -53,26 +126,47 @@ recoup orgs list --account <accountId>
 recoup orgs list --json
 ```
 
-## artists
-
-Manage artists. See [`GET /api/artists`](/api-reference/artists/list).
+## Chat management
 
 ```bash
-recoup artists list
-recoup artists list --org <orgId>
-recoup artists list --account <accountId>
-recoup artists list --json
+# List chats
+recoup chats list
+
+# Create a new chat
+recoup chats create --name "Release Strategy Q2"
+
+# Create a chat with artist context
+recoup chats create --name "EP Launch Plan" --artist <artistId>
 ```
 
-## notifications
+## Sandboxes
 
-Send a notification email to the authenticated account's email address. The recipient is automatically resolved from your API key — no need to specify a `to` address.
+Sandboxes are persistent environments where agents run. Create one to execute code, manage files, and run workflows.
 
 ```bash
-recoup notifications --subject "Pulse Report" --text "Here's your weekly summary."
+# List active sandboxes
+recoup sandboxes list
+
+# Create a new sandbox
+recoup sandboxes create
+
+# Run a command in a sandbox
+recoup sandboxes create --command "ls -la"
+```
+
+## Notifications
+
+Send emails to the authenticated account. The recipient is resolved from your API key.
+
+```bash
+# Plain text email
+recoup notifications --subject "Weekly Pulse" --text "Here's your summary."
+
+# HTML email
+recoup notifications --subject "Weekly Pulse" --html "<h1>Report</h1><p>Active campaigns: 3</p>"
+
+# With CC
 recoup notifications --subject "Update" --cc manager@example.com --text "New release scheduled."
-recoup notifications --subject "Weekly Pulse" --html "<h1>Pulse Report</h1><p>BVB release planning is <strong>active</strong>.</p>"
-recoup notifications --subject "Pulse Report" --account <accountId> --text "Here's your weekly summary."
 ```
 
 | Flag | Required | Description |
@@ -84,99 +178,22 @@ recoup notifications --subject "Pulse Report" --account <accountId> --text "Here
 | `--room-id <id>` | No | Room ID for a chat link in the email footer |
 | `--account <accountId>` | No | Send to a specific account (org keys only) |
 
-This command wraps [`POST /api/notifications`](/api-reference/notifications/create).
+## Command summary
 
-## chats
+| Command | What It Does |
+|---------|-------------|
+| `recoup whoami` | Show authenticated account |
+| `recoup artists list` | List artists on your account |
+| `recoup orgs list` | List organizations |
+| `recoup chats list` | List chats |
+| `recoup chats create` | Create a new chat |
+| `recoup content templates` | List content templates |
+| `recoup content validate` | Check artist readiness |
+| `recoup content estimate` | Preview cost and duration |
+| `recoup content create` | Trigger content creation |
+| `recoup tasks status` | Check task run status |
+| `recoup sandboxes list` | List sandboxes |
+| `recoup sandboxes create` | Create a sandbox |
+| `recoup notifications` | Send a notification email |
 
-Manage chats. See [`GET /api/chats`](/api-reference/chat/chats) and [`POST /api/chats`](/api-reference/chat/create).
-
-```bash
-recoup chats list
-recoup chats create --name "My Topic"
-recoup chats create --name "My Topic" --artist <artistId>
-recoup chats list --json
-```
-
-## sandboxes
-
-Manage sandboxes. See [`GET /api/sandboxes`](/api-reference/sandboxes/list) and [`POST /api/sandboxes`](/api-reference/sandboxes/create).
-
-```bash
-recoup sandboxes list
-recoup sandboxes create
-recoup sandboxes create --command "ls -la"
-recoup sandboxes list --json
-```
-
-## tasks
-
-Check the status of background task runs. See [`GET /api/tasks/runs`](/api-reference/tasks/runs).
-
-```bash
-recoup tasks status --run <runId>
-recoup tasks status --run <runId> --json
-```
-
-| Flag | Required | Description |
-|------|----------|-------------|
-| `--run <id>` | Yes | Trigger.dev run ID |
-
-## content
-
-Content-creation pipeline commands. Generate AI-powered social videos for artists.
-
-### List templates
-
-List available content templates. See [`GET /api/content/templates`](/api-reference/content/templates).
-
-```bash
-recoup content templates
-recoup content templates --json
-```
-
-### Validate artist
-
-Check that an artist has the required assets (face-guide, songs, context files) before creating content. See [`POST /api/content/validate`](/api-reference/content/validate).
-
-```bash
-recoup content validate --artist <artistAccountId>
-recoup content validate --artist <artistAccountId> --json
-```
-
-| Flag | Required | Description |
-|------|----------|-------------|
-| `--artist <id>` | Yes | Artist account ID |
-
-### Estimate cost
-
-Preview the estimated cost and duration for a content run without starting it. See [`POST /api/content/estimate`](/api-reference/content/estimate).
-
-```bash
-recoup content estimate --artist <artistAccountId>
-recoup content estimate --artist <artistAccountId> --template <name> --json
-```
-
-| Flag | Required | Description |
-|------|----------|-------------|
-| `--artist <id>` | Yes | Artist account ID |
-| `--template <name>` | No | Template name (default: random) |
-| `--lipsync` | No | Enable lipsync mode |
-| `--upscale` | No | Enable upscaling |
-
-### Create content
-
-Trigger the full content-creation pipeline. Returns a run ID you can check with [`recoup tasks status`](/cli#tasks). See [`POST /api/content`](/api-reference/content/create).
-
-```bash
-recoup content create --artist <artistAccountId>
-recoup content create --artist <artistAccountId> --template <name> --lipsync --upscale
-recoup content create --artist <artistAccountId> --json
-```
-
-| Flag | Required | Description |
-|------|----------|-------------|
-| `--artist <id>` | Yes | Artist account ID |
-| `--template <name>` | No | Template name (default: random) |
-| `--lipsync` | No | Enable lipsync mode |
-| `--upscale` | No | Enable upscaling |
-| `--caption-length <n>` | No | Max caption length in characters |
+Run `recoup <command> --help` for detailed usage and flags.

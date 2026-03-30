@@ -1,0 +1,102 @@
+---
+title: "How It Works"
+description: "Agents, sandboxes, context, and the architecture behind Recoup."
+---
+
+Recoup is a system, not a tool. You give it artist context. It deploys agents that run your music operations autonomously.
+
+## The Three Layers
+
+```
+┌─────────────────────────────────────────────────┐
+│  Entry Points                                   │
+│  Web App · Slack · CLI · API · MCP              │
+├─────────────────────────────────────────────────┤
+│  Agent Layer                                    │
+│  Chat agents · Content agent · Coding agent     │
+│  Scheduled tasks · Background workers           │
+├─────────────────────────────────────────────────┤
+│  Context Layer                                  │
+│  Artist profiles · Songs · Face guides          │
+│  Brand docs · Audience data · Platform metrics  │
+└─────────────────────────────────────────────────┘
+```
+
+**Entry points** are how you interact with the system. Web app for visual workflows. Slack for team operations. CLI for automation. API and MCP for developers and other AI agents.
+
+**Agents** do the work. They create content, research audiences, generate reports, manage releases, and post to social platforms. Each agent is purpose-built for a specific job.
+
+**Context** is what makes the output yours. Every agent reads your artist files — songs, face guide, brand voice, audience data — before it creates anything. The agent doesn't guess. It reads your docs.
+
+## Agents
+
+Agents are autonomous workers. You give them a goal, they execute. Each agent type specializes in a domain.
+
+| Agent | What It Does | Entry Points |
+|-------|-------------|--------------|
+| **Chat Agent** | Conversational AI with full artist context. Research, planning, strategy. | Web App, API |
+| **Content Agent** | Generates social-ready videos from your artist's songs and brand. | Slack, API, CLI |
+| **Task Agent** | Runs scheduled operations — daily reports, batch jobs, monitoring. | API, Web App |
+
+### How agents use context
+
+When you create content for an artist, the agent reads:
+
+1. `context/artist.md` — who they are, their genre, brand voice, aesthetic
+2. `context/audience.md` — fan demographics, platform behavior, engagement patterns
+3. `context/images/face-guide.png` — visual reference for AI-generated imagery
+4. `songs/*.mp3` — the actual music for clip selection and audio-driven content
+
+This is why Recoup content sounds like the artist, not like generic AI output.
+
+## Sandboxes
+
+Every account gets a persistent sandbox — an isolated environment where agents run code, manage files, and execute workflows. The sandbox persists across sessions, so agents pick up where they left off.
+
+```bash
+# Via MCP
+prompt_sandbox "analyze my top 5 songs by streaming performance"
+
+# Via API
+POST /api/sandboxes
+{ "prompt": "generate a release timeline for Q2" }
+
+# Via CLI
+recoup sandboxes create --prompt "set up content pipeline for new EP"
+```
+
+Sandboxes are how Recoup moves from "suggesting" to "doing." The agent doesn't just recommend a marketing plan — it creates the assets, schedules the posts, and tracks the results.
+
+## Data Flow
+
+```
+Your data (songs, brand docs, social accounts)
+    ↓
+Recoup API (ingestion, normalization, storage)
+    ↓
+Agents (content creation, analysis, distribution)
+    ↓
+Platforms (Spotify, Instagram, TikTok, X, YouTube)
+    ↓
+Results (metrics, reports, optimizations)
+```
+
+## Integration Options
+
+| Method | Best For | Docs |
+|--------|----------|------|
+| **REST API** | Custom integrations, dashboards, programmatic access | [API Reference](/api-reference/introduction) |
+| **MCP** | AI agents (Claude, Cursor, VS Code), tool-use workflows | [MCP Guide](/mcp) |
+| **CLI** | Terminal workflows, scripting, CI/CD automation | [CLI Guide](/cli) |
+| **Slack** | Team-based content operations, batch workflows | [Content Agent](/content-agent) |
+| **Web App** | Visual interface, chat, artist management | [chat.recoupable.com](https://chat.recoupable.com) |
+
+## What Makes Recoup Different
+
+| Them | Us |
+|------|------|
+| Chatbot that suggests | System that executes |
+| Generic AI tools adapted for music | Built for music — releases, fans, workflows |
+| Manual operation required | Agents run autonomously with your context |
+| One interface, one capability | Multiple entry points, one system |
+| Point solutions (analytics OR content OR scheduling) | Full stack — create, distribute, measure, improve |
