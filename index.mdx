@@ -1,19 +1,21 @@
 ---
 title: "Recoup"
-description: "Run your music business with agents. API, MCP, and CLI for autonomous music operations."
+description: "AI infrastructure for the music industry. Connect your AI tools to 40+ music-industry agents."
 ---
 
-We build AI infrastructure for the music industry — agents and tools for agents that run music businesses. Content creation, analytics, marketing, catalog management. Available as an API, MCP server, and CLI.
+# AI Infrastructure for Music
 
-## Get started
+40+ tools that know your artists, your catalog, your audience, and your history. Search Spotify. Generate content. Analyze fans. Run entire release campaigns. From Claude Code, Cursor, OpenClaw, or anything that speaks MCP.
 
-Choose how you want to integrate. The API, MCP, and CLI all connect to the same system — your artists, context, and data are shared across all of them.
+<Info>
+**Just want to connect?** Copy the config below, paste it, and start using Recoup tools in under a minute.
+</Info>
+
+## Connect your tools
 
 <Tabs>
-  <Tab title="MCP">
-    Connect Claude Desktop, Cursor, or any MCP client to 40+ music-industry tools. No SDK needed.
-
-    Add to your MCP config:
+  <Tab title="Cursor">
+    Add to `.cursor/mcp.json` in your project (or global settings):
 
     ```json
     {
@@ -28,123 +30,168 @@ Choose how you want to integrate. The API, MCP, and CLI all connect to the same 
     }
     ```
 
-    Once connected, your AI assistant can search Spotify, create content, analyze audiences, manage tasks, and more.
-
-    [Full MCP setup and tool list →](/mcp)
+    Restart Cursor. You now have 40+ music tools available in every conversation.
   </Tab>
-  <Tab title="REST API">
-    Programmatic access to artists, content, analytics, tasks, and integrations.
+  <Tab title="Claude Code">
+    Run this in your terminal:
 
     ```bash
-    curl -X GET "https://api.recoupable.com/api/spotify/search?q=Mac%20Miller&type=artist" \
+    claude mcp add recoup \
+      --transport http \
+      --url https://recoup-api.vercel.app/mcp \
+      --header "Authorization: Bearer YOUR_API_KEY"
+    ```
+
+    That's it. Claude Code can now search Spotify, create content, analyze artists, and more.
+  </Tab>
+  <Tab title="OpenClaw">
+    OpenClaw connects via MCP automatically in Recoup sandboxes. If you're running outside a sandbox, add the MCP server:
+
+    ```json
+    {
+      "mcpServers": {
+        "recoup": {
+          "url": "https://recoup-api.vercel.app/mcp",
+          "headers": {
+            "Authorization": "Bearer YOUR_API_KEY"
+          }
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Claude Desktop">
+    Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "recoup": {
+          "url": "https://recoup-api.vercel.app/mcp",
+          "headers": {
+            "Authorization": "Bearer YOUR_API_KEY"
+          }
+        }
+      }
+    }
+    ```
+
+    Restart Claude Desktop. All Recoup tools appear in your tool list.
+  </Tab>
+  <Tab title="REST API">
+    ```bash
+    curl "https://api.recoupable.com/api/spotify/search?q=Mac%20Miller&type=artist" \
       -H "x-api-key: YOUR_API_KEY"
     ```
 
-    All endpoints return JSON. Authentication is a single API key in the `x-api-key` header.
-
-    [API reference →](/api-reference/introduction)
+    [Full API reference →](/api-reference/introduction)
   </Tab>
   <Tab title="CLI">
-    Full platform access from your terminal. Manage artists, generate content, monitor tasks.
-
     ```bash
     npm install -g @recoupable/cli
     export RECOUP_API_KEY=your-api-key
     recoup whoami
     ```
 
-    Then run content workflows, list artists, and check task status — all from the command line.
-
     [CLI docs →](/cli)
-  </Tab>
-  <Tab title="Slack">
-    The Content Agent bot generates social-ready videos from Slack. Mention the bot with an artist ID, and it handles the rest.
-
-    ```
-    @RecoupContentAgent abc-123-uuid artist-caption-bedroom batch=3
-    ```
-
-    Results are posted back to your thread when the pipeline finishes.
-
-    [Content Agent setup →](/content-agent)
   </Tab>
 </Tabs>
 
-<Info>
-Get your API key from the [API Keys page](https://chat.recoupable.com/keys). One key works across all integration methods.
-</Info>
+Get your API key from the [API Keys page](https://chat.recoupable.com/keys). One key works everywhere.
 
 ## What you can do
 
 <AccordionGroup>
-  <Accordion title="Generate content from artist context" icon="video">
-    Agents read your artist's songs, face guide, brand voice, and audience data — then create social-ready videos, captions, and imagery that sound like the artist, not like generic AI.
+  <Accordion title="Search and analyze any artist on Spotify" icon="spotify">
+    Find artists, pull their albums, get top tracks by country, and run deep research — all from your AI tool.
 
-    ```bash
-    recoup content create --artist <artistAccountId> --template artist-caption-bedroom --lipsync
+    ```
+    "Search Spotify for Wiz Khalifa and show me his top 5 tracks"
     ```
 
-    The pipeline handles clip selection, rendering, captioning, and delivery. Run one video or batch 30.
+    Tools: `get_spotify_search`, `get_spotify_artist_albums`, `get_spotify_artist_top_tracks`, `spotify_deep_research`
   </Accordion>
-  <Accordion title="Research audiences across platforms" icon="users">
-    Pull fan data from Spotify, Instagram, TikTok, YouTube, and X. Demographics, engagement patterns, follower trends, and streaming performance — all through a single API.
+  <Accordion title="Generate social-ready content for an artist" icon="video">
+    The content pipeline reads the artist's songs, face guide, and brand docs — then generates videos with clip selection, captions, and rendering. Run one or batch 30.
 
     ```bash
-    curl "https://api.recoupable.com/api/artist/profile?artistId=YOUR_ARTIST_ID" \
-      -H "x-api-key: YOUR_API_KEY"
+    recoup content create --artist <id> --template artist-caption-bedroom --lipsync --songs hiccups,adhd
     ```
-  </Accordion>
-  <Accordion title="Chat with agents that know your artist" icon="comments">
-    Every chat agent reads the artist's context files before responding. Ask for a release strategy, competitive analysis, or marketing plan — the agent works from real data, not assumptions.
-  </Accordion>
-  <Accordion title="Schedule automated operations" icon="clock">
-    Set up recurring tasks — daily fan reports, weekly content runs, social monitoring. Tasks run in the background on Trigger.dev workers and deliver results via email or webhook.
 
-    ```bash
-    recoup tasks status --run <runId>
+    Or trigger it from Slack: `@RecoupContentAgent abc-123-uuid batch=5`
+  </Accordion>
+  <Accordion title="Deep research across every platform" icon="magnifying-glass">
+    Cross-platform artist research that pulls from Spotify, YouTube, Instagram, TikTok, and the web. The agent builds a full picture — streaming data, audience demographics, engagement trends, competitive positioning.
+
     ```
+    "Do a deep research report on this artist's streaming performance and fan demographics"
+    ```
+
+    Tools: `artist_deep_research`, `web_deep_research`, `search_web`
   </Accordion>
-  <Accordion title="Run agent workflows in sandboxes" icon="box">
-    Every account gets a persistent sandbox — an isolated environment where agents execute code, manage files, and run multi-step workflows. The sandbox persists across sessions.
+  <Accordion title="Manage YouTube channels and revenue" icon="youtube">
+    Pull channel info, list videos, check revenue data, and set custom thumbnails — all through your AI assistant.
+
+    ```
+    "Show me the last 10 videos on this YouTube channel and their view counts"
+    ```
+
+    Tools: `get_youtube_channels`, `get_youtube_channel_video_list`, `get_youtube_revenue`, `set_youtube_thumbnail`
   </Accordion>
-  <Accordion title="Connect external services" icon="plug">
-    Agents connect to Spotify, YouTube, Gmail, Google Calendar, Instagram, TikTok, X, Slack, and LinkedIn via Composio connectors. Authenticate once, agents use them automatically.
+  <Accordion title="Run persistent agent sandboxes" icon="terminal">
+    Every account gets an isolated sandbox where agents run code, manage files, and execute multi-step workflows. The sandbox persists — agents pick up where they left off.
+
+    ```
+    "Set up a content pipeline for the new EP and schedule weekly social posts"
+    ```
+
+    Tool: `prompt_sandbox`
+  </Accordion>
+  <Accordion title="Schedule tasks that run autonomously" icon="clock">
+    Daily fan reports, batch content runs, social monitoring — set it up once and it runs in the background. Results delivered via email or webhook.
+
+    Tools: `create_task`, `get_tasks`, `update_task`, `get_task_run_status`
+  </Accordion>
+  <Accordion title="Generate and edit images" icon="image">
+    Create promotional artwork, edit existing images, or search Google Images for real photos and references.
+
+    Tools: `generate_image`, `edit_image`, `search_google_images`
+  </Accordion>
+  <Accordion title="Transcribe and analyze music" icon="music">
+    Transcribe audio with Whisper (music, podcasts, voice memos) and analyze tracks with Recoup's Audio Language Model.
+
+    Tools: `transcribe_audio`, `analyze_music`
   </Accordion>
 </AccordionGroup>
+
+## Why Recoup and not ChatGPT
+
+General purpose AI doesn't know the artist, the catalog, the audience, or the history. Recoup does. Every tool reads your artist's context files — songs, brand voice, audience data — before it does anything. The output sounds like the artist, not like AI.
+
+[How context works →](/how-it-works)
 
 ## Who it's for
 
 | I am a... | I want to... | Start here |
 |-----------|-------------|------------|
-| **Artist** | Run my career without a team — content, marketing, fan engagement | [Dashboard](https://chat.recoupable.com) |
-| **Label / Manager** | Scale operations across my roster without scaling headcount | [How It Works](/how-it-works) |
 | **Developer** | Build on music-specific agent infrastructure | [API Reference](/api-reference/introduction) |
-| **AI agent builder** | Connect my agent to music-industry tools | [MCP](/mcp) |
-
-## Platform integrations
-
-<CardGroup cols={4}>
-  <Card title="Spotify" icon="spotify" href="/api-reference/spotify/search" />
-  <Card title="Instagram" icon="instagram" href="/api-reference/instagram/profiles" />
-  <Card title="X (Twitter)" icon="x-twitter" href="/api-reference/x/search" />
-  <Card title="YouTube" icon="youtube" href="/api-reference/artist/socials" />
-</CardGroup>
+| **AI agent builder** | Connect my agent to music tools via MCP | [MCP tool list](/mcp) |
+| **Label / Manager** | Scale operations across a roster | [How It Works](/how-it-works) |
+| **Artist** | Run my career with agents | [Dashboard](https://chat.recoupable.com) |
 
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card
-    title="Quickstart"
-    icon="rocket"
-    href="/quickstart"
-  >
-    Get your API key and make your first request in 5 minutes.
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    API key setup and first request in 5 minutes.
   </Card>
-  <Card
-    title="How It Works"
-    icon="diagram-project"
-    href="/how-it-works"
-  >
+  <Card title="How It Works" icon="diagram-project" href="/how-it-works">
     Agents, sandboxes, context, and architecture.
+  </Card>
+  <Card title="MCP Tool List" icon="plug" href="/mcp">
+    All 40+ tools with descriptions and examples.
+  </Card>
+  <Card title="CLI" icon="terminal" href="/cli">
+    Content workflows, artist management, task monitoring.
   </Card>
 </CardGroup>
