@@ -6639,10 +6639,10 @@
       "DeleteChatRequest": {
         "type": "object",
         "required": [
-          "chatId"
+          "id"
         ],
         "properties": {
-          "chatId": {
+          "id": {
             "type": "string",
             "format": "uuid",
             "description": "The unique identifier (UUID) of the chat room to delete."
@@ -6653,7 +6653,7 @@
         "type": "object",
         "required": [
           "status",
-          "chatId",
+          "id",
           "message"
         ],
         "properties": {
@@ -6664,7 +6664,7 @@
             ],
             "description": "Status of the request"
           },
-          "chatId": {
+          "id": {
             "type": "string",
             "format": "uuid",
             "description": "The UUID of the deleted chat room."
