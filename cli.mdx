@@ -397,7 +397,7 @@ See [`POST /api/research/people`](/api-reference/research/people).
 Extract clean markdown content from any public URL. Handles JavaScript-heavy pages and PDFs.
 
 ```bash
-recoup research extract "https://en.wikipedia.org/wiki/Kaash_Paige" --objective "biography and discography"
+recoup research extract "https://en.wikipedia.org/wiki/Drake_(musician)" --objective "biography and discography"
 recoup research extract "https://open.spotify.com/artist/..." --full-content
 ```
 
@@ -410,7 +410,7 @@ See [`POST /api/research/extract`](/api-reference/research/extract).
 Get structured data about any entity from web research. Provide a description and a JSON schema — get typed data back with citations.
 
 ```bash
-recoup research enrich "Kaash Paige R&B artist" --schema '{"properties": {"real_name": {"type": "string"}, "label": {"type": "string"}, "hometown": {"type": "string"}}}'
+recoup research enrich "Drake rapper" --schema '{"properties": {"real_name": {"type": "string"}, "label": {"type": "string"}, "hometown": {"type": "string"}}}'
 ```
 
 Processors: `base` (fast, default), `core` (balanced), `ultra` (comprehensive).
