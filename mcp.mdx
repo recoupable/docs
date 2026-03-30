@@ -1,45 +1,51 @@
 ---
 title: "MCP"
-description: "Connect AI agents to the Recoup platform using the Model Context Protocol (MCP) server."
+description: "Connect AI agents to 40+ music-industry tools via the Model Context Protocol."
 ---
 
-The Recoup API exposes an [MCP](https://modelcontextprotocol.io/) server that AI agents can connect to for tool use. The server is available at:
+The Recoup MCP server gives AI agents direct access to music-industry tools — artist data, content creation, audience analysis, Spotify research, YouTube analytics, and more. Connect from Claude Desktop, Cursor, VS Code, or any MCP-compatible client.
 
 ```
 https://recoup-api.vercel.app/mcp
 ```
 
-## Authentication
+## Connect
 
-All MCP tools require an API key. Pass it as a Bearer token in the `Authorization` header when connecting to the MCP server.
+### Claude Desktop
 
-You can get a key from the [API Keys page](https://chat.recoupable.com/keys).
+Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json`):
 
-## Tools
+```json
+{
+  "mcpServers": {
+    "recoup": {
+      "url": "https://recoup-api.vercel.app/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_API_KEY"
+      }
+    }
+  }
+}
+```
 
-### prompt_sandbox
+### Cursor / VS Code
 
-Send a prompt to OpenClaw running in a persistent per-account sandbox. The sandbox is reused across calls — if one is already running it picks up where you left off, otherwise a new one is created from the account's latest snapshot.
+Add to your MCP settings (`.cursor/mcp.json` or VS Code MCP config):
 
-Returns raw `stdout` and `stderr` from the command. The sandbox stays alive after each prompt for follow-up interactions.
+```json
+{
+  "mcpServers": {
+    "recoup": {
+      "url": "https://recoup-api.vercel.app/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_API_KEY"
+      }
+    }
+  }
+}
+```
 
-**Input schema:**
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `prompt` | `string` | Yes | The prompt to send to OpenClaw in the sandbox. |
-
-**Response fields:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `sandboxId` | `string` | The Vercel Sandbox ID. |
-| `stdout` | `string` | Standard output from the command. |
-| `stderr` | `string` | Standard error from the command. |
-| `exitCode` | `number` | Process exit code (`0` = success). |
-| `created` | `boolean` | `true` if a new sandbox was created, `false` if an existing one was reused. |
-
-**Example usage (TypeScript with MCP SDK):**
+### TypeScript SDK
 
 ```typescript
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
@@ -47,32 +53,161 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 
 const transport = new StreamableHTTPClientTransport(
   new URL("https://recoup-api.vercel.app/mcp"),
-  { requestInit: { headers: { Authorization: `Bearer ${RECOUP_API_KEY}` } } },
+  {
+    requestInit: {
+      headers: { Authorization: `Bearer ${process.env.RECOUP_API_KEY}` },
+    },
+  }
 );
 
 const client = new Client({ name: "my-agent", version: "1.0.0" });
 await client.connect(transport);
 
 const result = await client.callTool({
-  name: "prompt_sandbox",
-  arguments: { prompt: "list all files in the orgs directory" },
+  name: "get_spotify_search",
+  arguments: { query: "Mac Miller", type: "artist" },
 });
-
-console.log(result.content);
 ```
 
-### run_sandbox_command
+## Authentication
 
-Create a sandbox and run a shell command or OpenClaw prompt in it. Unlike `prompt_sandbox`, this creates a **new sandbox each call** and runs the command asynchronously via a background task. Returns a sandbox ID and run ID to track progress.
+All tools require an API key. Pass it as a Bearer token in the `Authorization` header.
 
-See [`POST /api/sandboxes`](/api-reference/sandboxes/create) for the equivalent REST endpoint.
+Get a key from the [API Keys page](https://chat.recoupable.com/keys).
 
-**Input schema:**
+## Tools
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `command` | `string` | No | Shell command to run. Cannot be used with `prompt`. |
-| `args` | `string[]` | No | Arguments for the command. |
-| `cwd` | `string` | No | Working directory for the command. |
-| `prompt` | `string` | No | OpenClaw prompt. Cannot be used with `command`. |
-| `account_id` | `string` | No | Target a specific account (org API keys only). |
+### Artists & Socials
+
+| Tool | Description |
+|------|-------------|
+| `create_new_artist` | Create a new artist account |
+| `get_artist_socials` | Get all social profiles for an artist (handle, avatar, bio, follower count) |
+| `update_artist_socials` | Update artist social profiles from URLs |
+| `update_account_info` | Update artist profile, name, instructions, label, knowledge base |
+| `create_segments` | Analyze fan data and create audience segments |
+
+### Chat
+
+| Tool | Description |
+|------|-------------|
+| `get_chats` | Get chat conversations for accounts |
+| `compact_chats` | Summarize long conversations into concise versions |
+
+### Content & Files
+
+| Tool | Description |
+|------|-------------|
+| `generate_image` | Generate an image from a text prompt |
+| `edit_image` | Edit an existing image |
+| `generate_sora_2_video` | Generate video from text using OpenAI Sora 2 |
+| `retrieve_sora_2_video` | Check video generation status |
+| `retrieve_sora_2_video_content` | Download rendered video content |
+| `generate_txt_file` | Create a downloadable text file stored on Arweave |
+| `create_knowledge_base` | Save reference notes to the artist's permanent storage |
+
+### Spotify
+
+| Tool | Description |
+|------|-------------|
+| `get_spotify_search` | Search Spotify for artists, albums, tracks, playlists |
+| `get_spotify_artist_albums` | Get an artist's album catalog |
+| `get_spotify_artist_top_tracks` | Get an artist's top tracks by country |
+| `get_spotify_album` | Get album details |
+| `spotify_deep_research` | Deep research on an artist via Spotify ID |
+
+### YouTube
+
+| Tool | Description |
+|------|-------------|
+| `get_youtube_channels` | Get YouTube channel info for an account |
+| `get_youtube_channel_video_list` | List videos for a YouTube channel |
+| `get_youtube_revenue` | Get estimated revenue for a date range |
+| `set_youtube_thumbnail` | Set a custom video thumbnail |
+| `youtube_login` | Check YouTube authentication status |
+
+### Catalogs & Songs
+
+| Tool | Description |
+|------|-------------|
+| `select_catalogs` | Get catalogs for an account |
+| `select_catalog_songs` | Find songs from available catalogs |
+| `insert_catalog_songs` | Add songs to a catalog by ISRC |
+
+### Tasks & Scheduling
+
+| Tool | Description |
+|------|-------------|
+| `get_tasks` | List tasks |
+| `create_task` | Create a new scheduled task |
+| `update_task` | Update an existing task |
+| `delete_task` | Delete a task |
+| `get_task_run_status` | Check the status of a task run |
+
+### Pulses
+
+| Tool | Description |
+|------|-------------|
+| `get_pulses` | Get pulse statuses for accounts |
+| `update_pulse` | Update pulse status |
+
+### Audio & Music Analysis
+
+| Tool | Description |
+|------|-------------|
+| `transcribe_audio` | Transcribe audio using OpenAI Whisper (music, podcasts, voice memos) |
+| `analyze_music` | Analyze music or answer music questions using Recoup's Audio Language Model |
+
+### Search & Research
+
+| Tool | Description |
+|------|-------------|
+| `search_web` | Web search — use first for any information you're unsure about |
+| `search_google_images` | Search for existing images on Google |
+| `artist_deep_research` | Comprehensive cross-platform artist research |
+| `web_deep_research` | Deep multi-source web research |
+
+### Communication
+
+| Tool | Description |
+|------|-------------|
+| `send_email` | Send email via Resend API |
+| `contact_team` | Message the Recoup support team |
+
+### Sandboxes
+
+| Tool | Description |
+|------|-------------|
+| `prompt_sandbox` | Send a prompt to a persistent agent sandbox |
+
+### Utilities
+
+| Tool | Description |
+|------|-------------|
+| `get_local_time` | Get current local time/date with optional timezone |
+
+## Example: Research an Artist
+
+```
+You: "Research Mac Miller's streaming performance and fan demographics"
+
+Agent calls: get_spotify_search → get_spotify_artist_albums →
+             get_spotify_artist_top_tracks → artist_deep_research
+
+Agent returns: Comprehensive report with streaming data, discography analysis,
+               and fan engagement metrics.
+```
+
+## Example: Create Content
+
+```
+You: "Generate a promotional image for an upcoming EP release"
+
+Agent calls: get_artist_socials → generate_image
+
+Agent returns: Artist-branded promotional image ready for social posting.
+```
+
+## Docs Search MCP
+
+Mintlify (which hosts these docs) also provides an MCP server for searching documentation. Look for the MCP option in the contextual menu on any docs page to get the connection config for searching Recoup docs directly from your AI assistant.

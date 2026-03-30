@@ -14,29 +14,24 @@
         "tab": "Guides",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Get Started",
             "pages": [
               "index",
               "quickstart",
-              "cli",
               "mcp",
+              "cli",
+              "how-it-works",
               "authentication",
-              "api-reference/sandboxes/create"
-            ]
-          },
-          {
-            "group": "Agents",
-            "pages": [
               "content-agent"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "API Reference",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Overview",
             "pages": [
               "api-reference/introduction"
             ]
@@ -265,19 +260,19 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Recoup App",
+          "anchor": "Dashboard",
           "href": "https://chat.recoupable.com",
           "icon": "rocket"
+        },
+        {
+          "anchor": "API Keys",
+          "href": "https://chat.recoupable.com/keys",
+          "icon": "key"
         },
         {
           "anchor": "Website",
           "href": "https://recoupable.com",
           "icon": "globe"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://research.recoupable.com/",
-          "icon": "newspaper"
         }
       ]
     }

@@ -1,102 +1,168 @@
 ---
-title: "Recoup API Documentation"
-description: "Use the Recoup API to build your record label."
+title: "Recoup"
+description: "Music industry tools for AI agents. Spotify data, content generation, audience research, catalog management — via MCP and CLI."
 ---
 
-# Welcome to the Recoup API
+# Music Industry Tools for AI Agents
 
-Use the Recoup API to build your record label. Access artist analytics, fan segmentation, AI-powered chat, and task automation to power your music business.
+Spotify data. Content generation. Audience research. Catalog management. YouTube analytics. 40+ tools, one connection. Install the CLI or connect via MCP.
 
-## What is Recoup?
+```bash
+npm install -g @recoupable/cli
+```
 
-Recoup is an AI agent platform for smarter song rollouts, unforgettable fan experiences, and lasting artist growth. Empowering music executives with actionable insights and next-gen tools.
+## Get started
 
-This is where record labels, musicians, and managers start to build on Recoup AI technology like chat, tasks, agents, and more.
+<Tabs>
+  <Tab title="CLI">
+    ```bash
+    npm install -g @recoupable/cli
+    export RECOUP_API_KEY=your-api-key
+    recoup whoami
+    ```
 
-## Get Started
+    Then start working:
+
+    ```bash
+    recoup artists list
+    recoup content templates
+    recoup content create --artist <id> --template artist-caption-bedroom
+    ```
+
+    [Full CLI docs →](/cli)
+  </Tab>
+  <Tab title="MCP (Cursor)">
+    Add to `.cursor/mcp.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "recoup": {
+          "url": "https://recoup-api.vercel.app/mcp",
+          "headers": {
+            "Authorization": "Bearer YOUR_API_KEY"
+          }
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="MCP (Claude Code)">
+    ```bash
+    claude mcp add recoup \
+      --transport http \
+      --url https://recoup-api.vercel.app/mcp \
+      --header "Authorization: Bearer YOUR_API_KEY"
+    ```
+  </Tab>
+  <Tab title="MCP (Claude Desktop)">
+    Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "recoup": {
+          "url": "https://recoup-api.vercel.app/mcp",
+          "headers": {
+            "Authorization": "Bearer YOUR_API_KEY"
+          }
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="REST API">
+    ```bash
+    curl "https://api.recoupable.com/api/spotify/search?q=Mac%20Miller&type=artist" \
+      -H "x-api-key: YOUR_API_KEY"
+    ```
+
+    [API reference →](/api-reference/introduction)
+  </Tab>
+</Tabs>
+
+Get your API key → [chat.recoupable.com/keys](https://chat.recoupable.com/keys)
+
+## What you get
 
 <CardGroup cols={2}>
-  <Card
-    title="Quickstart"
-    icon="rocket"
-    href="/quickstart"
-  >
-    Get your API key and make your first request in minutes.
+  <Card title="Spotify" icon="spotify">
+    Search artists, albums, tracks. Pull discographies, top tracks by country, album details. Deep artist research.
+
+    ```bash
+    recoup spotify search "Mac Miller"
+    ```
   </Card>
-  <Card
-    title="API Reference"
-    icon="code"
-    href="/api-reference/introduction"
-  >
-    Explore all available endpoints and integrations.
+  <Card title="Content Creation" icon="video">
+    Generate social-ready videos from artist songs, face guide, and brand context. Single or batch 30.
+
+    ```bash
+    recoup content create --artist <id> --lipsync
+    ```
+  </Card>
+  <Card title="YouTube" icon="youtube">
+    Channel info, video lists, estimated revenue, custom thumbnails.
+
+    `get_youtube_channels` · `get_youtube_channel_video_list` · `get_youtube_revenue`
+  </Card>
+  <Card title="Research" icon="magnifying-glass">
+    Deep cross-platform artist research. Web search. Multi-source analysis.
+
+    `artist_deep_research` · `web_deep_research` · `search_web`
+  </Card>
+  <Card title="Images & Video" icon="image">
+    Generate images from prompts. Edit existing images. Generate video with Sora 2.
+
+    `generate_image` · `edit_image` · `generate_sora_2_video`
+  </Card>
+  <Card title="Audio & Music" icon="music">
+    Transcribe audio with Whisper. Analyze music with Recoup's Audio Language Model.
+
+    `transcribe_audio` · `analyze_music`
+  </Card>
+  <Card title="Tasks & Scheduling" icon="clock">
+    Create scheduled tasks, monitor runs, automate recurring operations.
+
+    ```bash
+    recoup tasks status --run <runId>
+    ```
+  </Card>
+  <Card title="Catalogs & Songs" icon="compact-disc">
+    Query catalogs, find songs by ISRC, add tracks in batch.
+
+    `select_catalogs` · `select_catalog_songs` · `insert_catalog_songs`
   </Card>
 </CardGroup>
 
-## Key Capabilities
+[See all 40+ tools →](/mcp)
 
-<CardGroup cols={2}>
-  <Card
-    title="Chat API"
-    icon="comments"
-    href="/api-reference/chat/chats"
-  >
-    AI-powered conversations with artist context. Stream responses or generate complete messages.
-  </Card>
-  <Card
-    title="Artist Analytics"
-    icon="chart-line"
-    href="/api-reference/artist/profile"
-  >
-    Comprehensive artist profiles with social metrics, follower counts, and engagement data across platforms.
-  </Card>
-  <Card
-    title="Fan Segmentation"
-    icon="users"
-    href="/api-reference/segment/fans"
-  >
-    Organize and analyze fan bases by demographics, engagement levels, and behavior patterns.
-  </Card>
-  <Card
-    title="Task Management"
-    icon="list-check"
-    href="/api-reference/tasks/get"
-  >
-    Schedule and automate recurring tasks with cron-based scheduling and AI-powered execution.
-  </Card>
-</CardGroup>
-
-## Platform Integrations
+## Why Recoup
 
 <CardGroup cols={3}>
-  <Card
-    title="Spotify"
-    icon="spotify"
-    href="/api-reference/spotify/search"
-  >
-    Search artists, albums, and tracks.
+  <Card title="Music-specific" icon="guitar">
+    Not a generic API with a music skin. Built for artists, catalogs, releases, and fans.
   </Card>
-  <Card
-    title="Instagram"
-    icon="instagram"
-    href="/api-reference/instagram/profiles"
-  >
-    Scrape profiles and comments.
+  <Card title="Context-aware" icon="brain">
+    Every tool knows the artist's songs, brand voice, audience, and history. Output is artist-specific.
   </Card>
-  <Card
-    title="X (Twitter)"
-    icon="x-twitter"
-    href="/api-reference/x/search"
-  >
-    Search tweets and trending topics.
+  <Card title="One install" icon="plug">
+    Spotify, YouTube, Instagram, content generation, analytics, tasks — all through one CLI or one MCP connection.
   </Card>
 </CardGroup>
 
-## Need Help?
+## Next steps
 
-<Card
-  title="Contact Support"
-  icon="envelope"
-  href="mailto:agent@recoupable.com"
->
-  Reach out to our team for assistance with the Recoup API.
-</Card>
+<CardGroup cols={2}>
+  <Card title="CLI docs" icon="terminal" href="/cli">
+    Content workflows, artist management, task monitoring.
+  </Card>
+  <Card title="MCP tool list" icon="list" href="/mcp">
+    All 40+ tools with descriptions and inputs.
+  </Card>
+  <Card title="How context works" icon="diagram-project" href="/how-it-works">
+    Why Recoup output is artist-specific, not generic AI.
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    API key + first request in 5 minutes.
+  </Card>
+</CardGroup>
