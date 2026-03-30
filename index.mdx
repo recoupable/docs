@@ -1,21 +1,19 @@
 ---
 title: "Recoup"
-description: "AI infrastructure for the music industry. Connect your AI tools to 40+ music-industry agents."
+description: "Music-industry tools for AI agents. Spotify data, content generation, audience research, catalog management — via MCP."
 ---
 
-# AI Infrastructure for Music
+# The MCP server for music
 
-40+ tools that know your artists, your catalog, your audience, and your history. Search Spotify. Generate content. Analyze fans. Run entire release campaigns. From Claude Code, Cursor, OpenClaw, or anything that speaks MCP.
+Recoup gives your agent access to the music industry. Spotify data, artist research, content generation, audience analytics, YouTube revenue, catalog management, and more — 40+ tools, one connection.
 
-<Info>
-**Just want to connect?** Copy the config below, paste it, and start using Recoup tools in under a minute.
-</Info>
+Every tool is context-aware. Recoup knows the artist, the catalog, the audience, and the release history. Your agent gets music-specific results that generic tools can't match.
 
-## Connect your tools
+## Connect in 30 seconds
 
 <Tabs>
   <Tab title="Cursor">
-    Add to `.cursor/mcp.json` in your project (or global settings):
+    Add to `.cursor/mcp.json`:
 
     ```json
     {
@@ -29,23 +27,17 @@ description: "AI infrastructure for the music industry. Connect your AI tools to
       }
     }
     ```
-
-    Restart Cursor. You now have 40+ music tools available in every conversation.
   </Tab>
   <Tab title="Claude Code">
-    Run this in your terminal:
-
     ```bash
     claude mcp add recoup \
       --transport http \
       --url https://recoup-api.vercel.app/mcp \
       --header "Authorization: Bearer YOUR_API_KEY"
     ```
-
-    That's it. Claude Code can now search Spotify, create content, analyze artists, and more.
   </Tab>
   <Tab title="OpenClaw">
-    OpenClaw connects via MCP automatically in Recoup sandboxes. If you're running outside a sandbox, add the MCP server:
+    Pre-connected in Recoup sandboxes. Outside a sandbox:
 
     ```json
     {
@@ -75,123 +67,116 @@ description: "AI infrastructure for the music industry. Connect your AI tools to
       }
     }
     ```
-
-    Restart Claude Desktop. All Recoup tools appear in your tool list.
   </Tab>
-  <Tab title="REST API">
-    ```bash
-    curl "https://api.recoupable.com/api/spotify/search?q=Mac%20Miller&type=artist" \
-      -H "x-api-key: YOUR_API_KEY"
+  <Tab title="Any MCP client">
     ```
-
-    [Full API reference →](/api-reference/introduction)
-  </Tab>
-  <Tab title="CLI">
-    ```bash
-    npm install -g @recoupable/cli
-    export RECOUP_API_KEY=your-api-key
-    recoup whoami
+    Server URL: https://recoup-api.vercel.app/mcp
+    Auth: Bearer token in Authorization header
     ```
-
-    [CLI docs →](/cli)
   </Tab>
 </Tabs>
 
-Get your API key from the [API Keys page](https://chat.recoupable.com/keys). One key works everywhere.
+Get your API key → [chat.recoupable.com/keys](https://chat.recoupable.com/keys)
 
-## What you can do
+## What your agent can do
 
-<AccordionGroup>
-  <Accordion title="Search and analyze any artist on Spotify" icon="spotify">
-    Find artists, pull their albums, get top tracks by country, and run deep research — all from your AI tool.
+<CardGroup cols={2}>
+  <Card title="Spotify" icon="spotify">
+    Search artists, albums, tracks. Pull discographies, top tracks by country, album details. Deep artist research.
 
-    ```
-    "Search Spotify for Wiz Khalifa and show me his top 5 tracks"
-    ```
+    `get_spotify_search` · `get_spotify_artist_albums` · `get_spotify_artist_top_tracks` · `spotify_deep_research`
+  </Card>
+  <Card title="YouTube" icon="youtube">
+    Channel info, video lists, estimated revenue, custom thumbnails, auth status.
 
-    Tools: `get_spotify_search`, `get_spotify_artist_albums`, `get_spotify_artist_top_tracks`, `spotify_deep_research`
-  </Accordion>
-  <Accordion title="Generate social-ready content for an artist" icon="video">
-    The content pipeline reads the artist's songs, face guide, and brand docs — then generates videos with clip selection, captions, and rendering. Run one or batch 30.
+    `get_youtube_channels` · `get_youtube_channel_video_list` · `get_youtube_revenue` · `set_youtube_thumbnail`
+  </Card>
+  <Card title="Content Creation" icon="video">
+    Generate social-ready videos from artist songs, face guide, and brand context. Single or batch. Lipsync, upscale, custom captions.
 
-    ```bash
-    recoup content create --artist <id> --template artist-caption-bedroom --lipsync --songs hiccups,adhd
-    ```
+    `prompt_sandbox` · via [CLI](/cli) or [Slack](/content-agent)
+  </Card>
+  <Card title="Research" icon="magnifying-glass">
+    Deep cross-platform artist research. Web search. Google Images. Multi-source analysis reports.
 
-    Or trigger it from Slack: `@RecoupContentAgent abc-123-uuid batch=5`
-  </Accordion>
-  <Accordion title="Deep research across every platform" icon="magnifying-glass">
-    Cross-platform artist research that pulls from Spotify, YouTube, Instagram, TikTok, and the web. The agent builds a full picture — streaming data, audience demographics, engagement trends, competitive positioning.
+    `artist_deep_research` · `web_deep_research` · `search_web` · `search_google_images`
+  </Card>
+  <Card title="Images & Video" icon="image">
+    Generate images from prompts. Edit existing images. Generate video with Sora 2.
 
-    ```
-    "Do a deep research report on this artist's streaming performance and fan demographics"
-    ```
+    `generate_image` · `edit_image` · `generate_sora_2_video`
+  </Card>
+  <Card title="Audio & Music" icon="music">
+    Transcribe audio with Whisper. Analyze music with Recoup's Audio Language Model.
 
-    Tools: `artist_deep_research`, `web_deep_research`, `search_web`
-  </Accordion>
-  <Accordion title="Manage YouTube channels and revenue" icon="youtube">
-    Pull channel info, list videos, check revenue data, and set custom thumbnails — all through your AI assistant.
+    `transcribe_audio` · `analyze_music`
+  </Card>
+  <Card title="Tasks & Scheduling" icon="clock">
+    Create scheduled tasks, monitor runs, automate recurring operations.
 
-    ```
-    "Show me the last 10 videos on this YouTube channel and their view counts"
-    ```
+    `create_task` · `get_tasks` · `update_task` · `get_task_run_status`
+  </Card>
+  <Card title="Catalogs & Songs" icon="compact-disc">
+    Query catalogs, find songs by ISRC, add tracks in batch.
 
-    Tools: `get_youtube_channels`, `get_youtube_channel_video_list`, `get_youtube_revenue`, `set_youtube_thumbnail`
-  </Accordion>
-  <Accordion title="Run persistent agent sandboxes" icon="terminal">
-    Every account gets an isolated sandbox where agents run code, manage files, and execute multi-step workflows. The sandbox persists — agents pick up where they left off.
+    `select_catalogs` · `select_catalog_songs` · `insert_catalog_songs`
+  </Card>
+</CardGroup>
 
-    ```
-    "Set up a content pipeline for the new EP and schedule weekly social posts"
-    ```
+[See all 40+ tools with full descriptions →](/mcp)
 
-    Tool: `prompt_sandbox`
-  </Accordion>
-  <Accordion title="Schedule tasks that run autonomously" icon="clock">
-    Daily fan reports, batch content runs, social monitoring — set it up once and it runs in the background. Results delivered via email or webhook.
+## Example: what an agent call looks like
 
-    Tools: `create_task`, `get_tasks`, `update_task`, `get_task_run_status`
-  </Accordion>
-  <Accordion title="Generate and edit images" icon="image">
-    Create promotional artwork, edit existing images, or search Google Images for real photos and references.
+Ask your agent:
 
-    Tools: `generate_image`, `edit_image`, `search_google_images`
-  </Accordion>
-  <Accordion title="Transcribe and analyze music" icon="music">
-    Transcribe audio with Whisper (music, podcasts, voice memos) and analyze tracks with Recoup's Audio Language Model.
+```
+"Find Mac Miller on Spotify and show me his top 5 tracks"
+```
 
-    Tools: `transcribe_audio`, `analyze_music`
-  </Accordion>
-</AccordionGroup>
+The agent calls `get_spotify_search` with `{ "query": "Mac Miller", "type": "artist" }`, then `get_spotify_artist_top_tracks` with the artist ID. You get back track names, popularity scores, album info, and preview URLs — real Spotify data, not a web scrape.
 
-## Why Recoup and not ChatGPT
+## Why agents pick Recoup
 
-General purpose AI doesn't know the artist, the catalog, the audience, or the history. Recoup does. Every tool reads your artist's context files — songs, brand voice, audience data — before it does anything. The output sounds like the artist, not like AI.
+<CardGroup cols={3}>
+  <Card title="Music-specific" icon="guitar">
+    Not a generic API adapted for music. Built for artists, catalogs, releases, and fans from day one.
+  </Card>
+  <Card title="Context-aware" icon="brain">
+    Every tool knows the artist's songs, brand voice, audience data, and history. Output is artist-specific, not generic.
+  </Card>
+  <Card title="One connection" icon="plug">
+    Spotify, YouTube, Instagram, content generation, analytics, tasks, sandboxes — all through one MCP server.
+  </Card>
+</CardGroup>
 
-[How context works →](/how-it-works)
+## Also available as
 
-## Who it's for
+<CardGroup cols={2}>
+  <Card title="REST API" icon="code" href="/api-reference/introduction">
+    Direct HTTP access. Same tools, same data.
 
-| I am a... | I want to... | Start here |
-|-----------|-------------|------------|
-| **Developer** | Build on music-specific agent infrastructure | [API Reference](/api-reference/introduction) |
-| **AI agent builder** | Connect my agent to music tools via MCP | [MCP tool list](/mcp) |
-| **Label / Manager** | Scale operations across a roster | [How It Works](/how-it-works) |
-| **Artist** | Run my career with agents | [Dashboard](https://chat.recoupable.com) |
+    `https://api.recoupable.com/api`
+  </Card>
+  <Card title="CLI" icon="terminal" href="/cli">
+    Terminal workflows, scripting, automation.
+
+    `npm install -g @recoupable/cli`
+  </Card>
+</CardGroup>
 
 ## Next steps
 
 <CardGroup cols={2}>
+  <Card title="Full tool list" icon="list" href="/mcp">
+    All 40+ MCP tools with descriptions, inputs, and examples.
+  </Card>
+  <Card title="How context works" icon="diagram-project" href="/how-it-works">
+    Why Recoup output is artist-specific, not generic AI.
+  </Card>
   <Card title="Quickstart" icon="rocket" href="/quickstart">
-    API key setup and first request in 5 minutes.
+    API key + first request in 5 minutes.
   </Card>
-  <Card title="How It Works" icon="diagram-project" href="/how-it-works">
-    Agents, sandboxes, context, and architecture.
-  </Card>
-  <Card title="MCP Tool List" icon="plug" href="/mcp">
-    All 40+ tools with descriptions and examples.
-  </Card>
-  <Card title="CLI" icon="terminal" href="/cli">
-    Content workflows, artist management, task monitoring.
+  <Card title="Content Agent" icon="slack" href="/content-agent">
+    Generate videos from Slack with a single @mention.
   </Card>
 </CardGroup>
