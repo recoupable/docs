@@ -1243,6 +1243,82 @@
             }
           }
         }
+      },
+      "delete": {
+        "description": "Delete a chat room by ID. This operation also removes related room records (memory emails, memories, room-report links, and segment-room links) before deleting the room itself.",
+        "requestBody": {
+          "description": "Chat deletion parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Chat deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteChatResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteChatErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - API key does not have access to this chat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - chat room does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteChatErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error - failed to delete chat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteChatErrorResponse"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/chats/compact": {
@@ -6557,6 +6633,65 @@
           "message": {
             "type": "string",
             "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "DeleteChatRequest": {
+        "type": "object",
+        "required": [
+          "chatId"
+        ],
+        "properties": {
+          "chatId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier (UUID) of the chat room to delete."
+          }
+        }
+      },
+      "DeleteChatResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "chatId",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "chatId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The UUID of the deleted chat room."
+          },
+          "message": {
+            "type": "string",
+            "description": "Success message describing the deletion result."
+          }
+        }
+      },
+      "DeleteChatErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong."
           }
         }
       },
