@@ -1,18 +1,37 @@
 ---
 title: "Recoup"
-description: "Music-industry tools for AI agents. Spotify data, content generation, audience research, catalog management — via MCP."
+description: "The CLI for music. Spotify data, content generation, audience research, catalog management — from your terminal or any AI agent."
 ---
 
-# The MCP server for music
+# The CLI for Music
 
-Recoup gives your agent access to the music industry. Spotify data, artist research, content generation, audience analytics, YouTube revenue, catalog management, and more — 40+ tools, one connection.
+Search Spotify. Generate content. Analyze audiences. Manage catalogs. Run release campaigns. From your terminal, your AI agent, or any MCP client.
 
-Every tool is context-aware. Recoup knows the artist, the catalog, the audience, and the release history. Your agent gets music-specific results that generic tools can't match.
+```bash
+npm install -g @recoupable/cli
+```
 
-## Connect in 30 seconds
+## Get started
 
 <Tabs>
-  <Tab title="Cursor">
+  <Tab title="CLI">
+    ```bash
+    npm install -g @recoupable/cli
+    export RECOUP_API_KEY=your-api-key
+    recoup whoami
+    ```
+
+    Then start working:
+
+    ```bash
+    recoup artists list
+    recoup content templates
+    recoup content create --artist <id> --template artist-caption-bedroom
+    ```
+
+    [Full CLI docs →](/cli)
+  </Tab>
+  <Tab title="MCP (Cursor)">
     Add to `.cursor/mcp.json`:
 
     ```json
@@ -28,7 +47,7 @@ Every tool is context-aware. Recoup knows the artist, the catalog, the audience,
     }
     ```
   </Tab>
-  <Tab title="Claude Code">
+  <Tab title="MCP (Claude Code)">
     ```bash
     claude mcp add recoup \
       --transport http \
@@ -36,23 +55,7 @@ Every tool is context-aware. Recoup knows the artist, the catalog, the audience,
       --header "Authorization: Bearer YOUR_API_KEY"
     ```
   </Tab>
-  <Tab title="OpenClaw">
-    Pre-connected in Recoup sandboxes. Outside a sandbox:
-
-    ```json
-    {
-      "mcpServers": {
-        "recoup": {
-          "url": "https://recoup-api.vercel.app/mcp",
-          "headers": {
-            "Authorization": "Bearer YOUR_API_KEY"
-          }
-        }
-      }
-    }
-    ```
-  </Tab>
-  <Tab title="Claude Desktop">
+  <Tab title="MCP (Claude Desktop)">
     Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
     ```json
@@ -68,38 +71,44 @@ Every tool is context-aware. Recoup knows the artist, the catalog, the audience,
     }
     ```
   </Tab>
-  <Tab title="Any MCP client">
+  <Tab title="REST API">
+    ```bash
+    curl "https://api.recoupable.com/api/spotify/search?q=Mac%20Miller&type=artist" \
+      -H "x-api-key: YOUR_API_KEY"
     ```
-    Server URL: https://recoup-api.vercel.app/mcp
-    Auth: Bearer token in Authorization header
-    ```
+
+    [API reference →](/api-reference/introduction)
   </Tab>
 </Tabs>
 
 Get your API key → [chat.recoupable.com/keys](https://chat.recoupable.com/keys)
 
-## What your agent can do
+## What you get
 
 <CardGroup cols={2}>
   <Card title="Spotify" icon="spotify">
     Search artists, albums, tracks. Pull discographies, top tracks by country, album details. Deep artist research.
 
-    `get_spotify_search` · `get_spotify_artist_albums` · `get_spotify_artist_top_tracks` · `spotify_deep_research`
-  </Card>
-  <Card title="YouTube" icon="youtube">
-    Channel info, video lists, estimated revenue, custom thumbnails, auth status.
-
-    `get_youtube_channels` · `get_youtube_channel_video_list` · `get_youtube_revenue` · `set_youtube_thumbnail`
+    ```bash
+    recoup spotify search "Mac Miller"
+    ```
   </Card>
   <Card title="Content Creation" icon="video">
-    Generate social-ready videos from artist songs, face guide, and brand context. Single or batch. Lipsync, upscale, custom captions.
+    Generate social-ready videos from artist songs, face guide, and brand context. Single or batch 30.
 
-    `prompt_sandbox` · via [CLI](/cli) or [Slack](/content-agent)
+    ```bash
+    recoup content create --artist <id> --lipsync
+    ```
+  </Card>
+  <Card title="YouTube" icon="youtube">
+    Channel info, video lists, estimated revenue, custom thumbnails.
+
+    `get_youtube_channels` · `get_youtube_channel_video_list` · `get_youtube_revenue`
   </Card>
   <Card title="Research" icon="magnifying-glass">
-    Deep cross-platform artist research. Web search. Google Images. Multi-source analysis reports.
+    Deep cross-platform artist research. Web search. Multi-source analysis.
 
-    `artist_deep_research` · `web_deep_research` · `search_web` · `search_google_images`
+    `artist_deep_research` · `web_deep_research` · `search_web`
   </Card>
   <Card title="Images & Video" icon="image">
     Generate images from prompts. Edit existing images. Generate video with Sora 2.
@@ -114,7 +123,9 @@ Get your API key → [chat.recoupable.com/keys](https://chat.recoupable.com/keys
   <Card title="Tasks & Scheduling" icon="clock">
     Create scheduled tasks, monitor runs, automate recurring operations.
 
-    `create_task` · `get_tasks` · `update_task` · `get_task_run_status`
+    ```bash
+    recoup tasks status --run <runId>
+    ```
   </Card>
   <Card title="Catalogs & Songs" icon="compact-disc">
     Query catalogs, find songs by ISRC, add tracks in batch.
@@ -123,60 +134,35 @@ Get your API key → [chat.recoupable.com/keys](https://chat.recoupable.com/keys
   </Card>
 </CardGroup>
 
-[See all 40+ tools with full descriptions →](/mcp)
+[See all 40+ tools →](/mcp)
 
-## Example: what an agent call looks like
-
-Ask your agent:
-
-```
-"Find Mac Miller on Spotify and show me his top 5 tracks"
-```
-
-The agent calls `get_spotify_search` with `{ "query": "Mac Miller", "type": "artist" }`, then `get_spotify_artist_top_tracks` with the artist ID. You get back track names, popularity scores, album info, and preview URLs — real Spotify data, not a web scrape.
-
-## Why agents pick Recoup
+## Why Recoup
 
 <CardGroup cols={3}>
   <Card title="Music-specific" icon="guitar">
-    Not a generic API adapted for music. Built for artists, catalogs, releases, and fans from day one.
+    Not a generic API with a music skin. Built for artists, catalogs, releases, and fans.
   </Card>
   <Card title="Context-aware" icon="brain">
-    Every tool knows the artist's songs, brand voice, audience data, and history. Output is artist-specific, not generic.
+    Every tool knows the artist's songs, brand voice, audience, and history. Output is artist-specific.
   </Card>
-  <Card title="One connection" icon="plug">
-    Spotify, YouTube, Instagram, content generation, analytics, tasks, sandboxes — all through one MCP server.
-  </Card>
-</CardGroup>
-
-## Also available as
-
-<CardGroup cols={2}>
-  <Card title="REST API" icon="code" href="/api-reference/introduction">
-    Direct HTTP access. Same tools, same data.
-
-    `https://api.recoupable.com/api`
-  </Card>
-  <Card title="CLI" icon="terminal" href="/cli">
-    Terminal workflows, scripting, automation.
-
-    `npm install -g @recoupable/cli`
+  <Card title="One install" icon="plug">
+    Spotify, YouTube, Instagram, content generation, analytics, tasks — all through one CLI or one MCP connection.
   </Card>
 </CardGroup>
 
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card title="Full tool list" icon="list" href="/mcp">
-    All 40+ MCP tools with descriptions, inputs, and examples.
+  <Card title="CLI docs" icon="terminal" href="/cli">
+    Content workflows, artist management, task monitoring.
+  </Card>
+  <Card title="MCP tool list" icon="list" href="/mcp">
+    All 40+ tools with descriptions and inputs.
   </Card>
   <Card title="How context works" icon="diagram-project" href="/how-it-works">
     Why Recoup output is artist-specific, not generic AI.
   </Card>
   <Card title="Quickstart" icon="rocket" href="/quickstart">
     API key + first request in 5 minutes.
-  </Card>
-  <Card title="Content Agent" icon="slack" href="/content-agent">
-    Generate videos from Slack with a single @mention.
   </Card>
 </CardGroup>
