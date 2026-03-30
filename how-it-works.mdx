@@ -7,26 +7,17 @@ General purpose AI tools don't know the artist, the catalog, the audience, or th
 
 ## The Three Layers
 
-```
-┌─────────────────────────────────────────────────┐
-│  Entry Points                                   │
-│  Web App · Slack · CLI · API · MCP              │
-├─────────────────────────────────────────────────┤
-│  Agent Layer                                    │
-│  Chat agents · Content agent · Coding agent     │
-│  Scheduled tasks · Background workers           │
-├─────────────────────────────────────────────────┤
-│  Context Layer                                  │
-│  Artist profiles · Songs · Face guides          │
-│  Brand docs · Audience data · Platform metrics  │
-└─────────────────────────────────────────────────┘
-```
-
-**Entry points** are how you interact with the system. Web app for visual workflows. Slack for team operations. CLI for automation. API and MCP for developers and other AI agents.
-
-**Agents** do the work. They create content, research audiences, generate reports, manage releases, and post to social platforms. Each agent is purpose-built for a specific job.
-
-**Context** is the entire edge. Every agent reads the artist's files before it does anything — songs, face guide, brand voice, audience data, release history. This is why Recoup output doesn't sound like generic AI. The agent knows the artist the way a dedicated manager would.
+<Steps>
+  <Step title="Context Layer">
+    Artist profiles, songs, face guides, brand docs, audience data, platform metrics. This is what makes the output *yours*. Every agent reads these files before it does anything — the agent knows the artist the way a dedicated manager would.
+  </Step>
+  <Step title="Agent Layer">
+    Chat agents, Content agent, Coding agent, scheduled tasks, background workers. Agents do the work — they create content, research audiences, generate reports, manage releases, and post to social platforms.
+  </Step>
+  <Step title="Entry Points">
+    Web App, Slack, CLI, API, MCP. These are how you interact with the system. Different surfaces, same agents, same context. Use the web app for visual workflows, Slack for team ops, CLI for automation, API and MCP for developers.
+  </Step>
+</Steps>
 
 ## Agents
 
@@ -69,17 +60,17 @@ Sandboxes are how Recoup moves from "suggesting" to "doing." The agent doesn't j
 
 ## Data Flow
 
-```
-Your data (songs, brand docs, social accounts)
-    ↓
-Recoup API (ingestion, normalization, storage)
-    ↓
-Agents (content creation, analysis, distribution)
-    ↓
-Platforms (Spotify, Instagram, TikTok, X, YouTube)
-    ↓
-Results (metrics, reports, optimizations)
-```
+<Steps>
+  <Step title="Your data goes in">
+    Songs, brand docs, social accounts, audience files. Upload through the web app, API, or CLI.
+  </Step>
+  <Step title="Agents process it">
+    Content creation, audience analysis, competitive research, distribution. Agents read your context and act.
+  </Step>
+  <Step title="Results come out">
+    Videos on Instagram. Reports in your inbox. Analytics in your dashboard. Metrics tracked across Spotify, YouTube, TikTok, X.
+  </Step>
+</Steps>
 
 ## Integration Options
 
