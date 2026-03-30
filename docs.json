@@ -18,15 +18,10 @@
             "pages": [
               "index",
               "quickstart",
-              "how-it-works",
-              "authentication"
-            ]
-          },
-          {
-            "group": "Integrate",
-            "pages": [
               "mcp",
               "cli",
+              "how-it-works",
+              "authentication",
               "content-agent"
             ]
           }
