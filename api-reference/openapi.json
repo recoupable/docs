@@ -3785,7 +3785,7 @@
     },
     "/api/content/create": {
       "post": {
-        "description": "Trigger the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs), then triggers a background task that generates a short-form video. Returns `runIds` \u2014 an array of run IDs that can each be polled via [GET /api/tasks/runs](/api-reference/tasks/runs). Authentication is handled via the x-api-key header.",
+        "description": "Trigger the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden by attached media, then triggers a background task that generates a short-form video. Returns `runIds` \u2014 an array of run IDs that can each be polled via [GET /api/tasks/runs](/api-reference/tasks/runs). Authentication is handled via the x-api-key header.",
         "requestBody": {
           "description": "Content creation parameters including the target artist and optional template/workflow settings",
           "required": true,
@@ -10738,6 +10738,18 @@
             },
             "description": "Optional list of song slugs to restrict which songs the pipeline picks from. When omitted, all songs in the artist's `songs/` directory are eligible. Song slugs match the filename without extension (e.g. `\"hiccups\"` for `hiccups.mp3`). Useful for targeting a specific release — pass all track slugs from an EP or album.",
             "example": ["hiccups", "adhd"]
+          },
+          "attached_audio_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public URL of an audio file to use instead of selecting from the artist's Git repo songs. When provided, the pipeline downloads this audio, transcribes it, and selects a clip from it. Overrides the `songs` parameter.",
+            "example": "https://example.com/my-song.mp3"
+          },
+          "attached_image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public URL of an image to use as the face guide instead of the artist's `face-guide.png` from their GitHub repo. Useful when the caller wants to override the default face reference.",
+            "example": "https://example.com/face.png"
           }
         },
         "required": [
