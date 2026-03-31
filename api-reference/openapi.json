@@ -1321,6 +1321,65 @@
         }
       }
     },
+    "/api/chats/{id}/artist": {
+      "get": {
+        "description": "Retrieve the artist associated with a specific chat room. Returns 404 if the chat does not exist or is not accessible by the authenticated caller.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the chat room.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat artist resolved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatArtistResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid chat id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatArtistErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - chat does not exist or is not accessible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatArtistErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/chats/compact": {
       "post": {
         "description": "Compact one or more chat conversations into summarized versions. This reduces the size of chat history while preserving key information. Optionally provide a prompt to control what information gets preserved in the compacted summary.",
@@ -6493,6 +6552,59 @@
         }
       },
       "GetChatsErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "GetChatArtistResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "room_id",
+          "artist_id",
+          "artist_exists"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "room_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the chat room"
+          },
+          "artist_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "UUID of the artist account associated with the chat, or null when no artist is linked"
+          },
+          "artist_exists": {
+            "type": "boolean",
+            "description": "Whether an artist is linked to the chat room"
+          }
+        }
+      },
+      "GetChatArtistErrorResponse": {
         "type": "object",
         "required": [
           "status",
