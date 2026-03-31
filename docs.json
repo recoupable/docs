@@ -21,6 +21,7 @@
               "cli",
               "mcp",
               "authentication",
+              "api-reference/content/create",
               "api-reference/sandboxes/create"
             ]
           },
