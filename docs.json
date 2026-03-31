@@ -27,9 +27,7 @@
           },
           {
             "group": "Agents",
-            "pages": [
-              "content-agent"
-            ]
+            "pages": ["content-agent"]
           }
         ]
       },
@@ -38,9 +36,7 @@
         "groups": [
           {
             "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
-            ]
+            "pages": ["api-reference/introduction"]
           },
           {
             "group": "Chat",
@@ -48,6 +44,7 @@
               "api-reference/chat/chats",
               "api-reference/chat/artist",
               "api-reference/chat/segment",
+              "api-reference/chat/messages-copy",
               "api-reference/chat/create",
               "api-reference/chat/update",
               "api-reference/chat/delete",
@@ -109,33 +106,23 @@
           },
           {
             "group": "Segment",
-            "pages": [
-              "api-reference/segment/fans"
-            ]
+            "pages": ["api-reference/segment/fans"]
           },
           {
             "group": "Fans",
-            "pages": [
-              "api-reference/fans/get"
-            ]
+            "pages": ["api-reference/fans/get"]
           },
           {
             "group": "Posts",
-            "pages": [
-              "api-reference/posts/get"
-            ]
+            "pages": ["api-reference/posts/get"]
           },
           {
             "group": "Post",
-            "pages": [
-              "api-reference/post/comments"
-            ]
+            "pages": ["api-reference/post/comments"]
           },
           {
             "group": "Comments",
-            "pages": [
-              "api-reference/comments/get"
-            ]
+            "pages": ["api-reference/comments/get"]
           },
           {
             "group": "Organizations",
@@ -147,9 +134,7 @@
           },
           {
             "group": "Workspaces",
-            "pages": [
-              "api-reference/workspaces/create"
-            ]
+            "pages": ["api-reference/workspaces/create"]
           },
           {
             "group": "Spotify",
@@ -170,10 +155,7 @@
           },
           {
             "group": "X (Twitter)",
-            "pages": [
-              "api-reference/x/search",
-              "api-reference/x/trends"
-            ]
+            "pages": ["api-reference/x/search", "api-reference/x/trends"]
           },
           {
             "group": "Social",
@@ -184,15 +166,11 @@
           },
           {
             "group": "Image",
-            "pages": [
-              "api-reference/image/generation"
-            ]
+            "pages": ["api-reference/image/generation"]
           },
           {
             "group": "Transcribe",
-            "pages": [
-              "api-reference/transcribe/audio"
-            ]
+            "pages": ["api-reference/transcribe/audio"]
           },
           {
             "group": "Songs & Catalogs",
@@ -211,21 +189,15 @@
           },
           {
             "group": "Subscriptions",
-            "pages": [
-              "api-reference/subscriptions/get"
-            ]
+            "pages": ["api-reference/subscriptions/get"]
           },
           {
             "group": "Notifications",
-            "pages": [
-              "api-reference/notifications/create"
-            ]
+            "pages": ["api-reference/notifications/create"]
           },
           {
             "group": "Apify",
-            "pages": [
-              "api-reference/apify/scraper"
-            ]
+            "pages": ["api-reference/apify/scraper"]
           },
           {
             "group": "Sandboxes",
