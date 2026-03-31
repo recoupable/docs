@@ -3785,7 +3785,7 @@
     },
     "/api/content/create": {
       "post": {
-        "description": "Trigger the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs), then triggers a background task that generates a short-form video. Returns `runIds` \u2014 an array of run IDs that can each be polled via [GET /api/tasks/runs](/api-reference/tasks/runs). Authentication is handled via the x-api-key header.",
+        "description": "Trigger the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden via `songs` URLs or `images`, then triggers a background task that generates a short-form video. Returns `runIds` \u2014 an array of run IDs that can each be polled via [GET /api/tasks/runs](/api-reference/tasks/runs). Authentication is handled via the x-api-key header.",
         "requestBody": {
           "description": "Content creation parameters including the target artist and optional template/workflow settings",
           "required": true,
@@ -10736,8 +10736,17 @@
             "items": {
               "type": "string"
             },
-            "description": "Optional list of song slugs to restrict which songs the pipeline picks from. When omitted, all songs in the artist's `songs/` directory are eligible. Song slugs match the filename without extension (e.g. `\"hiccups\"` for `hiccups.mp3`). Useful for targeting a specific release — pass all track slugs from an EP or album.",
-            "example": ["hiccups", "adhd"]
+            "description": "Optional list of song slugs or public URLs to use for the audio track. Song slugs match filenames without extension from the artist's `songs/` directory (e.g. `\"hiccups\"` for `hiccups.mp3`). Public URLs (e.g. `\"https://example.com/my-song.mp3\"`) are downloaded, transcribed, and clipped directly — bypassing the Git repo. When omitted, all songs in the artist's repo are eligible.",
+            "example": ["hiccups", "https://example.com/unreleased-track.mp3"]
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
+            "description": "Optional list of public image URLs to use as face guides instead of the artist's default `face-guide.png` from their GitHub repo. The first image is used as the primary face guide. Useful when the caller wants to override the default face reference.",
+            "example": ["https://example.com/face.png"]
           }
         },
         "required": [
