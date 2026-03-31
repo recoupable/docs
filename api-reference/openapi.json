@@ -1380,6 +1380,65 @@
         }
       }
     },
+    "/api/chats/{id}/segment": {
+      "get": {
+        "description": "Retrieve the segment associated with a specific chat room. Returns 404 if the chat does not exist or is not accessible by the authenticated caller.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the chat room.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat segment resolved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatSegmentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid chat id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatSegmentErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - chat does not exist or is not accessible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatSegmentErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/chats/compact": {
       "post": {
         "description": "Compact one or more chat conversations into summarized versions. This reduces the size of chat history while preserving key information. Optionally provide a prompt to control what information gets preserved in the compacted summary.",
@@ -6605,6 +6664,59 @@
         }
       },
       "GetChatArtistErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "GetChatSegmentResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "room_id",
+          "segment_id",
+          "segment_exists"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "room_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the chat room"
+          },
+          "segment_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "UUID of the segment associated with the chat, or null when no segment is linked"
+          },
+          "segment_exists": {
+            "type": "boolean",
+            "description": "Whether a segment is linked to the chat room"
+          }
+        }
+      },
+      "GetChatSegmentErrorResponse": {
         "type": "object",
         "required": [
           "status",

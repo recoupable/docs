@@ -46,6 +46,7 @@
             "pages": [
               "api-reference/chat/chats",
               "api-reference/chat/artist",
+              "api-reference/chat/segment",
               "api-reference/chat/create",
               "api-reference/chat/update",
               "api-reference/chat/delete",
