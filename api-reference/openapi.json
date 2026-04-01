@@ -7099,8 +7099,7 @@
         "required": [
           "status",
           "chat_id",
-          "from_message_id",
-          "deleted_count"
+          "from_message_id"
         ],
         "properties": {
           "status": {
@@ -7119,10 +7118,6 @@
             "type": "string",
             "format": "uuid",
             "description": "The message UUID used as the trailing deletion boundary."
-          },
-          "deleted_count": {
-            "type": "integer",
-            "description": "Number of deleted messages."
           }
         }
       },
