@@ -1362,17 +1362,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeleteTrailingChatMessagesErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - access denied to this chat",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeleteTrailingChatMessagesErrorResponse"
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
