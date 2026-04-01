@@ -1449,6 +1449,175 @@
         }
       }
     },
+    "/api/chats/{id}/messages": {
+      "get": {
+        "description": "Retrieve all messages (memories) for a specific chat room in chronological order.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the chat room.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Messages retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatMessagesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid chat id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatMessagesErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller does not have access to this chat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - chat does not exist or is not accessible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatMessagesErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error - failed to retrieve messages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatMessagesErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chats/{id}/messages/copy": {
+      "post": {
+        "description": "Copy all messages from the source chat (`id` path param) to a target chat (`targetChatId` in request body). By default, existing target messages are cleared before copy.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The source chat room UUID.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Copy target options",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CopyChatMessagesRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Messages copied successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopyChatMessagesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid payload or chat identifiers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopyChatMessagesErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller lacks access to source or target chat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopyChatMessagesErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - source or target chat does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopyChatMessagesErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error - failed to copy messages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopyChatMessagesErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/chats/{id}/messages/trailing": {
       "delete": {
         "description": "Delete all messages in a chat from a given message onward (inclusive), identified by `from_message_id`.",
@@ -1500,7 +1669,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/DeleteTrailingChatMessagesErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - access denied to this chat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteTrailingChatMessagesErrorResponse"
                 }
               }
             }
@@ -6823,6 +7002,106 @@
             "type": "string",
             "description": "Error message describing what went wrong"
           }
+        }
+      },
+      "ChatMessage": {
+        "type": "object",
+        "required": [
+          "id",
+          "room_id",
+          "content",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the memory message"
+          },
+          "room_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the parent chat room"
+          },
+          "content": {
+            "type": "object",
+            "description": "Structured message payload stored for the memory"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of the memory update"
+          }
+        }
+      },
+      "GetChatMessagesResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatMessage"
+            },
+            "description": "Chronologically ordered list of messages for the chat"
+          }
+        }
+      },
+      "GetChatMessagesErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "CopyChatMessagesRequest": {
+        "type": "object",
+        "required": ["targetChatId"],
+        "properties": {
+          "targetChatId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Target chat room UUID to receive the copied messages."
+          },
+          "clearExisting": {
+            "type": "boolean",
+            "default": true,
+            "description": "When true, existing messages in the target chat are deleted before copy."
+          }
+        }
+      },
+      "CopyChatMessagesResponse": {
+        "type": "object",
+        "required": ["status", "source_chat_id", "target_chat_id", "copied_count", "cleared_existing"],
+        "properties": {
+          "status": { "type": "string", "enum": ["success"], "description": "Status of the request" },
+          "source_chat_id": { "type": "string", "format": "uuid", "description": "Source chat room UUID." },
+          "target_chat_id": { "type": "string", "format": "uuid", "description": "Target chat room UUID." },
+          "copied_count": { "type": "integer", "description": "Number of messages copied from source to target." },
+          "cleared_existing": { "type": "boolean", "description": "Whether existing target messages were deleted before copy." }
+        }
+      },
+      "CopyChatMessagesErrorResponse": {
+        "type": "object",
+        "required": ["status", "error"],
+        "properties": {
+          "status": { "type": "string", "enum": ["error"], "description": "Status of the request" },
+          "error": { "type": "string", "description": "Error message describing what went wrong." }
         }
       },
       "DeleteTrailingChatMessagesResponse": {
