@@ -1439,6 +1439,85 @@
         }
       }
     },
+    "/api/chats/{id}/messages": {
+      "get": {
+        "description": "Retrieve all messages (memories) for a specific chat room in chronological order.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the chat room.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Messages retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatMessagesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid chat id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatMessagesErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller does not have access to this chat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - chat does not exist or is not accessible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatMessagesErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error - failed to retrieve messages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatMessagesErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/chats/{id}/messages/copy": {
       "post": {
         "description": "Copy all messages from the source chat (`id` path param) to a target chat (`targetChatId` in request body). By default, existing target messages are cleared before copy.",
@@ -6826,11 +6905,74 @@
           }
         }
       },
-      "CopyChatMessagesRequest": {
+      "ChatMessage": {
         "type": "object",
         "required": [
-          "targetChatId"
+          "id",
+          "room_id",
+          "content",
+          "updated_at"
         ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the memory message"
+          },
+          "room_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the parent chat room"
+          },
+          "content": {
+            "type": "object",
+            "description": "Structured message payload stored for the memory"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of the memory update"
+          }
+        }
+      },
+      "GetChatMessagesResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatMessage"
+            },
+            "description": "Chronologically ordered list of messages for the chat"
+          }
+        }
+      },
+      "GetChatMessagesErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "CopyChatMessagesRequest": {
+        "type": "object",
+        "required": ["targetChatId"],
         "properties": {
           "targetChatId": {
             "type": "string",
@@ -6846,19 +6988,11 @@
       },
       "CopyChatMessagesResponse": {
         "type": "object",
-        "required": [
-          "status",
-          "source_chat_id",
-          "target_chat_id",
-          "copied_count",
-          "cleared_existing"
-        ],
+        "required": ["status", "source_chat_id", "target_chat_id", "copied_count", "cleared_existing"],
         "properties": {
           "status": {
             "type": "string",
-            "enum": [
-              "success"
-            ],
+            "enum": ["success"],
             "description": "Status of the request"
           },
           "source_chat_id": {
@@ -6883,16 +7017,11 @@
       },
       "CopyChatMessagesErrorResponse": {
         "type": "object",
-        "required": [
-          "status",
-          "error"
-        ],
+        "required": ["status", "error"],
         "properties": {
           "status": {
             "type": "string",
-            "enum": [
-              "error"
-            ],
+            "enum": ["error"],
             "description": "Status of the request"
           },
           "error": {
