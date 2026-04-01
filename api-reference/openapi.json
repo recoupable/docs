@@ -379,7 +379,7 @@
         }
       },
       "patch": {
-        "description": "Update an existing account's profile information including name, organization, image, instruction, job title, role type, company name, and knowledges.",
+        "description": "Update account profile fields for the authenticated account. Bearer token or API key is required. accountId override is optional and only allowed for admin accounts.",
         "requestBody": {
           "description": "Account fields to update",
           "required": true,
@@ -391,6 +391,14 @@
             }
           }
         },
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Account updated successfully",
@@ -402,8 +410,28 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - accountId override is only allowed for admin accounts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
           "400": {
-            "description": "Bad request - account not found or update failed",
+            "description": "Bad request - invalid payload or update failed",
             "content": {
               "application/json": {
                 "schema": {
@@ -5833,14 +5861,53 @@
       },
       "UpdateAccountRequest": {
         "type": "object",
-        "required": [
-          "accountId"
+        "anyOf": [
+          {
+            "required": [
+              "name"
+            ]
+          },
+          {
+            "required": [
+              "instruction"
+            ]
+          },
+          {
+            "required": [
+              "organization"
+            ]
+          },
+          {
+            "required": [
+              "image"
+            ]
+          },
+          {
+            "required": [
+              "jobTitle"
+            ]
+          },
+          {
+            "required": [
+              "roleType"
+            ]
+          },
+          {
+            "required": [
+              "companyName"
+            ]
+          },
+          {
+            "required": [
+              "knowledges"
+            ]
+          }
         ],
         "properties": {
           "accountId": {
             "type": "string",
             "format": "uuid",
-            "description": "The unique identifier of the account to update"
+            "description": "Optional override target account ID. Only admin accounts may set this to another account."
           },
           "name": {
             "type": "string",
