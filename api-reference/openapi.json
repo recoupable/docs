@@ -1608,6 +1608,95 @@
         }
       }
     },
+    "/api/chats/{id}/messages/trailing": {
+      "delete": {
+        "description": "Delete all messages in a chat from a given message onward (inclusive), identified by `from_message_id`.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the chat room.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "from_message_id",
+            "in": "query",
+            "description": "The message UUID from which trailing messages should be deleted (inclusive).",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trailing messages deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteTrailingChatMessagesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid or missing query/path parameters or message does not belong to chat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteTrailingChatMessagesErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteTrailingChatMessagesErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - access denied to this chat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteTrailingChatMessagesErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - chat or message does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteTrailingChatMessagesErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error - failed to delete trailing messages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteTrailingChatMessagesErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/chats/compact": {
       "post": {
         "description": "Compact one or more chat conversations into summarized versions. This reduces the size of chat history while preserving key information. Optionally provide a prompt to control what information gets preserved in the compacted summary.",
@@ -7003,6 +7092,60 @@
         "properties": {
           "status": { "type": "string", "enum": ["error"], "description": "Status of the request" },
           "error": { "type": "string", "description": "Error message describing what went wrong." }
+        }
+      },
+      "DeleteTrailingChatMessagesResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "chat_id",
+          "from_message_id"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "chat_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The chat UUID where deletion was applied."
+          },
+          "from_message_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The message UUID used as the trailing deletion boundary."
+          }
+        }
+      },
+      "DeleteTrailingChatMessagesErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong."
+          },
+          "missing_fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of missing or invalid parameter fields (when validation fails)."
+          }
         }
       },
       "CreateChatRequest": {

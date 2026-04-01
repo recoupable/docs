@@ -50,6 +50,7 @@
               "api-reference/chat/segment",
               "api-reference/chat/messages",
               "api-reference/chat/messages-copy",
+              "api-reference/chat/messages-trailing-delete",
               "api-reference/chat/create",
               "api-reference/chat/update",
               "api-reference/chat/delete",
