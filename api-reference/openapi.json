@@ -1476,7 +1476,7 @@
             }
           },
           "400": {
-            "description": "Bad request - invalid query/body parameters or message does not belong to chat",
+            "description": "Bad request - invalid or missing query/path parameters or message does not belong to chat",
             "content": {
               "application/json": {
                 "schema": {
