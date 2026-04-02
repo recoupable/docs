@@ -5746,7 +5746,7 @@
     },
     "/api/content/upscale": {
       "post": {
-        "description": "Upscale an image or video to higher resolution. Returns the upscaled URL.",
+        "description": "Upscale an image or video to higher resolution. Pass the URL and specify the type. Returns the upscaled URL.",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
