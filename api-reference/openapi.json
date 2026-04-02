@@ -5805,6 +5805,68 @@
           }
         }
       }
+    },
+    "/api/content/create/analyze": {
+      "post": {
+        "description": "Analyze a video and generate text based on its content. Pass a publicly accessible video URL and a text prompt describing the desired analysis. Returns the generated text synchronously.",
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
+        "requestBody": {
+          "description": "Video analysis parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentCreateAnalyzeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Video analyzed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentCreateAnalyzeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized \u2014 invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Video analysis failed upstream",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -12966,6 +13028,66 @@
             "type": "string",
             "format": "uri",
             "description": "URL of the upscaled image or video"
+          }
+        }
+      },
+      "ContentCreateAnalyzeRequest": {
+        "type": "object",
+        "required": [
+          "video_url",
+          "prompt"
+        ],
+        "properties": {
+          "video_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Publicly accessible URL of the video to analyze. Supported formats: MP4, MOV, AVI, and other FFmpeg-compatible formats. Maximum duration: 1 hour."
+          },
+          "prompt": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "A text prompt that guides the analysis. Can be instructive, descriptive, or phrased as a question. Examples: \"Describe the key moments in this video\", \"Generate 5 SEO keywords for this video\"."
+          },
+          "temperature": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0.2,
+            "description": "Controls the randomness of the text output. Lower values produce more focused results. Defaults to `0.2`."
+          },
+          "max_tokens": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4096,
+            "description": "Maximum number of tokens to generate. If omitted, uses the model default."
+          }
+        }
+      },
+      "ContentCreateAnalyzeResponse": {
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "The generated analysis text based on the video and prompt."
+          },
+          "finish_reason": {
+            "type": "string",
+            "enum": ["stop", "length"],
+            "nullable": true,
+            "description": "`stop` if the generation completed normally. `length` if truncated at the token limit."
+          },
+          "usage": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "output_tokens": {
+                "type": "integer",
+                "description": "Number of tokens in the generated text."
+              }
+            }
           }
         }
       }

@@ -253,6 +253,7 @@
               "api-reference/content/create-audio",
               "api-reference/content/create-render",
               "api-reference/content/create-upscale",
+              "api-reference/content/create-analyze",
               "api-reference/content/templates",
               "api-reference/content/validate",
               "api-reference/content/estimate"
