@@ -5436,7 +5436,7 @@
     },
     "/api/content/generate-image": {
       "post": {
-        "description": "Generate an AI image. Returns the image URL synchronously.",
+        "description": "Generate an image from a text prompt. Pass a `reference_image_url` to guide the output toward a specific look or subject. Returns the image URL.",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
@@ -5560,7 +5560,7 @@
     },
     "/api/content/generate-caption": {
       "post": {
-        "description": "Generate on-screen text for a social video using an LLM. Returns text content and styling synchronously.",
+        "description": "Generate a short caption from a topic. Returns the text content and default styling (font, color, size).",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
@@ -5622,7 +5622,7 @@
     },
     "/api/content/transcribe-audio": {
       "post": {
-        "description": "Transcribe a song. Pass a song URL in the `songs` array. Returns timestamped lyrics.",
+        "description": "Transcribe audio into text with word-level timestamps. Pass one or more audio file URLs in `audio_urls`. Returns the full transcript and an array of timed segments.",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
@@ -5684,7 +5684,7 @@
     },
     "/api/content/edit": {
       "post": {
-        "description": "Edit media using an operations pipeline or a template preset. Accepts video and/or audio inputs with either a template name (deterministic config) or an explicit operations array. All operations execute in a single processing pass.",
+        "description": "Apply edits to a video or audio file — trim, crop, resize, overlay text, or add an audio track. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array. Everything runs in one pass.",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
@@ -5746,7 +5746,7 @@
     },
     "/api/content/upscale": {
       "post": {
-        "description": "Upscale an image or video. Returns the upscaled URL synchronously.",
+        "description": "Upscale an image or video to higher resolution. Returns the upscaled URL.",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
@@ -5808,7 +5808,7 @@
     },
     "/api/content/analyze-video": {
       "post": {
-        "description": "Analyze a video and generate text based on its content. Pass a publicly accessible video URL and a text prompt describing the desired analysis. Returns the generated text synchronously.",
+        "description": "Analyze a video and answer questions about it. Pass a video URL and a text prompt — for example, \"Describe what happens\" or \"Rate the visual quality 1-10.\" Returns the generated text.",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
