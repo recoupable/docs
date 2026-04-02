@@ -1,0 +1,1885 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup Artists API",
+    "description": "API documentation for the Recoup platform - an AI agent platform for the music industry",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://recoup-api.vercel.app"
+    }
+  ],
+  "security": [
+    {
+      "apiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/api/artists": {
+      "get": {
+        "description": "Retrieve artists accessible to the authenticated account. The account is derived from the API key or Bearer token. When org_id is omitted, returns only the account's own artists. Pass org_id to view artists in a specific organization. Pass account_id to filter to a specific account the API key has access to.",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "query",
+            "description": "Filter to a specific account's artists. Only applicable when the authenticated account has access to multiple accounts via organization membership.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "org_id",
+            "in": "query",
+            "description": "Filter to artists in a specific organization. When omitted, returns only personal (non-organization) artists.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artists retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication"
+          },
+          "403": {
+            "description": "Forbidden - account_id is not accessible with the provided credentials"
+          }
+        },
+        "operationId": "list"
+      },
+      "post": {
+        "description": "Create a new artist account. The artist can optionally be linked to an organization.",
+        "requestBody": {
+          "description": "Artist creation parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateArtistRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Artist created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateArtistResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation error or invalid JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateArtistError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "create"
+      }
+    },
+    "/api/artist/segments": {
+      "get": {
+        "description": "Retrieve all segments associated with an artist. This endpoint should be called before using the Segment Fans endpoint to obtain the necessary segment IDs. Supports pagination.",
+        "parameters": [
+          {
+            "name": "artist_account_id",
+            "in": "query",
+            "description": "The unique identifier of the artist account to fetch segments for",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number to retrieve (default: 1)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The number of records per page (default: 20, max: 100)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Segments retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistSegmentsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistSegmentsErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "segments"
+      }
+    },
+    "/api/artist/socials": {
+      "get": {
+        "description": "Retrieve all social media profiles associated with an artist. This endpoint should be called before using the Social Posts endpoint to obtain the necessary social IDs.",
+        "parameters": [
+          {
+            "name": "artist_account_id",
+            "in": "query",
+            "description": "The unique identifier of the artist account to fetch social profiles for",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Social profiles retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistSocialsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistSocialsErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "socials"
+      }
+    },
+    "/api/artist/socials/scrape": {
+      "post": {
+        "description": "Trigger scrape jobs for all social profiles linked to an artist. Provide an artist_account_id, and the API will look up the artist's socials and invoke a scraping job for each social profile. Each scrape returns Apify run metadata so you can poll for status and retrieve results.",
+        "requestBody": {
+          "description": "Artist to scrape socials for",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArtistSocialsScrapeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Scrape jobs triggered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistSocialsScrapeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistSocialsErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "socials-scrape"
+      }
+    },
+    "/api/artist-profile": {
+      "get": {
+        "description": "Retrieve comprehensive profile information for an artist across all connected social media platforms, including profile details and post metrics.",
+        "parameters": [
+          {
+            "name": "artist_account_id",
+            "in": "query",
+            "description": "The unique identifier of the artist account to fetch profile data for",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist profile retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistProfileResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistProfileErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "profile"
+      }
+    },
+    "/api/segment/fans": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Retrieve all social profiles from fans within a specific segment. This endpoint should be called after obtaining segment IDs from the Artist Segments endpoint. Supports pagination for large fan lists.",
+        "parameters": [
+          {
+            "name": "segment_id",
+            "in": "query",
+            "description": "The unique identifier of the segment to fetch fans for",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number to retrieve (default: 1)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The number of records per page (default: 20, max: 100)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Segment fans retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SegmentFansResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SegmentFansErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "segment-fans"
+      }
+    },
+    "/api/fans": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Retrieve all social profiles from fans of an artist across all platforms. This endpoint aggregates fan data from all connected social media platforms. Supports pagination for large fan lists.",
+        "parameters": [
+          {
+            "name": "artist_account_id",
+            "in": "query",
+            "description": "The unique identifier of the artist account to fetch fans for",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number to retrieve (default: 1)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The number of records per page (default: 20, max: 100)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist fans retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistFansResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistFansErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "fans"
+      }
+    },
+    "/api/posts": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Retrieve all social media posts from an artist across all platforms. This endpoint aggregates posts from all connected social media profiles for the specified artist. Supports pagination for large post collections.",
+        "parameters": [
+          {
+            "name": "artist_account_id",
+            "in": "query",
+            "description": "The unique identifier of the artist account to fetch posts for",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number to retrieve (default: 1)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The number of records per page (default: 20, max: 100)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist posts retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistPostsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistPostsErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "posts"
+      }
+    },
+    "/api/post/comments": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Retrieve comments for a specific social media post. This endpoint should be called after obtaining post IDs from the Social Posts endpoint. Returns detailed information about each commenter including their profile data, follower counts, and geographic region.",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "query",
+            "description": "The unique identifier of the post to fetch comments for",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number to retrieve (default: 1)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The number of records per page (default: 20, max: 100)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Post comments retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostCommentsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostCommentsErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "post-comments"
+      }
+    },
+    "/api/comments": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Retrieve comments associated with an artist or a specific post, with support for pagination. This endpoint returns raw comment data including the comment text, associated post, and commenter's social profile reference.",
+        "parameters": [
+          {
+            "name": "artist_account_id",
+            "in": "query",
+            "description": "The unique identifier of the artist account to fetch comments for",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "post_id",
+            "in": "query",
+            "description": "Filter comments by specific post",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination (default: 1)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of comments per page (default: 10)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comments retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentsErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "comments"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApifyRunResult": {
+        "type": "object",
+        "properties": {
+          "runId": {
+            "type": "string",
+            "description": "Unique identifier for the Apify run"
+          },
+          "datasetId": {
+            "type": "string",
+            "description": "Unique identifier for the dataset containing scraped data"
+          },
+          "error": {
+            "type": "string",
+            "nullable": true,
+            "description": "Error message if the run failed (null if successful)"
+          }
+        }
+      },
+      "Artist": {
+        "type": "object",
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist account"
+          },
+          "name": {
+            "type": "string",
+            "description": "Artist display name"
+          },
+          "image": {
+            "type": "string",
+            "nullable": true,
+            "description": "Artist profile image URL"
+          },
+          "pinned": {
+            "type": "boolean",
+            "description": "Whether the account has pinned this artist"
+          },
+          "socials": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArtistSocial"
+            },
+            "description": "Social media profiles linked to the artist"
+          }
+        }
+      },
+      "ArtistFan": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the fan's social profile"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username or handle on the platform"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "URL to the fan's avatar/profile image"
+          },
+          "profile_url": {
+            "type": "string",
+            "description": "Full URL to the fan's profile on the platform"
+          },
+          "region": {
+            "type": "string",
+            "description": "Geographic region or location of the fan"
+          },
+          "bio": {
+            "type": "string",
+            "description": "Fan's biography or profile description"
+          },
+          "followerCount": {
+            "type": "integer",
+            "description": "Number of followers the fan has"
+          },
+          "followingCount": {
+            "type": "integer",
+            "description": "Number of accounts the fan is following"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the fan data was last updated"
+          }
+        }
+      },
+      "ArtistFansErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "ArtistFansPagination": {
+        "type": "object",
+        "properties": {
+          "total_count": {
+            "type": "integer",
+            "description": "Total number of records available"
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of records per page"
+          },
+          "total_pages": {
+            "type": "integer",
+            "description": "Total number of pages available"
+          }
+        }
+      },
+      "ArtistFansResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "fans",
+          "pagination"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "fans": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArtistFan"
+            },
+            "description": "List of social profiles from fans across all platforms"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/ArtistFansPagination",
+            "description": "Pagination metadata for the response"
+          }
+        }
+      },
+      "ArtistPost": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the post"
+          },
+          "post_url": {
+            "type": "string",
+            "description": "Direct URL to the post on the social platform"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the post was last updated"
+          }
+        }
+      },
+      "ArtistPostsErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "ArtistPostsPagination": {
+        "type": "object",
+        "properties": {
+          "total_count": {
+            "type": "integer",
+            "description": "Total number of posts available"
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of posts per page"
+          },
+          "total_pages": {
+            "type": "integer",
+            "description": "Total number of pages available"
+          }
+        }
+      },
+      "ArtistPostsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "posts",
+          "pagination"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "posts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArtistPost"
+            },
+            "description": "List of posts from the artist across all social platforms"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/ArtistPostsPagination",
+            "description": "Pagination metadata for the response"
+          }
+        }
+      },
+      "ArtistProfile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the artist"
+          },
+          "profiles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArtistProfileSocialProfile"
+            },
+            "description": "List of social media profiles"
+          },
+          "total_followers": {
+            "type": "integer",
+            "description": "Sum of followers across all platforms"
+          },
+          "total_following": {
+            "type": "integer",
+            "description": "Sum of following across all platforms"
+          },
+          "total_posts": {
+            "type": "integer",
+            "description": "Sum of posts across all platforms"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the data was last updated"
+          }
+        }
+      },
+      "ArtistProfileErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "ArtistProfileResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "profile"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "profile": {
+            "$ref": "#/components/schemas/ArtistProfile",
+            "description": "The artist's comprehensive profile information"
+          }
+        }
+      },
+      "ArtistProfileSocialProfile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the social profile"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username on the platform"
+          },
+          "profile_url": {
+            "type": "string",
+            "description": "Direct URL to the profile"
+          },
+          "avatar": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL to the profile avatar image"
+          },
+          "bio": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profile biography or description"
+          },
+          "follower_count": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Number of followers on this platform"
+          },
+          "following_count": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Number of accounts followed on this platform"
+          },
+          "post_count": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Number of posts on this platform"
+          },
+          "region": {
+            "type": "string",
+            "nullable": true,
+            "description": "Geographic region of the profile"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the profile was last updated"
+          }
+        }
+      },
+      "ArtistSegment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist_segments record"
+          },
+          "artist_account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist's accounts record"
+          },
+          "segment_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the segments record"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the segment data was last updated"
+          },
+          "segment_name": {
+            "type": "string",
+            "description": "Name of the segment (e.g., 'Twitter Followers')"
+          },
+          "artist_name": {
+            "type": "string",
+            "description": "Name of the artist"
+          }
+        }
+      },
+      "ArtistSegmentsErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "ArtistSegmentsPagination": {
+        "type": "object",
+        "properties": {
+          "total_count": {
+            "type": "integer",
+            "description": "Total number of segments available"
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of segments per page"
+          },
+          "total_pages": {
+            "type": "integer",
+            "description": "Total number of pages available"
+          }
+        }
+      },
+      "ArtistSegmentsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "segments",
+          "pagination"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "segments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArtistSegment"
+            },
+            "description": "List of segment objects associated with the artist"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/ArtistSegmentsPagination",
+            "description": "Pagination metadata for the response"
+          }
+        }
+      },
+      "ArtistSocial": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the social profile"
+          },
+          "platform": {
+            "type": "string",
+            "description": "Social media platform (e.g., instagram, twitter, tiktok)"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username on the platform"
+          },
+          "profile_url": {
+            "type": "string",
+            "description": "Full URL to the social media profile"
+          }
+        }
+      },
+      "ArtistSocialsErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "ArtistSocialsPagination": {
+        "type": "object",
+        "properties": {
+          "total_count": {
+            "type": "integer",
+            "description": "Total number of social profiles available"
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of social profiles per page"
+          },
+          "total_pages": {
+            "type": "integer",
+            "description": "Total number of pages available"
+          }
+        }
+      },
+      "ArtistSocialsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "socials",
+          "pagination"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "socials": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SocialProfile"
+            },
+            "description": "List of social media profiles associated with the artist"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/ArtistSocialsPagination",
+            "description": "Pagination metadata for the response"
+          }
+        }
+      },
+      "ArtistSocialsScrapeRequest": {
+        "type": "object",
+        "required": [
+          "artist_account_id"
+        ],
+        "properties": {
+          "artist_account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist account to scrape socials for",
+            "example": "1873859c-dd37-4e9a-9bac-80d35a1b2c3d"
+          }
+        }
+      },
+      "ArtistSocialsScrapeResponse": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ApifyRunResult"
+        },
+        "description": "Array of Apify run results, one for each social profile scraped"
+      },
+      "ArtistsErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "ArtistsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "artists"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Artist"
+            },
+            "description": "List of artist objects"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message (only present if status is error)"
+          }
+        }
+      },
+      "Comment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the comment"
+          },
+          "post_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the associated post"
+          },
+          "social_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the social profile who made the comment"
+          },
+          "comment": {
+            "type": "string",
+            "description": "Comment text content"
+          },
+          "commented_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp with timezone of when the comment was made"
+          }
+        }
+      },
+      "CommentsErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "CommentsPagination": {
+        "type": "object",
+        "properties": {
+          "total_count": {
+            "type": "integer",
+            "description": "Total number of comments available"
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of comments per page"
+          },
+          "total_pages": {
+            "type": "integer",
+            "description": "Total number of pages available"
+          }
+        }
+      },
+      "CommentsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "comments",
+          "pagination"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Comment"
+            },
+            "description": "List of comments for the specified artist or post"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/CommentsPagination",
+            "description": "Pagination metadata for the response"
+          }
+        }
+      },
+      "CreateArtistError": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "missing_fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of missing or invalid field names"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing the validation failure"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message (for invalid JSON or other errors)"
+          }
+        }
+      },
+      "CreateArtistRequest": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The name of the artist to create"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account to create the artist for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, the artist is created for the API key's own account."
+          },
+          "organization_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Optional organization ID to link the new artist to"
+          }
+        }
+      },
+      "CreateArtistResponse": {
+        "type": "object",
+        "required": [
+          "artist"
+        ],
+        "properties": {
+          "artist": {
+            "$ref": "#/components/schemas/CreatedArtist"
+          }
+        }
+      },
+      "CreatedArtist": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the created artist account"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist account (same as id)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the artist"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "ISO timestamp of when the artist was created"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "ISO timestamp of when the artist was last updated"
+          },
+          "image": {
+            "type": "string",
+            "nullable": true,
+            "description": "Artist profile image URL"
+          },
+          "instruction": {
+            "type": "string",
+            "nullable": true,
+            "description": "Custom AI instruction for this artist"
+          },
+          "knowledges": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "description": "Knowledge base references for this artist"
+          },
+          "label": {
+            "type": "string",
+            "nullable": true,
+            "description": "Record label name"
+          },
+          "organization": {
+            "type": "string",
+            "nullable": true,
+            "description": "Organization name"
+          },
+          "company_name": {
+            "type": "string",
+            "nullable": true,
+            "description": "Company name"
+          },
+          "job_title": {
+            "type": "string",
+            "nullable": true,
+            "description": "Job title"
+          },
+          "role_type": {
+            "type": "string",
+            "nullable": true,
+            "description": "Role type"
+          },
+          "onboarding_status": {
+            "type": "string",
+            "nullable": true,
+            "description": "Onboarding status"
+          },
+          "onboarding_data": {
+            "nullable": true,
+            "description": "Onboarding data"
+          },
+          "account_info": {
+            "type": "array",
+            "description": "Account info records"
+          },
+          "account_socials": {
+            "type": "array",
+            "description": "Linked social media accounts"
+          }
+        }
+      },
+      "Error": {
+        "required": [
+          "error",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "PostComment": {
+        "type": "object",
+        "required": [
+          "id",
+          "post_id",
+          "social_id",
+          "comment",
+          "commented_at",
+          "username",
+          "profile_url",
+          "post_url"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the comment record"
+          },
+          "post_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the post this comment belongs to"
+          },
+          "social_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the social profile that made the comment"
+          },
+          "comment": {
+            "type": "string",
+            "description": "Text content of the comment"
+          },
+          "commented_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the comment was posted"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username of the commenter"
+          },
+          "avatar": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL to the commenter's avatar image"
+          },
+          "profile_url": {
+            "type": "string",
+            "description": "URL to the commenter's profile"
+          },
+          "post_url": {
+            "type": "string",
+            "description": "URL to the post where the comment was made"
+          },
+          "region": {
+            "type": "string",
+            "nullable": true,
+            "description": "Geographic region of the commenter"
+          },
+          "bio": {
+            "type": "string",
+            "nullable": true,
+            "description": "Commenter's biography or description"
+          },
+          "follower_count": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Number of followers the commenter has"
+          },
+          "following_count": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Number of accounts the commenter follows"
+          }
+        }
+      },
+      "PostCommentsErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "PostCommentsPagination": {
+        "type": "object",
+        "properties": {
+          "total_count": {
+            "type": "integer",
+            "description": "Total number of comments available"
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of comments per page"
+          },
+          "total_pages": {
+            "type": "integer",
+            "description": "Total number of pages available"
+          }
+        }
+      },
+      "PostCommentsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "comments",
+          "pagination"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PostComment"
+            },
+            "description": "List of comments for the specified post"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PostCommentsPagination",
+            "description": "Pagination metadata for the response"
+          }
+        }
+      },
+      "SegmentFan": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the fan_segments record"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username or handle on the platform"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "URL to the fan's avatar/profile image"
+          },
+          "profile_url": {
+            "type": "string",
+            "description": "Full URL to the fan's profile on the platform"
+          },
+          "segment_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the fan's segments record"
+          },
+          "segment_name": {
+            "type": "string",
+            "description": "Name of the segment (e.g., 'Twitter Followers')"
+          },
+          "fan_social_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the fan's socials media profile account"
+          },
+          "region": {
+            "type": "string",
+            "description": "Geographic region or location of the fan"
+          },
+          "bio": {
+            "type": "string",
+            "description": "Fan's biography or profile description"
+          },
+          "follower_count": {
+            "type": "integer",
+            "description": "Number of followers the fan has"
+          },
+          "following_count": {
+            "type": "integer",
+            "description": "Number of accounts the fan is following"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the fan data was last updated"
+          }
+        }
+      },
+      "SegmentFansErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "SegmentFansPagination": {
+        "type": "object",
+        "properties": {
+          "total_count": {
+            "type": "integer",
+            "description": "Total number of records available"
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of records per page"
+          },
+          "total_pages": {
+            "type": "integer",
+            "description": "Total number of pages available"
+          }
+        }
+      },
+      "SegmentFansResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "fans",
+          "pagination"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "fans": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SegmentFan"
+            },
+            "description": "List of social profiles from fans in the segment"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/SegmentFansPagination",
+            "description": "Pagination metadata for the response"
+          }
+        }
+      },
+      "SocialProfile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist's account_socials record"
+          },
+          "social_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist's socials account"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username on the platform"
+          },
+          "profile_url": {
+            "type": "string",
+            "description": "Direct URL to the profile"
+          },
+          "avatar": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL to the profile avatar image"
+          },
+          "bio": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profile biography or description"
+          },
+          "follower_count": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Number of followers on this platform"
+          },
+          "following_count": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Number of accounts followed on this platform"
+          },
+          "region": {
+            "type": "string",
+            "nullable": true,
+            "description": "Geographic region of the profile"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the profile was last updated"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Your Recoup API key. [Learn more](/quickstart#api-keys)."
+      }
+    }
+  }
+}

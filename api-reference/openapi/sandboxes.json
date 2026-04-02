@@ -1,0 +1,879 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup Sandboxes API",
+    "description": "API documentation for the Recoup platform - an AI agent platform for the music industry",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://recoup-api.vercel.app"
+    }
+  ],
+  "security": [
+    {
+      "apiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/api/sandboxes": {
+      "get": {
+        "description": "List all sandboxes associated with the authenticated account and their current statuses. Returns sandbox details including lifecycle state, timeout remaining, and creation timestamp. Pass account_id to retrieve sandboxes for a specific account the API key has access to. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "parameters": [
+          {
+            "name": "sandbox_id",
+            "in": "query",
+            "required": false,
+            "description": "Filter by a specific sandbox ID. When provided, returns only the sandbox matching this ID. Must be a sandbox that your account or organization is an admin of.",
+            "schema": {
+              "type": "string",
+              "example": "sbx_abc123def456"
+            }
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "description": "Filter to a specific account. Only applicable when the authenticated account has access to multiple accounts via organization membership.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sandboxes retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account_id is not a member of the organization or account tried to filter by an account_id they don't have access to",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "list"
+      },
+      "post": {
+        "description": "Create a new ephemeral sandbox environment. Optionally executes a command or an OpenCode prompt if provided. Sandboxes are isolated Linux microVMs that can be used to evaluate account-generated code, run AI agent output safely, or execute reproducible tasks. The sandbox will automatically stop after the timeout period. If no command or prompt is provided, the sandbox is created without triggering any background task. Use the prompt parameter as a shortcut to run `opencode run \"<prompt>\"` in the sandbox. Pass account_id to create a sandbox for a specific account the API key has access to. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "requestBody": {
+          "description": "Optional command execution parameters. If command and prompt are both omitted, sandbox is created without running any command. Use prompt as a shortcut for running OpenCode.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSandboxRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sandbox created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - failed to create sandbox",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account_id is not a member of the organization or account tried to use an account_id they don't have access to",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "create"
+      },
+      "patch": {
+        "description": "Set a custom snapshot ID for an account. By default, updates the key owner's account. Pass account_id to target a specific account the API key has access to. This allows accounts to use a specific sandbox snapshot when creating new sandboxes, enabling reproducible environments with pre-configured tools, dependencies, and files.",
+        "requestBody": {
+          "description": "Snapshot configuration parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSnapshotRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Snapshot ID updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateSnapshotResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid snapshot ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account_id is not a member of the organization or account tried to use an account_id they don't have access to",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "snapshot"
+      },
+      "delete": {
+        "description": "Delete a sandbox environment for the authenticated account. This permanently deletes the associated GitHub repository and removes the account's snapshot record from the database. By default, deletes the sandbox for the key owner's account. Pass account_id to target a specific account the API key has access to. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "requestBody": {
+          "description": "Optional account targeting parameters",
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteSandboxRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sandbox deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteSandboxResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - failed to delete sandbox",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account_id is not a member of the organization or account tried to use an account_id they don't have access to",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "delete"
+      }
+    },
+    "/api/sandboxes/setup": {
+      "post": {
+        "description": "Triggers the setup-sandbox background task to create a personal sandbox, provision a GitHub repo, take a snapshot, and shut down. By default, sets up the sandbox for the key owner's account. Pass account_id to target a specific account the API key has access to. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "requestBody": {
+          "description": "Optional account targeting parameters",
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetupSandboxRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Setup task triggered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SetupSandboxResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid account_id format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "setup"
+      }
+    },
+    "/api/sandboxes/file": {
+      "get": {
+        "description": "Retrieve the raw contents of a file from the authenticated account's sandbox GitHub repository. Resolves the github_repo from the [account's snapshot](/api-reference/sandboxes/list), then fetches the file at the specified path from the repository's main branch. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "parameters": [
+          {
+            "name": "path",
+            "in": "query",
+            "required": true,
+            "description": "The file path within the repository (e.g. \"src/index.ts\" or \"README.md\").",
+            "schema": {
+              "type": "string",
+              "example": "src/index.ts"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File contents retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxFileResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid path parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account does not have access",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - no snapshot, no github_repo, or file not found in repository",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "file"
+      }
+    },
+    "/api/sandboxes/files": {
+      "post": {
+        "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Accepts an array of file URLs and commits each file to the specified directory path within the repository. Supports submodule resolution — if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "requestBody": {
+          "description": "JSON body containing file URLs and target path",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadSandboxFilesRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Files uploaded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadSandboxFilesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing files or invalid path",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account does not have access",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - no snapshot or no github_repo configured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "upload"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateSandboxRequest": {
+        "type": "object",
+        "description": "Request body for creating a new sandbox. All fields are optional - if no command or prompt is provided, sandbox is created without triggering a command execution task. Use prompt as a shortcut to run OpenCode with a given prompt instead of specifying command/args manually.",
+        "properties": {
+          "command": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The command to execute in the sandbox environment. If omitted, the sandbox is created without running any command.",
+            "example": "ls"
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Optional arguments to pass to the command.",
+            "example": [
+              "-la",
+              "/home"
+            ]
+          },
+          "cwd": {
+            "type": "string",
+            "description": "Optional working directory for command execution.",
+            "example": "/home/user"
+          },
+          "prompt": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A prompt to pass to OpenCode in the sandbox. When provided, the sandbox will execute `opencode run \"<prompt>\"`. Cannot be used together with command.",
+            "example": "create a hello world index.html"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account to create the sandbox for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, creates the sandbox for the API key's own account."
+          }
+        }
+      },
+      "DeleteSandboxRequest": {
+        "type": "object",
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account to delete the sandbox for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, deletes the sandbox for the API key's own account."
+          }
+        }
+      },
+      "DeleteSandboxResponse": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the delete operation"
+          },
+          "deleted_snapshot": {
+            "nullable": true,
+            "description": "The snapshot record that was deleted. Null if no snapshot existed for the account.",
+            "$ref": "#/components/schemas/UpdateSnapshotResponse"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message (only present if status is error)"
+          }
+        }
+      },
+      "Error": {
+        "required": [
+          "error",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "FileTreeEntry": {
+        "type": "object",
+        "required": [
+          "path",
+          "type",
+          "sha"
+        ],
+        "description": "A single entry in a GitHub repository file tree",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "The file or directory path relative to the repository root",
+            "example": "src/index.ts"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "blob",
+              "tree"
+            ],
+            "description": "The type of entry: blob for files, tree for directories"
+          },
+          "sha": {
+            "type": "string",
+            "description": "The SHA hash of the entry",
+            "example": "abc123def456"
+          },
+          "size": {
+            "type": "integer",
+            "description": "The size of the file in bytes. Only present for blob entries.",
+            "example": 1024
+          }
+        }
+      },
+      "Sandbox": {
+        "type": "object",
+        "required": [
+          "sandboxId",
+          "sandboxStatus",
+          "timeout",
+          "createdAt"
+        ],
+        "description": "A sandbox environment instance",
+        "properties": {
+          "sandboxId": {
+            "type": "string",
+            "description": "Unique identifier for the sandbox",
+            "example": "sbx_abc123def456"
+          },
+          "sandboxStatus": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "running",
+              "stopping",
+              "stopped",
+              "failed"
+            ],
+            "description": "Current lifecycle state of the sandbox",
+            "example": "running"
+          },
+          "timeout": {
+            "type": "integer",
+            "description": "Milliseconds remaining before the sandbox stops automatically",
+            "example": 300000
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp when the sandbox was created",
+            "example": "2024-01-15T10:30:00.000Z"
+          },
+          "runId": {
+            "type": "string",
+            "description": "Unique identifier for the command execution run. Only present if a command was provided when creating the sandbox. Use this with [GET /api/tasks/runs](/api-reference/tasks/runs) to check the status and retrieve results.",
+            "example": "run_xyz789abc123"
+          }
+        }
+      },
+      "SandboxErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong",
+            "example": "Failed to create sandbox"
+          }
+        }
+      },
+      "SandboxFileResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "content"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the operation"
+          },
+          "content": {
+            "type": "string",
+            "description": "The raw text content of the file"
+          }
+        }
+      },
+      "SandboxesResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "sandboxes"
+        ],
+        "description": "Response containing sandbox information",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "sandboxes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Sandbox"
+            },
+            "description": "Array of sandbox objects"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "description": "The account's saved snapshot ID used for creating new sandboxes. Null if no snapshot has been saved.",
+            "example": "snap_abc123def456",
+            "nullable": true
+          },
+          "github_repo": {
+            "type": "string",
+            "description": "The GitHub repository URL associated with the account's sandbox environment. Used as the filesystem source when restoring sandboxes.",
+            "example": "https://github.com/username/repo",
+            "nullable": true
+          },
+          "filetree": {
+            "type": "array",
+            "nullable": true,
+            "description": "The recursive file tree of the account's GitHub repository. Null if no github_repo is set or if the fetch fails.",
+            "items": {
+              "$ref": "#/components/schemas/FileTreeEntry"
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message (only present if status is error)"
+          }
+        }
+      },
+      "SetupSandboxRequest": {
+        "type": "object",
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account to set up the sandbox for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, sets up the sandbox for the API key's own account."
+          }
+        }
+      },
+      "SetupSandboxResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "runId"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the setup operation"
+          },
+          "runId": {
+            "type": "string",
+            "description": "The Trigger.dev run ID for the setup-sandbox background task. Use this with [GET /api/tasks/runs](/api-reference/tasks/runs) to check the status and retrieve results.",
+            "example": "run_abc123def456"
+          }
+        }
+      },
+      "UpdateSnapshotRequest": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "snapshotId": {
+            "type": "string",
+            "description": "The snapshot ID to set for the account. This snapshot will be used as the base environment when creating new sandboxes.",
+            "example": "snap_abc123def456"
+          },
+          "github_repo": {
+            "type": "string",
+            "format": "uri",
+            "description": "The GitHub repository URL to associate with the account's sandbox environment. Must be a valid URL.",
+            "example": "https://github.com/org/repo"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account to update the snapshot for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, updates the snapshot for the API key's own account."
+          }
+        }
+      },
+      "UpdateSnapshotResponse": {
+        "type": "object",
+        "required": [
+          "account_id",
+          "snapshot_id",
+          "expires_at",
+          "github_repo",
+          "created_at"
+        ],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The account ID this snapshot belongs to",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "description": "The snapshot ID that was set for the account",
+            "example": "snap_abc123def456"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the snapshot expires",
+            "example": "2027-01-01T00:00:00.000Z"
+          },
+          "github_repo": {
+            "type": "string",
+            "nullable": true,
+            "description": "The GitHub repository URL associated with the sandbox",
+            "example": "https://github.com/org/repo"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "When the snapshot record was created",
+            "example": "2025-01-01T00:00:00.000Z"
+          }
+        }
+      },
+      "UploadSandboxFilesRequest": {
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "The target directory path within the repository to upload files to. Defaults to the repository root if omitted.",
+            "example": "assets/images"
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "url",
+                "name"
+              ],
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "The URL of the file to upload",
+                  "example": "https://example.com/files/album-cover.png"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The filename to use when committing to the repository",
+                  "example": "album-cover.png"
+                }
+              }
+            },
+            "description": "Array of files to upload, each with a URL and target filename"
+          },
+          "message": {
+            "type": "string",
+            "description": "Optional commit message. Defaults to 'Upload files via API'.",
+            "example": "Add new album artwork"
+          }
+        }
+      },
+      "UploadSandboxFilesResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "uploaded"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the operation"
+          },
+          "uploaded": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "description": "The full path of the uploaded file in the repository"
+                },
+                "sha": {
+                  "type": "string",
+                  "description": "The git SHA of the created/updated file"
+                }
+              }
+            },
+            "description": "Array of uploaded file details"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Your Recoup API key. [Learn more](/quickstart#api-keys)."
+      }
+    }
+  }
+}

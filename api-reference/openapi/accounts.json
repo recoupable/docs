@@ -1,0 +1,1204 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup Accounts API",
+    "description": "API documentation for the Recoup platform - an AI agent platform for the music industry",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://recoup-api.vercel.app"
+    }
+  ],
+  "security": [
+    {
+      "apiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/api/accounts/{id}": {
+      "get": {
+        "description": "Retrieve detailed account information by ID. Returns the account with associated profile info, emails, and wallet addresses.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the account",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAccountResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get"
+      }
+    },
+    "/api/accounts/id": {
+      "get": {
+        "description": "Retrieve the ID of the authenticated account associated with the provided credentials. This is useful when you have an API key or access token but do not yet know the corresponding accountId.",
+        "parameters": [],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account ID retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAccountIdResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "id"
+      }
+    },
+    "/api/accounts": {
+      "post": {
+        "description": "Create a new account or retrieve an existing account by email or wallet address. If an account with the provided email or wallet already exists, returns that account. Otherwise creates a new account and initializes credits.",
+        "requestBody": {
+          "description": "Account credentials to create or lookup",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAccountRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Account created or retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountDataResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - failed to create account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "create"
+      },
+      "patch": {
+        "description": "Update an existing account's profile information including name, organization, image, instruction, job title, role type, company name, and knowledges.",
+        "requestBody": {
+          "description": "Account fields to update",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAccountRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Account updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountDataResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - account not found or update failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "update"
+      }
+    },
+    "/api/accounts/artists": {
+      "post": {
+        "description": "Add an artist to an account's list of associated artists. If the artist is already associated with the account, returns success without modification.",
+        "requestBody": {
+          "description": "Account and artist identifiers",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddArtistToAccountRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Artist added to account successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddArtistSuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "add-artist"
+      }
+    },
+    "/api/organizations": {
+      "get": {
+        "description": "Retrieve all organizations that the authenticated account belongs to. Pass account_id to retrieve organizations for a specific account the API key has access to.",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "query",
+            "description": "Filter to a specific account. Only applicable when the authenticated account has access to multiple accounts via organization membership.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Organizations retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetOrganizationsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account_id is not a member of the organization or account tried to filter by an account_id they don't have access to",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "organizations-list"
+      },
+      "post": {
+        "description": "Create a new organization. The creator is automatically added as a member of the organization.",
+        "requestBody": {
+          "description": "Organization creation parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrganizationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Organization created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateOrganizationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "organizations-create"
+      }
+    },
+    "/api/organizations/artists": {
+      "post": {
+        "description": "Add an artist to an organization. This allows organization members to access and manage the artist. This endpoint is idempotent - calling it multiple times with the same artistId and organizationId will not create duplicate records.",
+        "requestBody": {
+          "description": "Artist-organization association parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddArtistToOrganizationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Artist added to organization successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddArtistToOrganizationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "organizations-add-artist"
+      }
+    },
+    "/api/workspaces": {
+      "post": {
+        "description": "Create a new workspace account. Workspaces can optionally be linked to an organization.",
+        "requestBody": {
+          "description": "Workspace creation parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWorkspaceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Workspace created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateWorkspaceResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - access denied to organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "workspaces-create"
+      }
+    },
+    "/api/subscriptions": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Retrieve subscription information for an account. For accounts with enterprise plans, returns a simplified response indicating enterprise status. For standard accounts, returns the full Stripe subscription object.",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "description": "The unique identifier of the account to query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subscription information retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/SubscriptionResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/EnterpriseSubscriptionResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid accountId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "subscriptions-get"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Account": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the account"
+          },
+          "name": {
+            "type": "string",
+            "description": "Account display name"
+          },
+          "image": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profile image URL"
+          },
+          "instruction": {
+            "type": "string",
+            "nullable": true,
+            "description": "Custom AI instructions for this account"
+          },
+          "knowledges": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/Knowledge"
+            },
+            "description": "Knowledge base files attached to this account"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true,
+            "description": "Primary email address"
+          },
+          "wallet_address": {
+            "type": "string",
+            "nullable": true,
+            "description": "Connected wallet address"
+          }
+        }
+      },
+      "AccountData": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier of the account"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The account ID (same as id, for consistency)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Display name of the account"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address associated with the account"
+          },
+          "wallet": {
+            "type": "string",
+            "description": "Wallet address associated with the account"
+          },
+          "image": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the account's profile image"
+          },
+          "instruction": {
+            "type": "string",
+            "description": "Custom instruction or bio"
+          },
+          "organization": {
+            "type": "string",
+            "description": "Organization name"
+          },
+          "job_title": {
+            "type": "string",
+            "description": "Job title"
+          },
+          "role_type": {
+            "type": "string",
+            "description": "Role type"
+          },
+          "company_name": {
+            "type": "string",
+            "description": "Company name"
+          },
+          "knowledges": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of knowledge areas"
+          }
+        }
+      },
+      "AccountDataResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AccountData",
+            "description": "The account data"
+          }
+        }
+      },
+      "AccountErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "AddArtistSuccessResponse": {
+        "type": "object",
+        "required": [
+          "success"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [
+              true
+            ],
+            "description": "Indicates the artist was successfully added"
+          }
+        }
+      },
+      "AddArtistToAccountRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "artistId"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the account to add the artist to"
+          },
+          "artistId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier of the artist to add"
+          }
+        }
+      },
+      "AddArtistToOrganizationRequest": {
+        "type": "object",
+        "required": [
+          "artistId",
+          "organizationId"
+        ],
+        "properties": {
+          "artistId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The account ID of the artist to add",
+            "example": "artist-account-uuid"
+          },
+          "organizationId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The account ID of the organization",
+            "example": "org-account-uuid"
+          }
+        }
+      },
+      "AddArtistToOrganizationResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "id"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the created artist-organization link"
+          }
+        }
+      },
+      "CreateAccountRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address to associate with the account. If an account with this email exists, it will be returned."
+          },
+          "wallet": {
+            "type": "string",
+            "description": "Wallet address to associate with the account. If an account with this wallet exists, it will be returned."
+          }
+        },
+        "description": "At least one of email or wallet should be provided to identify or create an account."
+      },
+      "CreateOrganizationRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "accountId"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the organization to create",
+            "example": "My New Label"
+          },
+          "accountId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The account ID of the creator",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          }
+        }
+      },
+      "CreateOrganizationResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "organization"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "organization": {
+            "$ref": "#/components/schemas/CreatedOrganization",
+            "description": "The created organization"
+          }
+        }
+      },
+      "CreateWorkspaceRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the workspace (defaults to \"Untitled\")"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account to create the workspace for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, the workspace is created for the API key's own account."
+          },
+          "organization_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Organization to link the workspace to"
+          }
+        }
+      },
+      "CreateWorkspaceResponse": {
+        "type": "object",
+        "required": [
+          "workspace"
+        ],
+        "properties": {
+          "workspace": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              },
+              "account_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "isWorkspace": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      },
+      "CreatedOrganization": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the new organization account"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the organization"
+          }
+        }
+      },
+      "EnterpriseSubscriptionResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "isEnterprise"
+        ],
+        "description": "Response for accounts with enterprise plans",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "isEnterprise": {
+            "type": "boolean",
+            "enum": [
+              true
+            ],
+            "description": "Indicates that the account has an enterprise plan"
+          }
+        }
+      },
+      "Error": {
+        "required": [
+          "error",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "GetAccountIdResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "accountId"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "accountId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier (UUID) of the authenticated account"
+          }
+        }
+      },
+      "GetAccountResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "account"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "account": {
+            "$ref": "#/components/schemas/Account",
+            "description": "The account details"
+          }
+        }
+      },
+      "GetOrganizationsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "organizations"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "organizations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Organization"
+            },
+            "description": "List of organizations the account belongs to"
+          }
+        }
+      },
+      "Knowledge": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL to the knowledge file"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the knowledge file"
+          },
+          "type": {
+            "type": "string",
+            "description": "MIME type of the file"
+          }
+        }
+      },
+      "Organization": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the membership record"
+          },
+          "organization_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the organization account"
+          },
+          "organization_name": {
+            "type": "string",
+            "description": "Display name of the organization"
+          },
+          "organization_image": {
+            "type": "string",
+            "nullable": true,
+            "description": "Organization logo/image URL"
+          }
+        }
+      },
+      "OrganizationsErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "StripeSubscription": {
+        "type": "object",
+        "description": "A Stripe subscription object. For detailed information about all available properties, see the Stripe Subscription API documentation: https://docs.stripe.com/api/subscriptions/retrieve",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the subscription"
+          },
+          "object": {
+            "type": "string",
+            "enum": [
+              "subscription"
+            ],
+            "description": "String representing the object's type"
+          },
+          "customer": {
+            "type": "string",
+            "description": "ID of the customer who owns this subscription"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "canceled",
+              "incomplete",
+              "incomplete_expired",
+              "past_due",
+              "trialing",
+              "unpaid"
+            ],
+            "description": "The status of the subscription"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Three-letter ISO currency code"
+          },
+          "current_period_start": {
+            "type": "integer",
+            "description": "Start of the current period (Unix timestamp)"
+          },
+          "current_period_end": {
+            "type": "integer",
+            "description": "End of the current period (Unix timestamp)"
+          },
+          "cancel_at_period_end": {
+            "type": "boolean",
+            "description": "If true, the subscription will be canceled at the end of the current period"
+          },
+          "created": {
+            "type": "integer",
+            "description": "Time at which the subscription was created (Unix timestamp)"
+          },
+          "items": {
+            "type": "object",
+            "description": "List of subscription items, each with an attached price",
+            "properties": {
+              "object": {
+                "type": "string",
+                "enum": [
+                  "list"
+                ]
+              },
+              "data": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "object": {
+                      "type": "string",
+                      "enum": [
+                        "subscription_item"
+                      ]
+                    },
+                    "price": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "currency": {
+                          "type": "string"
+                        },
+                        "unit_amount": {
+                          "type": "integer",
+                          "description": "Price amount in cents"
+                        },
+                        "recurring": {
+                          "type": "object",
+                          "properties": {
+                            "interval": {
+                              "type": "string",
+                              "enum": [
+                                "day",
+                                "week",
+                                "month",
+                                "year"
+                              ]
+                            },
+                            "interval_count": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "quantity": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              },
+              "has_more": {
+                "type": "boolean"
+              },
+              "total_count": {
+                "type": "integer"
+              }
+            }
+          },
+          "latest_invoice": {
+            "type": "string",
+            "description": "ID of the most recent invoice for this subscription"
+          },
+          "livemode": {
+            "type": "boolean",
+            "description": "Indicates if in live mode (true) or test mode (false)"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Set of key-value pairs attached to the subscription"
+          }
+        }
+      },
+      "SubscriptionErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "SubscriptionResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "subscription"
+        ],
+        "description": "Response for standard accounts with Stripe subscriptions",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "subscription": {
+            "$ref": "#/components/schemas/StripeSubscription",
+            "description": "The full Stripe subscription object"
+          }
+        }
+      },
+      "UpdateAccountRequest": {
+        "type": "object",
+        "required": [
+          "accountId"
+        ],
+        "properties": {
+          "accountId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier of the account to update"
+          },
+          "name": {
+            "type": "string",
+            "description": "Display name for the account"
+          },
+          "instruction": {
+            "type": "string",
+            "description": "Custom instruction or bio for the account"
+          },
+          "organization": {
+            "type": "string",
+            "description": "Organization name associated with the account"
+          },
+          "image": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the account's profile image"
+          },
+          "jobTitle": {
+            "type": "string",
+            "description": "Job title of the account holder"
+          },
+          "roleType": {
+            "type": "string",
+            "description": "Role type within the organization"
+          },
+          "companyName": {
+            "type": "string",
+            "description": "Company name associated with the account"
+          },
+          "knowledges": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of knowledge areas or expertise"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Your Recoup API key. [Learn more](/quickstart#api-keys)."
+      }
+    }
+  }
+}

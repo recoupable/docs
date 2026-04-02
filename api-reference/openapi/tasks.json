@@ -1,0 +1,778 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup Tasks API",
+    "description": "API documentation for the Recoup platform - an AI agent platform for the music industry",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://recoup-api.vercel.app"
+    }
+  ],
+  "security": [
+    {
+      "apiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/api/tasks": {
+      "get": {
+        "description": "Retrieve scheduled tasks. The response includes recent_runs (last 5 runs) and upcoming (next scheduled run times) sourced directly from the Trigger.dev API. Supports filtering by id, account_id, or artist_account_id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Filter by task ID (UUID). Returns a single task matching the provided ID.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "description": "Filter tasks to only include those for the specified account.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "artist_account_id",
+            "in": "query",
+            "description": "Filter tasks to only include those for the specified artist account.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tasks retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get"
+      },
+      "post": {
+        "description": "Create a new scheduled task. All fields are required. The response shape matches the GET endpoint (an array containing the created task).",
+        "requestBody": {
+          "description": "Task to create",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTaskRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "create"
+      },
+      "patch": {
+        "description": "Update an existing scheduled task. Only the id field is required; any additional fields you include will be updated on the task. The response shape matches the GET endpoint (an array containing the updated task).",
+        "requestBody": {
+          "description": "Task fields to update",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTaskRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "update"
+      },
+      "delete": {
+        "description": "Delete an existing scheduled task by its ID. Returns the status of the delete operation.",
+        "requestBody": {
+          "description": "Task to delete",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteTaskRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteTaskResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "delete"
+      }
+    },
+    "/api/tasks/runs": {
+      "get": {
+        "description": "Returns an array of task runs. When runId is provided, the array contains that single run. When omitted, returns recent runs for the authenticated account. Use account_id to query runs for a specific account within your organizations.",
+        "parameters": [
+          {
+            "name": "runId",
+            "in": "query",
+            "description": "The unique identifier of a specific task run to retrieve. If omitted, returns a list of recent runs for the authenticated account.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of runs to return when listing (ignored when runId is provided). Default 20, max 100.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "description": "Filter runs by account ID. When provided, returns runs tagged with account:<account_id>. Only applicable when the authenticated account has access to multiple accounts via organization membership.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task runs retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskRunListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account_id is not accessible with the provided credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Task run not found (only when runId is provided)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "runs"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateTaskRequest": {
+        "type": "object",
+        "required": [
+          "title",
+          "prompt",
+          "schedule",
+          "account_id",
+          "artist_account_id"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Descriptive title of the task",
+            "example": "Weekly Genre Pulse Check"
+          },
+          "prompt": {
+            "type": "string",
+            "description": "Instruction/prompt executed by the task",
+            "example": "Execute this weekly genre analysis workflow and email a summary to the team."
+          },
+          "schedule": {
+            "type": "string",
+            "description": "Cron expression defining when the task runs (e.g., '0 9 * * 4' for Thursdays at 9 AM)",
+            "example": "0 9 * * 4"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the associated account",
+            "example": "848cd58d-700f-4b38-ab4c-d9f52a1b2c3d"
+          },
+          "artist_account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the associated artist account",
+            "example": "1873859c-dd37-4e9a-9bac-80d35a1b2c3d"
+          }
+        }
+      },
+      "DeleteTaskRequest": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the task to delete",
+            "example": "aade2bce-55c7-468e-a606-c4e76fb2ea2a"
+          }
+        }
+      },
+      "DeleteTaskResponse": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the delete operation"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message (only present if status is error)"
+          }
+        }
+      },
+      "Error": {
+        "required": [
+          "error",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Task": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the task"
+          },
+          "title": {
+            "type": "string",
+            "description": "Descriptive title or name of the task"
+          },
+          "prompt": {
+            "type": "string",
+            "description": "Detailed instruction or prompt for task execution"
+          },
+          "schedule": {
+            "type": "string",
+            "description": "Cron expression defining when the task should execute (e.g., '0 10 * * *')"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the associated account"
+          },
+          "artist_account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the associated artist account"
+          },
+          "enabled": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Whether the task is enabled. Defaults to true."
+          },
+          "trigger_schedule_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Identifier for the trigger schedule associated with this task"
+          },
+          "recent_runs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TaskRunResponse"
+            },
+            "description": "Last 5 runs for this task, sourced from the Trigger.dev API."
+          },
+          "upcoming": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Next scheduled run times, sourced from the latest Trigger.dev run payload."
+          }
+        }
+      },
+      "TaskRunListResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "runs"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Indicates the request was successful"
+          },
+          "runs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TaskRunResponse"
+            },
+            "description": "List of recent task runs for the authenticated account. Each item is a raw Trigger.dev SDK run object (same shape as TaskRunResponse, but without `output` and `error` fields)."
+          }
+        }
+      },
+      "TaskRunResponse": {
+        "type": "object",
+        "description": "Raw Trigger.dev SDK run object. The API passes through the SDK response without field mapping. See https://trigger.dev/docs/management/runs/retrieve for the full reference. When listing runs, `output`, `error`, `payload`, and `attempts` are not included.",
+        "required": [
+          "id",
+          "status",
+          "taskIdentifier",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique run identifier, prefixed with `run_`"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING_VERSION",
+              "DELAYED",
+              "QUEUED",
+              "EXECUTING",
+              "REATTEMPTING",
+              "FROZEN",
+              "COMPLETED",
+              "CANCELED",
+              "FAILED",
+              "CRASHED",
+              "INTERRUPTED",
+              "SYSTEM_FAILURE"
+            ],
+            "description": "Current run status"
+          },
+          "taskIdentifier": {
+            "type": "string",
+            "description": "The task type identifier (e.g. 'setup-sandbox', 'run-sandbox-command')"
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "nullable": true,
+            "description": "Idempotency key used to deduplicate trigger requests"
+          },
+          "version": {
+            "type": "string",
+            "description": "The worker version that executed the run"
+          },
+          "isTest": {
+            "type": "boolean",
+            "description": "Whether this is a test run"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the run was created (ISO 8601)"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the run was last updated (ISO 8601)"
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "When execution started (null if not yet started)"
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "When the run finished (null if still running)"
+          },
+          "delayedUntil": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "If delayed, when the run becomes eligible to execute"
+          },
+          "ttl": {
+            "description": "Time-to-live. If the run is not started within this duration, it expires.",
+            "nullable": true
+          },
+          "expiredAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "When the run expired (null if not expired)"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Tags associated with this run (max 10)"
+          },
+          "metadata": {
+            "type": "object",
+            "nullable": true,
+            "description": "JSON metadata attached to the run"
+          },
+          "costInCents": {
+            "type": "number",
+            "description": "Compute cost of the run in cents"
+          },
+          "baseCostInCents": {
+            "type": "number",
+            "description": "Base invocation cost in cents"
+          },
+          "durationMs": {
+            "type": "number",
+            "description": "Compute duration in milliseconds"
+          },
+          "env": {
+            "type": "object",
+            "description": "Environment the run executed in",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "user": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          },
+          "depth": {
+            "type": "integer",
+            "description": "Nesting depth for child runs"
+          },
+          "batchId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Batch ID if triggered as part of a batch"
+          },
+          "triggerFunction": {
+            "type": "string",
+            "enum": [
+              "trigger",
+              "triggerAndWait",
+              "batchTrigger",
+              "batchTriggerAndWait"
+            ],
+            "description": "The function used to trigger this run"
+          },
+          "payload": {
+            "description": "Input payload for the task. Only present when retrieving by runId.",
+            "nullable": true
+          },
+          "output": {
+            "description": "Task output data. Only present when retrieving by runId.",
+            "nullable": true
+          },
+          "error": {
+            "type": "object",
+            "nullable": true,
+            "description": "Error details if the run failed. Only present when retrieving by runId.",
+            "properties": {
+              "message": {
+                "type": "string",
+                "description": "Human-readable error message"
+              },
+              "name": {
+                "type": "string",
+                "description": "Error name or type"
+              },
+              "stackTrace": {
+                "type": "string",
+                "description": "Stack trace"
+              }
+            }
+          },
+          "attempts": {
+            "type": "array",
+            "description": "Attempt history. Only present when retrieving by runId.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Attempt ID, prefixed with `attempt_`"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "PENDING",
+                    "EXECUTING",
+                    "PAUSED",
+                    "COMPLETED",
+                    "FAILED",
+                    "CANCELED"
+                  ]
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "startedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "nullable": true
+                },
+                "completedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "nullable": true
+                },
+                "error": {
+                  "type": "object",
+                  "nullable": true,
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "stackTrace": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "schedule": {
+            "type": "object",
+            "nullable": true,
+            "description": "Schedule information if triggered by a schedule. Only present when retrieving by runId."
+          },
+          "relatedRuns": {
+            "type": "object",
+            "nullable": true,
+            "description": "Related run references (root, parent, children). Only present when retrieving by runId."
+          }
+        }
+      },
+      "TasksResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "tasks"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "tasks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Task"
+            },
+            "description": "Array of task objects"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message (only present if status is error)"
+          }
+        }
+      },
+      "UpdateTaskRequest": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the task to update",
+            "example": "aade2bce-55c7-468e-a606-c4e76fb2ea2a"
+          },
+          "title": {
+            "type": "string",
+            "description": "New descriptive title of the task",
+            "example": "Weekly Genre Pulse Check (Updated)"
+          },
+          "prompt": {
+            "type": "string",
+            "description": "New instruction/prompt executed by the task",
+            "example": "Execute this weekly genre analysis workflow and email a summary to the team."
+          },
+          "schedule": {
+            "type": "string",
+            "description": "New cron expression defining when the task runs",
+            "example": "0 10 * * 4"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "New UUID of the associated account",
+            "example": "848cd58d-700f-4b38-ab4c-d9f52a1b2c3d"
+          },
+          "artist_account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "New UUID of the associated artist account",
+            "example": "1873859c-dd37-4e9a-9bac-80d35a1b2c3d"
+          },
+          "enabled": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Whether the task is enabled. Can be true, false, or null.",
+            "example": true
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Your Recoup API key. [Learn more](/quickstart#api-keys)."
+      }
+    }
+  }
+}

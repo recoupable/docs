@@ -1,0 +1,2212 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup Social API",
+    "description": "API documentation for the Recoup platform - an AI agent platform for the music industry",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://recoup-api.vercel.app"
+    }
+  ],
+  "security": [
+    {
+      "apiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/api/spotify/search": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Search for artists, albums, tracks, and playlists using the Spotify API. This endpoint is a proxy to the official Spotify Search API.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "The search query keywords and optional field filters",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "A comma-separated list of item types to search across: album, artist, playlist, track, show, episode, audiobook",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "market",
+            "in": "query",
+            "description": "An ISO 3166-1 alpha-2 country code or 'from_token'",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of results to return (default: 20, min: 1, max: 50)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "The index of the first result to return (default: 0, max: 10000)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "maximum": 10000
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpotifySearchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpotifyErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "spotify-search"
+      }
+    },
+    "/api/spotify/artist/": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Get Spotify catalog information for a single artist identified by their unique Spotify ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "The Spotify ID of the artist",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpotifyGetArtistResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpotifyErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "spotify-artist"
+      }
+    },
+    "/api/spotify/artist/albums": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Get Spotify catalog information about an artist's albums.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "The Spotify ID of the artist",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "include_groups",
+            "in": "query",
+            "description": "A comma-separated list of keywords to filter the response. Valid values are: album, single, appears_on, compilation",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "market",
+            "in": "query",
+            "description": "An ISO 3166-1 alpha-2 country code. If specified, only content available in that market will be returned",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The maximum number of items to return (default: 20, min: 1, max: 50)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "The index of the first item to return (default: 0)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist albums retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpotifyArtistAlbumsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpotifyErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "spotify-artist-albums"
+      }
+    },
+    "/api/spotify/artist/topTracks": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Get an artist's top tracks by country.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "The Spotify ID of the artist",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "market",
+            "in": "query",
+            "description": "An ISO 3166-1 alpha-2 country code. If provided, only tracks available in that market are returned",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist top tracks retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpotifyArtistTopTracksResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpotifyErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "spotify-artist-top-tracks"
+      }
+    },
+    "/api/spotify/album": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Get Spotify catalog information for a single album.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "The Spotify ID of the album",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "market",
+            "in": "query",
+            "description": "An ISO 3166-1 alpha-2 country code. If provided, only content available in that market is returned",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Album retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpotifyAlbum"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpotifyErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "spotify-album"
+      }
+    },
+    "/api/instagram/comments": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Fetch Instagram comments for multiple post URLs using Apify's Instagram Comment Scraper. The actual comment data will be available in the Apify dataset after the run completes.",
+        "parameters": [
+          {
+            "name": "postUrls",
+            "in": "query",
+            "description": "Array of Instagram post URLs to fetch comments for",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "style": "form",
+            "explode": true
+          },
+          {
+            "name": "resultsLimit",
+            "in": "query",
+            "description": "Maximum number of comments to fetch (default: 10000)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10000
+            }
+          },
+          {
+            "name": "isNewestComments",
+            "in": "query",
+            "description": "Whether to fetch newest comments first. Set to true for newest first, false for oldest first, or omit for platform default sorting",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Apify scraper run started successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApifyRunResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstagramErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "instagram-comments"
+      }
+    },
+    "/api/instagram/profiles": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Fetch Instagram profile information for multiple handles using Apify's Instagram Profile Scraper. The actual profile data will be available in the Apify dataset after the run completes.",
+        "parameters": [
+          {
+            "name": "handles",
+            "in": "query",
+            "description": "Array of Instagram handles to fetch profiles for",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "style": "form",
+            "explode": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Apify scraper run started successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApifyRunResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstagramErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "instagram-profiles"
+      }
+    },
+    "/api/x/search": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Search for tweets using the Twitter Search API, powered by agent-twitter-client (no Twitter API key required). Supports various search modes including Top, Latest, Photos, Videos, and Users.",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "description": "The search query. Any Twitter-compatible query format can be used (e.g., '#nodejs', 'from:username', etc.)",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "maxTweets",
+            "in": "query",
+            "description": "The maximum number of tweets to return",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "searchMode",
+            "in": "query",
+            "description": "The category filter to apply to the search",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Top",
+                "Latest",
+                "Photos",
+                "Videos",
+                "Users"
+              ],
+              "default": "Latest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tweets retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwitterSearchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwitterErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "x-search"
+      }
+    },
+    "/api/x/trends": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Retrieve the current trending topics from Twitter using the getTrends method from agent-twitter-client (no Twitter API key required).",
+        "responses": {
+          "200": {
+            "description": "Trends retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwitterTrendsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwitterErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "x-trends"
+      }
+    },
+    "/api/social/scrape": {
+      "post": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Trigger a social profile scraping job for a given social_id. Use the Get Artist Socials endpoint first to retrieve the social_id values. The response returns Apify run metadata for polling status and retrieving results via the Apify Scraper Results API.",
+        "requestBody": {
+          "description": "Social profile to scrape",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SocialScrapeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Scrape job triggered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApifyRunResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SocialErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "scrape"
+      }
+    },
+    "/api/social/posts": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Retrieve all social media posts from a specific social profile. Call the Artist Socials endpoint first to obtain social IDs.",
+        "parameters": [
+          {
+            "name": "social_id",
+            "in": "query",
+            "description": "The unique identifier (UUID) of the social profile to fetch posts for",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "latestFirst",
+            "in": "query",
+            "description": "Sort posts by most recent first (default: true)",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number to retrieve (default: 1)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The number of records per page (default: 20, max: 100)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Posts retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SocialPostsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SocialErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "posts"
+      }
+    },
+    "/api/apify/scraper": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Check the status and retrieve results from Apify scraper runs. This endpoint uses the Apify API Client to fetch the current status of a scraper run and its results if available. Use the runId returned from endpoints like Instagram Comments, Instagram Profiles, Social Scrape, or Artist Socials Scrape to poll for results.",
+        "parameters": [
+          {
+            "name": "runId",
+            "in": "query",
+            "description": "The ID of the Apify run to check status for. This is returned when starting a scrape via Instagram Comments, Instagram Profiles, Social Scrape, or Artist Socials Scrape endpoints.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "abc123xyz"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Scraper run status retrieved successfully. Returns status info for in-progress runs, or status info plus data for completed runs.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ApifyScraperInProgressResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApifyScraperCompletedResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required runId parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApifyScraperErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error - failed to fetch run status from Apify",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApifyScraperErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "apify-scraper"
+      }
+    },
+    "/api/connectors": {
+      "get": {
+        "description": "List available connectors and their connection status. Returns all supported third-party integrations (e.g., Google Sheets, TikTok) along with whether they are currently connected.",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "query",
+            "description": "Optional account ID to get connectors for a different account (e.g., an artist, workspace, or organization). The authenticated account must have access to the specified account. Omit to get your own account's connectors.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Connectors retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectorsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid account_id format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - no access to the specified account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "connectors-list"
+      },
+      "delete": {
+        "description": "Disconnect a connected account from a third-party service. This revokes the OAuth connection and removes stored credentials.",
+        "requestBody": {
+          "description": "Connection to disconnect",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DisconnectConnectorRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Connector disconnected successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisconnectConnectorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - no access to the specified account or connection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "connectors-disconnect"
+      },
+      "post": {
+        "description": "Generate an OAuth authorization URL for connecting a third-party service. Redirect to the returned URL to complete the OAuth flow.",
+        "requestBody": {
+          "description": "Authorization request details",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorizeConnectorRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authorization URL generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorizeConnectorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid connector or parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - no access to the specified account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "connectors-authorize"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApifyRunResult": {
+        "type": "object",
+        "properties": {
+          "runId": {
+            "type": "string",
+            "description": "Unique identifier for the Apify run"
+          },
+          "datasetId": {
+            "type": "string",
+            "description": "Unique identifier for the dataset containing scraped data"
+          },
+          "error": {
+            "type": "string",
+            "nullable": true,
+            "description": "Error message if the run failed (null if successful)"
+          }
+        }
+      },
+      "ApifyScraperCompletedResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "datasetId",
+          "data"
+        ],
+        "description": "Response when the Apify run has completed successfully",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Final status of the Apify run (typically 'SUCCEEDED')",
+            "example": "SUCCEEDED"
+          },
+          "datasetId": {
+            "type": "string",
+            "description": "ID of the dataset containing the results",
+            "example": "def456uvw"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "description": "Array of dataset items returned by the scraper. The structure of each item varies depending on the scraper type (Instagram Profile, Instagram Comments, etc.)",
+            "example": [
+              {
+                "id": "123456789",
+                "username": "example_user",
+                "fullName": "Example User",
+                "biography": "This is a sample biography",
+                "followersCount": 1000,
+                "followsCount": 500,
+                "profilePicUrl": "https://example.com/profile.jpg"
+              }
+            ]
+          }
+        }
+      },
+      "ApifyScraperErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "description": "Error response from the Apify scraper results endpoint",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status indicating an error occurred"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong",
+            "example": "runId is required"
+          }
+        }
+      },
+      "ApifyScraperInProgressResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "datasetId"
+        ],
+        "description": "Response when the Apify run is still in progress",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Current status of the Apify run (e.g., 'RUNNING', 'READY')",
+            "example": "RUNNING"
+          },
+          "datasetId": {
+            "type": "string",
+            "description": "ID of the dataset that will contain the results when the run completes",
+            "example": "def456uvw"
+          }
+        }
+      },
+      "AuthorizeConnectorRequest": {
+        "type": "object",
+        "required": [
+          "connector"
+        ],
+        "properties": {
+          "connector": {
+            "type": "string",
+            "description": "The connector slug to authorize (e.g., 'googlesheets', 'tiktok')"
+          },
+          "callback_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Optional custom callback URL after OAuth completion"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Optional account ID to connect a service for a different account (e.g., an artist, workspace, or organization). Use this when connecting an artist's TikTok or other service. The authenticated account must have access. Omit to connect for your own account."
+          }
+        }
+      },
+      "AuthorizeConnectorResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "data"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "required": [
+              "connector",
+              "redirectUrl"
+            ],
+            "properties": {
+              "connector": {
+                "type": "string",
+                "description": "The connector slug being authorized"
+              },
+              "redirectUrl": {
+                "type": "string",
+                "format": "uri",
+                "description": "URL to redirect to for OAuth authorization"
+              }
+            }
+          }
+        }
+      },
+      "ConnectorInfo": {
+        "type": "object",
+        "required": [
+          "slug",
+          "name",
+          "isConnected"
+        ],
+        "properties": {
+          "slug": {
+            "type": "string",
+            "description": "Unique identifier for the connector (e.g., 'googlesheets', 'tiktok')"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable name of the connector"
+          },
+          "isConnected": {
+            "type": "boolean",
+            "description": "Whether the connector is currently connected"
+          },
+          "connectedAccountId": {
+            "type": "string",
+            "description": "The connected account ID (only present when isConnected is true)"
+          }
+        }
+      },
+      "ConnectorsResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "connectors"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "connectors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConnectorInfo"
+            },
+            "description": "List of available connectors with connection status"
+          }
+        }
+      },
+      "DisconnectConnectorRequest": {
+        "type": "object",
+        "required": [
+          "connected_account_id"
+        ],
+        "properties": {
+          "connected_account_id": {
+            "type": "string",
+            "description": "The connected account ID to disconnect (from ConnectorInfo.connectedAccountId)"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Optional account ID when disconnecting a connection that belongs to a different account (e.g., an artist). Required when the connection was created for another account rather than your own. The authenticated account must have access."
+          }
+        }
+      },
+      "DisconnectConnectorResponse": {
+        "type": "object",
+        "required": [
+          "success"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string",
+            "description": "Status message"
+          }
+        }
+      },
+      "Error": {
+        "required": [
+          "error",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "InstagramErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "SocialErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          }
+        }
+      },
+      "SocialPost": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the social's social_posts record"
+          },
+          "post_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the social's posts record"
+          },
+          "social_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the social's socials record"
+          },
+          "post_url": {
+            "type": "string",
+            "description": "Direct URL to the post on the platform"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the post data was last updated"
+          }
+        }
+      },
+      "SocialPostsPagination": {
+        "type": "object",
+        "properties": {
+          "total_count": {
+            "type": "integer",
+            "description": "Total number of posts available"
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of posts per page"
+          },
+          "total_pages": {
+            "type": "integer",
+            "description": "Total number of pages available"
+          }
+        }
+      },
+      "SocialPostsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "posts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SocialPost"
+            },
+            "description": "List of social media posts"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/SocialPostsPagination"
+          }
+        }
+      },
+      "SocialScrapeRequest": {
+        "type": "object",
+        "required": [
+          "social_id"
+        ],
+        "properties": {
+          "social_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the social profile to scrape. Obtain this from the Get Artist Socials API."
+          }
+        }
+      },
+      "SpotifyAlbum": {
+        "type": "object",
+        "properties": {
+          "album_type": {
+            "type": "string",
+            "enum": [
+              "album",
+              "single",
+              "compilation"
+            ],
+            "description": "The type of the album"
+          },
+          "total_tracks": {
+            "type": "integer",
+            "description": "The number of tracks in the album"
+          },
+          "available_markets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Markets in which the album is available"
+          },
+          "external_urls": {
+            "$ref": "#/components/schemas/SpotifyExternalUrls"
+          },
+          "href": {
+            "type": "string",
+            "description": "A link to the Web API endpoint providing full details"
+          },
+          "id": {
+            "type": "string",
+            "description": "The Spotify ID for the album"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpotifyImage"
+            },
+            "description": "The cover art for the album in various sizes"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the album"
+          },
+          "release_date": {
+            "type": "string",
+            "description": "The date the album was first released"
+          },
+          "release_date_precision": {
+            "type": "string",
+            "enum": [
+              "year",
+              "month",
+              "day"
+            ],
+            "description": "The precision with which release_date value is known"
+          },
+          "restrictions": {
+            "type": "object",
+            "properties": {
+              "reason": {
+                "type": "string"
+              }
+            },
+            "description": "Included when a content restriction is applied"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "album"
+            ],
+            "description": "The object type, always 'album'"
+          },
+          "uri": {
+            "type": "string",
+            "description": "The Spotify URI for the album"
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpotifySimplifiedArtist"
+            },
+            "description": "The artists of the album"
+          },
+          "tracks": {
+            "$ref": "#/components/schemas/SpotifyAlbumTracks",
+            "description": "The tracks of the album"
+          },
+          "copyrights": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpotifyCopyright"
+            },
+            "description": "Copyright statements of the album"
+          },
+          "external_ids": {
+            "type": "object",
+            "properties": {
+              "isrc": {
+                "type": "string"
+              },
+              "ean": {
+                "type": "string"
+              },
+              "upc": {
+                "type": "string"
+              }
+            },
+            "description": "Known external IDs for the album"
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Deprecated. Always empty."
+          },
+          "label": {
+            "type": "string",
+            "description": "The label associated with the album"
+          },
+          "popularity": {
+            "type": "integer",
+            "description": "Popularity of the album (0-100)"
+          }
+        }
+      },
+      "SpotifyAlbumTracks": {
+        "type": "object",
+        "properties": {
+          "href": {
+            "type": "string",
+            "description": "A link to the Web API endpoint"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "The maximum number of items in the response"
+          },
+          "next": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL to the next page of items"
+          },
+          "offset": {
+            "type": "integer",
+            "description": "The offset of the items returned"
+          },
+          "previous": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL to the previous page"
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items available"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpotifySimplifiedTrack"
+            },
+            "description": "Array of simplified track objects"
+          }
+        }
+      },
+      "SpotifyArtistAlbumsResponse": {
+        "type": "object",
+        "properties": {
+          "href": {
+            "type": "string",
+            "description": "A link to the Web API endpoint returning the full result"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "The maximum number of items in the response"
+          },
+          "next": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL to the next page of items"
+          },
+          "offset": {
+            "type": "integer",
+            "description": "The offset of the items returned"
+          },
+          "previous": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL to the previous page of items"
+          },
+          "total": {
+            "type": "integer",
+            "description": "The total number of items available"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpotifySimplifiedAlbum"
+            },
+            "description": "Array of simplified album objects"
+          }
+        }
+      },
+      "SpotifyArtistObject": {
+        "type": "object",
+        "properties": {
+          "external_urls": {
+            "$ref": "#/components/schemas/SpotifyExternalUrls"
+          },
+          "followers": {
+            "$ref": "#/components/schemas/SpotifyFollowers"
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "A list of the genres the artist is associated with"
+          },
+          "href": {
+            "type": "string",
+            "description": "A link to the Web API endpoint providing full details"
+          },
+          "id": {
+            "type": "string",
+            "description": "The Spotify ID for the artist"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpotifyImage"
+            },
+            "description": "Images of the artist in various sizes"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the artist"
+          },
+          "popularity": {
+            "type": "integer",
+            "description": "The popularity of the artist (0-100)"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "artist"
+            ],
+            "description": "The object type, always 'artist'"
+          },
+          "uri": {
+            "type": "string",
+            "description": "The Spotify URI for the artist"
+          }
+        }
+      },
+      "SpotifyArtistTopTracksResponse": {
+        "type": "object",
+        "properties": {
+          "tracks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpotifyTrack"
+            },
+            "description": "Array of track objects"
+          }
+        }
+      },
+      "SpotifyArtistsPaginated": {
+        "type": "object",
+        "properties": {
+          "href": {
+            "type": "string",
+            "description": "A link to the Web API endpoint returning the full result"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpotifyArtistObject"
+            },
+            "description": "List of artist objects"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "The maximum number of items in the response"
+          },
+          "next": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL to the next page of items"
+          },
+          "offset": {
+            "type": "integer",
+            "description": "The offset of the items returned"
+          },
+          "previous": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL to the previous page of items"
+          },
+          "total": {
+            "type": "integer",
+            "description": "The total number of items available"
+          }
+        }
+      },
+      "SpotifyCopyright": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "The copyright text"
+          },
+          "type": {
+            "type": "string",
+            "description": "The type of copyright"
+          }
+        }
+      },
+      "SpotifyErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              },
+              "message": {
+                "type": "string",
+                "description": "Error message"
+              }
+            },
+            "description": "Error details"
+          }
+        }
+      },
+      "SpotifyExternalUrls": {
+        "type": "object",
+        "properties": {
+          "spotify": {
+            "type": "string",
+            "description": "The Spotify URL for the object"
+          }
+        }
+      },
+      "SpotifyFollowers": {
+        "type": "object",
+        "properties": {
+          "href": {
+            "type": "string",
+            "nullable": true,
+            "description": "This will always be set to null"
+          },
+          "total": {
+            "type": "integer",
+            "description": "The total number of followers"
+          }
+        }
+      },
+      "SpotifyGetArtistResponse": {
+        "type": "object",
+        "properties": {
+          "artist": {
+            "$ref": "#/components/schemas/SpotifyArtistObject",
+            "nullable": true,
+            "description": "The Spotify artist object (null if error)"
+          },
+          "error": {
+            "type": "object",
+            "nullable": true,
+            "description": "Error object if request failed (null if successful)"
+          }
+        }
+      },
+      "SpotifyImage": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "The source URL of the image"
+          },
+          "height": {
+            "type": "integer",
+            "nullable": true,
+            "description": "The image height in pixels"
+          },
+          "width": {
+            "type": "integer",
+            "nullable": true,
+            "description": "The image width in pixels"
+          }
+        }
+      },
+      "SpotifySearchResponse": {
+        "type": "object",
+        "properties": {
+          "artists": {
+            "$ref": "#/components/schemas/SpotifyArtistsPaginated",
+            "description": "Search results for artists (if type includes artist)"
+          },
+          "albums": {
+            "type": "object",
+            "description": "Search results for albums (if type includes album)"
+          },
+          "tracks": {
+            "type": "object",
+            "description": "Search results for tracks (if type includes track)"
+          },
+          "playlists": {
+            "type": "object",
+            "description": "Search results for playlists (if type includes playlist)"
+          }
+        }
+      },
+      "SpotifySimplifiedAlbum": {
+        "type": "object",
+        "properties": {
+          "album_type": {
+            "type": "string",
+            "enum": [
+              "album",
+              "single",
+              "compilation"
+            ],
+            "description": "The type of the album"
+          },
+          "total_tracks": {
+            "type": "integer",
+            "description": "The number of tracks in the album"
+          },
+          "available_markets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Markets in which the album is available"
+          },
+          "external_urls": {
+            "$ref": "#/components/schemas/SpotifyExternalUrls"
+          },
+          "href": {
+            "type": "string",
+            "description": "A link to the Web API endpoint providing full details"
+          },
+          "id": {
+            "type": "string",
+            "description": "The Spotify ID for the album"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpotifyImage"
+            },
+            "description": "The cover art for the album in various sizes"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the album"
+          },
+          "release_date": {
+            "type": "string",
+            "description": "The date the album was first released"
+          },
+          "release_date_precision": {
+            "type": "string",
+            "enum": [
+              "year",
+              "month",
+              "day"
+            ],
+            "description": "The precision with which release_date value is known"
+          },
+          "restrictions": {
+            "type": "object",
+            "properties": {
+              "reason": {
+                "type": "string",
+                "description": "The reason for the restriction"
+              }
+            },
+            "description": "Included when a content restriction is applied"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "album"
+            ],
+            "description": "The object type, always 'album'"
+          },
+          "uri": {
+            "type": "string",
+            "description": "The Spotify URI for the album"
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpotifySimplifiedArtist"
+            },
+            "description": "The artists of the album"
+          },
+          "album_group": {
+            "type": "string",
+            "enum": [
+              "album",
+              "single",
+              "compilation",
+              "appears_on"
+            ],
+            "description": "The field to distinguish albums by various groups"
+          }
+        }
+      },
+      "SpotifySimplifiedArtist": {
+        "type": "object",
+        "properties": {
+          "external_urls": {
+            "$ref": "#/components/schemas/SpotifyExternalUrls"
+          },
+          "href": {
+            "type": "string",
+            "description": "A link to the Web API endpoint providing full details"
+          },
+          "id": {
+            "type": "string",
+            "description": "The Spotify ID for the artist"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the artist"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "artist"
+            ],
+            "description": "The object type, always 'artist'"
+          },
+          "uri": {
+            "type": "string",
+            "description": "The Spotify URI for the artist"
+          }
+        }
+      },
+      "SpotifySimplifiedTrack": {
+        "type": "object",
+        "properties": {
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpotifySimplifiedArtist"
+            },
+            "description": "The artists who performed the track"
+          },
+          "available_markets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Markets in which the track is available"
+          },
+          "disc_number": {
+            "type": "integer",
+            "description": "Disc number the track is on"
+          },
+          "duration_ms": {
+            "type": "integer",
+            "description": "Track length in milliseconds"
+          },
+          "explicit": {
+            "type": "boolean",
+            "description": "Whether the track has explicit lyrics"
+          },
+          "external_urls": {
+            "$ref": "#/components/schemas/SpotifyExternalUrls"
+          },
+          "href": {
+            "type": "string",
+            "description": "Link to the Web API endpoint"
+          },
+          "id": {
+            "type": "string",
+            "description": "Spotify ID for the track"
+          },
+          "is_playable": {
+            "type": "boolean",
+            "description": "If true, the track is playable"
+          },
+          "linked_from": {
+            "type": "object",
+            "description": "Track relinking info"
+          },
+          "restrictions": {
+            "type": "object",
+            "properties": {
+              "reason": {
+                "type": "string"
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "description": "Track name"
+          },
+          "preview_url": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL to a 30 second preview"
+          },
+          "track_number": {
+            "type": "integer",
+            "description": "Track number on the album"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "track"
+            ]
+          },
+          "uri": {
+            "type": "string",
+            "description": "Spotify URI for the track"
+          },
+          "is_local": {
+            "type": "boolean",
+            "description": "Whether from a local file"
+          }
+        }
+      },
+      "SpotifyTrack": {
+        "type": "object",
+        "properties": {
+          "album": {
+            "$ref": "#/components/schemas/SpotifySimplifiedAlbum",
+            "description": "The album the track appears on"
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpotifySimplifiedArtist"
+            },
+            "description": "Artists who performed the track"
+          },
+          "available_markets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Markets in which the track is available"
+          },
+          "disc_number": {
+            "type": "integer",
+            "description": "Disc number the track is on"
+          },
+          "duration_ms": {
+            "type": "integer",
+            "description": "Track length in milliseconds"
+          },
+          "explicit": {
+            "type": "boolean",
+            "description": "Whether the track has explicit lyrics"
+          },
+          "external_ids": {
+            "type": "object",
+            "properties": {
+              "isrc": {
+                "type": "string",
+                "description": "International Standard Recording Code"
+              },
+              "ean": {
+                "type": "string",
+                "description": "International Article Number"
+              },
+              "upc": {
+                "type": "string",
+                "description": "Universal Product Code"
+              }
+            },
+            "description": "Known external IDs for the track"
+          },
+          "external_urls": {
+            "$ref": "#/components/schemas/SpotifyExternalUrls"
+          },
+          "href": {
+            "type": "string",
+            "description": "Link to the Web API endpoint with full details"
+          },
+          "id": {
+            "type": "string",
+            "description": "Spotify ID for the track"
+          },
+          "is_playable": {
+            "type": "boolean",
+            "description": "If true, the track is playable in the given market"
+          },
+          "linked_from": {
+            "type": "object",
+            "description": "Information about the originally requested track when track relinking is applied"
+          },
+          "restrictions": {
+            "type": "object",
+            "properties": {
+              "reason": {
+                "type": "string",
+                "description": "The reason for the restriction"
+              }
+            },
+            "description": "Content restriction information"
+          },
+          "name": {
+            "type": "string",
+            "description": "Track name"
+          },
+          "popularity": {
+            "type": "integer",
+            "description": "Popularity score (0-100)"
+          },
+          "preview_url": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL to a 30 second preview, if available"
+          },
+          "track_number": {
+            "type": "integer",
+            "description": "Track number on the album"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "track"
+            ],
+            "description": "The object type, always 'track'"
+          },
+          "uri": {
+            "type": "string",
+            "description": "The Spotify URI for the track"
+          },
+          "is_local": {
+            "type": "boolean",
+            "description": "Whether the track is from a local file"
+          }
+        }
+      },
+      "Tweet": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Tweet ID"
+          },
+          "text": {
+            "type": "string",
+            "description": "Tweet text content"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username of the tweet author"
+          },
+          "timestamp": {
+            "type": "integer",
+            "description": "Unix timestamp (ms) of when the tweet was posted"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "ISO timestamp of when the tweet was posted"
+          },
+          "isReply": {
+            "type": "boolean",
+            "description": "Whether the tweet is a reply"
+          },
+          "isRetweet": {
+            "type": "boolean",
+            "description": "Whether the tweet is a retweet"
+          },
+          "likes": {
+            "type": "integer",
+            "description": "Number of likes"
+          },
+          "retweetCount": {
+            "type": "integer",
+            "description": "Number of retweets"
+          },
+          "replies": {
+            "type": "integer",
+            "description": "Number of replies"
+          },
+          "photos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TwitterPhoto"
+            },
+            "description": "Array of photo objects"
+          },
+          "videos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TwitterVideo"
+            },
+            "description": "Array of video objects"
+          },
+          "urls": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of URLs included in the tweet"
+          },
+          "permanentUrl": {
+            "type": "string",
+            "description": "Permanent URL to the tweet"
+          },
+          "quotedStatusId": {
+            "type": "string",
+            "description": "ID of the quoted tweet (if applicable)"
+          },
+          "inReplyToStatusId": {
+            "type": "string",
+            "description": "ID of the tweet this is replying to (if applicable)"
+          },
+          "hashtags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of hashtags in the tweet"
+          }
+        }
+      },
+      "TwitterErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          }
+        }
+      },
+      "TwitterPhoto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Photo ID"
+          },
+          "url": {
+            "type": "string",
+            "description": "URL of the photo"
+          }
+        }
+      },
+      "TwitterSearchResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Status of the request",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "tweets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tweet"
+            },
+            "description": "List of tweet objects"
+          }
+        }
+      },
+      "TwitterTrendsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Status of the request",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "trends": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of current trending topics on Twitter"
+          }
+        }
+      },
+      "TwitterVideo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Video ID"
+          },
+          "preview": {
+            "type": "string",
+            "description": "URL of the video preview image"
+          },
+          "url": {
+            "type": "string",
+            "description": "URL of the video"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Your Recoup API key. [Learn more](/quickstart#api-keys)."
+      }
+    }
+  }
+}
