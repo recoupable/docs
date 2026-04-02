@@ -5498,7 +5498,7 @@
     },
     "/api/content/generate-video": {
       "post": {
-        "description": "Generate a short video from a text prompt, a reference image, or both. Set `lipsync` to `true` and pass an `audio_url` to animate a face that moves in sync with the audio.",
+        "description": "Generate a video. Set `mode` to control what kind of video you get:\n\n- `prompt` — create a video from a text description\n- `animate` — animate a still image\n- `reference` — use an image as a style/subject reference (not the first frame)\n- `extend` — continue an existing video\n- `first-last` — generate a video that transitions between two images\n- `lipsync` — sync face movement to an audio clip\n\nIf `mode` is omitted, it's inferred from the inputs you provide.",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
@@ -12709,32 +12709,65 @@
       "ContentCreateVideoRequest": {
         "type": "object",
         "properties": {
+          "mode": {
+            "type": "string",
+            "enum": ["prompt", "animate", "reference", "extend", "first-last", "lipsync"],
+            "description": "What kind of video to generate. If omitted, inferred from the inputs you provide."
+          },
           "prompt": {
             "type": "string",
-            "description": "Text prompt describing the desired video content"
+            "description": "Text describing the video content, motion, or how to continue/extend"
           },
           "image_url": {
             "type": "string",
             "format": "uri",
-            "description": "Optional reference image URL. When provided, generates video from this image."
+            "description": "Image URL. Used as the first frame (animate), style reference (reference), start frame (first-last), or face source (lipsync)"
           },
-          "lipsync": {
-            "type": "boolean",
-            "default": false,
-            "description": "When `true`, uses audio-to-video lipsync mode. Requires `audio_url`."
+          "end_image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "End frame image URL. Only used with `first-last` mode"
+          },
+          "video_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Video URL to extend. Only used with `extend` mode (max 8 seconds input)"
           },
           "audio_url": {
             "type": "string",
             "format": "uri",
-            "description": "Audio URL for lipsync mode"
+            "description": "Audio URL for lipsync mode. The generated face will move in sync with this audio"
           },
-          "motion_prompt": {
+          "aspect_ratio": {
             "type": "string",
-            "description": "Optional prompt describing desired motion in the video"
+            "enum": ["auto", "16:9", "9:16"],
+            "default": "auto",
+            "description": "Aspect ratio of the output video"
+          },
+          "duration": {
+            "type": "string",
+            "enum": ["4s", "6s", "7s", "8s"],
+            "default": "8s",
+            "description": "Duration of the generated video"
+          },
+          "resolution": {
+            "type": "string",
+            "enum": ["720p", "1080p", "4k"],
+            "default": "720p",
+            "description": "Output resolution"
+          },
+          "negative_prompt": {
+            "type": "string",
+            "description": "Describe what you do NOT want in the video"
+          },
+          "generate_audio": {
+            "type": "boolean",
+            "default": false,
+            "description": "Generate audio for the video"
           },
           "model": {
             "type": "string",
-            "description": "fal.ai model ID. Defaults to fal-ai/veo3.1/fast/image-to-video or fal-ai/ltx-2-19b/audio-to-video when lipsync is true"
+            "description": "Override the model. Auto-selected based on mode if omitted"
           }
         }
       },
