@@ -5806,7 +5806,7 @@
         }
       }
     },
-    "/api/content/create/analyze": {
+    "/api/content/analyze": {
       "post": {
         "description": "Analyze a video and generate text based on its content. Pass a publicly accessible video URL and a text prompt describing the desired analysis. Returns the generated text synchronously.",
         "security": [
