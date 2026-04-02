@@ -5498,7 +5498,7 @@
     },
     "/api/content/generate-video": {
       "post": {
-        "description": "Generate a short video from a text prompt, a reference image, audio, or any combination. Use `prompt` to describe what you want, `image_url` to animate a still image, and `audio_url` with `lipsync` to sync mouth movement to audio.",
+        "description": "Generate a short video from a text prompt, a reference image, or both. Set `lipsync` to `true` and pass an `audio_url` to animate a face that moves in sync with the audio.",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
