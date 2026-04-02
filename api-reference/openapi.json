@@ -5498,7 +5498,7 @@
     },
     "/api/content/generate-video": {
       "post": {
-        "description": "Generate a video. Optionally provide a reference image and/or audio. Supports image-to-video, audio-to-video (lipsync), and prompt-only generation depending on the model.",
+        "description": "Generate a short video from a text prompt, a reference image, audio, or any combination. Use `prompt` to describe what you want, `image_url` to animate a still image, and `audio_url` with `lipsync` to sync mouth movement to audio.",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
