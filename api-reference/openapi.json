@@ -5434,7 +5434,7 @@
         ]
       }
     },
-    "/api/content/create/image": {
+    "/api/content/generate-image": {
       "post": {
         "description": "Generate an AI image. Returns the image URL synchronously.",
         "security": [
@@ -5496,7 +5496,7 @@
         }
       }
     },
-    "/api/content/create/video": {
+    "/api/content/generate-video": {
       "post": {
         "description": "Generate a video from an image. Supports normal image-to-video and lipsync audio-to-video modes.",
         "security": [
@@ -5558,7 +5558,7 @@
         }
       }
     },
-    "/api/content/create/text": {
+    "/api/content/generate-caption": {
       "post": {
         "description": "Generate on-screen text for a social video using an LLM. Returns text content and styling synchronously.",
         "security": [
@@ -5620,7 +5620,7 @@
         }
       }
     },
-    "/api/content/create/audio": {
+    "/api/content/transcribe-audio": {
       "post": {
         "description": "Transcribe a song. Pass a song URL in the `songs` array. Returns timestamped lyrics.",
         "security": [
@@ -5682,7 +5682,7 @@
         }
       }
     },
-    "/api/content/create/render": {
+    "/api/content/render": {
       "post": {
         "description": "Combine video, audio, and on-screen text into a final social video using ffmpeg. This is the only primitive that runs as a background task \u2014 poll via [GET /api/tasks/runs](/api-reference/tasks/runs).",
         "security": [
@@ -5744,7 +5744,7 @@
         }
       }
     },
-    "/api/content/create/upscale": {
+    "/api/content/upscale": {
       "post": {
         "description": "Upscale an image or video. Returns the upscaled URL synchronously.",
         "security": [
@@ -5806,7 +5806,7 @@
         }
       }
     },
-    "/api/content/analyze": {
+    "/api/content/analyze-video": {
       "post": {
         "description": "Analyze a video and generate text based on its content. Pass a publicly accessible video URL and a text prompt describing the desired analysis. Returns the generated text synchronously.",
         "security": [
