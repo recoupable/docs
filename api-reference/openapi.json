@@ -5498,7 +5498,7 @@
     },
     "/api/content/generate-video": {
       "post": {
-        "description": "Generate a video from an image. Supports normal image-to-video and lipsync audio-to-video modes.",
+        "description": "Generate a video. Optionally provide a reference image and/or audio. Supports image-to-video, audio-to-video (lipsync), and prompt-only generation depending on the model.",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
@@ -12708,14 +12708,15 @@
       },
       "ContentCreateVideoRequest": {
         "type": "object",
-        "required": [
-          "image_url"
-        ],
         "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "Text prompt describing the desired video content"
+          },
           "image_url": {
             "type": "string",
             "format": "uri",
-            "description": "URL of the source image to animate"
+            "description": "Optional reference image URL. When provided, generates video from this image."
           },
           "lipsync": {
             "type": "boolean",
