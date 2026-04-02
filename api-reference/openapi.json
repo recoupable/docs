@@ -21,7 +21,15 @@
   "paths": {
     "/api/tasks": {
       "get": {
-        "description": "Retrieve scheduled tasks. The response includes recent_runs (last 5 runs) and upcoming (next scheduled run times) sourced directly from the Trigger.dev API. Supports filtering by id, account_id, or artist_account_id.",
+        "description": "Retrieve scheduled tasks. The response includes recent_runs (last 5 runs) and upcoming (next scheduled run times) sourced directly from the Trigger.dev API. Supports filtering by id, account_id, or artist_account_id.\n\n**Authentication:** Send exactly one of `x-api-key` or `Authorization: Bearer <token>`. Query `account_id` is scoped: non-admin callers may only list tasks for accounts they are permitted to access (same override rules as elsewhere).",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
@@ -66,11 +74,41 @@
             }
           },
           "400": {
-            "description": "Bad request",
+            "description": "Validation error (e.g. invalid query parameters)",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/TasksApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication, or both `x-api-key` and `Authorization` provided",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Caller is not allowed to use the requested `account_id` filter (cross-account access denied)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksApiError"
                 }
               }
             }
@@ -78,7 +116,15 @@
         }
       },
       "post": {
-        "description": "Create a new scheduled task. All fields are required. The response shape matches the GET endpoint (an array containing the created task).",
+        "description": "Create a new scheduled task. Required body fields: `title`, `prompt`, `schedule`, `account_id`, `artist_account_id`. Optional: `model`.\n\n**Authentication:** Exactly one of `x-api-key` or `Authorization: Bearer <token>`. The `account_id` in the body is validated against the caller's allowed accounts (override / org rules); the persisted task uses the **authenticated account context**, not an arbitrary spoof.\n\nThe response shape matches GET (wrapped task in `tasks`).",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "description": "Task to create",
           "required": true,
@@ -102,11 +148,41 @@
             }
           },
           "400": {
-            "description": "Bad request",
+            "description": "Validation error (missing or invalid body fields)",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/TasksApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication, or both `x-api-key` and `Authorization` provided",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Caller is not allowed to create for the requested `account_id` context",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksApiError"
                 }
               }
             }
@@ -114,7 +190,15 @@
         }
       },
       "patch": {
-        "description": "Update an existing scheduled task. Only the id field is required; any additional fields you include will be updated on the task. The response shape matches the GET endpoint (an array containing the updated task).",
+        "description": "Update an existing scheduled task. **`id` is required.** Other fields are optional; see `UpdateTaskRequest`.\n\n**Authentication:** Exactly one of `x-api-key` or `Authorization: Bearer <token>`. The server loads the task by `id`, checks that the caller may access the task's owner account, then applies updates. **`account_id` must not be sent in the body to change task ownership** — it is ignored/stripped; first-party clients omit it entirely.\n\nThe response shape matches GET (updated task in `tasks`).",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "description": "Task fields to update",
           "required": true,
@@ -138,11 +222,51 @@
             }
           },
           "400": {
-            "description": "Bad request",
+            "description": "Validation error",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/TasksApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication, or both `x-api-key` and `Authorization` provided",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Caller cannot access the task's owner account (cross-account update denied)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No task exists for the given `id`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksApiError"
                 }
               }
             }
@@ -150,7 +274,15 @@
         }
       },
       "delete": {
-        "description": "Delete an existing scheduled task by its ID. Returns the status of the delete operation.",
+        "description": "Delete an existing scheduled task by its ID.\n\n**Authentication:** Exactly one of `x-api-key` or `Authorization: Bearer <token>`. The server loads the task by `id` and verifies the caller may access the task's owner account before deleting.\n\n**Response:** On success, JSON is `{ \"status\": \"success\" }`.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "description": "Task to delete",
           "required": true,
@@ -168,17 +300,57 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeleteTaskResponse"
+                  "$ref": "#/components/schemas/DeleteTaskSuccessResponse"
                 }
               }
             }
           },
           "400": {
-            "description": "Bad request",
+            "description": "Validation error (e.g. missing `id`)",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/TasksApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication, or both `x-api-key` and `Authorization` provided",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Caller cannot access the task's owner account (cross-account delete denied)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No task exists for the given `id`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksApiError"
                 }
               }
             }
@@ -5665,6 +5837,28 @@
           }
         }
       },
+      "TasksApiError": {
+        "type": "object",
+        "required": ["status", "error"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["error"],
+            "description": "Always `error` for failed task API responses"
+          },
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "missing_fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Present on some 400 validation responses (field paths)"
+          }
+        }
+      },
       "CreateTaskRequest": {
         "type": "object",
         "required": [
@@ -5693,7 +5887,7 @@
           "account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the associated account",
+            "description": "Requested account context; must match an account the caller is allowed to act as (validated with the same rules as other account_id overrides). The created task's `account_id` is set from the authenticated context, not blindly from this value.",
             "example": "848cd58d-700f-4b38-ab4c-d9f52a1b2c3d"
           },
           "artist_account_id": {
@@ -5701,6 +5895,11 @@
             "format": "uuid",
             "description": "UUID of the associated artist account",
             "example": "1873859c-dd37-4e9a-9bac-80d35a1b2c3d"
+          },
+          "model": {
+            "type": "string",
+            "description": "Optional AI model id for task execution (e.g. `anthropic/claude-sonnet-4.5`).",
+            "example": "openai/gpt-4o-mini"
           }
         }
       },
@@ -5731,12 +5930,6 @@
             "description": "New cron expression defining when the task runs",
             "example": "0 10 * * 4"
           },
-          "account_id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "New UUID of the associated account",
-            "example": "848cd58d-700f-4b38-ab4c-d9f52a1b2c3d"
-          },
           "artist_account_id": {
             "type": "string",
             "format": "uuid",
@@ -5748,6 +5941,11 @@
             "nullable": true,
             "description": "Whether the task is enabled. Can be true, false, or null.",
             "example": true
+          },
+          "model": {
+            "type": "string",
+            "description": "Optional AI model id for task execution.",
+            "example": "openai/gpt-4o-mini"
           }
         }
       },
@@ -5762,6 +5960,17 @@
             "format": "uuid",
             "description": "UUID of the task to delete",
             "example": "aade2bce-55c7-468e-a606-c4e76fb2ea2a"
+          }
+        }
+      },
+      "DeleteTaskSuccessResponse": {
+        "type": "object",
+        "required": ["status"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success"],
+            "description": "Successful delete"
           }
         }
       },

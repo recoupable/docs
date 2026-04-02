@@ -63,6 +63,10 @@ curl -X GET "https://api.recoupable.com/api/tasks" \
 
 The API validates the token against Privy, extracts the user's email, and resolves it to the corresponding Recoup account. Bearer tokens always authenticate as a personal account — they cannot act on behalf of an organization.
 
+### Tasks API (`/api/tasks`)
+
+**GET**, **POST**, **PATCH**, and **DELETE** on `/api/tasks` all require authentication. Use the same **exactly-one** rule: **`x-api-key`** or **`Authorization: Bearer`**. For **PATCH** and **DELETE**, the server checks that the caller may access the task owner's account before applying the change. **PATCH** does not apply `account_id` from the body for reassignment (omit it). Details: [Get Tasks](/api-reference/tasks/get), [Create](/api-reference/tasks/create), [Update](/api-reference/tasks/update), [Delete](/api-reference/tasks/delete).
+
 ---
 
 ## How We Verify Access on API Calls

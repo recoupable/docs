@@ -2,3 +2,7 @@
 title: 'Create Task'
 openapi: 'POST /api/tasks'
 ---
+
+<Info>
+**Authentication:** Exactly one of `x-api-key` or `Authorization: Bearer`. Body `account_id` is validated against allowed account context; the created task's `account_id` is set from the authenticated resolution, not from spoofed JSON alone.
+</Info>

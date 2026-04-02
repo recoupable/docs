@@ -119,6 +119,19 @@ console.log(data.tasks);
 For full documentation on the Tasks API including filtering options, see the [Tasks API Reference](/api-reference/tasks/get).
 </Info>
 
+### Tasks: Bearer token example (update)
+
+All **`/api/tasks`** operations (**GET**, **POST**, **PATCH**, **DELETE**) accept **either** `x-api-key` **or** `Authorization: Bearer` — never both. From a logged-in web app (Privy), use Bearer on writes:
+
+```bash
+curl -X PATCH "https://api.recoupable.com/api/tasks" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_PRIVY_JWT" \
+  -d '{"id":"550e8400-e29b-41d4-a716-446655440000","title":"Updated title"}'
+```
+
+Do not send `account_id` in the PATCH body to move a task between accounts; the API ignores it. See [Update Task](/api-reference/tasks/update).
+
 ## Next Steps
 
 With your API key ready, you can now:

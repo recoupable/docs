@@ -2,3 +2,7 @@
 title: 'Update Task'
 openapi: 'PATCH /api/tasks'
 ---
+
+<Info>
+**Authentication:** Exactly one of `x-api-key` or `Authorization: Bearer`. The server loads the task by `id` and returns **403** if you cannot access the task owner's account. **Do not send `account_id` in the body** to change ownership — it is ignored.
+</Info>

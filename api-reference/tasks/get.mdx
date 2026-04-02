@@ -2,3 +2,7 @@
 title: 'Get Tasks'
 openapi: 'GET /api/tasks'
 ---
+
+<Info>
+**Authentication:** Send exactly one of `x-api-key` or `Authorization: Bearer`. Query `account_id` is only honored when your key or token is allowed to access that account (org / override rules).
+</Info>

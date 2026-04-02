@@ -2,3 +2,7 @@
 title: 'Delete Task'
 openapi: 'DELETE /api/tasks'
 ---
+
+<Info>
+**Authentication:** Exactly one of `x-api-key` or `Authorization: Bearer`. Success responses use `{ "status": "success" }`. **404** if the task id does not exist; **403** if you cannot access the task owner's account.
+</Info>
