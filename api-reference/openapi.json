@@ -243,8 +243,8 @@
               }
             }
           },
-          "404": {
-            "description": "Task run not found (only when runId is provided)",
+          "403": {
+            "description": "Forbidden - account_id is not accessible with the provided credentials",
             "content": {
               "application/json": {
                 "schema": {
@@ -253,8 +253,8 @@
               }
             }
           },
-          "403": {
-            "description": "Forbidden - account_id is not accessible with the provided credentials",
+          "404": {
+            "description": "Task run not found (only when runId is provided)",
             "content": {
               "application/json": {
                 "schema": {
@@ -2821,7 +2821,7 @@
     },
     "/api/sandboxes/files": {
       "post": {
-        "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Accepts an array of file URLs and commits each file to the specified directory path within the repository. Supports submodule resolution \u2014 if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Accepts an array of file URLs and commits each file to the specified directory path within the repository. Supports submodule resolution — if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
         "requestBody": {
           "description": "JSON body containing file URLs and target path",
           "required": true,
@@ -4043,10 +4043,14 @@
     },
     "/api/content/create": {
       "post": {
-        "description": "Trigger the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden via `songs` URLs or `images`, then triggers a background task that generates a short-form video. Returns `runIds` \u2014 an array of run IDs that can each be polled via [GET /api/tasks/runs](/api-reference/tasks/runs).",
+        "description": "Trigger the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden via `songs` URLs or `images`, then triggers a background task that generates a short-form video. Returns `runIds` — an array of run IDs that can each be polled via [GET /api/tasks/runs](/api-reference/tasks/runs).",
         "security": [
-          { "apiKeyAuth": [] },
-          { "bearerAuth": [] }
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
         ],
         "requestBody": {
           "description": "Content creation parameters including the target artist and optional template/workflow settings",
@@ -4061,7 +4065,7 @@
         },
         "responses": {
           "202": {
-            "description": "Pipeline triggered successfully. Returns `runIds` \u2014 an array of run IDs. Poll each via [GET /api/tasks/runs](/api-reference/tasks/runs) to check progress.",
+            "description": "Pipeline triggered successfully. Returns `runIds` — an array of run IDs. Poll each via [GET /api/tasks/runs](/api-reference/tasks/runs) to check progress.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4071,7 +4075,7 @@
             }
           },
           "400": {
-            "description": "Validation failed \u2014 missing artist identifier, artist is missing required files, or template not found",
+            "description": "Validation failed — missing artist identifier, artist is missing required files, or template not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -4081,7 +4085,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -4091,7 +4095,7 @@
             }
           },
           "404": {
-            "description": "Artist not found \u2014 the provided artist_account_id does not match any artist",
+            "description": "Artist not found — the provided artist_account_id does not match any artist",
             "content": {
               "application/json": {
                 "schema": {
@@ -4107,8 +4111,12 @@
       "get": {
         "description": "List all available content creation templates. Templates define the visual style, scene composition, and default workflow settings for generated videos. Each template includes reference images, style guides, caption rules, and prompt configurations.",
         "security": [
-          { "apiKeyAuth": [] },
-          { "bearerAuth": [] }
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
         ],
         "responses": {
           "200": {
@@ -4122,7 +4130,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -4138,8 +4146,12 @@
       "get": {
         "description": "Check whether an artist has all the required files to run the content creation pipeline. Returns a structured report of each required and recommended file with its status. Required files must be present or the pipeline will fail. Recommended files improve output quality but are not strictly necessary. Provide `artist_account_id` as a query parameter.",
         "security": [
-          { "apiKeyAuth": [] },
-          { "bearerAuth": [] }
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
         ],
         "parameters": [
           {
@@ -4166,7 +4178,7 @@
             }
           },
           "400": {
-            "description": "Bad request \u2014 artist_account_id is required",
+            "description": "Bad request — artist_account_id is required",
             "content": {
               "application/json": {
                 "schema": {
@@ -4176,7 +4188,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -4186,7 +4198,7 @@
             }
           },
           "404": {
-            "description": "Artist not found \u2014 the provided artist_account_id does not match any artist",
+            "description": "Artist not found — the provided artist_account_id does not match any artist",
             "content": {
               "application/json": {
                 "schema": {
@@ -4200,10 +4212,14 @@
     },
     "/api/content/estimate": {
       "get": {
-        "description": "Estimate the cost of running the content creation pipeline. Calculates per-step and per-video costs based on current pricing. Supports comparing multiple workflow profiles (e.g., premium vs. budget) and projecting batch costs. This endpoint is informational only \u2014 it does not trigger any pipeline execution or spend credits.",
+        "description": "Estimate the cost of running the content creation pipeline. Calculates per-step and per-video costs based on current pricing. Supports comparing multiple workflow profiles (e.g., premium vs. budget) and projecting batch costs. This endpoint is informational only — it does not trigger any pipeline execution or spend credits.",
         "security": [
-          { "apiKeyAuth": [] },
-          { "bearerAuth": [] }
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
         ],
         "parameters": [
           {
@@ -4252,7 +4268,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -4327,7 +4343,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key / Bearer token",
+            "description": "Unauthorized — invalid or missing API key / Bearer token",
             "content": {
               "application/json": {
                 "schema": {
@@ -4341,7 +4357,7 @@
     },
     "/api/songs/analyze": {
       "post": {
-        "description": "Analyze music using a state-of-the-art Audio Language Model that listens directly to the audio waveform. Unlike text-based AI, this model processes the actual sound \u2014 identifying harmony, structure, timbre, lyrics, and cultural context through deep music understanding. Supports audio up to 20 minutes (MP3, WAV, FLAC). Two modes: (1) **Presets** \u2014 pass a `preset` name like `catalog_metadata`, `mood_tags`, or `full_report` for structured, optimized output. (2) **Custom prompt** \u2014 pass a `prompt` for free-form questions. The `full_report` preset runs all 13 presets in parallel and returns a comprehensive music intelligence report. Use `GET /api/songs/analyze/presets` to list available presets.",
+        "description": "Analyze music using a state-of-the-art Audio Language Model that listens directly to the audio waveform. Unlike text-based AI, this model processes the actual sound — identifying harmony, structure, timbre, lyrics, and cultural context through deep music understanding. Supports audio up to 20 minutes (MP3, WAV, FLAC). Two modes: (1) **Presets** — pass a `preset` name like `catalog_metadata`, `mood_tags`, or `full_report` for structured, optimized output. (2) **Custom prompt** — pass a `prompt` for free-form questions. The `full_report` preset runs all 13 presets in parallel and returns a comprehensive music intelligence report. Use `GET /api/songs/analyze/presets` to list available presets.",
         "security": [
           {
             "apiKeyAuth": []
@@ -4373,7 +4389,7 @@
             }
           },
           "400": {
-            "description": "Bad request \u2014 missing or invalid fields",
+            "description": "Bad request — missing or invalid fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -4383,7 +4399,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key / Bearer token",
+            "description": "Unauthorized — invalid or missing API key / Bearer token",
             "content": {
               "application/json": {
                 "schema": {
@@ -4393,7 +4409,7 @@
             }
           },
           "500": {
-            "description": "Server error \u2014 upstream model unavailable or inference failed",
+            "description": "Server error — upstream model unavailable or inference failed",
             "content": {
               "application/json": {
                 "schema": {
@@ -4465,7 +4481,7 @@
     },
     "/api/admins": {
       "get": {
-        "description": "Check if the authenticated account is a Recoup admin. An account is considered an admin if it is a member of the Recoup organization. No input parameters required \u2014 authentication is performed via the x-api-key or Authorization header.",
+        "description": "Check if the authenticated account is a Recoup admin. An account is considered an admin if it is a member of the Recoup organization. No input parameters required — authentication is performed via the x-api-key or Authorization header.",
         "parameters": [],
         "security": [
           {
@@ -5302,7 +5318,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Slack Events API envelope \u2014 the shape depends on the event type"
+                "description": "Slack Events API envelope — the shape depends on the event type"
               }
             }
           }
@@ -5331,7 +5347,7 @@
     },
     "/api/content-agent/callback": {
       "post": {
-        "description": "Internal callback endpoint for the `poll-content-run` Trigger.dev task. Receives content generation results and posts them back to the originating Slack thread. Authenticated via the `x-callback-secret` header.\n\nThis endpoint is not intended for external use \u2014 it is called automatically by the polling task when content runs complete, fail, or time out.",
+        "description": "Internal callback endpoint for the `poll-content-run` Trigger.dev task. Receives content generation results and posts them back to the originating Slack thread. Authenticated via the `x-callback-secret` header.\n\nThis endpoint is not intended for external use — it is called automatically by the polling task when content runs complete, fail, or time out.",
         "requestBody": {
           "description": "Content generation results from the polling task",
           "required": true,
@@ -5420,11 +5436,11 @@
               }
             }
           },
-          "401": {
-            "description": "Missing or invalid callback secret"
-          },
           "400": {
             "description": "Invalid request body"
+          },
+          "401": {
+            "description": "Missing or invalid callback secret"
           }
         },
         "security": [
@@ -5434,322 +5450,16 @@
         ]
       }
     },
-    "/api/content/generate-image": {
-      "post": {
-        "description": "Generate an image from a text prompt. Pass a `reference_image_url` to guide the output toward a specific look or subject. Returns the image URL.",
-        "security": [
-          { "apiKeyAuth": [] },
-          { "bearerAuth": [] }
-        ],
-        "requestBody": {
-          "description": "Image generation parameters",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ContentCreateImageRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Image generated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentCreateImageResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation failed \u2014 invalid or missing request body fields",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/content/generate-video": {
-      "post": {
-        "description": "Generate a video. Set `mode` to control what kind of video you get:\n\n- `prompt` — create a video from a text description\n- `animate` — animate a still image\n- `reference` — use an image as a style/subject reference (not the first frame)\n- `extend` — continue an existing video\n- `first-last` — generate a video that transitions between two images\n- `lipsync` — sync face movement to an audio clip\n\nIf `mode` is omitted, it's inferred from the inputs you provide.",
-        "security": [
-          { "apiKeyAuth": [] },
-          { "bearerAuth": [] }
-        ],
-        "requestBody": {
-          "description": "Video generation parameters",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ContentCreateVideoRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Video generated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentCreateVideoResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation failed \u2014 invalid or missing request body fields",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/content/generate-caption": {
-      "post": {
-        "description": "Generate a short caption from a topic. Returns the text content and default styling (font, color, size).",
-        "security": [
-          { "apiKeyAuth": [] },
-          { "bearerAuth": [] }
-        ],
-        "requestBody": {
-          "description": "Text generation parameters",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ContentCreateTextRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Text generated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentCreateTextResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation failed \u2014 invalid or missing request body fields",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/content/transcribe-audio": {
-      "post": {
-        "description": "Transcribe audio into text with word-level timestamps. Pass one or more audio file URLs in `audio_urls`. Returns the full transcript and an array of timed segments.",
-        "security": [
-          { "apiKeyAuth": [] },
-          { "bearerAuth": [] }
-        ],
-        "requestBody": {
-          "description": "Audio transcription parameters",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ContentCreateAudioRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Song transcribed successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentCreateAudioResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation failed \u2014 invalid or missing request body fields",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/content/edit": {
-      "post": {
-        "description": "Apply edits to a video or audio file — trim, crop, resize, overlay text, or add an audio track. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array. Everything runs in one pass.",
-        "security": [
-          { "apiKeyAuth": [] },
-          { "bearerAuth": [] }
-        ],
-        "requestBody": {
-          "description": "Edit parameters",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ContentCreateEditRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "202": {
-            "description": "Edit task triggered successfully. Poll via [GET /api/tasks/runs](/api-reference/tasks/runs) using the returned `runId`.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentCreateEditResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation failed \u2014 invalid or missing request body fields",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/content/upscale": {
       "post": {
         "description": "Upscale an image or video to higher resolution. Pass the URL and specify the type. Returns the upscaled URL.",
         "security": [
-          { "apiKeyAuth": [] },
-          { "bearerAuth": [] }
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
         ],
         "requestBody": {
           "description": "Upscale parameters",
@@ -5774,7 +5484,7 @@
             }
           },
           "400": {
-            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "description": "Validation failed — invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5784,7 +5494,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5806,12 +5516,16 @@
         }
       }
     },
-    "/api/content/analyze-video": {
+    "/api/content/analyze": {
       "post": {
         "description": "Analyze a video and answer questions about it. Pass a video URL and a text prompt — for example, \"Describe what happens\" or \"Rate the visual quality 1-10.\" Returns the generated text.",
         "security": [
-          { "apiKeyAuth": [] },
-          { "bearerAuth": [] }
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
         ],
         "requestBody": {
           "description": "Video analysis parameters",
@@ -5836,7 +5550,7 @@
             }
           },
           "400": {
-            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "description": "Validation failed — invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5846,7 +5560,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5857,6 +5571,334 @@
           },
           "502": {
             "description": "Video analysis failed upstream",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/content/caption": {
+      "post": {
+        "description": "Generate a short caption from a topic. Returns the text content and default styling (font, color, size).",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Text generation parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentCreateTextRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Text generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentCreateTextResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed — invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/content/image": {
+      "post": {
+        "description": "Generate an image from a text prompt. Pass a `reference_image_url` to guide the output toward a specific look or subject. Returns the image URL.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Image generation parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentCreateImageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Image generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentCreateImageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed — invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/content/video": {
+      "post": {
+        "description": "Generate a video. Set `mode` to control what kind of video you get:\n\n- `prompt` — create a video from a text description\n- `animate` — animate a still image\n- `reference` — use an image as a style/subject reference (not the first frame)\n- `extend` — continue an existing video\n- `first-last` — generate a video that transitions between two images\n- `lipsync` — sync face movement to an audio clip\n\nIf `mode` is omitted, it's inferred from the inputs you provide.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Video generation parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentCreateVideoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Video generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentCreateVideoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed — invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "Apply edits to a video or audio file — trim, crop, resize, overlay text, or add an audio track. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array. Everything runs in one pass.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Edit parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentCreateEditRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Edit task triggered successfully. Poll via [GET /api/tasks/runs](/api-reference/tasks/runs) using the returned `runId`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentCreateEditResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed — invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/content/transcribe": {
+      "post": {
+        "description": "Transcribe audio into text with word-level timestamps. Pass one or more audio file URLs in `audio_urls`. Returns the full transcript and an array of timed segments.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Audio transcription parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentCreateAudioRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Song transcribed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentCreateAudioResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed — invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -11751,7 +11793,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Optional list of song slugs or public URLs to use for the audio track. Song slugs match filenames without extension from the artist's `songs/` directory (e.g. `\"hiccups\"` for `hiccups.mp3`). Public URLs (e.g. `\"https://example.com/my-song.mp3\"`) are downloaded, transcribed, and clipped directly \u2014 bypassing the Git repo. When omitted, all songs in the artist's repo are eligible.",
+            "description": "Optional list of song slugs or public URLs to use for the audio track. Song slugs match filenames without extension from the artist's `songs/` directory (e.g. `\"hiccups\"` for `hiccups.mp3`). Public URLs (e.g. `\"https://example.com/my-song.mp3\"`) are downloaded, transcribed, and clipped directly — bypassing the Git repo. When omitted, all songs in the artist's repo are eligible.",
             "example": [
               "hiccups",
               "https://example.com/unreleased-track.mp3"
@@ -11781,7 +11823,7 @@
           "artist_account_id",
           "template"
         ],
-        "description": "Confirmation that the content creation pipeline has been triggered. Always returns `runIds` as an array \u2014 even for a single run, it contains one element.",
+        "description": "Confirmation that the content creation pipeline has been triggered. Always returns `runIds` as an array — even for a single run, it contains one element.",
         "properties": {
           "runIds": {
             "type": "array",
@@ -12260,7 +12302,7 @@
           "audio_url": {
             "type": "string",
             "format": "uri",
-            "description": "Public URL to an audio file (MP3, WAV, or FLAC \u2014 up to 20 minutes)",
+            "description": "Public URL to an audio file (MP3, WAV, or FLAC — up to 20 minutes)",
             "example": "https://example.com/song.mp3"
           },
           "max_new_tokens": {
@@ -12275,8 +12317,8 @@
             "type": "number",
             "minimum": 0,
             "maximum": 2,
-            "default": 1.0,
-            "description": "Controls output creativity \u2014 higher values produce more varied responses",
+            "default": 1,
+            "description": "Controls output creativity — higher values produce more varied responses",
             "example": 0.7
           },
           "top_p": {
@@ -12711,7 +12753,14 @@
         "properties": {
           "mode": {
             "type": "string",
-            "enum": ["prompt", "animate", "reference", "extend", "first-last", "lipsync"],
+            "enum": [
+              "prompt",
+              "animate",
+              "reference",
+              "extend",
+              "first-last",
+              "lipsync"
+            ],
             "description": "What kind of video to generate. If omitted, inferred from the inputs you provide."
           },
           "prompt": {
@@ -12740,19 +12789,32 @@
           },
           "aspect_ratio": {
             "type": "string",
-            "enum": ["auto", "16:9", "9:16"],
+            "enum": [
+              "auto",
+              "16:9",
+              "9:16"
+            ],
             "default": "auto",
             "description": "Aspect ratio of the output video"
           },
           "duration": {
             "type": "string",
-            "enum": ["4s", "6s", "7s", "8s"],
+            "enum": [
+              "4s",
+              "6s",
+              "7s",
+              "8s"
+            ],
             "default": "8s",
             "description": "Duration of the generated video"
           },
           "resolution": {
             "type": "string",
-            "enum": ["720p", "1080p", "4k"],
+            "enum": [
+              "720p",
+              "1080p",
+              "4k"
+            ],
             "default": "720p",
             "description": "Output resolution"
           },
@@ -12938,11 +13000,19 @@
             "description": "Array of edit operations to apply in order. Required if template is not provided.",
             "items": {
               "type": "object",
-              "required": ["type"],
+              "required": [
+                "type"
+              ],
               "properties": {
                 "type": {
                   "type": "string",
-                  "enum": ["trim", "crop", "resize", "overlay_text", "mux_audio"],
+                  "enum": [
+                    "trim",
+                    "crop",
+                    "resize",
+                    "overlay_text",
+                    "mux_audio"
+                  ],
                   "description": "Operation type"
                 },
                 "start": {
@@ -12987,7 +13057,11 @@
                 },
                 "position": {
                   "type": "string",
-                  "enum": ["top", "center", "bottom"],
+                  "enum": [
+                    "top",
+                    "center",
+                    "bottom"
+                  ],
                   "description": "Text position (overlay_text)"
                 },
                 "audio_url": {
@@ -13004,7 +13078,11 @@
           },
           "output_format": {
             "type": "string",
-            "enum": ["mp4", "webm", "mov"],
+            "enum": [
+              "mp4",
+              "webm",
+              "mov"
+            ],
             "default": "mp4",
             "description": "Output format"
           }
@@ -13109,7 +13187,10 @@
           },
           "finish_reason": {
             "type": "string",
-            "enum": ["stop", "length"],
+            "enum": [
+              "stop",
+              "length"
+            ],
             "nullable": true,
             "description": "`stop` if the generation completed normally. `length` if truncated at the token limit."
           },
