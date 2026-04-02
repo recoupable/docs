@@ -4043,7 +4043,11 @@
     },
     "/api/content/create": {
       "post": {
-        "description": "Trigger the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden via `songs` URLs or `images`, then triggers a background task that generates a short-form video. Returns `runIds` \u2014 an array of run IDs that can each be polled via [GET /api/tasks/runs](/api-reference/tasks/runs). Authentication is handled via the x-api-key header.",
+        "description": "Trigger the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden via `songs` URLs or `images`, then triggers a background task that generates a short-form video. Returns `runIds` \u2014 an array of run IDs that can each be polled via [GET /api/tasks/runs](/api-reference/tasks/runs).",
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
         "requestBody": {
           "description": "Content creation parameters including the target artist and optional template/workflow settings",
           "required": true,
@@ -4102,6 +4106,10 @@
     "/api/content/templates": {
       "get": {
         "description": "List all available content creation templates. Templates define the visual style, scene composition, and default workflow settings for generated videos. Each template includes reference images, style guides, caption rules, and prompt configurations.",
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
         "responses": {
           "200": {
             "description": "Templates retrieved successfully",
@@ -4129,6 +4137,10 @@
     "/api/content/validate": {
       "get": {
         "description": "Check whether an artist has all the required files to run the content creation pipeline. Returns a structured report of each required and recommended file with its status. Required files must be present or the pipeline will fail. Recommended files improve output quality but are not strictly necessary. Provide `artist_account_id` as a query parameter.",
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
         "parameters": [
           {
             "name": "artist_account_id",
@@ -4188,7 +4200,11 @@
     },
     "/api/content/estimate": {
       "get": {
-        "description": "Estimate the cost of running the content creation pipeline. Fetches live pricing from fal.ai and calculates per-step and per-video costs. Supports comparing multiple workflow profiles (e.g., premium vs. budget) and projecting batch costs. This endpoint is informational only \u2014 it does not trigger any pipeline execution or spend credits.",
+        "description": "Estimate the cost of running the content creation pipeline. Calculates per-step and per-video costs based on current pricing. Supports comparing multiple workflow profiles (e.g., premium vs. budget) and projecting batch costs. This endpoint is informational only \u2014 it does not trigger any pipeline execution or spend credits.",
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
         "parameters": [
           {
             "name": "lipsync",
@@ -5420,7 +5436,11 @@
     },
     "/api/content/create/image": {
       "post": {
-        "description": "Generate an AI image using fal.ai. Returns the image URL synchronously. Requires `FAL_KEY` on the server.",
+        "description": "Generate an AI image. Returns the image URL synchronously.",
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
         "requestBody": {
           "description": "Image generation parameters",
           "required": true,
@@ -5478,7 +5498,11 @@
     },
     "/api/content/create/video": {
       "post": {
-        "description": "Generate a video from an image using fal.ai. Supports normal image-to-video and lipsync audio-to-video modes.",
+        "description": "Generate a video from an image. Supports normal image-to-video and lipsync audio-to-video modes.",
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
         "requestBody": {
           "description": "Video generation parameters",
           "required": true,
@@ -5537,6 +5561,10 @@
     "/api/content/create/text": {
       "post": {
         "description": "Generate on-screen text for a social video using an LLM. Returns text content and styling synchronously.",
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
         "requestBody": {
           "description": "Text generation parameters",
           "required": true,
@@ -5594,7 +5622,11 @@
     },
     "/api/content/create/audio": {
       "post": {
-        "description": "Transcribe a song using fal.ai Whisper. Pass a song URL in the `songs` array. Returns timestamped lyrics.",
+        "description": "Transcribe a song. Pass a song URL in the `songs` array. Returns timestamped lyrics.",
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
         "requestBody": {
           "description": "Audio transcription parameters",
           "required": true,
@@ -5653,6 +5685,10 @@
     "/api/content/create/render": {
       "post": {
         "description": "Combine video, audio, and on-screen text into a final social video using ffmpeg. This is the only primitive that runs as a background task \u2014 poll via [GET /api/tasks/runs](/api-reference/tasks/runs).",
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
         "requestBody": {
           "description": "Render composition parameters",
           "required": true,
@@ -5710,7 +5746,11 @@
     },
     "/api/content/create/upscale": {
       "post": {
-        "description": "Upscale an image or video using fal.ai. Returns the upscaled URL synchronously.",
+        "description": "Upscale an image or video. Returns the upscaled URL synchronously.",
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
         "requestBody": {
           "description": "Upscale parameters",
           "required": true,
@@ -11632,7 +11672,7 @@
           },
           "upscale": {
             "type": "boolean",
-            "description": "Whether to upscale the generated image and video using fal.ai SeedVR2 for higher resolution and detail. Adds approximately 2 minutes to the pipeline. Defaults to `false`.",
+            "description": "Whether to upscale the generated image and video for higher resolution and detail. Adds approximately 2 minutes to the pipeline. Defaults to `false`.",
             "default": false,
             "example": false
           },
@@ -11956,7 +11996,7 @@
         "required": [
           "workflows"
         ],
-        "description": "Cost estimates based on live fal.ai pricing. When `compare` is `false`, the `workflows` array contains a single entry. When `true`, it contains all available profiles.",
+        "description": "Cost estimates based on current pricing. When `compare` is `false`, the `workflows` array contains a single entry. When `true`, it contains all available profiles.",
         "properties": {
           "workflows": {
             "type": "array",

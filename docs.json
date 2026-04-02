@@ -20,9 +20,7 @@
               "quickstart",
               "cli",
               "mcp",
-              "authentication",
-              "api-reference/content/create",
-              "api-reference/sandboxes/create"
+              "authentication"
             ]
           },
           {
@@ -125,12 +123,7 @@
           {
             "group": "Posts",
             "pages": [
-              "api-reference/posts/get"
-            ]
-          },
-          {
-            "group": "Post",
-            "pages": [
+              "api-reference/posts/get",
               "api-reference/post/comments"
             ]
           },
