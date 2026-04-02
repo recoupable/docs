@@ -5682,31 +5682,31 @@
         }
       }
     },
-    "/api/content/render": {
+    "/api/content/edit": {
       "post": {
-        "description": "Combine video, audio, and on-screen text into a final social video using ffmpeg. This is the only primitive that runs as a background task \u2014 poll via [GET /api/tasks/runs](/api-reference/tasks/runs).",
+        "description": "Edit media using an operations pipeline or a template preset. Accepts video and/or audio inputs with either a template name (deterministic config) or an explicit operations array. All operations execute in a single processing pass.",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
         ],
         "requestBody": {
-          "description": "Render composition parameters",
+          "description": "Edit parameters",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ContentCreateRenderRequest"
+                "$ref": "#/components/schemas/ContentCreateEditRequest"
               }
             }
           }
         },
         "responses": {
           "202": {
-            "description": "Render task triggered successfully. Poll via [GET /api/tasks/runs](/api-reference/tasks/runs) using the returned `runId`.",
+            "description": "Edit task triggered successfully. Poll via [GET /api/tasks/runs](/api-reference/tasks/runs) using the returned `runId`.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContentCreateRenderResponse"
+                  "$ref": "#/components/schemas/ContentCreateEditResponse"
                 }
               }
             }
@@ -12669,28 +12669,15 @@
       },
       "ContentCreateImageRequest": {
         "type": "object",
-        "required": [
-          "artist_account_id",
-          "template"
-        ],
         "properties": {
-          "artist_account_id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "UUID of the artist account"
-          },
-          "template": {
-            "type": "string",
-            "description": "Template identifier for image generation. Use [GET /api/content/templates](/api-reference/content/templates) to list available templates."
-          },
           "prompt": {
             "type": "string",
             "description": "Optional prompt to guide image generation"
           },
-          "face_guide_url": {
+          "reference_image_url": {
             "type": "string",
             "format": "uri",
-            "description": "URL of a face guide image for face-consistent generation"
+            "description": "URL of a reference image for conditioning the generation"
           },
           "images": {
             "type": "array",
@@ -12699,6 +12686,10 @@
               "format": "uri"
             },
             "description": "Optional reference image URLs to guide generation"
+          },
+          "model": {
+            "type": "string",
+            "description": "fal.ai model ID. Defaults to fal-ai/nano-banana-pro/edit"
           }
         }
       },
@@ -12726,31 +12717,23 @@
             "format": "uri",
             "description": "URL of the source image to animate"
           },
-          "template": {
-            "type": "string",
-            "description": "Optional template identifier for video style"
-          },
           "lipsync": {
             "type": "boolean",
             "default": false,
-            "description": "When `true`, uses audio-to-video lipsync mode. Requires `song_url`."
+            "description": "When `true`, uses audio-to-video lipsync mode. Requires `audio_url`."
           },
-          "song_url": {
+          "audio_url": {
             "type": "string",
             "format": "uri",
-            "description": "URL of the audio track for lipsync mode. Required when `lipsync` is `true`."
-          },
-          "audio_start_seconds": {
-            "type": "number",
-            "description": "Start offset in the audio track (seconds)"
-          },
-          "audio_duration_seconds": {
-            "type": "number",
-            "description": "Duration of audio to use (seconds)"
+            "description": "Audio URL for lipsync mode"
           },
           "motion_prompt": {
             "type": "string",
             "description": "Optional prompt describing desired motion in the video"
+          },
+          "model": {
+            "type": "string",
+            "description": "fal.ai model ID. Defaults to fal-ai/veo3.1/fast/image-to-video or fal-ai/ltx-2-19b/audio-to-video when lipsync is true"
           }
         }
       },
@@ -12770,22 +12753,12 @@
       "ContentCreateTextRequest": {
         "type": "object",
         "required": [
-          "artist_account_id",
-          "song"
+          "topic"
         ],
         "properties": {
-          "artist_account_id": {
+          "topic": {
             "type": "string",
-            "format": "uuid",
-            "description": "UUID of the artist account"
-          },
-          "song": {
-            "type": "string",
-            "description": "Song title or lyrics to generate on-screen text for"
-          },
-          "template": {
-            "type": "string",
-            "description": "Optional template identifier for text styling"
+            "description": "The subject or theme for caption generation"
           },
           "length": {
             "type": "string",
@@ -12861,25 +12834,21 @@
       "ContentCreateAudioRequest": {
         "type": "object",
         "required": [
-          "artist_account_id"
+          "audio_urls"
         ],
         "properties": {
-          "artist_account_id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "UUID of the artist account"
-          },
-          "lipsync": {
-            "type": "boolean",
-            "default": false,
-            "description": "Whether this transcription is for lipsync use"
-          },
-          "songs": {
+          "audio_urls": {
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "format": "uri"
             },
-            "description": "Array containing a song URL to transcribe"
+            "minItems": 1,
+            "description": "Audio file URLs to transcribe"
+          },
+          "model": {
+            "type": "string",
+            "description": "fal.ai model ID. Defaults to fal-ai/whisper"
           }
         }
       },
@@ -12913,70 +12882,101 @@
           }
         }
       },
-      "ContentCreateRenderTextInput": {
+      "ContentCreateEditRequest": {
         "type": "object",
-        "properties": {
-          "content": {
-            "type": "string",
-            "description": "On-screen text content"
-          },
-          "font": {
-            "type": "string",
-            "description": "Font name"
-          },
-          "color": {
-            "type": "string",
-            "description": "Text color as a CSS color value"
-          },
-          "border_color": {
-            "type": "string",
-            "description": "Text border/stroke color"
-          },
-          "max_font_size": {
-            "type": "number",
-            "description": "Maximum font size in pixels"
-          }
-        }
-      },
-      "ContentCreateRenderRequest": {
-        "type": "object",
-        "required": [
-          "video_url",
-          "song_url",
-          "audio_start_seconds",
-          "audio_duration_seconds"
-        ],
         "properties": {
           "video_url": {
             "type": "string",
             "format": "uri",
-            "description": "URL of the video clip to use as the visual layer"
+            "description": "Input video URL"
           },
-          "song_url": {
+          "audio_url": {
             "type": "string",
             "format": "uri",
-            "description": "URL of the audio track to overlay"
+            "description": "Input audio URL"
           },
-          "audio_start_seconds": {
-            "type": "number",
-            "description": "Start offset in the audio track (seconds)"
+          "template": {
+            "type": "string",
+            "description": "Template name for deterministic edit config. If provided, operations are read from the template."
           },
-          "audio_duration_seconds": {
-            "type": "number",
-            "description": "Duration of audio to use (seconds)"
+          "operations": {
+            "type": "array",
+            "description": "Array of edit operations to apply in order. Required if template is not provided.",
+            "items": {
+              "type": "object",
+              "required": ["type"],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["trim", "crop", "resize", "overlay_text", "mux_audio"],
+                  "description": "Operation type"
+                },
+                "start": {
+                  "type": "number",
+                  "description": "Start time in seconds (trim)"
+                },
+                "duration": {
+                  "type": "number",
+                  "description": "Duration in seconds (trim)"
+                },
+                "aspect": {
+                  "type": "string",
+                  "description": "Aspect ratio e.g. 9:16 (crop)"
+                },
+                "width": {
+                  "type": "integer",
+                  "description": "Width in pixels (crop/resize)"
+                },
+                "height": {
+                  "type": "integer",
+                  "description": "Height in pixels (crop/resize)"
+                },
+                "content": {
+                  "type": "string",
+                  "description": "Text content (overlay_text)"
+                },
+                "font": {
+                  "type": "string",
+                  "description": "Font name (overlay_text)"
+                },
+                "color": {
+                  "type": "string",
+                  "description": "Text color (overlay_text)"
+                },
+                "stroke_color": {
+                  "type": "string",
+                  "description": "Text stroke color (overlay_text)"
+                },
+                "max_font_size": {
+                  "type": "number",
+                  "description": "Maximum font size (overlay_text)"
+                },
+                "position": {
+                  "type": "string",
+                  "enum": ["top", "center", "bottom"],
+                  "description": "Text position (overlay_text)"
+                },
+                "audio_url": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "Audio URL to mux (mux_audio)"
+                },
+                "replace": {
+                  "type": "boolean",
+                  "description": "Replace existing audio (mux_audio)"
+                }
+              }
+            }
           },
-          "text": {
-            "$ref": "#/components/schemas/ContentCreateRenderTextInput",
-            "description": "Optional on-screen text overlay configuration"
-          },
-          "has_audio": {
-            "type": "boolean",
-            "default": false,
-            "description": "Whether the source video already contains audio"
+          "output_format": {
+            "type": "string",
+            "enum": ["mp4", "webm", "mov"],
+            "default": "mp4",
+            "description": "Output format"
           }
         }
       },
-      "ContentCreateRenderResponse": {
+      "ContentCreateEditResponse": {
         "type": "object",
         "required": [
           "runId",
@@ -12992,7 +12992,7 @@
             "enum": [
               "triggered"
             ],
-            "description": "Status of the render task"
+            "description": "Status of the edit task"
           }
         }
       },

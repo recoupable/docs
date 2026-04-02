@@ -251,7 +251,7 @@
               "api-reference/content/generate-video",
               "api-reference/content/generate-caption",
               "api-reference/content/transcribe-audio",
-              "api-reference/content/render",
+              "api-reference/content/edit",
               "api-reference/content/upscale",
               "api-reference/content/analyze-video",
               "api-reference/content/templates",
