@@ -2821,7 +2821,7 @@
     },
     "/api/sandboxes/files": {
       "post": {
-        "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Accepts an array of file URLs and commits each file to the specified directory path within the repository. Supports submodule resolution — if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Accepts an array of file URLs and commits each file to the specified directory path within the repository. Supports submodule resolution \u2014 if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
         "requestBody": {
           "description": "JSON body containing file URLs and target path",
           "required": true,
@@ -4692,14 +4692,23 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": ["all", "daily", "weekly", "monthly"],
+              "enum": [
+                "all",
+                "daily",
+                "weekly",
+                "monthly"
+              ],
               "default": "all"
             }
           }
         ],
         "security": [
-          { "apiKeyAuth": [] },
-          { "bearerAuth": [] }
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
         ],
         "responses": {
           "200": {
@@ -4708,11 +4717,19 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["status", "total", "total_pull_requests", "tags_with_pull_requests", "tags"],
+                  "required": [
+                    "status",
+                    "total",
+                    "total_pull_requests",
+                    "tags_with_pull_requests",
+                    "tags"
+                  ],
                   "properties": {
                     "status": {
                       "type": "string",
-                      "enum": ["success"],
+                      "enum": [
+                        "success"
+                      ],
                       "description": "Status of the request"
                     },
                     "total": {
@@ -4735,7 +4752,14 @@
                       "description": "List of Slack tag events",
                       "items": {
                         "type": "object",
-                        "required": ["user_id", "user_name", "prompt", "timestamp", "channel_id", "channel_name"],
+                        "required": [
+                          "user_id",
+                          "user_name",
+                          "prompt",
+                          "timestamp",
+                          "channel_id",
+                          "channel_name"
+                        ],
                         "properties": {
                           "user_id": {
                             "type": "string",
@@ -4748,7 +4772,10 @@
                             "example": "Jane Smith"
                           },
                           "user_avatar": {
-                            "type": ["string", "null"],
+                            "type": [
+                              "string",
+                              "null"
+                            ],
                             "description": "URL of the Slack avatar",
                             "example": "https://avatars.slack-edge.com/..."
                           },
@@ -4781,7 +4808,9 @@
                               "format": "uri",
                               "example": "https://github.com/recoupable/api/pull/42"
                             },
-                            "example": ["https://github.com/recoupable/api/pull/42"]
+                            "example": [
+                              "https://github.com/recoupable/api/pull/42"
+                            ]
                           }
                         }
                       }
@@ -4795,7 +4824,9 @@
             "description": "Unauthorized - missing or invalid credentials",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
               }
             }
           },
@@ -4803,7 +4834,9 @@
             "description": "Forbidden - authenticated account is not a Recoup admin",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
               }
             }
           },
@@ -4811,7 +4844,9 @@
             "description": "Internal server error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
               }
             }
           }
@@ -4829,14 +4864,23 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": ["all", "daily", "weekly", "monthly"],
+              "enum": [
+                "all",
+                "daily",
+                "weekly",
+                "monthly"
+              ],
               "default": "all"
             }
           }
         ],
         "security": [
-          { "apiKeyAuth": [] },
-          { "bearerAuth": [] }
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
         ],
         "responses": {
           "200": {
@@ -4845,11 +4889,19 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["status", "total", "total_videos", "tags_with_videos", "tags"],
+                  "required": [
+                    "status",
+                    "total",
+                    "total_videos",
+                    "tags_with_videos",
+                    "tags"
+                  ],
                   "properties": {
                     "status": {
                       "type": "string",
-                      "enum": ["success"],
+                      "enum": [
+                        "success"
+                      ],
                       "description": "Status of the request"
                     },
                     "total": {
@@ -4872,7 +4924,14 @@
                       "description": "List of Slack tag events",
                       "items": {
                         "type": "object",
-                        "required": ["user_id", "user_name", "prompt", "timestamp", "channel_id", "channel_name"],
+                        "required": [
+                          "user_id",
+                          "user_name",
+                          "prompt",
+                          "timestamp",
+                          "channel_id",
+                          "channel_name"
+                        ],
                         "properties": {
                           "user_id": {
                             "type": "string",
@@ -4885,7 +4944,10 @@
                             "example": "Jane Smith"
                           },
                           "user_avatar": {
-                            "type": ["string", "null"],
+                            "type": [
+                              "string",
+                              "null"
+                            ],
                             "description": "URL of the Slack avatar",
                             "example": "https://avatars.slack-edge.com/..."
                           },
@@ -4918,7 +4980,9 @@
                               "format": "uri",
                               "example": "https://recoupable.com/v/abc123"
                             },
-                            "example": ["https://recoupable.com/v/abc123"]
+                            "example": [
+                              "https://recoupable.com/v/abc123"
+                            ]
                           }
                         }
                       }
@@ -4932,7 +4996,9 @@
             "description": "Unauthorized - missing or invalid credentials",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
               }
             }
           },
@@ -4940,7 +5006,9 @@
             "description": "Forbidden - authenticated account is not a Recoup admin",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
               }
             }
           },
@@ -4948,7 +5016,9 @@
             "description": "Internal server error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
               }
             }
           }
@@ -4978,8 +5048,12 @@
           }
         ],
         "security": [
-          { "apiKeyAuth": [] },
-          { "bearerAuth": [] }
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
         ],
         "responses": {
           "200": {
@@ -4988,11 +5062,16 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["status", "pull_requests"],
+                  "required": [
+                    "status",
+                    "pull_requests"
+                  ],
                   "properties": {
                     "status": {
                       "type": "string",
-                      "enum": ["success"],
+                      "enum": [
+                        "success"
+                      ],
                       "description": "Status of the request"
                     },
                     "pull_requests": {
@@ -5000,7 +5079,10 @@
                       "description": "Status for each provided pull request URL",
                       "items": {
                         "type": "object",
-                        "required": ["url", "status"],
+                        "required": [
+                          "url",
+                          "status"
+                        ],
                         "properties": {
                           "url": {
                             "type": "string",
@@ -5010,7 +5092,11 @@
                           },
                           "status": {
                             "type": "string",
-                            "enum": ["open", "closed", "merged"],
+                            "enum": [
+                              "open",
+                              "closed",
+                              "merged"
+                            ],
                             "description": "The current status of the pull request",
                             "example": "merged"
                           }
@@ -5026,7 +5112,9 @@
             "description": "Bad request - missing or invalid pull_requests parameter",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
               }
             }
           },
@@ -5034,7 +5122,9 @@
             "description": "Unauthorized - missing or invalid credentials",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
               }
             }
           },
@@ -5042,7 +5132,9 @@
             "description": "Forbidden - authenticated account is not a Recoup admin",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
               }
             }
           },
@@ -5050,7 +5142,9 @@
             "description": "Internal server error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
               }
             }
           }
@@ -5179,7 +5273,9 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": ["slack"]
+              "enum": [
+                "slack"
+              ]
             }
           }
         ],
@@ -5190,7 +5286,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Slack Events API envelope — the shape depends on the event type"
+                "description": "Slack Events API envelope \u2014 the shape depends on the event type"
               }
             }
           }
@@ -5219,7 +5315,7 @@
     },
     "/api/content-agent/callback": {
       "post": {
-        "description": "Internal callback endpoint for the `poll-content-run` Trigger.dev task. Receives content generation results and posts them back to the originating Slack thread. Authenticated via the `x-callback-secret` header.\n\nThis endpoint is not intended for external use — it is called automatically by the polling task when content runs complete, fail, or time out.",
+        "description": "Internal callback endpoint for the `poll-content-run` Trigger.dev task. Receives content generation results and posts them back to the originating Slack thread. Authenticated via the `x-callback-secret` header.\n\nThis endpoint is not intended for external use \u2014 it is called automatically by the polling task when content runs complete, fail, or time out.",
         "requestBody": {
           "description": "Content generation results from the polling task",
           "required": true,
@@ -5227,7 +5323,10 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["threadId", "status"],
+                "required": [
+                  "threadId",
+                  "status"
+                ],
                 "properties": {
                   "threadId": {
                     "type": "string",
@@ -5235,7 +5334,11 @@
                   },
                   "status": {
                     "type": "string",
-                    "enum": ["completed", "failed", "timeout"],
+                    "enum": [
+                      "completed",
+                      "failed",
+                      "timeout"
+                    ],
                     "description": "Overall status of the content generation batch"
                   },
                   "results": {
@@ -5243,7 +5346,10 @@
                     "description": "Per-run results",
                     "items": {
                       "type": "object",
-                      "required": ["runId", "status"],
+                      "required": [
+                        "runId",
+                        "status"
+                      ],
                       "properties": {
                         "runId": {
                           "type": "string",
@@ -5251,7 +5357,11 @@
                         },
                         "status": {
                           "type": "string",
-                          "enum": ["completed", "failed", "timeout"]
+                          "enum": [
+                            "completed",
+                            "failed",
+                            "timeout"
+                          ]
                         },
                         "videoUrl": {
                           "type": "string",
@@ -5306,6 +5416,354 @@
             "callbackSecret": []
           }
         ]
+      }
+    },
+    "/api/content/create/image": {
+      "post": {
+        "description": "Generate an AI image using fal.ai. Returns the image URL synchronously. Requires `FAL_KEY` on the server.",
+        "requestBody": {
+          "description": "Image generation parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentCreateImageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Image generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentCreateImageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized \u2014 invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/content/create/video": {
+      "post": {
+        "description": "Generate a video from an image using fal.ai. Supports normal image-to-video and lipsync audio-to-video modes.",
+        "requestBody": {
+          "description": "Video generation parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentCreateVideoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Video generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentCreateVideoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized \u2014 invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/content/create/text": {
+      "post": {
+        "description": "Generate on-screen text for a social video using an LLM. Returns text content and styling synchronously.",
+        "requestBody": {
+          "description": "Text generation parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentCreateTextRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Text generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentCreateTextResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized \u2014 invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/content/create/audio": {
+      "post": {
+        "description": "Transcribe a song using fal.ai Whisper. Pass a song URL in the `songs` array. Returns timestamped lyrics.",
+        "requestBody": {
+          "description": "Audio transcription parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentCreateAudioRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Song transcribed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentCreateAudioResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized \u2014 invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/content/create/render": {
+      "post": {
+        "description": "Combine video, audio, and on-screen text into a final social video using ffmpeg. This is the only primitive that runs as a background task \u2014 poll via [GET /api/tasks/runs](/api-reference/tasks/runs).",
+        "requestBody": {
+          "description": "Render composition parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentCreateRenderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Render task triggered successfully. Poll via [GET /api/tasks/runs](/api-reference/tasks/runs) using the returned `runId`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentCreateRenderResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized \u2014 invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/content/create/upscale": {
+      "post": {
+        "description": "Upscale an image or video using fal.ai. Returns the upscaled URL synchronously.",
+        "requestBody": {
+          "description": "Upscale parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentCreateUpscaleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Media upscaled successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentCreateUpscaleResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized \u2014 invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
@@ -7061,7 +7519,9 @@
       },
       "CopyChatMessagesRequest": {
         "type": "object",
-        "required": ["targetChatId"],
+        "required": [
+          "targetChatId"
+        ],
         "properties": {
           "targetChatId": {
             "type": "string",
@@ -7077,21 +7537,59 @@
       },
       "CopyChatMessagesResponse": {
         "type": "object",
-        "required": ["status", "source_chat_id", "target_chat_id", "copied_count", "cleared_existing"],
+        "required": [
+          "status",
+          "source_chat_id",
+          "target_chat_id",
+          "copied_count",
+          "cleared_existing"
+        ],
         "properties": {
-          "status": { "type": "string", "enum": ["success"], "description": "Status of the request" },
-          "source_chat_id": { "type": "string", "format": "uuid", "description": "Source chat room UUID." },
-          "target_chat_id": { "type": "string", "format": "uuid", "description": "Target chat room UUID." },
-          "copied_count": { "type": "integer", "description": "Number of messages copied from source to target." },
-          "cleared_existing": { "type": "boolean", "description": "Whether existing target messages were deleted before copy." }
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "source_chat_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Source chat room UUID."
+          },
+          "target_chat_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Target chat room UUID."
+          },
+          "copied_count": {
+            "type": "integer",
+            "description": "Number of messages copied from source to target."
+          },
+          "cleared_existing": {
+            "type": "boolean",
+            "description": "Whether existing target messages were deleted before copy."
+          }
         }
       },
       "CopyChatMessagesErrorResponse": {
         "type": "object",
-        "required": ["status", "error"],
+        "required": [
+          "status",
+          "error"
+        ],
         "properties": {
-          "status": { "type": "string", "enum": ["error"], "description": "Status of the request" },
-          "error": { "type": "string", "description": "Error message describing what went wrong." }
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong."
+          }
         }
       },
       "DeleteTrailingChatMessagesResponse": {
@@ -10520,7 +11018,10 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": ["url", "name"],
+              "required": [
+                "url",
+                "name"
+              ],
               "properties": {
                 "url": {
                   "type": "string",
@@ -11148,8 +11649,11 @@
             "items": {
               "type": "string"
             },
-            "description": "Optional list of song slugs or public URLs to use for the audio track. Song slugs match filenames without extension from the artist's `songs/` directory (e.g. `\"hiccups\"` for `hiccups.mp3`). Public URLs (e.g. `\"https://example.com/my-song.mp3\"`) are downloaded, transcribed, and clipped directly — bypassing the Git repo. When omitted, all songs in the artist's repo are eligible.",
-            "example": ["hiccups", "https://example.com/unreleased-track.mp3"]
+            "description": "Optional list of song slugs or public URLs to use for the audio track. Song slugs match filenames without extension from the artist's `songs/` directory (e.g. `\"hiccups\"` for `hiccups.mp3`). Public URLs (e.g. `\"https://example.com/my-song.mp3\"`) are downloaded, transcribed, and clipped directly \u2014 bypassing the Git repo. When omitted, all songs in the artist's repo are eligible.",
+            "example": [
+              "hiccups",
+              "https://example.com/unreleased-track.mp3"
+            ]
           },
           "images": {
             "type": "array",
@@ -11158,7 +11662,9 @@
               "format": "uri"
             },
             "description": "Optional list of public image URLs to use as face guides instead of the artist's default `face-guide.png` from their GitHub repo. The first image is used as the primary face guide. Useful when the caller wants to override the default face reference.",
-            "example": ["https://example.com/face.png"]
+            "example": [
+              "https://example.com/face.png"
+            ]
           }
         },
         "required": [
@@ -12056,6 +12562,370 @@
             "items": {
               "$ref": "#/components/schemas/OrgRepoRow"
             }
+          }
+        }
+      },
+      "ContentCreateImageRequest": {
+        "type": "object",
+        "required": [
+          "artist_account_id",
+          "template"
+        ],
+        "properties": {
+          "artist_account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist account"
+          },
+          "template": {
+            "type": "string",
+            "description": "Template identifier for image generation. Use [GET /api/content/templates](/api-reference/content/templates) to list available templates."
+          },
+          "prompt": {
+            "type": "string",
+            "description": "Optional prompt to guide image generation"
+          },
+          "face_guide_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of a face guide image for face-consistent generation"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
+            "description": "Optional reference image URLs to guide generation"
+          }
+        }
+      },
+      "ContentCreateImageResponse": {
+        "type": "object",
+        "required": [
+          "imageUrl"
+        ],
+        "properties": {
+          "imageUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the generated image"
+          }
+        }
+      },
+      "ContentCreateVideoRequest": {
+        "type": "object",
+        "required": [
+          "image_url"
+        ],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the source image to animate"
+          },
+          "template": {
+            "type": "string",
+            "description": "Optional template identifier for video style"
+          },
+          "lipsync": {
+            "type": "boolean",
+            "default": false,
+            "description": "When `true`, uses audio-to-video lipsync mode. Requires `song_url`."
+          },
+          "song_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the audio track for lipsync mode. Required when `lipsync` is `true`."
+          },
+          "audio_start_seconds": {
+            "type": "number",
+            "description": "Start offset in the audio track (seconds)"
+          },
+          "audio_duration_seconds": {
+            "type": "number",
+            "description": "Duration of audio to use (seconds)"
+          },
+          "motion_prompt": {
+            "type": "string",
+            "description": "Optional prompt describing desired motion in the video"
+          }
+        }
+      },
+      "ContentCreateVideoResponse": {
+        "type": "object",
+        "required": [
+          "videoUrl"
+        ],
+        "properties": {
+          "videoUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the generated video"
+          }
+        }
+      },
+      "ContentCreateTextRequest": {
+        "type": "object",
+        "required": [
+          "artist_account_id",
+          "song"
+        ],
+        "properties": {
+          "artist_account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist account"
+          },
+          "song": {
+            "type": "string",
+            "description": "Song title or lyrics to generate on-screen text for"
+          },
+          "template": {
+            "type": "string",
+            "description": "Optional template identifier for text styling"
+          },
+          "length": {
+            "type": "string",
+            "enum": [
+              "short",
+              "medium",
+              "long"
+            ],
+            "default": "short",
+            "description": "Desired text length"
+          }
+        }
+      },
+      "ContentCreateTextResponse": {
+        "type": "object",
+        "required": [
+          "content",
+          "color",
+          "borderColor",
+          "maxFontSize"
+        ],
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "Generated on-screen text content"
+          },
+          "font": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Font name for the text, or null for default"
+          },
+          "color": {
+            "type": "string",
+            "description": "Text color as a CSS color value",
+            "example": "#FFFFFF"
+          },
+          "borderColor": {
+            "type": "string",
+            "description": "Text border/stroke color as a CSS color value",
+            "example": "#000000"
+          },
+          "maxFontSize": {
+            "type": "number",
+            "description": "Maximum font size in pixels",
+            "example": 48
+          }
+        }
+      },
+      "ContentCreateAudioSegment": {
+        "type": "object",
+        "required": [
+          "start",
+          "end",
+          "text"
+        ],
+        "properties": {
+          "start": {
+            "type": "number",
+            "description": "Segment start time in seconds"
+          },
+          "end": {
+            "type": "number",
+            "description": "Segment end time in seconds"
+          },
+          "text": {
+            "type": "string",
+            "description": "Transcribed text for this segment"
+          }
+        }
+      },
+      "ContentCreateAudioRequest": {
+        "type": "object",
+        "required": [
+          "artist_account_id"
+        ],
+        "properties": {
+          "artist_account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist account"
+          },
+          "lipsync": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether this transcription is for lipsync use"
+          },
+          "songs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array containing a song URL to transcribe"
+          }
+        }
+      },
+      "ContentCreateAudioResponse": {
+        "type": "object",
+        "required": [
+          "songUrl",
+          "fullLyrics",
+          "segments",
+          "segmentCount"
+        ],
+        "properties": {
+          "songUrl": {
+            "type": "string",
+            "description": "URL of the transcribed song"
+          },
+          "fullLyrics": {
+            "type": "string",
+            "description": "Complete transcribed lyrics as a single string"
+          },
+          "segments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContentCreateAudioSegment"
+            },
+            "description": "Timestamped lyric segments"
+          },
+          "segmentCount": {
+            "type": "number",
+            "description": "Total number of segments returned"
+          }
+        }
+      },
+      "ContentCreateRenderTextInput": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "On-screen text content"
+          },
+          "font": {
+            "type": "string",
+            "description": "Font name"
+          },
+          "color": {
+            "type": "string",
+            "description": "Text color as a CSS color value"
+          },
+          "border_color": {
+            "type": "string",
+            "description": "Text border/stroke color"
+          },
+          "max_font_size": {
+            "type": "number",
+            "description": "Maximum font size in pixels"
+          }
+        }
+      },
+      "ContentCreateRenderRequest": {
+        "type": "object",
+        "required": [
+          "video_url",
+          "song_url",
+          "audio_start_seconds",
+          "audio_duration_seconds"
+        ],
+        "properties": {
+          "video_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the video clip to use as the visual layer"
+          },
+          "song_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the audio track to overlay"
+          },
+          "audio_start_seconds": {
+            "type": "number",
+            "description": "Start offset in the audio track (seconds)"
+          },
+          "audio_duration_seconds": {
+            "type": "number",
+            "description": "Duration of audio to use (seconds)"
+          },
+          "text": {
+            "$ref": "#/components/schemas/ContentCreateRenderTextInput",
+            "description": "Optional on-screen text overlay configuration"
+          },
+          "has_audio": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether the source video already contains audio"
+          }
+        }
+      },
+      "ContentCreateRenderResponse": {
+        "type": "object",
+        "required": [
+          "runId",
+          "status"
+        ],
+        "properties": {
+          "runId": {
+            "type": "string",
+            "description": "Background task run ID. Poll via [GET /api/tasks/runs](/api-reference/tasks/runs) to check progress."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "triggered"
+            ],
+            "description": "Status of the render task"
+          }
+        }
+      },
+      "ContentCreateUpscaleRequest": {
+        "type": "object",
+        "required": [
+          "url",
+          "type"
+        ],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the image or video to upscale"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "image",
+              "video"
+            ],
+            "description": "Whether the input is an image or video"
+          }
+        }
+      },
+      "ContentCreateUpscaleResponse": {
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the upscaled image or video"
           }
         }
       }
