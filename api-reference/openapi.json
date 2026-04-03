@@ -4041,6 +4041,72 @@
         }
       }
     },
+    "/api/content": {
+      "patch": {
+        "description": "Apply edits to content — trim, crop, resize, overlay text, or add an audio track. Accepts video, image, or audio input. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Edit parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentCreateEditRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Edit task triggered successfully. Poll via [GET /api/tasks/runs](/api-reference/tasks/runs) using the returned `runId`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentCreateEditResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed — invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/content/create": {
       "post": {
         "description": "Trigger the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden via `songs` URLs or `images`, then triggers a background task that generates a short-form video. Returns `runIds` — an array of run IDs that can each be polled via [GET /api/tasks/runs](/api-reference/tasks/runs).",
@@ -4109,7 +4175,7 @@
     },
     "/api/content/templates": {
       "get": {
-        "description": "List all available content creation templates. Templates define the visual style, scene composition, and default workflow settings for generated videos. Each template includes reference images, style guides, caption rules, and prompt configurations.",
+        "description": "List all available content creation templates. Templates are optional — every content primitive works without one. When you do use a template, it provides a complete creative recipe: image prompts, video motion config, caption style rules, and edit operations. Returns template ID and description only — enough to pick the right one.",
         "security": [
           {
             "apiKeyAuth": []
@@ -4135,6 +4201,73 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/content/templates/{id}": {
+      "get": {
+        "description": "Get the full configuration for a specific content creation template. Returns the complete creative recipe including image prompts, video motion config, caption style rules, and edit operations.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Template identifier",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "artist-caption-bedroom"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Template detail retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentTemplateDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Template not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "error"
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Template not found"
+                    }
+                  }
                 }
               }
             }
@@ -5778,70 +5911,6 @@
             }
           }
         }
-      },
-      "patch": {
-        "description": "Apply edits to a video or audio file — trim, crop, resize, overlay text, or add an audio track. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array. Everything runs in one pass.",
-        "security": [
-          {
-            "apiKeyAuth": []
-          },
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "description": "Edit parameters",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ContentCreateEditRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "202": {
-            "description": "Edit task triggered successfully. Poll via [GET /api/tasks/runs](/api-reference/tasks/runs) using the returned `runId`.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentCreateEditResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation failed — invalid or missing request body fields",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized — invalid or missing API key",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/api/content/transcribe": {
@@ -5903,6 +5972,489 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/music/compose": {
+      "post": {
+        "description": "Generate a song from a text prompt or a composition plan. The prompt can describe mood, genre, instruments, lyrics, and structure. Alternatively, pass a full composition_plan for fine-grained control over sections, styles, and lyrics. Returns binary audio in the requested format (default MP3).",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Music composition parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MusicComposeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Audio generated successfully",
+            "headers": {
+              "song-id": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Unique identifier for the generated song"
+              }
+            },
+            "content": {
+              "audio/mpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed — invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/music/compose/detailed": {
+      "post": {
+        "description": "Generate a song with metadata and optional word-level timestamps. Returns a multipart/mixed response: the first part is JSON metadata (song ID, duration, seed, etc.) and the second part is binary audio. Use with_timestamps to get precise timing for each word in the lyrics.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Music composition parameters with optional timestamps",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MusicComposeDetailedRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Audio and metadata generated successfully. Response is multipart/mixed: JSON metadata followed by binary audio.",
+            "content": {
+              "multipart/mixed": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed — invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/music/stream": {
+      "post": {
+        "description": "Generate a song and stream audio chunks in real time. Use this endpoint when you want to begin playback before the full song is generated. The response streams binary audio chunks as they are produced.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Music streaming parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MusicStreamRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Audio stream started successfully",
+            "headers": {
+              "song-id": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Unique identifier for the generated song"
+              }
+            },
+            "content": {
+              "audio/mpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed — invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/music/plan": {
+      "post": {
+        "description": "Create a composition plan from a text prompt. A composition plan is a structured representation of a song — sections, styles, lyrics, and durations — that you can review and tweak before passing to the compose endpoint. This endpoint is free and does not consume credits.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Plan creation parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MusicCreatePlanRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Composition plan created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicCreatePlanResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed — invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/music/video-to-music": {
+      "post": {
+        "description": "Generate background music from video files. Upload 1–10 video files via multipart/form-data (max 200 MB total). The AI analyzes the video content and generates music that matches the mood, pacing, and style. Optionally provide a text description and style tags to guide the output.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Video files and optional generation parameters",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "minItems": 1,
+                    "maxItems": 10,
+                    "description": "Video files to analyze (max 200 MB total)"
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "description": "Optional text description to guide the music generation"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "maxItems": 10,
+                    "description": "Optional style tags to influence the output (max 10)"
+                  },
+                  "sign_with_c2pa": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Sign the output with C2PA content credentials"
+                  },
+                  "output_format": {
+                    "type": "string",
+                    "description": "Audio output format (e.g. mp3_44100_192)"
+                  }
+                },
+                "required": ["files"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Background music generated successfully",
+            "headers": {
+              "song-id": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Unique identifier for the generated song"
+              }
+            },
+            "content": {
+              "audio/mpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed — invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/music/stem-separation": {
+      "post": {
+        "description": "Separate an audio file into individual stems (vocals, drums, bass, etc.). Upload an audio file via multipart/form-data. Choose between two-stem separation (vocals + instrumental) or six-stem separation (vocals, drums, bass, guitar, piano, other). Returns a ZIP archive containing the separated stems.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Audio file and separation parameters",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Audio file to separate into stems"
+                  },
+                  "stem_variation_id": {
+                    "type": "string",
+                    "enum": ["two_stems_v1", "six_stems_v1"],
+                    "default": "six_stems_v1",
+                    "description": "Stem separation mode. `two_stems_v1` produces vocals + instrumental. `six_stems_v1` produces vocals, drums, bass, guitar, piano, and other."
+                  },
+                  "sign_with_c2pa": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Sign the output with C2PA content credentials"
+                  },
+                  "output_format": {
+                    "type": "string",
+                    "description": "Audio output format (e.g. mp3_44100_192)"
+                  }
+                },
+                "required": ["file"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stems separated successfully. Returns a ZIP archive containing the individual stems.",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed — invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
                 }
               }
             }
@@ -11754,9 +12306,8 @@
           },
           "template": {
             "type": "string",
-            "description": "The template to use for content generation. Defines the visual style, scene, and prompt configuration. If omitted, defaults to `artist-caption-bedroom`. See [GET /api/content/templates](/api-reference/content/templates) for available options.",
-            "example": "artist-caption-stage",
-            "default": "artist-caption-bedroom"
+            "description": "Optional template ID for content generation. Defines the visual style, scene, and prompt configuration. When omitted, the pipeline runs in malleable mode using only the params you provide. See GET /api/content/templates for available options.",
+            "example": "artist-caption-stage"
           },
           "lipsync": {
             "type": "boolean",
@@ -11934,26 +12485,148 @@
       "ContentTemplate": {
         "type": "object",
         "required": [
-          "name",
-          "description",
-          "defaultLipsync"
+          "id",
+          "description"
         ],
-        "description": "A content creation template that defines the visual style and composition for generated videos.",
+        "description": "A content creation template — a complete creative recipe defining visual style, composition, caption rules, and edit operations. Templates are optional; all primitives work without one.",
         "properties": {
-          "name": {
+          "id": {
             "type": "string",
-            "description": "Template identifier. Pass this as the `template` field in [POST /api/content/create](/api-reference/content/create).",
+            "description": "Template identifier. Pass this as the template field in content primitive requests or POST /api/content/create.",
             "example": "artist-caption-bedroom"
           },
           "description": {
             "type": "string",
             "description": "Human-readable description of the template's visual style",
-            "example": "Moody purple bedroom setting with caption overlay"
+            "example": "Moody bedroom selfie. Artist on camera with deadpan expression, purple LED lighting, dark room. Short blunt captions in lowercase. Vertical 9:16 video, 8 seconds. Best for: introspective songs, vulnerable moments, daily content. Requires: face image, audio."
+          }
+        }
+      },
+      "ContentTemplateDetail": {
+        "type": "object",
+        "required": [
+          "id",
+          "description"
+        ],
+        "description": "Full configuration for a content creation template including image prompts, video motion config, caption style rules, and edit operations.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Template identifier",
+            "example": "artist-caption-bedroom"
           },
-          "defaultLipsync": {
-            "type": "boolean",
-            "description": "Whether this template defaults to lip-sync mode when the `lipsync` flag is not explicitly set",
-            "example": false
+          "description": {
+            "type": "string",
+            "description": "Human-readable description of the template",
+            "example": "Moody bedroom selfie. Artist on camera with deadpan expression, purple LED lighting, dark room."
+          },
+          "image": {
+            "type": "object",
+            "description": "Image generation configuration",
+            "properties": {
+              "prompt": {
+                "type": "string",
+                "description": "Default image prompt used when no caller prompt is provided"
+              },
+              "reference_images": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "description": "Reference image URLs for style conditioning"
+              },
+              "style_rules": {
+                "type": "object",
+                "description": "Style constraints (lighting, colors, composition)"
+              }
+            }
+          },
+          "video": {
+            "type": "object",
+            "description": "Video generation configuration",
+            "properties": {
+              "moods": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Mood descriptors for motion prompt generation"
+              },
+              "movements": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Camera/subject movement descriptors"
+              }
+            }
+          },
+          "caption": {
+            "type": "object",
+            "description": "Caption generation configuration",
+            "properties": {
+              "guide": {
+                "type": "object",
+                "description": "Caption style guide",
+                "properties": {
+                  "tone": {
+                    "type": "string",
+                    "description": "Voice and tone direction"
+                  },
+                  "rules": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Style rules for caption generation"
+                  },
+                  "formats": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Allowed caption formats"
+                  }
+                }
+              },
+              "examples": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Example captions for few-shot prompting"
+              }
+            }
+          },
+          "edit": {
+            "type": "object",
+            "description": "Post-processing edit operations",
+            "properties": {
+              "operations": {
+                "type": "array",
+                "description": "Default edit operations applied during post-processing",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "type"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "trim",
+                        "crop",
+                        "resize",
+                        "overlay_text",
+                        "mux_audio"
+                      ],
+                      "description": "Operation type"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -12004,12 +12677,6 @@
                 "$ref": "#/components/schemas/ContentValidationCheck"
               },
               "audience_context": {
-                "$ref": "#/components/schemas/ContentValidationCheck"
-              },
-              "era_config": {
-                "$ref": "#/components/schemas/ContentValidationCheck"
-              },
-              "pipeline_config": {
                 "$ref": "#/components/schemas/ContentValidationCheck"
               },
               "songs": {
@@ -12712,6 +13379,10 @@
       "ContentCreateImageRequest": {
         "type": "object",
         "properties": {
+          "template": {
+            "type": "string",
+            "description": "Optional template ID. When provided, uses the template's image prompt, reference images, and style rules. Caller params override template defaults. Artist context overrides template style when available."
+          },
           "prompt": {
             "type": "string",
             "description": "Optional prompt to guide image generation"
@@ -12751,6 +13422,10 @@
       "ContentCreateVideoRequest": {
         "type": "object",
         "properties": {
+          "template": {
+            "type": "string",
+            "description": "Optional template ID. When provided, the template's video config (moods, movements) is used as the motion prompt. Caller params override template defaults."
+          },
           "mode": {
             "type": "string",
             "enum": [
@@ -12852,6 +13527,10 @@
           "topic"
         ],
         "properties": {
+          "template": {
+            "type": "string",
+            "description": "Optional template ID. When provided, injects the template's caption guide (tone, rules, formats) and examples into the LLM prompt. Caller's topic is still required."
+          },
           "topic": {
             "type": "string",
             "description": "The subject or theme for caption generation"
@@ -12980,11 +13659,17 @@
       },
       "ContentCreateEditRequest": {
         "type": "object",
+        "description": "Must provide at least one input (video_url, image_url, or audio_url)",
         "properties": {
           "video_url": {
             "type": "string",
             "format": "uri",
             "description": "Input video URL"
+          },
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Input image URL"
           },
           "audio_url": {
             "type": "string",

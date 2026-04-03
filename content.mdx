@@ -1,0 +1,122 @@
+---
+title: 'Content Creation'
+description: 'Generate images, videos, captions, and social-ready content using AI-powered primitives'
+---
+
+## Overview
+
+Recoup's content API gives you seven independent primitives for generating and editing visual content. Each primitive does one thing well. You orchestrate them.
+
+**Every primitive works without a template.** Pass your own prompt, reference images, and parameters directly. Templates are optional shortcuts — opinionated creative recipes that pre-fill parameters for a specific look.
+
+## Primitives
+
+| Primitive | Endpoint | What it does |
+|-----------|----------|-------------|
+| Generate Image | [POST /api/content/image](/api-reference/content/generate-image) | Create an image from a text prompt, optionally with a reference image for face/style |
+| Generate Video | [POST /api/content/video](/api-reference/content/generate-video) | Create a video — 6 modes: prompt, animate, reference, extend, first-last, lipsync |
+| Generate Caption | [POST /api/content/caption](/api-reference/content/generate-caption) | Generate on-screen text for social media videos |
+| Transcribe Audio | [POST /api/content/transcribe](/api-reference/content/transcribe-audio) | Transcribe audio to timestamped lyrics/text |
+| Edit Content | [PATCH /api/content](/api-reference/content/edit) | Trim, crop, resize, overlay text, or add audio — one processing pass |
+| Upscale | [POST /api/content/upscale](/api-reference/content/upscale) | Upscale image or video resolution (up to 4x) |
+| Analyze Video | [POST /api/content/analyze](/api-reference/content/analyze-video) | AI video analysis — describe scenes, check quality, evaluate content |
+
+There is also [POST /api/content/create](/api-reference/content/create) which runs the full pipeline in one call — use it when you want a video without creative control over each step.
+
+## How It Works
+
+### Without a template (malleable mode)
+
+Pass your own parameters directly to any primitive. Maximum creative control.
+
+```bash
+# Generate an image with your own prompt
+curl -X POST https://recoup-api.vercel.app/api/content/image \
+  -H "x-api-key: YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "A moody portrait in a dimly lit room, front-facing phone camera"}'
+
+# Generate a video from that image
+curl -X POST https://recoup-api.vercel.app/api/content/video \
+  -H "x-api-key: YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"image_url": "IMAGE_URL_FROM_ABOVE", "prompt": "subtle breathing motion, nearly still"}'
+```
+
+### With a template (shortcut mode)
+
+Pass a template ID and the primitive fills in prompts, reference images, and style rules automatically. You can still override any parameter.
+
+```bash
+# Same image, but the template provides the prompt and reference images
+curl -X POST https://recoup-api.vercel.app/api/content/image \
+  -H "x-api-key: YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"template": "artist-caption-bedroom", "reference_image_url": "YOUR_FACE_IMAGE"}'
+```
+
+Use [GET /api/content/templates](/api-reference/content/templates) to see available templates with descriptions.
+
+## Templates
+
+A template is a complete creative recipe — it defines what a piece of content looks like across every primitive:
+
+- **Image config**: prompt, reference images, style rules (camera, lighting, composition)
+- **Video config**: mood variations, movement descriptions
+- **Caption config**: tone, formatting rules, example captions
+- **Edit config**: crop ratio, text overlay style, audio mixing
+
+Templates are optional. They save time by pre-filling parameters with curated defaults. When you see customers repeatedly creating the same kind of content, that pattern becomes a template.
+
+### Override priority
+
+When using a template, your explicit parameters always win:
+
+1. **Your params** — highest priority. What you pass overrides everything.
+2. **Artist context** — if the artist has a style guide, it personalizes the template.
+3. **Template defaults** — lowest priority. The recipe's built-in values.
+
+## Architecture
+
+```
+┌──────────────────────────────────────────────┐
+│ SKILL (advisory)                              │
+│ Teaches the agent which template to pick,     │
+│ when to override, when to skip templates      │
+├──────────────────────────────────────────────┤
+│ TEMPLATE (optional, enforced when used)       │
+│ Complete creative recipe — image + video +     │
+│ caption + edit config. Applied server-side.    │
+├──────────────────────────────────────────────┤
+│ PRIMITIVES (execution)                        │
+│ image, video, caption, transcribe, edit,      │
+│ upscale, analyze. Work with or without         │
+│ templates. Do exactly what they're told.       │
+└──────────────────────────────────────────────┘
+```
+
+## Video Modes
+
+The video primitive supports 6 generation modes:
+
+| Mode | What it does | Required inputs |
+|------|-------------|-----------------|
+| `prompt` | Create from text description | `prompt` |
+| `animate` | Animate a still image | `image_url`, `prompt` |
+| `reference` | Use image as style reference (not first frame) | `image_url`, `prompt` |
+| `extend` | Continue an existing video | `video_url`, `prompt` |
+| `first-last` | Transition between two images | `image_url`, `end_image_url`, `prompt` |
+| `lipsync` | Sync face to audio | `image_url`, `audio_url` |
+
+Set `mode` explicitly, or omit it and the API infers the mode from the inputs you provide.
+
+## Iteration
+
+Each primitive is independent. Redo any step without rerunning the whole pipeline:
+
+- Bad image? Regenerate with a different prompt or reference
+- Caption too long? Regenerate with `length: "short"`
+- Video glitchy? Analyze it, then regenerate with adjusted params
+- Clip too short? Use `extend` mode to continue it
+- Low quality? Upscale the image or video
+- Everything good but wrong caption? Just re-run the edit step

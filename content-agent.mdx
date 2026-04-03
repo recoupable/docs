@@ -32,7 +32,7 @@ Bot replies in-thread with the generated video URL(s)
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `artist_account_id` | Yes | UUID of the artist account |
-| `template` | No | Content template name (defaults to `artist-caption-bedroom`) |
+| `template` | No | Content template name. Optional — when omitted, the pipeline runs with default settings. See [GET /api/content/templates](/api-reference/content/templates) for options. |
 | `batch=N` | No | Number of videos to generate (1-30, default 1) |
 | `lipsync` | No | Enable lipsync mode (audio baked into video) |
 
