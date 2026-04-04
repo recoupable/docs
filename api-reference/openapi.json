@@ -14357,11 +14357,54 @@
       "ResearchAudienceResponse": {
         "type": "object",
         "description": "Audience demographics breakdown \u2014 age ranges, gender split, and country distribution for the specified platform.",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "age": {
+            "type": "array",
+            "description": "Age range breakdown",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "gender": {
+            "type": "object",
+            "description": "Gender split percentages",
+            "additionalProperties": true
+          },
+          "countries": {
+            "type": "array",
+            "description": "Top countries by audience share",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        },
         "additionalProperties": true
       },
       "ResearchCareerResponse": {
         "type": "object",
         "description": "Career timeline \u2014 milestones, trajectory, and career stage history.",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "career_stage": {
+            "type": "string",
+            "description": "Current career stage (e.g., 'Mid-Level', 'Superstar')"
+          },
+          "data": {
+            "type": "array",
+            "description": "Career timeline data points",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        },
         "additionalProperties": true
       },
       "ResearchChartsResponse": {
@@ -14784,16 +14827,73 @@
       "ResearchInstagramPostsResponse": {
         "type": "object",
         "description": "Top Instagram posts and reels sorted by engagement.",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "posts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string"
+                },
+                "likes": {
+                  "type": "integer"
+                },
+                "comments": {
+                  "type": "integer"
+                },
+                "timestamp": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        },
         "additionalProperties": true
       },
       "ResearchLookupResponse": {
         "type": "object",
         "description": "Artist profile resolved from a platform URL or ID.",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "description": "Chartmetric artist ID"
+          },
+          "spotify_id": {
+            "type": "string"
+          },
+          "apple_music_id": {
+            "type": "string"
+          },
+          "deezer_id": {
+            "type": "string"
+          }
+        },
         "additionalProperties": true
       },
       "ResearchMetricsResponse": {
         "type": "object",
         "description": "Time-series metrics for a specific platform. Shape varies by source \u2014 typically an array of data points with timestamps and values (followers, listeners, views, etc.).",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "description": "Array of time-series data points. Fields vary by platform.",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        },
         "additionalProperties": true
       },
       "ResearchMilestone": {
@@ -14944,6 +15044,29 @@
       "ResearchPlaylistResponse": {
         "type": "object",
         "description": "Playlist metadata \u2014 name, description, follower count, track count, and curator info.",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "description": {
+            "type": "string"
+          },
+          "followers": {
+            "type": "integer"
+          },
+          "num_tracks": {
+            "type": "integer"
+          },
+          "curator_name": {
+            "type": "string"
+          }
+        },
         "additionalProperties": true
       },
       "ResearchPlaylistsResponse": {
@@ -14967,6 +15090,48 @@
       "ResearchProfileResponse": {
         "type": "object",
         "description": "Full artist profile \u2014 bio, genres, social links, label, images, and basic stats.",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "description": "Chartmetric artist ID"
+          },
+          "image_url": {
+            "type": "string"
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string"
+          },
+          "hometown": {
+            "type": "string"
+          },
+          "record_label": {
+            "type": "string"
+          },
+          "sp_followers": {
+            "type": "integer"
+          },
+          "sp_monthly_listeners": {
+            "type": "integer"
+          }
+        },
         "additionalProperties": true
       },
       "ResearchRadioResponse": {
@@ -15117,6 +15282,30 @@
       "ResearchTrackResponse": {
         "type": "object",
         "description": "Track metadata \u2014 title, artist, album, release date, popularity, and platform IDs.",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "description": "Chartmetric track ID"
+          },
+          "isrc": {
+            "type": "string"
+          },
+          "album_name": {
+            "type": "string"
+          },
+          "release_date": {
+            "type": "string"
+          },
+          "artist_names": {
+            "type": "string"
+          }
+        },
         "additionalProperties": true
       },
       "ResearchTracksResponse": {

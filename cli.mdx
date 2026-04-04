@@ -256,7 +256,7 @@ recoup research track "God's Plan"
 recoup research track "https://open.spotify.com/track/2grjqo0Frpf2..."
 ```
 
-See [`GET /api/research/track/{id}`](/api-reference/research/track).
+See [`GET /api/research/track`](/api-reference/research/track).
 
 ### Playlist and curator details
 
@@ -276,7 +276,6 @@ Find artists by criteria — country, genre, listener ranges, growth rate.
 ```bash
 recoup research discover --country US --spotify-listeners 100000 500000
 recoup research discover --genre 86 --sort weekly_diff.sp_monthly_listeners
-recoup research discover --tiktok-followers 1000000 10000000 --spotify-listeners 0 100000
 ```
 
 | Flag | Description |
@@ -284,8 +283,8 @@ recoup research discover --tiktok-followers 1000000 10000000 --spotify-listeners
 | `--country <code>` | ISO country code (US, BR, GB, etc.) |
 | `--genre <id>` | Genre ID (use `recoup research genres` to list) |
 | `--spotify-listeners <min> <max>` | Monthly listener range |
-| `--tiktok-followers <min> <max>` | TikTok follower range |
 | `--sort <field>` | Sort field (e.g., `weekly_diff.sp_monthly_listeners`) |
+| `--limit <n>` | Max results |
 
 See [`GET /api/research/discover`](/api-reference/research/discover).
 
@@ -338,6 +337,7 @@ recoup research charts --platform applemusic --country GB --interval weekly --js
 | `--country <code>` | No | ISO country code (US, GB, DE, etc.) |
 | `--interval <interval>` | No | Time interval (e.g. daily, weekly) |
 | `--type <type>` | No | Chart type (varies by platform) |
+| `--latest` | No | Return only the most recent chart |
 
 See [`GET /api/research/charts`](/api-reference/research/charts).
 
