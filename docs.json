@@ -20,8 +20,7 @@
               "quickstart",
               "cli",
               "mcp",
-              "authentication",
-              "api-reference/sandboxes/create"
+              "authentication"
             ]
           },
           {
@@ -45,8 +44,14 @@
             "group": "Chat",
             "pages": [
               "api-reference/chat/chats",
+              "api-reference/chat/artist",
+              "api-reference/chat/segment",
+              "api-reference/chat/messages",
+              "api-reference/chat/messages-copy",
+              "api-reference/chat/messages-trailing-delete",
               "api-reference/chat/create",
               "api-reference/chat/update",
+              "api-reference/chat/delete",
               "api-reference/chat/generate",
               "api-reference/chat/stream",
               "api-reference/chat/compact"
@@ -118,12 +123,7 @@
           {
             "group": "Posts",
             "pages": [
-              "api-reference/posts/get"
-            ]
-          },
-          {
-            "group": "Post",
-            "pages": [
+              "api-reference/posts/get",
               "api-reference/post/comments"
             ]
           },
@@ -282,6 +282,13 @@
             "group": "Content",
             "pages": [
               "api-reference/content/create",
+              "api-reference/content/generate-image",
+              "api-reference/content/generate-video",
+              "api-reference/content/generate-caption",
+              "api-reference/content/transcribe-audio",
+              "api-reference/content/edit",
+              "api-reference/content/upscale",
+              "api-reference/content/analyze-video",
               "api-reference/content/templates",
               "api-reference/content/validate",
               "api-reference/content/estimate"
