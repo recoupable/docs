@@ -2821,7 +2821,7 @@
     },
     "/api/sandboxes/files": {
       "post": {
-        "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Accepts an array of file URLs and commits each file to the specified directory path within the repository. Supports submodule resolution — if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Accepts an array of file URLs and commits each file to the specified directory path within the repository. Supports submodule resolution \u2014 if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
         "requestBody": {
           "description": "JSON body containing file URLs and target path",
           "required": true,
@@ -4043,7 +4043,7 @@
     },
     "/api/content/create": {
       "post": {
-        "description": "Trigger the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden via `songs` URLs or `images`, then triggers a background task that generates a short-form video. Returns `runIds` — an array of run IDs that can each be polled via [GET /api/tasks/runs](/api-reference/tasks/runs).",
+        "description": "Trigger the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden via `songs` URLs or `images`, then triggers a background task that generates a short-form video. Returns `runIds` \u2014 an array of run IDs that can each be polled via [GET /api/tasks/runs](/api-reference/tasks/runs).",
         "security": [
           {
             "apiKeyAuth": []
@@ -4065,7 +4065,7 @@
         },
         "responses": {
           "202": {
-            "description": "Pipeline triggered successfully. Returns `runIds` — an array of run IDs. Poll each via [GET /api/tasks/runs](/api-reference/tasks/runs) to check progress.",
+            "description": "Pipeline triggered successfully. Returns `runIds` \u2014 an array of run IDs. Poll each via [GET /api/tasks/runs](/api-reference/tasks/runs) to check progress.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4075,7 +4075,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — missing artist identifier, artist is missing required files, or template not found",
+            "description": "Validation failed \u2014 missing artist identifier, artist is missing required files, or template not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -4085,7 +4085,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -4095,7 +4095,7 @@
             }
           },
           "404": {
-            "description": "Artist not found — the provided artist_account_id does not match any artist",
+            "description": "Artist not found \u2014 the provided artist_account_id does not match any artist",
             "content": {
               "application/json": {
                 "schema": {
@@ -4130,7 +4130,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -4178,7 +4178,7 @@
             }
           },
           "400": {
-            "description": "Bad request — artist_account_id is required",
+            "description": "Bad request \u2014 artist_account_id is required",
             "content": {
               "application/json": {
                 "schema": {
@@ -4188,7 +4188,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -4198,7 +4198,7 @@
             }
           },
           "404": {
-            "description": "Artist not found — the provided artist_account_id does not match any artist",
+            "description": "Artist not found \u2014 the provided artist_account_id does not match any artist",
             "content": {
               "application/json": {
                 "schema": {
@@ -4212,7 +4212,7 @@
     },
     "/api/content/estimate": {
       "get": {
-        "description": "Estimate the cost of running the content creation pipeline. Calculates per-step and per-video costs based on current pricing. Supports comparing multiple workflow profiles (e.g., premium vs. budget) and projecting batch costs. This endpoint is informational only — it does not trigger any pipeline execution or spend credits.",
+        "description": "Estimate the cost of running the content creation pipeline. Calculates per-step and per-video costs based on current pricing. Supports comparing multiple workflow profiles (e.g., premium vs. budget) and projecting batch costs. This endpoint is informational only \u2014 it does not trigger any pipeline execution or spend credits.",
         "security": [
           {
             "apiKeyAuth": []
@@ -4268,7 +4268,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -4343,7 +4343,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key / Bearer token",
+            "description": "Unauthorized \u2014 invalid or missing API key / Bearer token",
             "content": {
               "application/json": {
                 "schema": {
@@ -4357,7 +4357,7 @@
     },
     "/api/songs/analyze": {
       "post": {
-        "description": "Analyze music using a state-of-the-art Audio Language Model that listens directly to the audio waveform. Unlike text-based AI, this model processes the actual sound — identifying harmony, structure, timbre, lyrics, and cultural context through deep music understanding. Supports audio up to 20 minutes (MP3, WAV, FLAC). Two modes: (1) **Presets** — pass a `preset` name like `catalog_metadata`, `mood_tags`, or `full_report` for structured, optimized output. (2) **Custom prompt** — pass a `prompt` for free-form questions. The `full_report` preset runs all 13 presets in parallel and returns a comprehensive music intelligence report. Use `GET /api/songs/analyze/presets` to list available presets.",
+        "description": "Analyze music using a state-of-the-art Audio Language Model that listens directly to the audio waveform. Unlike text-based AI, this model processes the actual sound \u2014 identifying harmony, structure, timbre, lyrics, and cultural context through deep music understanding. Supports audio up to 20 minutes (MP3, WAV, FLAC). Two modes: (1) **Presets** \u2014 pass a `preset` name like `catalog_metadata`, `mood_tags`, or `full_report` for structured, optimized output. (2) **Custom prompt** \u2014 pass a `prompt` for free-form questions. The `full_report` preset runs all 13 presets in parallel and returns a comprehensive music intelligence report. Use `GET /api/songs/analyze/presets` to list available presets.",
         "security": [
           {
             "apiKeyAuth": []
@@ -4389,7 +4389,7 @@
             }
           },
           "400": {
-            "description": "Bad request — missing or invalid fields",
+            "description": "Bad request \u2014 missing or invalid fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -4399,7 +4399,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key / Bearer token",
+            "description": "Unauthorized \u2014 invalid or missing API key / Bearer token",
             "content": {
               "application/json": {
                 "schema": {
@@ -4409,7 +4409,7 @@
             }
           },
           "500": {
-            "description": "Server error — upstream model unavailable or inference failed",
+            "description": "Server error \u2014 upstream model unavailable or inference failed",
             "content": {
               "application/json": {
                 "schema": {
@@ -4481,7 +4481,7 @@
     },
     "/api/admins": {
       "get": {
-        "description": "Check if the authenticated account is a Recoup admin. An account is considered an admin if it is a member of the Recoup organization. No input parameters required — authentication is performed via the x-api-key or Authorization header.",
+        "description": "Check if the authenticated account is a Recoup admin. An account is considered an admin if it is a member of the Recoup organization. No input parameters required \u2014 authentication is performed via the x-api-key or Authorization header.",
         "parameters": [],
         "security": [
           {
@@ -5318,7 +5318,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Slack Events API envelope — the shape depends on the event type"
+                "description": "Slack Events API envelope \u2014 the shape depends on the event type"
               }
             }
           }
@@ -5342,12 +5342,13 @@
           "404": {
             "description": "Unknown platform"
           }
-        }
+        },
+        "security": []
       }
     },
     "/api/content-agent/callback": {
       "post": {
-        "description": "Internal callback endpoint for the `poll-content-run` Trigger.dev task. Receives content generation results and posts them back to the originating Slack thread. Authenticated via the `x-callback-secret` header.\n\nThis endpoint is not intended for external use — it is called automatically by the polling task when content runs complete, fail, or time out.",
+        "description": "Internal callback endpoint for the `poll-content-run` Trigger.dev task. Receives content generation results and posts them back to the originating Slack thread. Authenticated via the `x-callback-secret` header.\n\nThis endpoint is not intended for external use \u2014 it is called automatically by the polling task when content runs complete, fail, or time out.",
         "requestBody": {
           "description": "Content generation results from the polling task",
           "required": true,
@@ -5484,7 +5485,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5494,7 +5495,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5518,7 +5519,7 @@
     },
     "/api/content/analyze": {
       "post": {
-        "description": "Analyze a video and answer questions about it. Pass a video URL and a text prompt — for example, \"Describe what happens\" or \"Rate the visual quality 1-10.\" Returns the generated text.",
+        "description": "Analyze a video and answer questions about it. Pass a video URL and a text prompt \u2014 for example, \"Describe what happens\" or \"Rate the visual quality 1-10.\" Returns the generated text.",
         "security": [
           {
             "apiKeyAuth": []
@@ -5550,7 +5551,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5560,7 +5561,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5616,7 +5617,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5626,7 +5627,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5682,7 +5683,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5692,7 +5693,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5716,7 +5717,7 @@
     },
     "/api/content/video": {
       "post": {
-        "description": "Generate a video. Set `mode` to control what kind of video you get:\n\n- `prompt` — create a video from a text description\n- `animate` — animate a still image\n- `reference` — use an image as a style/subject reference (not the first frame)\n- `extend` — continue an existing video\n- `first-last` — generate a video that transitions between two images\n- `lipsync` — sync face movement to an audio clip\n\nIf `mode` is omitted, it's inferred from the inputs you provide.",
+        "description": "Generate a video. Set `mode` to control what kind of video you get:\n\n- `prompt` \u2014 create a video from a text description\n- `animate` \u2014 animate a still image\n- `reference` \u2014 use an image as a style/subject reference (not the first frame)\n- `extend` \u2014 continue an existing video\n- `first-last` \u2014 generate a video that transitions between two images\n- `lipsync` \u2014 sync face movement to an audio clip\n\nIf `mode` is omitted, it's inferred from the inputs you provide.",
         "security": [
           {
             "apiKeyAuth": []
@@ -5748,7 +5749,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5758,7 +5759,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5780,7 +5781,7 @@
         }
       },
       "patch": {
-        "description": "Apply edits to a video or audio file — trim, crop, resize, overlay text, or add an audio track. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array. Everything runs in one pass.",
+        "description": "Apply edits to a video or audio file \u2014 trim, crop, resize, overlay text, or add an audio track. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array. Everything runs in one pass.",
         "security": [
           {
             "apiKeyAuth": []
@@ -5812,7 +5813,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5822,7 +5823,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5878,7 +5879,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5888,7 +5889,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5903,6 +5904,1119 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research": {
+      "get": {
+        "description": "Search for artists by name. Returns matching results with profile summaries.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Artist name to search for.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "description": "Entity type.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "artists",
+                "tracks",
+                "albums",
+                "playlists",
+                "curators",
+                "stations"
+              ],
+              "default": "artists"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Maximum number of results.",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchSearchResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/albums": {
+      "get": {
+        "description": "Get an artist's full discography \u2014 albums, EPs, and singles with release dates.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist albums",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchAlbumsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/audience": {
+      "get": {
+        "description": "Get audience demographics for an artist on a specific platform \u2014 age, gender, and country breakdown.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "description": "Platform to get demographics for. Defaults to instagram.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "instagram",
+                "tiktok",
+                "youtube"
+              ],
+              "default": "instagram"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Audience demographics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchAudienceResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/career": {
+      "get": {
+        "description": "Get an artist's career timeline \u2014 key milestones, trajectory, and career stage.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Career timeline",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchCareerResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/charts": {
+      "get": {
+        "description": "Get global chart positions for a platform \u2014 Spotify, Apple Music, TikTok, YouTube, iTunes, Shazam, etc. NOT artist-scoped. Returns ranked entries with track and artist info.",
+        "parameters": [
+          {
+            "name": "platform",
+            "in": "query",
+            "required": true,
+            "description": "Chart platform: spotify, applemusic, tiktok, youtube, itunes, shazam, etc.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "required": false,
+            "description": "Two-letter country code (e.g. US, GB, DE).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "interval",
+            "in": "query",
+            "required": false,
+            "description": "Time interval (e.g. daily, weekly).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "description": "Chart type (varies by platform).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "latest",
+            "in": "query",
+            "required": false,
+            "description": "Return only the latest chart.",
+            "schema": {
+              "type": "string",
+              "default": "true"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chart data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchChartsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/cities": {
+      "get": {
+        "description": "Get the top cities where an artist's fans listen, ranked by listener concentration.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Top listener cities",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchCitiesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/curator": {
+      "get": {
+        "description": "Get curator profile \u2014 who curates a playlist, their other playlists, and follower reach.",
+        "parameters": [
+          {
+            "name": "platform",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "spotify",
+                "applemusic",
+                "deezer",
+                "amazon",
+                "youtube"
+              ]
+            },
+            "description": "Streaming platform."
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "Curator ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Curator profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchCuratorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/deep": {
+      "post": {
+        "description": "Perform deep, comprehensive research on a topic. Browses multiple sources extensively and returns a cited report. Use for full artist deep dives, competitive analysis, and any research requiring synthesis across many sources.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchDeepRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Deep research report with citations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchDeepResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/discover": {
+      "get": {
+        "description": "Discover artists by criteria \u2014 filter by country, genre, Spotify monthly listener range, and sort by growth metrics.",
+        "parameters": [
+          {
+            "name": "country",
+            "in": "query",
+            "required": false,
+            "description": "ISO country code (e.g., US, BR, GB).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "genre",
+            "in": "query",
+            "required": false,
+            "description": "Genre ID (use GET /api/research/genres to list).",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "sp_monthly_listeners_min",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "sp_monthly_listeners_max",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Sort field (e.g., weekly_diff.sp_monthly_listeners).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Filtered artist list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchDiscoverResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/enrich": {
+      "post": {
+        "description": "Enrich an entity with structured data from web research. Provide a description of who or what to research and a JSON schema defining the fields to extract. Returns typed data with citations.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchEnrichRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Structured enrichment data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchEnrichResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/extract": {
+      "post": {
+        "description": "Extract clean markdown content from one or more public URLs. Handles JavaScript-heavy pages and PDFs. Returns focused excerpts aligned to an objective, or full page content.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchExtractRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Extracted content from URLs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchExtractResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/festivals": {
+      "get": {
+        "description": "List music festivals.",
+        "responses": {
+          "200": {
+            "description": "Festival list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchFestivalsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/genres": {
+      "get": {
+        "description": "List all available genre IDs and names. Use these IDs with the discover endpoint at GET /api/research/discover.",
+        "responses": {
+          "200": {
+            "description": "Genre list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchGenresResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/insights": {
+      "get": {
+        "description": "Get AI-generated insights about an artist \u2014 automatically surfaced trends, milestones, and observations.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "AI-generated insights",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchInsightsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/instagram-posts": {
+      "get": {
+        "description": "Get an artist's top Instagram posts and reels, sorted by engagement.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Top Instagram posts and reels",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchInstagramPostsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/lookup": {
+      "get": {
+        "description": "Look up an artist by a platform URL or ID \u2014 Spotify URL, Spotify ID, Apple Music URL, etc.",
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "required": true,
+            "description": "Platform URL or ID (e.g., Spotify artist URL, Spotify ID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist profile matching the platform URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchLookupResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/metrics": {
+      "get": {
+        "description": "Get platform-specific metrics for an artist over time \u2014 followers, listeners, views, engagement. Supports 14 platforms.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "required": true,
+            "description": "Platform to get metrics for.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "spotify",
+                "instagram",
+                "tiktok",
+                "twitter",
+                "facebook",
+                "youtube_channel",
+                "youtube_artist",
+                "soundcloud",
+                "deezer",
+                "twitch",
+                "line",
+                "melon",
+                "wikipedia",
+                "bandsintown"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Platform metrics over time",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchMetricsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/milestones": {
+      "get": {
+        "description": "Get an artist's activity feed \u2014 playlist adds, chart entries, and other notable events. Each milestone includes a date, summary, platform, track name, and star rating.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Milestone list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchMilestonesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/people": {
+      "post": {
+        "description": "Search for people in the music industry \u2014 artists, managers, A&R reps, producers. Returns multi-source profiles including LinkedIn data.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchPeopleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "People search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchPeopleResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/playlist": {
+      "get": {
+        "description": "Get playlist metadata \u2014 name, description, follower count, track count, and curator info.",
+        "parameters": [
+          {
+            "name": "platform",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "spotify",
+                "applemusic",
+                "deezer",
+                "amazon",
+                "youtube"
+              ]
+            },
+            "description": "Streaming platform."
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "Playlist ID on the platform.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Playlist metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchPlaylistResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/playlists": {
+      "get": {
+        "description": "Get an artist's playlist placements \u2014 editorial, algorithmic, and indie playlists across platforms.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "spotify",
+                "applemusic",
+                "deezer",
+                "amazon",
+                "youtube"
+              ],
+              "default": "spotify"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "current",
+                "past"
+              ],
+              "default": "current"
+            }
+          },
+          {
+            "name": "editorial",
+            "in": "query",
+            "required": false,
+            "description": "Only editorial playlists.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "required": false,
+            "description": "Filter by date (YYYY-MM-DD).",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Sort results by this field.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Playlist placements",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchPlaylistsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/profile": {
+      "get": {
+        "description": "Get a full artist profile \u2014 bio, genres, social URLs, label, career stage, and basic metrics.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProfileResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/radio": {
+      "get": {
+        "description": "List radio stations tracked by Chartmetric. NOT artist-scoped. Returns station names, formats, and markets.",
+        "responses": {
+          "200": {
+            "description": "Radio station list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchRadioResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/rank": {
+      "get": {
+        "description": "Get an artist's global Chartmetric ranking as a single integer value.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist rank",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchRankResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/similar": {
+      "get": {
+        "description": "Find similar artists based on audience overlap, genre, mood, and musicality. Use for competitive analysis and collaboration discovery.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "audience",
+            "in": "query",
+            "required": false,
+            "description": "Audience overlap weight.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "high",
+                "medium",
+                "low"
+              ]
+            }
+          },
+          {
+            "name": "genre",
+            "in": "query",
+            "required": false,
+            "description": "Genre similarity weight.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "high",
+                "medium",
+                "low"
+              ]
+            }
+          },
+          {
+            "name": "mood",
+            "in": "query",
+            "required": false,
+            "description": "Mood similarity weight.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "high",
+                "medium",
+                "low"
+              ]
+            }
+          },
+          {
+            "name": "musicality",
+            "in": "query",
+            "required": false,
+            "description": "Musicality similarity weight.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "high",
+                "medium",
+                "low"
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Similar artists with overlap scores",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchSimilarResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/track": {
+      "get": {
+        "description": "Get track metadata \u2014 title, artist, album, release date, popularity, and platform IDs.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Track name or Spotify URL.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Track metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchTrackResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/tracks": {
+      "get": {
+        "description": "Get all tracks by an artist with popularity data.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist tracks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchTracksResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/urls": {
+      "get": {
+        "description": "Get all social and streaming URLs for an artist \u2014 Spotify, Instagram, TikTok, YouTube, Twitter, SoundCloud, and more.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Social and streaming URLs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchUrlsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/venues": {
+      "get": {
+        "description": "Get venues an artist has performed at, including capacity and location data.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Venue list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchVenuesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/web": {
+      "post": {
+        "description": "Search the web for real-time information. Returns ranked results with titles, URLs, and content snippets. Use for narrative context, press coverage, and cultural research that structured data endpoints don't cover.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchWebRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Web search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchWebResponse"
                 }
               }
             }
@@ -11793,7 +12907,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Optional list of song slugs or public URLs to use for the audio track. Song slugs match filenames without extension from the artist's `songs/` directory (e.g. `\"hiccups\"` for `hiccups.mp3`). Public URLs (e.g. `\"https://example.com/my-song.mp3\"`) are downloaded, transcribed, and clipped directly — bypassing the Git repo. When omitted, all songs in the artist's repo are eligible.",
+            "description": "Optional list of song slugs or public URLs to use for the audio track. Song slugs match filenames without extension from the artist's `songs/` directory (e.g. `\"hiccups\"` for `hiccups.mp3`). Public URLs (e.g. `\"https://example.com/my-song.mp3\"`) are downloaded, transcribed, and clipped directly \u2014 bypassing the Git repo. When omitted, all songs in the artist's repo are eligible.",
             "example": [
               "hiccups",
               "https://example.com/unreleased-track.mp3"
@@ -11823,7 +12937,7 @@
           "artist_account_id",
           "template"
         ],
-        "description": "Confirmation that the content creation pipeline has been triggered. Always returns `runIds` as an array — even for a single run, it contains one element.",
+        "description": "Confirmation that the content creation pipeline has been triggered. Always returns `runIds` as an array \u2014 even for a single run, it contains one element.",
         "properties": {
           "runIds": {
             "type": "array",
@@ -12302,7 +13416,7 @@
           "audio_url": {
             "type": "string",
             "format": "uri",
-            "description": "Public URL to an audio file (MP3, WAV, or FLAC — up to 20 minutes)",
+            "description": "Public URL to an audio file (MP3, WAV, or FLAC \u2014 up to 20 minutes)",
             "example": "https://example.com/song.mp3"
           },
           "max_new_tokens": {
@@ -12318,7 +13432,7 @@
             "minimum": 0,
             "maximum": 2,
             "default": 1,
-            "description": "Controls output creativity — higher values produce more varied responses",
+            "description": "Controls output creativity \u2014 higher values produce more varied responses",
             "example": 0.7
           },
           "top_p": {
@@ -13205,6 +14319,1152 @@
             }
           }
         }
+      },
+      "ResearchAlbum": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "release_date": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchAlbumsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "albums": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchAlbum"
+            }
+          }
+        }
+      },
+      "ResearchAudienceResponse": {
+        "type": "object",
+        "description": "Audience demographics breakdown \u2014 age ranges, gender split, and country distribution for the specified platform.",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "age": {
+            "type": "array",
+            "description": "Age range breakdown",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "gender": {
+            "type": "object",
+            "description": "Gender split percentages",
+            "additionalProperties": true
+          },
+          "countries": {
+            "type": "array",
+            "description": "Top countries by audience share",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchCareerResponse": {
+        "type": "object",
+        "description": "Career timeline \u2014 milestones, trajectory, and career stage history.",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "career_stage": {
+            "type": "string",
+            "description": "Current career stage (e.g., 'Mid-Level', 'Superstar')"
+          },
+          "data": {
+            "type": "array",
+            "description": "Career timeline data points",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchChartsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "data": {
+            "type": "object",
+            "description": "Chart data \u2014 structure varies by platform.",
+            "additionalProperties": true
+          }
+        }
+      },
+      "ResearchCitiesEntry": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "City name."
+          },
+          "country": {
+            "type": "string",
+            "description": "ISO country code."
+          },
+          "listeners": {
+            "type": "integer",
+            "description": "Listener count in this city."
+          }
+        }
+      },
+      "ResearchCitiesResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "cities": {
+            "type": "array",
+            "description": "Cities ranked by listener concentration.",
+            "items": {
+              "$ref": "#/components/schemas/ResearchCitiesEntry"
+            }
+          }
+        }
+      },
+      "ResearchCuratorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "num_playlists": {
+            "type": "integer",
+            "nullable": true
+          },
+          "followers": {
+            "type": "integer",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchDeepRequest": {
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "description": "Request body for deep research. Performs comprehensive multi-source analysis.",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "The research question \u2014 be specific and detailed for best results."
+          }
+        }
+      },
+      "ResearchDeepResponse": {
+        "type": "object",
+        "description": "Comprehensive research report with citations.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "content": {
+            "type": "string",
+            "description": "The full research report as markdown."
+          },
+          "citations": {
+            "type": "array",
+            "description": "Source URLs cited in the report.",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          }
+        }
+      },
+      "ResearchDiscoverArtist": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "sp_monthly_listeners": {
+            "type": "integer",
+            "nullable": true
+          },
+          "sp_followers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "tiktok_followers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "ins_followers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true,
+            "description": "ISO country code."
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchDiscoverResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchDiscoverArtist"
+            }
+          }
+        }
+      },
+      "ResearchEnrichRequest": {
+        "type": "object",
+        "required": [
+          "input",
+          "schema"
+        ],
+        "properties": {
+          "input": {
+            "type": "string",
+            "description": "What to research (e.g., \"Drake rapper from Dallas Texas\")."
+          },
+          "schema": {
+            "type": "object",
+            "description": "JSON schema defining the fields to extract.",
+            "additionalProperties": true
+          },
+          "processor": {
+            "type": "string",
+            "enum": [
+              "base",
+              "core",
+              "ultra"
+            ],
+            "default": "base",
+            "description": "Research depth: base (fast), core (balanced), ultra (comprehensive)."
+          }
+        }
+      },
+      "ResearchEnrichResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "output": {
+            "type": "object",
+            "description": "Structured data matching the provided schema.",
+            "additionalProperties": true
+          },
+          "research_basis": {
+            "type": "object",
+            "properties": {
+              "citations": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "field": {
+                      "type": "string",
+                      "description": "Which output field this citation supports."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ResearchExtractRequest": {
+        "type": "object",
+        "required": [
+          "urls"
+        ],
+        "properties": {
+          "urls": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
+            "maxItems": 10,
+            "description": "URLs to extract content from (max 10)."
+          },
+          "objective": {
+            "type": "string",
+            "description": "What information to focus on (optional, max 3000 chars)."
+          },
+          "full_content": {
+            "type": "boolean",
+            "default": false,
+            "description": "Return full page content instead of focused excerpts."
+          }
+        }
+      },
+      "ResearchExtractResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchExtractResult"
+            }
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "URLs that failed to extract."
+          }
+        }
+      },
+      "ResearchExtractResult": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "publish_date": {
+            "type": "string",
+            "nullable": true,
+            "description": "Publish date in YYYY-MM-DD format."
+          },
+          "excerpts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "description": "Focused excerpts as markdown."
+          },
+          "full_content": {
+            "type": "string",
+            "nullable": true,
+            "description": "Full page content as markdown."
+          }
+        }
+      },
+      "ResearchFestival": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchFestivalsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "festivals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchFestival"
+            }
+          }
+        }
+      },
+      "ResearchGenre": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          }
+        }
+      },
+      "ResearchGenresResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchGenre"
+            }
+          }
+        }
+      },
+      "ResearchInsight": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "The insight text."
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchInsightsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "insights": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchInsight"
+            }
+          }
+        }
+      },
+      "ResearchInstagramPostsResponse": {
+        "type": "object",
+        "description": "Top Instagram posts and reels sorted by engagement.",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "posts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string"
+                },
+                "likes": {
+                  "type": "integer"
+                },
+                "comments": {
+                  "type": "integer"
+                },
+                "timestamp": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchLookupResponse": {
+        "type": "object",
+        "description": "Artist profile resolved from a platform URL or ID.",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "description": "Chartmetric artist ID"
+          },
+          "spotify_id": {
+            "type": "string"
+          },
+          "apple_music_id": {
+            "type": "string"
+          },
+          "deezer_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchMetricsResponse": {
+        "type": "object",
+        "description": "Time-series metrics for a specific platform. Shape varies by source \u2014 typically an array of data points with timestamps and values (followers, listeners, views, etc.).",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "description": "Array of time-series data points. Fields vary by platform.",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchMilestone": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "Date of the milestone event."
+          },
+          "summary": {
+            "type": "string",
+            "description": "Human-readable description of the event."
+          },
+          "platform": {
+            "type": "string",
+            "description": "Platform where the event occurred (e.g. spotify, apple_music)."
+          },
+          "track_name": {
+            "type": "string",
+            "description": "Name of the track involved, if any."
+          },
+          "stars": {
+            "type": "integer",
+            "description": "Importance rating (1-5 stars)."
+          }
+        }
+      },
+      "ResearchMilestonesResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "milestones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchMilestone"
+            }
+          }
+        }
+      },
+      "ResearchPeopleRequest": {
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Natural language search for people (e.g., \"A&R reps at Atlantic Records\")."
+          },
+          "num_results": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 10,
+            "description": "Number of results to return."
+          }
+        }
+      },
+      "ResearchPeopleResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchPeopleResult"
+            }
+          }
+        }
+      },
+      "ResearchPeopleResult": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Person name and role."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Profile URL (often LinkedIn)."
+          },
+          "highlights": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Key excerpts from the profile."
+          },
+          "summary": {
+            "type": "string",
+            "nullable": true,
+            "description": "Brief summary of the person."
+          }
+        }
+      },
+      "ResearchPlaylistPlacement": {
+        "type": "object",
+        "properties": {
+          "playlist_name": {
+            "type": "string"
+          },
+          "track_name": {
+            "type": "string"
+          },
+          "position": {
+            "type": "integer",
+            "nullable": true
+          },
+          "peak_position": {
+            "type": "integer",
+            "nullable": true
+          },
+          "followers": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Playlist follower count."
+          },
+          "added_at": {
+            "type": "string",
+            "nullable": true,
+            "description": "When the track was added."
+          },
+          "removed_at": {
+            "type": "string",
+            "nullable": true,
+            "description": "When the track was removed (past placements only)."
+          },
+          "curator_name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchPlaylistResponse": {
+        "type": "object",
+        "description": "Playlist metadata \u2014 name, description, follower count, track count, and curator info.",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "description": {
+            "type": "string"
+          },
+          "followers": {
+            "type": "integer"
+          },
+          "num_tracks": {
+            "type": "integer"
+          },
+          "curator_name": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchPlaylistsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "placements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchPlaylistPlacement"
+            }
+          }
+        }
+      },
+      "ResearchProfileResponse": {
+        "type": "object",
+        "description": "Full artist profile \u2014 bio, genres, social links, label, images, and basic stats.",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "description": "Chartmetric artist ID"
+          },
+          "image_url": {
+            "type": "string"
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string"
+          },
+          "hometown": {
+            "type": "string"
+          },
+          "record_label": {
+            "type": "string"
+          },
+          "sp_followers": {
+            "type": "integer"
+          },
+          "sp_monthly_listeners": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchRadioResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "stations": {
+            "type": "array",
+            "description": "Radio stations tracked by Chartmetric.",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        }
+      },
+      "ResearchRankResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "rank": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Global Chartmetric artist rank."
+          }
+        }
+      },
+      "ResearchSearchResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "results": {
+            "type": "array",
+            "description": "Matching artists with IDs, names, and basic metadata.",
+            "items": {
+              "$ref": "#/components/schemas/ResearchSearchResult"
+            }
+          }
+        }
+      },
+      "ResearchSearchResult": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "description": "Internal ID for use with other research endpoints."
+          },
+          "spotify_id": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchSimilarArtist": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "similarity": {
+            "type": "number",
+            "description": "Similarity score (0-1)."
+          },
+          "career_stage": {
+            "type": "string",
+            "description": "undiscovered, developing, mid-level, mainstream, superstar, or legendary."
+          },
+          "recent_momentum": {
+            "type": "string",
+            "description": "decline, gradual decline, steady, growth, or explosive growth."
+          },
+          "sp_followers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "sp_monthly_listeners": {
+            "type": "integer",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchSimilarResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchSimilarArtist"
+            }
+          },
+          "total": {
+            "type": "integer"
+          }
+        }
+      },
+      "ResearchTrackItem": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "album_names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchTrackResponse": {
+        "type": "object",
+        "description": "Track metadata \u2014 title, artist, album, release date, popularity, and platform IDs.",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "description": "Chartmetric track ID"
+          },
+          "isrc": {
+            "type": "string"
+          },
+          "album_name": {
+            "type": "string"
+          },
+          "release_date": {
+            "type": "string"
+          },
+          "artist_names": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchTracksResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "tracks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchTrackItem"
+            }
+          }
+        }
+      },
+      "ResearchUrlEntry": {
+        "type": "object",
+        "properties": {
+          "domain": {
+            "type": "string",
+            "description": "Platform name (e.g., spotify, instagram)."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "ResearchUrlsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "urls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchUrlEntry"
+            }
+          }
+        }
+      },
+      "ResearchVenue": {
+        "type": "object",
+        "properties": {
+          "venue_name": {
+            "type": "string",
+            "description": "Name of the venue."
+          },
+          "venue_capacity": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Venue capacity (seats or standing)."
+          },
+          "city_name": {
+            "type": "string",
+            "description": "City where the venue is located."
+          },
+          "country": {
+            "type": "string",
+            "description": "Two-letter country code."
+          },
+          "events": {
+            "type": "array",
+            "description": "Events the artist performed at this venue.",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        }
+      },
+      "ResearchVenuesResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "venues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchVenue"
+            }
+          }
+        }
+      },
+      "ResearchWebRequest": {
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "description": "Request body for web research.",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "The search query \u2014 what you want to find on the web."
+          },
+          "max_results": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20,
+            "default": 10,
+            "description": "Maximum number of results to return."
+          },
+          "country": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2,
+            "description": "ISO country code for regional results (e.g., 'US', 'GB')."
+          }
+        }
+      },
+      "ResearchWebResponse": {
+        "type": "object",
+        "description": "Web search results with titles, URLs, and content snippets.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "results": {
+            "type": "array",
+            "description": "Ranked web search results.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "formatted": {
+            "type": "string",
+            "description": "Results formatted as markdown for easy reading."
+          }
+        }
       }
     },
     "securitySchemes": {
@@ -13217,6 +15477,12 @@
         "in": "header",
         "name": "x-api-key",
         "description": "Your Recoup API key. [Learn more](/quickstart#api-keys)."
+      },
+      "callbackSecret": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-callback-secret",
+        "description": "Shared secret used by internal Trigger.dev callback requests."
       }
     }
   }
