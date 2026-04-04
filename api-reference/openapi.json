@@ -6232,7 +6232,7 @@
     },
     "/api/research/discover": {
       "get": {
-        "description": "Discover artists by criteria \u2014 filter by country, genre, listener count, follower count, growth rate, and more.",
+        "description": "Discover artists by criteria \u2014 filter by country, genre, Spotify monthly listener range, and sort by growth metrics.",
         "parameters": [
           {
             "name": "country",
