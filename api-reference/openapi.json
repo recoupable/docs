@@ -2821,7 +2821,7 @@
     },
     "/api/sandboxes/files": {
       "post": {
-        "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Accepts an array of file URLs and commits each file to the specified directory path within the repository. Supports submodule resolution \u2014 if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Accepts an array of file URLs and commits each file to the specified directory path within the repository. Supports submodule resolution — if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
         "requestBody": {
           "description": "JSON body containing file URLs and target path",
           "required": true,
@@ -4043,7 +4043,7 @@
     },
     "/api/content/create": {
       "post": {
-        "description": "Trigger the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden via `songs` URLs or `images`, then triggers a background task that generates a short-form video. Returns `runIds` \u2014 an array of run IDs that can each be polled via [GET /api/tasks/runs](/api-reference/tasks/runs).",
+        "description": "Trigger the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden via `songs` URLs or `images`, then triggers a background task that generates a short-form video. Returns `runIds` — an array of run IDs that can each be polled via [GET /api/tasks/runs](/api-reference/tasks/runs).",
         "security": [
           {
             "apiKeyAuth": []
@@ -4065,7 +4065,7 @@
         },
         "responses": {
           "202": {
-            "description": "Pipeline triggered successfully. Returns `runIds` \u2014 an array of run IDs. Poll each via [GET /api/tasks/runs](/api-reference/tasks/runs) to check progress.",
+            "description": "Pipeline triggered successfully. Returns `runIds` — an array of run IDs. Poll each via [GET /api/tasks/runs](/api-reference/tasks/runs) to check progress.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4075,7 +4075,7 @@
             }
           },
           "400": {
-            "description": "Validation failed \u2014 missing artist identifier, artist is missing required files, or template not found",
+            "description": "Validation failed — missing artist identifier, artist is missing required files, or template not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -4085,7 +4085,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -4095,7 +4095,7 @@
             }
           },
           "404": {
-            "description": "Artist not found \u2014 the provided artist_account_id does not match any artist",
+            "description": "Artist not found — the provided artist_account_id does not match any artist",
             "content": {
               "application/json": {
                 "schema": {
@@ -4130,7 +4130,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -4178,7 +4178,7 @@
             }
           },
           "400": {
-            "description": "Bad request \u2014 artist_account_id is required",
+            "description": "Bad request — artist_account_id is required",
             "content": {
               "application/json": {
                 "schema": {
@@ -4188,7 +4188,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -4198,7 +4198,7 @@
             }
           },
           "404": {
-            "description": "Artist not found \u2014 the provided artist_account_id does not match any artist",
+            "description": "Artist not found — the provided artist_account_id does not match any artist",
             "content": {
               "application/json": {
                 "schema": {
@@ -4212,7 +4212,7 @@
     },
     "/api/content/estimate": {
       "get": {
-        "description": "Estimate the cost of running the content creation pipeline. Calculates per-step and per-video costs based on current pricing. Supports comparing multiple workflow profiles (e.g., premium vs. budget) and projecting batch costs. This endpoint is informational only \u2014 it does not trigger any pipeline execution or spend credits.",
+        "description": "Estimate the cost of running the content creation pipeline. Calculates per-step and per-video costs based on current pricing. Supports comparing multiple workflow profiles (e.g., premium vs. budget) and projecting batch costs. This endpoint is informational only — it does not trigger any pipeline execution or spend credits.",
         "security": [
           {
             "apiKeyAuth": []
@@ -4268,7 +4268,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -4343,7 +4343,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key / Bearer token",
+            "description": "Unauthorized — invalid or missing API key / Bearer token",
             "content": {
               "application/json": {
                 "schema": {
@@ -4357,7 +4357,7 @@
     },
     "/api/songs/analyze": {
       "post": {
-        "description": "Analyze music using a state-of-the-art Audio Language Model that listens directly to the audio waveform. Unlike text-based AI, this model processes the actual sound \u2014 identifying harmony, structure, timbre, lyrics, and cultural context through deep music understanding. Supports audio up to 20 minutes (MP3, WAV, FLAC). Two modes: (1) **Presets** \u2014 pass a `preset` name like `catalog_metadata`, `mood_tags`, or `full_report` for structured, optimized output. (2) **Custom prompt** \u2014 pass a `prompt` for free-form questions. The `full_report` preset runs all 13 presets in parallel and returns a comprehensive music intelligence report. Use `GET /api/songs/analyze/presets` to list available presets.",
+        "description": "Analyze music using a state-of-the-art Audio Language Model that listens directly to the audio waveform. Unlike text-based AI, this model processes the actual sound — identifying harmony, structure, timbre, lyrics, and cultural context through deep music understanding. Supports audio up to 20 minutes (MP3, WAV, FLAC). Two modes: (1) **Presets** — pass a `preset` name like `catalog_metadata`, `mood_tags`, or `full_report` for structured, optimized output. (2) **Custom prompt** — pass a `prompt` for free-form questions. The `full_report` preset runs all 13 presets in parallel and returns a comprehensive music intelligence report. Use `GET /api/songs/analyze/presets` to list available presets.",
         "security": [
           {
             "apiKeyAuth": []
@@ -4389,7 +4389,7 @@
             }
           },
           "400": {
-            "description": "Bad request \u2014 missing or invalid fields",
+            "description": "Bad request — missing or invalid fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -4399,7 +4399,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key / Bearer token",
+            "description": "Unauthorized — invalid or missing API key / Bearer token",
             "content": {
               "application/json": {
                 "schema": {
@@ -4409,7 +4409,7 @@
             }
           },
           "500": {
-            "description": "Server error \u2014 upstream model unavailable or inference failed",
+            "description": "Server error — upstream model unavailable or inference failed",
             "content": {
               "application/json": {
                 "schema": {
@@ -4481,7 +4481,7 @@
     },
     "/api/admins": {
       "get": {
-        "description": "Check if the authenticated account is a Recoup admin. An account is considered an admin if it is a member of the Recoup organization. No input parameters required \u2014 authentication is performed via the x-api-key or Authorization header.",
+        "description": "Check if the authenticated account is a Recoup admin. An account is considered an admin if it is a member of the Recoup organization. No input parameters required — authentication is performed via the x-api-key or Authorization header.",
         "parameters": [],
         "security": [
           {
@@ -5318,7 +5318,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Slack Events API envelope \u2014 the shape depends on the event type"
+                "description": "Slack Events API envelope — the shape depends on the event type"
               }
             }
           }
@@ -5348,7 +5348,7 @@
     },
     "/api/content-agent/callback": {
       "post": {
-        "description": "Internal callback endpoint for the `poll-content-run` Trigger.dev task. Receives content generation results and posts them back to the originating Slack thread. Authenticated via the `x-callback-secret` header.\n\nThis endpoint is not intended for external use \u2014 it is called automatically by the polling task when content runs complete, fail, or time out.",
+        "description": "Internal callback endpoint for the `poll-content-run` Trigger.dev task. Receives content generation results and posts them back to the originating Slack thread. Authenticated via the `x-callback-secret` header.\n\nThis endpoint is not intended for external use — it is called automatically by the polling task when content runs complete, fail, or time out.",
         "requestBody": {
           "description": "Content generation results from the polling task",
           "required": true,
@@ -5485,7 +5485,7 @@
             }
           },
           "400": {
-            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "description": "Validation failed — invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5495,7 +5495,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5519,7 +5519,7 @@
     },
     "/api/content/analyze": {
       "post": {
-        "description": "Analyze a video and answer questions about it. Pass a video URL and a text prompt \u2014 for example, \"Describe what happens\" or \"Rate the visual quality 1-10.\" Returns the generated text.",
+        "description": "Analyze a video and answer questions about it. Pass a video URL and a text prompt — for example, \"Describe what happens\" or \"Rate the visual quality 1-10.\" Returns the generated text.",
         "security": [
           {
             "apiKeyAuth": []
@@ -5551,7 +5551,7 @@
             }
           },
           "400": {
-            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "description": "Validation failed — invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5561,7 +5561,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5617,7 +5617,7 @@
             }
           },
           "400": {
-            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "description": "Validation failed — invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5627,7 +5627,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5683,7 +5683,7 @@
             }
           },
           "400": {
-            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "description": "Validation failed — invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5693,7 +5693,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5717,7 +5717,7 @@
     },
     "/api/content/video": {
       "post": {
-        "description": "Generate a video. Set `mode` to control what kind of video you get:\n\n- `prompt` \u2014 create a video from a text description\n- `animate` \u2014 animate a still image\n- `reference` \u2014 use an image as a style/subject reference (not the first frame)\n- `extend` \u2014 continue an existing video\n- `first-last` \u2014 generate a video that transitions between two images\n- `lipsync` \u2014 sync face movement to an audio clip\n\nIf `mode` is omitted, it's inferred from the inputs you provide.",
+        "description": "Generate a video. Set `mode` to control what kind of video you get:\n\n- `prompt` — create a video from a text description\n- `animate` — animate a still image\n- `reference` — use an image as a style/subject reference (not the first frame)\n- `extend` — continue an existing video\n- `first-last` — generate a video that transitions between two images\n- `lipsync` — sync face movement to an audio clip\n\nIf `mode` is omitted, it's inferred from the inputs you provide.",
         "security": [
           {
             "apiKeyAuth": []
@@ -5749,7 +5749,7 @@
             }
           },
           "400": {
-            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "description": "Validation failed — invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5759,7 +5759,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5781,7 +5781,7 @@
         }
       },
       "patch": {
-        "description": "Apply edits to a video or audio file \u2014 trim, crop, resize, overlay text, or add an audio track. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array. Everything runs in one pass.",
+        "description": "Apply edits to a video or audio file — trim, crop, resize, overlay text, or add an audio track. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array. Everything runs in one pass.",
         "security": [
           {
             "apiKeyAuth": []
@@ -5813,7 +5813,7 @@
             }
           },
           "400": {
-            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "description": "Validation failed — invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5823,7 +5823,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5879,7 +5879,7 @@
             }
           },
           "400": {
-            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "description": "Validation failed — invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5889,7 +5889,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5963,13 +5963,33 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error (e.g., missing required query parameter `q`)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/research/albums": {
       "get": {
-        "description": "Get an artist's full discography \u2014 albums, EPs, and singles with release dates.",
+        "description": "Get an artist's full discography — albums, EPs, and singles with release dates.",
         "parameters": [
           {
             "name": "artist",
@@ -5991,13 +6011,33 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error (e.g., missing `artist` parameter)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/research/audience": {
       "get": {
-        "description": "Get audience demographics for an artist on a specific platform \u2014 age, gender, and country breakdown.",
+        "description": "Get audience demographics for an artist on a specific platform — age, gender, and country breakdown.",
         "parameters": [
           {
             "name": "artist",
@@ -6034,13 +6074,33 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/research/career": {
       "get": {
-        "description": "Get an artist's career timeline \u2014 key milestones, trajectory, and career stage.",
+        "description": "Get an artist's career timeline — key milestones, trajectory, and career stage.",
         "parameters": [
           {
             "name": "artist",
@@ -6062,13 +6122,33 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/research/charts": {
       "get": {
-        "description": "Get global chart positions for a platform \u2014 Spotify, Apple Music, TikTok, YouTube, iTunes, Shazam, etc. NOT artist-scoped. Returns ranked entries with track and artist info.",
+        "description": "Get global chart positions for a platform — Spotify, Apple Music, TikTok, YouTube, iTunes, Shazam, etc. NOT artist-scoped. Returns ranked entries with track and artist info.",
         "parameters": [
           {
             "name": "platform",
@@ -6127,6 +6207,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -6155,13 +6255,33 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/research/curator": {
       "get": {
-        "description": "Get curator profile \u2014 who curates a playlist, their other playlists, and follower reach.",
+        "description": "Get curator profile — who curates a playlist, their other playlists, and follower reach.",
         "parameters": [
           {
             "name": "platform",
@@ -6199,6 +6319,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -6226,13 +6366,33 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/research/discover": {
       "get": {
-        "description": "Discover artists by criteria \u2014 filter by country, genre, Spotify monthly listener range, and sort by growth metrics.",
+        "description": "Discover artists by criteria — filter by country, genre, Spotify monthly listener range, and sort by growth metrics.",
         "parameters": [
           {
             "name": "country",
@@ -6297,6 +6457,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -6321,6 +6501,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchEnrichResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -6351,6 +6551,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -6365,6 +6585,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchFestivalsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -6385,13 +6625,33 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/research/insights": {
       "get": {
-        "description": "Get AI-generated insights about an artist \u2014 automatically surfaced trends, milestones, and observations.",
+        "description": "Get AI-generated insights about an artist — automatically surfaced trends, milestones, and observations.",
         "parameters": [
           {
             "name": "artist",
@@ -6410,6 +6670,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchInsightsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -6441,13 +6721,33 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/research/lookup": {
       "get": {
-        "description": "Look up an artist by a platform URL or ID \u2014 Spotify URL, Spotify ID, Apple Music URL, etc.",
+        "description": "Look up an artist by a platform URL or ID — Spotify URL, Spotify ID, Apple Music URL, etc.",
         "parameters": [
           {
             "name": "url",
@@ -6469,13 +6769,33 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/research/metrics": {
       "get": {
-        "description": "Get platform-specific metrics for an artist over time \u2014 followers, listeners, views, engagement. Supports 14 platforms.",
+        "description": "Get platform-specific metrics for an artist over time — followers, listeners, views, engagement. Supports 14 platforms.",
         "parameters": [
           {
             "name": "artist",
@@ -6522,13 +6842,33 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/research/milestones": {
       "get": {
-        "description": "Get an artist's activity feed \u2014 playlist adds, chart entries, and other notable events. Each milestone includes a date, summary, platform, track name, and star rating.",
+        "description": "Get an artist's activity feed — playlist adds, chart entries, and other notable events. Each milestone includes a date, summary, platform, track name, and star rating.",
         "parameters": [
           {
             "name": "artist",
@@ -6550,13 +6890,33 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/research/people": {
       "post": {
-        "description": "Search for people in the music industry \u2014 artists, managers, A&R reps, producers. Returns multi-source profiles including LinkedIn data.",
+        "description": "Search for people in the music industry — artists, managers, A&R reps, producers. Returns multi-source profiles including LinkedIn data.",
         "requestBody": {
           "required": true,
           "content": {
@@ -6577,13 +6937,33 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/research/playlist": {
       "get": {
-        "description": "Get playlist metadata \u2014 name, description, follower count, track count, and curator info.",
+        "description": "Get playlist metadata — name, description, follower count, track count, and curator info.",
         "parameters": [
           {
             "name": "platform",
@@ -6621,13 +7001,33 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/research/playlists": {
       "get": {
-        "description": "Get an artist's playlist placements \u2014 editorial, algorithmic, and indie playlists across platforms.",
+        "description": "Get an artist's playlist placements — editorial, algorithmic, and indie playlists across platforms.",
         "parameters": [
           {
             "name": "artist",
@@ -6715,13 +7115,33 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/research/profile": {
       "get": {
-        "description": "Get a full artist profile \u2014 bio, genres, social URLs, label, career stage, and basic metrics.",
+        "description": "Get a full artist profile — bio, genres, social URLs, label, career stage, and basic metrics.",
         "parameters": [
           {
             "name": "artist",
@@ -6743,6 +7163,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -6757,6 +7197,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchRadioResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -6785,6 +7245,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchRankResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -6881,13 +7361,33 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/research/track": {
       "get": {
-        "description": "Get track metadata \u2014 title, artist, album, release date, popularity, and platform IDs.",
+        "description": "Get track metadata — title, artist, album, release date, popularity, and platform IDs.",
         "parameters": [
           {
             "name": "q",
@@ -6906,6 +7406,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchTrackResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -6937,13 +7457,33 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/research/urls": {
       "get": {
-        "description": "Get all social and streaming URLs for an artist \u2014 Spotify, Instagram, TikTok, YouTube, Twitter, SoundCloud, and more.",
+        "description": "Get all social and streaming URLs for an artist — Spotify, Instagram, TikTok, YouTube, Twitter, SoundCloud, and more.",
         "parameters": [
           {
             "name": "artist",
@@ -6962,6 +7502,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchUrlsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -6993,6 +7553,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -7017,6 +7597,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchWebResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -12907,7 +13507,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Optional list of song slugs or public URLs to use for the audio track. Song slugs match filenames without extension from the artist's `songs/` directory (e.g. `\"hiccups\"` for `hiccups.mp3`). Public URLs (e.g. `\"https://example.com/my-song.mp3\"`) are downloaded, transcribed, and clipped directly \u2014 bypassing the Git repo. When omitted, all songs in the artist's repo are eligible.",
+            "description": "Optional list of song slugs or public URLs to use for the audio track. Song slugs match filenames without extension from the artist's `songs/` directory (e.g. `\"hiccups\"` for `hiccups.mp3`). Public URLs (e.g. `\"https://example.com/my-song.mp3\"`) are downloaded, transcribed, and clipped directly — bypassing the Git repo. When omitted, all songs in the artist's repo are eligible.",
             "example": [
               "hiccups",
               "https://example.com/unreleased-track.mp3"
@@ -12937,7 +13537,7 @@
           "artist_account_id",
           "template"
         ],
-        "description": "Confirmation that the content creation pipeline has been triggered. Always returns `runIds` as an array \u2014 even for a single run, it contains one element.",
+        "description": "Confirmation that the content creation pipeline has been triggered. Always returns `runIds` as an array — even for a single run, it contains one element.",
         "properties": {
           "runIds": {
             "type": "array",
@@ -13416,7 +14016,7 @@
           "audio_url": {
             "type": "string",
             "format": "uri",
-            "description": "Public URL to an audio file (MP3, WAV, or FLAC \u2014 up to 20 minutes)",
+            "description": "Public URL to an audio file (MP3, WAV, or FLAC — up to 20 minutes)",
             "example": "https://example.com/song.mp3"
           },
           "max_new_tokens": {
@@ -13432,7 +14032,7 @@
             "minimum": 0,
             "maximum": 2,
             "default": 1,
-            "description": "Controls output creativity \u2014 higher values produce more varied responses",
+            "description": "Controls output creativity — higher values produce more varied responses",
             "example": 0.7
           },
           "top_p": {
@@ -14344,7 +14944,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "albums": {
             "type": "array",
@@ -14356,10 +14957,11 @@
       },
       "ResearchAudienceResponse": {
         "type": "object",
-        "description": "Audience demographics breakdown \u2014 age ranges, gender split, and country distribution for the specified platform.",
+        "description": "Audience demographics breakdown — age ranges, gender split, and country distribution for the specified platform.",
         "properties": {
           "status": {
-            "type": "string"
+            "type": "string",
+            "example": "success"
           },
           "age": {
             "type": "array",
@@ -14387,16 +14989,13 @@
       },
       "ResearchCareerResponse": {
         "type": "object",
-        "description": "Career timeline \u2014 milestones, trajectory, and career stage history.",
+        "description": "Career timeline — milestones, trajectory, and career stage history.",
         "properties": {
           "status": {
-            "type": "string"
-          },
-          "career_stage": {
             "type": "string",
-            "description": "Current career stage (e.g., 'Mid-Level', 'Superstar')"
+            "example": "success"
           },
-          "data": {
+          "career": {
             "type": "array",
             "description": "Career timeline data points",
             "items": {
@@ -14404,8 +15003,7 @@
               "additionalProperties": true
             }
           }
-        },
-        "additionalProperties": true
+        }
       },
       "ResearchChartsResponse": {
         "type": "object",
@@ -14415,11 +15013,12 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "data": {
             "type": "object",
-            "description": "Chart data \u2014 structure varies by platform.",
+            "description": "Chart data — structure varies by platform.",
             "additionalProperties": true
           }
         }
@@ -14449,7 +15048,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "cities": {
             "type": "array",
@@ -14468,7 +15068,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "name": {
             "type": "string"
@@ -14501,7 +15102,7 @@
         "properties": {
           "query": {
             "type": "string",
-            "description": "The research question \u2014 be specific and detailed for best results."
+            "description": "The research question — be specific and detailed for best results."
           }
         }
       },
@@ -14514,7 +15115,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "content": {
             "type": "string",
@@ -14571,7 +15173,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "artists": {
             "type": "array",
@@ -14614,36 +15217,29 @@
         "properties": {
           "status": {
             "type": "string",
-            "enum": [
-              "success",
-              "error"
-            ]
+            "example": "success"
           },
           "output": {
             "type": "object",
             "description": "Structured data matching the provided schema.",
             "additionalProperties": true
           },
-          "research_basis": {
-            "type": "object",
-            "properties": {
-              "citations": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "url": {
-                      "type": "string",
-                      "format": "uri"
-                    },
-                    "title": {
-                      "type": "string"
-                    },
-                    "field": {
-                      "type": "string",
-                      "description": "Which output field this citation supports."
-                    }
-                  }
+          "citations": {
+            "type": "array",
+            "description": "Source citations supporting the enriched output.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "field": {
+                  "type": "string",
+                  "description": "Which output field this citation supports."
                 }
               }
             }
@@ -14684,7 +15280,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "results": {
             "type": "array",
@@ -14757,7 +15354,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "festivals": {
             "type": "array",
@@ -14786,7 +15384,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "genres": {
             "type": "array",
@@ -14814,7 +15413,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "insights": {
             "type": "array",
@@ -14829,7 +15429,8 @@
         "description": "Top Instagram posts and reels sorted by engagement.",
         "properties": {
           "status": {
-            "type": "string"
+            "type": "string",
+            "example": "success"
           },
           "posts": {
             "type": "array",
@@ -14860,7 +15461,8 @@
         "description": "Artist profile resolved from a platform URL or ID.",
         "properties": {
           "status": {
-            "type": "string"
+            "type": "string",
+            "example": "success"
           },
           "id": {
             "type": "integer",
@@ -14880,10 +15482,11 @@
       },
       "ResearchMetricsResponse": {
         "type": "object",
-        "description": "Time-series metrics for a specific platform. Shape varies by source \u2014 typically an array of data points with timestamps and values (followers, listeners, views, etc.).",
+        "description": "Time-series metrics for a specific platform. Shape varies by source — typically an array of data points with timestamps and values (followers, listeners, views, etc.).",
         "properties": {
           "status": {
-            "type": "string"
+            "type": "string",
+            "example": "success"
           },
           "data": {
             "type": "array",
@@ -14929,7 +15532,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "milestones": {
             "type": "array",
@@ -14966,7 +15570,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "results": {
             "type": "array",
@@ -14988,11 +15593,26 @@
             "format": "uri",
             "description": "Profile URL (often LinkedIn)."
           },
+          "id": {
+            "type": "string",
+            "description": "Unique result identifier from the search provider."
+          },
+          "publishedDate": {
+            "type": "string",
+            "nullable": true,
+            "description": "Date the profile or page was published."
+          },
+          "author": {
+            "type": "string",
+            "nullable": true,
+            "description": "Author of the page, if available."
+          },
           "highlights": {
             "type": "array",
             "items": {
               "type": "string"
             },
+            "nullable": true,
             "description": "Key excerpts from the profile."
           },
           "summary": {
@@ -15043,10 +15663,11 @@
       },
       "ResearchPlaylistResponse": {
         "type": "object",
-        "description": "Playlist metadata \u2014 name, description, follower count, track count, and curator info.",
+        "description": "Playlist metadata — name, description, follower count, track count, and curator info.",
         "properties": {
           "status": {
-            "type": "string"
+            "type": "string",
+            "example": "success"
           },
           "name": {
             "type": "string"
@@ -15077,7 +15698,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "placements": {
             "type": "array",
@@ -15089,10 +15711,11 @@
       },
       "ResearchProfileResponse": {
         "type": "object",
-        "description": "Full artist profile \u2014 bio, genres, social links, label, images, and basic stats.",
+        "description": "Full artist profile — bio, genres, social links, label, images, and basic stats.",
         "properties": {
           "status": {
-            "type": "string"
+            "type": "string",
+            "example": "success"
           },
           "name": {
             "type": "string"
@@ -15142,7 +15765,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "stations": {
             "type": "array",
@@ -15162,7 +15786,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "rank": {
             "type": "integer",
@@ -15179,7 +15804,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "results": {
             "type": "array",
@@ -15247,7 +15873,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "artists": {
             "type": "array",
@@ -15281,10 +15908,11 @@
       },
       "ResearchTrackResponse": {
         "type": "object",
-        "description": "Track metadata \u2014 title, artist, album, release date, popularity, and platform IDs.",
+        "description": "Track metadata — title, artist, album, release date, popularity, and platform IDs.",
         "properties": {
           "status": {
-            "type": "string"
+            "type": "string",
+            "example": "success"
           },
           "name": {
             "type": "string"
@@ -15316,7 +15944,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "tracks": {
             "type": "array",
@@ -15347,7 +15976,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "urls": {
             "type": "array",
@@ -15395,7 +16025,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "venues": {
             "type": "array",
@@ -15414,7 +16045,7 @@
         "properties": {
           "query": {
             "type": "string",
-            "description": "The search query \u2014 what you want to find on the web."
+            "description": "The search query — what you want to find on the web."
           },
           "max_results": {
             "type": "integer",
@@ -15437,10 +16068,7 @@
         "properties": {
           "status": {
             "type": "string",
-            "enum": [
-              "success",
-              "error"
-            ]
+            "example": "success"
           },
           "results": {
             "type": "array",
@@ -15454,8 +16082,19 @@
                 "url": {
                   "type": "string"
                 },
-                "content": {
-                  "type": "string"
+                "snippet": {
+                  "type": "string",
+                  "description": "Content snippet from the search result."
+                },
+                "date": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Publication date if available."
+                },
+                "last_updated": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Last updated date if available."
                 }
               }
             }
@@ -15463,6 +16102,28 @@
           "formatted": {
             "type": "string",
             "description": "Results formatted as markdown for easy reading."
+          }
+        }
+      },
+      "ResearchErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "description": "Error response returned by all research endpoints for validation failures (400) and authentication errors (401).",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "example": "error"
+          },
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message describing what went wrong.",
+            "example": "Missing required parameter: artist"
           }
         }
       }
