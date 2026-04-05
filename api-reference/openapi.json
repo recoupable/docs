@@ -6163,34 +6163,37 @@
             "name": "country",
             "in": "query",
             "required": false,
-            "description": "Two-letter country code (e.g. US, GB, DE).",
+            "description": "Two-letter ISO country code (e.g. US, GB, DE). Defaults to `US` if omitted.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "US"
             }
           },
           {
             "name": "interval",
             "in": "query",
             "required": false,
-            "description": "Time interval (e.g. daily, weekly).",
+            "description": "Time interval: `daily` or `weekly`. Defaults to `daily`.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "daily"
             }
           },
           {
             "name": "type",
             "in": "query",
             "required": false,
-            "description": "Chart type (varies by platform).",
+            "description": "Chart type (e.g. `regional`, `viral`). Defaults to `regional`.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "regional"
             }
           },
           {
             "name": "latest",
             "in": "query",
             "required": false,
-            "description": "Return only the latest chart.",
+            "description": "Return only the latest chart. Defaults to `true`.",
             "schema": {
               "type": "string",
               "default": "true"
@@ -6483,7 +6486,7 @@
     },
     "/api/research/enrich": {
       "post": {
-        "description": "Enrich an entity with structured data from web research. Provide a description of who or what to research and a JSON schema defining the fields to extract. Returns typed data with citations.",
+        "description": "Enrich an entity with structured data from web research. Provide a description of who or what to research and a JSON schema defining the fields to extract. Returns typed data with citations. **Important:** The `schema` object must include `\"type\": \"object\"` at the top level — requests without an explicit type will be rejected.",
         "requestBody": {
           "required": true,
           "content": {
@@ -14957,28 +14960,47 @@
       },
       "ResearchAudienceResponse": {
         "type": "object",
-        "description": "Audience demographics breakdown — age ranges, gender split, and country distribution for the specified platform.",
+        "description": "Audience demographics from Chartmetric — includes gender breakdown, age-by-gender splits, top countries and cities, and brand affinities. Over 20 fields may be returned; only the most common are listed here.",
         "properties": {
           "status": {
             "type": "string",
             "example": "success"
           },
-          "age": {
+          "audience_genders": {
             "type": "array",
-            "description": "Age range breakdown",
+            "description": "Gender breakdown with percentages.",
             "items": {
               "type": "object",
               "additionalProperties": true
             }
           },
-          "gender": {
-            "type": "object",
-            "description": "Gender split percentages",
-            "additionalProperties": true
-          },
-          "countries": {
+          "audience_genders_per_age": {
             "type": "array",
-            "description": "Top countries by audience share",
+            "description": "Gender split per age bracket.",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "top_countries": {
+            "type": "array",
+            "description": "Top countries by audience share.",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "top_cities": {
+            "type": "array",
+            "description": "Top cities by audience concentration.",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "audience_brand_affinities": {
+            "type": "array",
+            "description": "Brand affinity scores for the audience.",
             "items": {
               "type": "object",
               "additionalProperties": true
@@ -15197,7 +15219,7 @@
           },
           "schema": {
             "type": "object",
-            "description": "JSON schema defining the fields to extract.",
+            "description": "JSON schema defining the fields to extract. Must include `\"type\": \"object\"` at the top level.",
             "additionalProperties": true
           },
           "processor": {
@@ -15274,6 +15296,10 @@
       },
       "ResearchExtractResponse": {
         "type": "object",
+        "required": [
+          "status",
+          "results"
+        ],
         "properties": {
           "status": {
             "type": "string",
@@ -15294,7 +15320,7 @@
             "items": {
               "type": "object"
             },
-            "description": "URLs that failed to extract."
+            "description": "URLs that failed to extract. Only present when one or more URLs could not be processed."
           }
         }
       },
@@ -15426,14 +15452,37 @@
       },
       "ResearchInstagramPostsResponse": {
         "type": "object",
-        "description": "Top Instagram posts and reels sorted by engagement.",
+        "description": "Top Instagram posts and reels sorted by engagement. Fields are returned directly from Chartmetric's DeepSocial integration.",
         "properties": {
           "status": {
             "type": "string",
             "example": "success"
           },
-          "posts": {
+          "top_posts": {
             "type": "array",
+            "description": "Top posts ranked by engagement.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string"
+                },
+                "likes": {
+                  "type": "integer"
+                },
+                "comments": {
+                  "type": "integer"
+                },
+                "timestamp": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "top_reels": {
+            "type": "array",
+            "description": "Top reels ranked by engagement.",
             "items": {
               "type": "object",
               "properties": {
@@ -15458,27 +15507,33 @@
       },
       "ResearchLookupResponse": {
         "type": "object",
-        "description": "Artist profile resolved from a platform URL or ID.",
+        "description": "Artist profile resolved from a platform URL or ID. Cross-platform IDs are nested inside a `data` object.",
         "properties": {
           "status": {
             "type": "string",
             "example": "success"
           },
-          "id": {
-            "type": "integer",
-            "description": "Chartmetric artist ID"
-          },
-          "spotify_id": {
-            "type": "string"
-          },
-          "apple_music_id": {
-            "type": "string"
-          },
-          "deezer_id": {
-            "type": "string"
+          "data": {
+            "type": "object",
+            "description": "Cross-platform artist identifiers returned by Chartmetric.",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "description": "Chartmetric artist ID"
+              },
+              "spotify_id": {
+                "type": "string"
+              },
+              "apple_music_id": {
+                "type": "string"
+              },
+              "deezer_id": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": true
           }
-        },
-        "additionalProperties": true
+        }
       },
       "ResearchMetricsResponse": {
         "type": "object",
