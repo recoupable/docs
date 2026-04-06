@@ -104,6 +104,14 @@ Some endpoints accept an `organization_id` parameter. When provided, the API add
 
 ---
 
+## Chat billing: Stripe session checked
+
+`GET https://chat.recoupable.com/api/stripe/session/checked` is used by the chat app after checkout to update Stripe Checkout Session metadata. It requires a **Privy Bearer token** (same pattern as other chat-authenticated routes). The account written into Stripe metadata must come from the server’s resolved identity for that token. Query parameters such as `accountId` must **not** be trusted as ownership; if the implementation accepts them for compatibility, they must match the authenticated account or an explicitly authorized context (for example organization or admin rules), or the server must return `403`.
+
+See [Stripe checkout session checked (Chat)](/api-reference/subscriptions/session-checked).
+
+---
+
 ## Security Notes
 
 - API keys are **never stored in plaintext** — only an HMAC-SHA256 hash (keyed with your project secret) is persisted in the database

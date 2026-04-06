@@ -3694,6 +3694,104 @@
         }
       }
     },
+    "/api/stripe/session/checked": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://chat.recoupable.com"
+          }
+        ],
+        "description": "Chat-only endpoint used after checkout to mark a Stripe Checkout Session with credit-update metadata. Requires authentication. The account written into session metadata must be derived from the authenticated caller on the server. Query `accountId` must not be trusted as ownership proof; if present and conflicting with caller identity, the server must reject the request.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "query",
+            "description": "Stripe Checkout Session ID (`cs_...`) to update.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "accountId",
+            "in": "query",
+            "description": "Optional. Must not be used as a trust signal. If supported for compatibility, must match authenticated account or be explicitly authorized (org/admin). Prefer omitting so the server sets metadata from resolved identity only.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Checkout session updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StripeSessionCheckedResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing sessionId, invalid parameters, or Stripe rejected the update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StripeSessionCheckedErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StripeSessionCheckedErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - authenticated caller is not allowed to update this session or account metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StripeSessionCheckedErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - checkout session does not exist or is not accessible to the caller",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StripeSessionCheckedErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StripeSessionCheckedErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/workspaces": {
       "post": {
         "description": "Create a new workspace account. Workspaces can optionally be linked to an organization.",
@@ -15463,6 +15561,30 @@
           "formatted": {
             "type": "string",
             "description": "Results formatted as markdown for easy reading."
+          }
+        }
+      },
+      "StripeSessionCheckedResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Stripe Checkout Session object after metadata update. See Stripe API docs for full shape."
+          }
+        }
+      },
+      "StripeSessionCheckedErrorResponse": {
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Error message describing why the request failed."
           }
         }
       }

@@ -1,0 +1,6 @@
+---
+title: 'Stripe checkout session checked (Chat)'
+openapi: 'GET /api/stripe/session/checked'
+---
+
+This route runs on **chat.recoupable.com**, not the Recoup API host. Call it with `Authorization: Bearer <Privy JWT>` after redirect from Stripe Checkout. The server must derive the account for session metadata from the authenticated identity; do not treat query `accountId` as proof of ownership.
