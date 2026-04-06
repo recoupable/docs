@@ -37,6 +37,7 @@
           {
             "group": "Chat",
             "pages": [
+              "api-reference/chat/stream",
               "api-reference/chat/create",
               "api-reference/chat/chats",
               "api-reference/chat/artist",
@@ -47,7 +48,6 @@
               "api-reference/chat/update",
               "api-reference/chat/delete",
               "api-reference/chat/generate",
-              "api-reference/chat/stream",
               "api-reference/chat/compact"
             ]
           },
