@@ -1,11 +1,11 @@
 ---
 title: "Recoup API Documentation"
-description: "Use the Recoup API to build your record label."
+description: "Use the Recoup API to build your record label. Access research, content creation, chat, artist analytics, social media, and platform management endpoints."
 ---
 
 # Welcome to the Recoup API
 
-Use the Recoup API to build your record label. Access artist analytics, fan segmentation, AI-powered chat, and task automation to power your music business.
+Use the Recoup API to build your record label. Access artist analytics, fan segmentation, AI-powered chat, content creation, and task automation to power your music business.
 
 ## What is Recoup?
 
@@ -15,7 +15,7 @@ This is where record labels, musicians, and managers start to build on Recoup AI
 
 ## Get Started
 
-<CardGroup cols={2}>
+<CardGroup cols={3}>
   <Card
     title="Quickstart"
     icon="rocket"
@@ -24,72 +24,109 @@ This is where record labels, musicians, and managers start to build on Recoup AI
     Get your API key and make your first request in minutes.
   </Card>
   <Card
-    title="API Reference"
-    icon="code"
-    href="/api-reference/introduction"
+    title="CLI"
+    icon="terminal"
+    href="/cli"
   >
-    Explore all available endpoints and integrations.
+    Install and use the Recoup CLI to interact with the platform from your terminal.
+  </Card>
+  <Card
+    title="MCP Server"
+    icon="plug"
+    href="/mcp"
+  >
+    Connect Recoup to AI assistants via the Model Context Protocol.
   </Card>
 </CardGroup>
 
-## Key Capabilities
+## API Sections
+
+The API is organized into five main sections. Use these links to jump to the right area.
 
 <CardGroup cols={2}>
   <Card
-    title="Chat API"
+    title="Research"
+    icon="magnifying-glass-chart"
+    href="/api-reference/introduction"
+  >
+    30 endpoints for artist research: search, lookup, profile, metrics, audience, cities, similar artists, playlists, albums, tracks, career history, insights, genres, festivals, web presence, and more.
+  </Card>
+  <Card
+    title="Content Creation"
+    icon="wand-magic-sparkles"
+    href="/api-reference/content/create"
+  >
+    Generate images, videos, and captions. Transcribe audio, edit content, upscale media, analyze videos, manage templates, and estimate costs.
+  </Card>
+  <Card
+    title="Chat"
     icon="comments"
     href="/api-reference/chat/chats"
   >
-    AI-powered conversations with artist context. Stream responses or generate complete messages.
+    AI-powered conversations with artist context. Create, stream, and generate messages. Copy messages, delete trailing messages, and manage chat history.
   </Card>
   <Card
-    title="Artist Analytics"
-    icon="chart-line"
-    href="/api-reference/artist/profile"
-  >
-    Comprehensive artist profiles with social metrics, follower counts, and engagement data across platforms.
-  </Card>
-  <Card
-    title="Fan Segmentation"
-    icon="users"
-    href="/api-reference/segment/fans"
-  >
-    Organize and analyze fan bases by demographics, engagement levels, and behavior patterns.
-  </Card>
-  <Card
-    title="Task Management"
-    icon="list-check"
-    href="/api-reference/tasks/get"
-  >
-    Schedule and automate recurring tasks with cron-based scheduling and AI-powered execution.
-  </Card>
-</CardGroup>
-
-## Platform Integrations
-
-<CardGroup cols={3}>
-  <Card
-    title="Spotify"
-    icon="spotify"
+    title="Social Media"
+    icon="share-nodes"
     href="/api-reference/spotify/search"
   >
-    Search artists, albums, and tracks.
+    Spotify, Instagram, X (Twitter), and generic social scraping. Search artists, scrape profiles and comments, track trends, and manage OAuth connectors.
   </Card>
   <Card
-    title="Instagram"
-    icon="instagram"
-    href="/api-reference/instagram/profiles"
+    title="Releases"
+    icon="music"
+    href="/api-reference/songs/songs"
   >
-    Scrape profiles and comments.
+    Songs, catalogs, and task management. Analyze songs, manage catalog collections, and schedule recurring tasks with cron-based automation.
   </Card>
   <Card
-    title="X (Twitter)"
-    icon="x-twitter"
-    href="/api-reference/x/search"
+    title="Platform"
+    icon="building"
+    href="/api-reference/accounts/get"
   >
-    Search tweets and trending topics.
+    Accounts, organizations, workspaces, subscriptions, pulses, notifications, sandboxes, and admin tools.
   </Card>
 </CardGroup>
+
+## Agents
+
+<CardGroup cols={2}>
+  <Card
+    title="Content Agent"
+    icon="robot"
+    href="/content-agent"
+  >
+    AI content creation agent accessible via Slack. Generates images, videos, and captions for artists automatically.
+  </Card>
+  <Card
+    title="Authentication"
+    icon="key"
+    href="/authentication"
+  >
+    API key authentication, account-scoped access, and organization-level permissions.
+  </Card>
+</CardGroup>
+
+## Quick Reference for LLMs
+
+If you are an LLM navigating these docs, here is a summary of the endpoint structure:
+
+- **`/api/research/*`** — Artist research (search, lookup, profile, metrics, audience, cities, similar, urls, playlists, albums, tracks, career, insights, genres, festivals, web, deep, people, extract, enrich, milestones, venues, rank, charts, radio, discover, curator, playlist)
+- **`/api/content/*`** — Content creation (create, generate-image, generate-video, generate-caption, transcribe-audio, edit, upscale, analyze-video, templates, validate, estimate)
+- **`/api/chat/*`** — Chat (chats, artist, segment, messages, messages-copy, messages-trailing-delete, create, update, delete, generate, stream, compact)
+- **`/api/artists/*`** — Artist management (list, create, segments, socials, socials-scrape, profile)
+- **`/api/songs/*`** — Songs and catalogs (songs, create, analyze, analyze-presets, catalogs, catalogs-create, catalogs-delete, catalog-songs, catalog-songs-add, catalog-songs-delete)
+- **`/api/tasks/*`** — Task automation (get, create, update, delete, runs)
+- **`/api/spotify/*`** — Spotify (search, artist, artist-albums, artist-top-tracks, album)
+- **`/api/instagram/*`** — Instagram (comments, profiles)
+- **`/api/x/*`** — X/Twitter (search, trends)
+- **`/api/connectors/*`** — OAuth connectors (list, authorize, disconnect)
+- **`/api/accounts/*`** — Accounts (get, id, create, update, add-artist)
+- **`/api/organizations/*`** — Organizations (list, create, add-artist)
+- **`/api/sandboxes/*`** — Sandboxes (list, create, snapshot, delete, setup, file, upload)
+- **`/api/content-agent/*`** — Content agent webhooks (webhook, callback)
+
+Base URL: `https://recoup-api.vercel.app`
 
 ## Need Help?
 
@@ -98,5 +135,5 @@ This is where record labels, musicians, and managers start to build on Recoup AI
   icon="envelope"
   href="mailto:agent@recoupable.com"
 >
-  Reach out to our team for assistance with the Recoup API.
+  Reach out to our team at agent@recoupable.com for assistance with the Recoup API.
 </Card>
