@@ -104,6 +104,69 @@ Some endpoints accept an `organization_id` parameter. When provided, the API add
 
 ---
 
+## Chat App Fallback Endpoint Security
+
+The Recoup web app includes an internal fallback endpoint:
+
+- `DELETE https://chat.recoupable.com/api/scheduled-actions/delete`
+
+This route exists for fallback cleanup when scheduler deletion cannot be completed through the primary API path.
+
+### Required Access Rules
+
+- Caller must be authenticated (valid session/token).
+- Caller must be authorized to delete the specific task ID.
+- Deletion must be identity-bound (ownership derived from authenticated identity, not request body fields).
+
+<Info>
+Primary task deletion should continue to use `DELETE /api/tasks`. The chat fallback endpoint is only for fallback DB cleanup paths.
+</Info>
+
+### Request Body
+
+```json
+{
+  "id": "UUID_OF_SCHEDULED_ACTION"
+}
+```
+
+### Expected Responses
+
+| Status | Meaning |
+|--------|---------|
+| `200` | Task deleted successfully |
+| `400` | Missing or invalid `id` |
+| `401` | Missing or invalid authentication |
+| `403` | Authenticated caller is not allowed to delete this task |
+| `404` | Task ID not found |
+
+### Example (Authorized)
+
+```bash
+curl -X DELETE "https://chat.recoupable.com/api/scheduled-actions/delete" \
+  -H "Authorization: Bearer YOUR_PRIVY_JWT" \
+  -H "Content-Type: application/json" \
+  -d '{"id":"UUID_OF_SCHEDULED_ACTION"}'
+```
+
+### Example (Unauthorized)
+
+```bash
+curl -X DELETE "https://chat.recoupable.com/api/scheduled-actions/delete" \
+  -H "Content-Type: application/json" \
+  -d '{"id":"UUID_OF_SCHEDULED_ACTION"}'
+```
+
+Expected result:
+
+```json
+{
+  "error": "Unauthorized"
+}
+```
+
+---
+
 ## Security Notes
 
 - API keys are **never stored in plaintext** — only an HMAC-SHA256 hash (keyed with your project secret) is persisted in the database
