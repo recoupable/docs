@@ -34,13 +34,7 @@
       {
         "tab": "Research",
         "groups": [
-          {
-            "group": "Overview",
-            "pages": [
-              "api-reference/introduction"
-            ]
-          },
-          {
+{
             "group": "Research",
             "pages": [
               "api-reference/research/search",
