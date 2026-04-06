@@ -103,13 +103,6 @@
             ]
           },
           {
-            "group": "Fans & Segments",
-            "pages": [
-              "api-reference/segment/fans",
-              "api-reference/fans/get"
-            ]
-          },
-          {
             "group": "Songs & Catalogs",
             "pages": [
               "api-reference/songs/songs",
@@ -122,6 +115,13 @@
               "api-reference/songs/catalog-songs",
               "api-reference/songs/catalog-songs-add",
               "api-reference/songs/catalog-songs-delete"
+            ]
+          },
+          {
+            "group": "Fans & Segments",
+            "pages": [
+              "api-reference/segment/fans",
+              "api-reference/fans/get"
             ]
           },
           {
