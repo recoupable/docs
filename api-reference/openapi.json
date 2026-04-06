@@ -268,16 +268,15 @@
     },
     "/api/accounts/{id}": {
       "get": {
-        "description": "Retrieve detailed account information by ID. Returns the account with associated profile info, emails, and wallet addresses.",
+        "description": "Retrieve detailed account information by ID or email address. Accepts either a UUID account ID or an email address as the path parameter. Returns the account with associated profile info, emails, and wallet addresses.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "The unique identifier (UUID) of the account",
+            "description": "Account ID (UUID) or email address",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           }
         ],
