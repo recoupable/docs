@@ -70,24 +70,6 @@
             ]
           },
           {
-            "group": "Artists",
-            "pages": [
-              "api-reference/artists/list",
-              "api-reference/artists/create",
-              "api-reference/artist/segments",
-              "api-reference/artist/socials",
-              "api-reference/artist/socials-scrape",
-              "api-reference/artist/profile"
-            ]
-          },
-          {
-            "group": "Fans & Segments",
-            "pages": [
-              "api-reference/segment/fans",
-              "api-reference/fans/get"
-            ]
-          },
-          {
             "group": "Posts & Comments",
             "pages": [
               "api-reference/posts/get",
@@ -117,6 +99,24 @@
       {
         "tab": "Releases",
         "groups": [
+          {
+            "group": "Artists",
+            "pages": [
+              "api-reference/artists/list",
+              "api-reference/artists/create",
+              "api-reference/artist/segments",
+              "api-reference/artist/socials",
+              "api-reference/artist/socials-scrape",
+              "api-reference/artist/profile"
+            ]
+          },
+          {
+            "group": "Fans & Segments",
+            "pages": [
+              "api-reference/segment/fans",
+              "api-reference/fans/get"
+            ]
+          },
           {
             "group": "Songs & Catalogs",
             "pages": [
