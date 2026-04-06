@@ -3892,6 +3892,84 @@
         }
       }
     },
+    "/api/stripe/portal/create": {
+      "post": {
+        "servers": [
+          {
+            "url": "https://chat.recoupable.com"
+          }
+        ],
+        "description": "Create a Stripe Customer Portal session from the chat app. Authentication is required. The target account identity must be derived from the authenticated caller on the server, not trusted from client-provided body fields.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Billing portal session creation parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStripePortalSessionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Billing portal session created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateStripePortalSessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid or missing input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateStripePortalSessionErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateStripePortalSessionErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - authenticated caller is not authorized to create a portal session for the requested account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateStripePortalSessionErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error - failed to create billing portal session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateStripePortalSessionErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/connectors": {
       "get": {
         "description": "List available connectors and their connection status. Returns all supported third-party integrations (e.g., Google Sheets, TikTok) along with whether they are currently connected.",
@@ -9491,6 +9569,48 @@
           "organization": {
             "$ref": "#/components/schemas/CreatedOrganization",
             "description": "The created organization"
+          }
+        }
+      },
+      "CreateStripePortalSessionRequest": {
+        "type": "object",
+        "required": [
+          "returnUrl"
+        ],
+        "properties": {
+          "returnUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to return to after the customer leaves the Stripe Customer Portal."
+          },
+          "accountId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Optional account override. Must not be trusted directly from client input. If accepted, it must be authorized against authenticated caller context."
+          }
+        }
+      },
+      "CreateStripePortalSessionResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Stripe Billing Portal Session object. See Stripe docs for full schema."
+          }
+        }
+      },
+      "CreateStripePortalSessionErrorResponse": {
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Error message describing why billing portal session creation failed."
           }
         }
       },

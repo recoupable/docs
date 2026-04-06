@@ -283,7 +283,8 @@
           {
             "group": "Subscriptions",
             "pages": [
-              "api-reference/subscriptions/get"
+              "api-reference/subscriptions/get",
+              "api-reference/subscriptions/create-portal"
             ]
           },
           {

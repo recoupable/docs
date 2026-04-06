@@ -104,6 +104,49 @@ Some endpoints accept an `organization_id` parameter. When provided, the API add
 
 ---
 
+## Chat billing: Stripe Customer Portal (chat app)
+
+`POST https://chat.recoupable.com/api/stripe/portal/create` runs on the chat app origin. It must require authentication; the billing account must be resolved from the authenticated caller on the server. Do not treat client-supplied `accountId` as proof of ownership unless your authorization model explicitly allows it.
+
+### Expected responses
+
+| Status | Meaning |
+|--------|---------|
+| `200` | Billing portal session created successfully |
+| `400` | Invalid/missing input (e.g. `returnUrl`) |
+| `401` | Missing or invalid authentication |
+| `403` | Authenticated caller not authorized for target account |
+| `500` | Internal server error |
+
+### Example (Authorized)
+
+```bash
+curl -X POST "https://chat.recoupable.com/api/stripe/portal/create" \
+  -H "Authorization: Bearer YOUR_PRIVY_JWT" \
+  -H "Content-Type: application/json" \
+  -d '{"returnUrl":"https://chat.recoupable.com/settings/billing"}'
+```
+
+### Example (Unauthorized)
+
+```bash
+curl -X POST "https://chat.recoupable.com/api/stripe/portal/create" \
+  -H "Content-Type: application/json" \
+  -d '{"returnUrl":"https://chat.recoupable.com/settings/billing"}'
+```
+
+Expected result:
+
+```json
+{
+  "error": "Unauthorized"
+}
+```
+
+See also: [Create Stripe Billing Portal Session](/api-reference/subscriptions/create-portal).
+
+---
+
 ## Security Notes
 
 - API keys are **never stored in plaintext** — only an HMAC-SHA256 hash (keyed with your project secret) is persisted in the database
