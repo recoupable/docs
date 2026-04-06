@@ -1754,6 +1754,84 @@
         }
       }
     },
+    "/api/scheduled-actions/delete": {
+      "delete": {
+        "servers": [
+          {
+            "url": "https://chat.recoupable.com"
+          }
+        ],
+        "description": "Fallback endpoint used by the chat app to delete a scheduled action directly from the database when scheduler-side deletion cannot complete. This endpoint requires authenticated caller identity and authorization for the target task ID.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Scheduled action deletion parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteScheduledActionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Scheduled action deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteScheduledActionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteScheduledActionErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteScheduledActionErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller is not allowed to delete this scheduled action",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteScheduledActionErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - scheduled action does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteScheduledActionErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/chat/generate": {
       "post": {
         "servers": [
@@ -9086,6 +9164,44 @@
           "error": {
             "type": "string",
             "description": "Error message describing what went wrong."
+          }
+        }
+      },
+      "DeleteScheduledActionRequest": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The UUID of the scheduled action to delete."
+          }
+        }
+      },
+      "DeleteScheduledActionResponse": {
+        "type": "object",
+        "required": [
+          "success"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the scheduled action was deleted.",
+            "example": true
+          }
+        }
+      },
+      "DeleteScheduledActionErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message describing why deletion failed."
           }
         }
       },
