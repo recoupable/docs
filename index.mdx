@@ -18,7 +18,7 @@ This is where record labels, musicians, and managers start to build on Recoup AI
 All API requests should be made to:
 
 ```bash
-https://recoup-api.vercel.app/api
+https://api.recoupable.com/api
 ```
 
 ## Authentication
@@ -30,7 +30,7 @@ All API endpoints are authenticated using an API key passed in the `x-api-key` h
 3. Create a new API key and copy it immediately (it's only shown once)
 
 ```bash
-curl -X GET "https://recoup-api.vercel.app/api/artists?accountId=YOUR_ACCOUNT_ID" \
+curl -X GET "https://api.recoupable.com/api/artists?accountId=YOUR_ACCOUNT_ID" \
   -H "Content-Type: application/json" \
   -H "x-api-key: YOUR_API_KEY"
 ```
@@ -67,7 +67,7 @@ Keep your API key secure. Do not share it publicly or commit it to version contr
 
 ## API Sections
 
-The API is organized into five main sections. Use these links to jump to the right area.
+The API is organized into six main sections. Use these links to jump to the right area.
 
 <CardGroup cols={2}>
   <Card
@@ -137,7 +137,7 @@ The API is organized into five main sections. Use these links to jump to the rig
 
 If you are an LLM navigating these docs, here is a summary of the endpoint structure:
 
-- **`/api/research/*`** — Artist research (search, lookup, profile, metrics, audience, cities, similar, urls, playlists, albums, tracks, career, insights, genres, festivals, web, deep, people, extract, enrich, milestones, venues, rank, charts, radio, discover, curator, playlist)
+- **`/api/research/*`** — Artist research (search, lookup, profile, metrics, audience, cities, similar, urls, instagram-posts, playlists, albums, track, tracks, career, insights, genres, festivals, web, deep, people, extract, enrich, milestones, venues, rank, charts, radio, discover, curator, playlist)
 - **`/api/content/*`** — Content creation (create, generate-image, generate-video, generate-caption, transcribe-audio, edit, upscale, analyze-video, templates, validate, estimate)
 - **`/api/chat/*`** — Chat (chats, artist, segment, messages, messages-copy, messages-trailing-delete, create, update, delete, generate, stream, compact)
 - **`/api/artists/*`** — Artist management (list, create, segments, socials, socials-scrape, profile)
@@ -152,7 +152,7 @@ If you are an LLM navigating these docs, here is a summary of the endpoint struc
 - **`/api/sandboxes/*`** — Sandboxes (list, create, snapshot, delete, setup, file, upload)
 - **`/api/content-agent/*`** — Content agent webhooks (webhook, callback)
 
-Base URL: `https://recoup-api.vercel.app/api`
+Base URL: `https://api.recoupable.com/api`
 
 [OpenAPI Specification](https://github.com/sweetmantech/docs/blob/main/api-reference/openapi.json)
 
