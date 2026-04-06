@@ -7123,7 +7123,7 @@
         "properties": {
           "slug": {
             "type": "string",
-            "description": "Unique identifier for the connector (e.g., 'googlesheets', 'tiktok')"
+            "description": "Unique identifier for the connector (e.g., 'googlesheets', 'tiktok', 'instagram')"
           },
           "name": {
             "type": "string",
@@ -7166,7 +7166,7 @@
         "properties": {
           "connector": {
             "type": "string",
-            "description": "The connector slug to authorize (e.g., 'googlesheets', 'tiktok')"
+            "description": "The connector slug to authorize (e.g., 'googlesheets', 'tiktok', 'instagram')"
           },
           "callback_url": {
             "type": "string",
