@@ -9329,7 +9329,7 @@
           "accountId": {
             "type": "string",
             "format": "uuid",
-            "description": "Override the account used for this chat session. Requires the caller to have access to the target account (same account, shared org membership, or Recoup admin). Useful for admins previewing a customer's chat experience."
+            "description": "Override the account used for this chat session. Requires the caller to have access to the target account (same account, shared org membership, or Recoup admin). Useful for admins previewing a member's chat experience."
           }
         }
       },
