@@ -140,6 +140,25 @@ Primary task deletion should continue to use `DELETE /api/tasks`. The chat fallb
 | `403` | Authenticated caller is not allowed to delete this task |
 | `404` | Task ID not found |
 
+### Billing Endpoint Contract (`POST /api/stripe/session/create`)
+
+For chat billing flows, `POST https://chat.recoupable.com/api/stripe/session/create` must follow identity-bound authorization:
+
+- Caller must be authenticated (Bearer/session).
+- The server must derive the target account from authenticated identity.
+- If an account override is supported, it must be explicitly authorized (org/admin policy).
+- Do not trust client-provided `accountId` as ownership proof.
+
+Expected responses:
+
+| Status | Meaning |
+|--------|---------|
+| `200` | Checkout session created successfully |
+| `400` | Invalid/missing input (e.g., `successUrl`) |
+| `401` | Missing or invalid authentication |
+| `403` | Authenticated caller not authorized for target account |
+| `500` | Internal server error |
+
 ### Example (Authorized)
 
 ```bash
