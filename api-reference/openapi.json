@@ -6166,7 +6166,10 @@
             "description": "Two-letter ISO country code (e.g. US, GB, DE). Defaults to `US` if omitted.",
             "schema": {
               "type": "string",
-              "default": "US"
+              "default": "US",
+              "minLength": 2,
+              "maxLength": 2,
+              "pattern": "^[A-Z]{2}$"
             }
           },
           {
@@ -6176,7 +6179,11 @@
             "description": "Time interval: `daily` or `weekly`. Defaults to `daily`.",
             "schema": {
               "type": "string",
-              "default": "daily"
+              "default": "daily",
+              "enum": [
+                "daily",
+                "weekly"
+              ]
             }
           },
           {
@@ -6186,7 +6193,11 @@
             "description": "Chart type (e.g. `regional`, `viral`). Defaults to `regional`.",
             "schema": {
               "type": "string",
-              "default": "regional"
+              "default": "regional",
+              "enum": [
+                "regional",
+                "viral"
+              ]
             }
           },
           {
