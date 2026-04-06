@@ -250,6 +250,13 @@
         "tab": "Platform",
         "groups": [
           {
+            "group": "Pulses",
+            "pages": [
+              "api-reference/pulses/update",
+              "api-reference/pulses/list"
+            ]
+          },
+          {
             "group": "Accounts",
             "pages": [
               "api-reference/accounts/get",
@@ -290,13 +297,6 @@
               "api-reference/admins/coding-agent-slack-tags",
               "api-reference/admins/coding-pr",
               "api-reference/admins/content-slack-tags"
-            ]
-          },
-          {
-            "group": "Pulses",
-            "pages": [
-              "api-reference/pulses/list",
-              "api-reference/pulses/update"
             ]
           },
           {
