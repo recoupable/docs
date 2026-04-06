@@ -455,7 +455,7 @@
     },
     "/api/artists": {
       "get": {
-        "description": "Retrieve artists accessible to the authenticated account. The account is derived from the API key or Bearer token. When org_id is omitted, returns only the account's own artists. Pass org_id to view artists in a specific organization. Pass account_id to filter to a specific account the API key has access to.",
+        "description": "Retrieve artists. Artists can have socials. Artists can create songs and content.",
         "parameters": [
           {
             "name": "account_id",
