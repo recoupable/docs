@@ -1813,6 +1813,9 @@
         "security": [
           {
             "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
           }
         ],
         "requestBody": {
@@ -9322,6 +9325,11 @@
           "topic": {
             "type": "string",
             "description": "Topic name for the new chat room (e.g., 'Pulse Feb 2'). Only applies when creating a new room - ignored if room already exists. To edit the topic of an existing room, use [PATCH /api/chats](/api-reference/chat/update)."
+          },
+          "accountId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Override the account used for this chat session. Requires the caller to have access to the target account (same account, shared org membership, or Recoup admin). Useful for admins previewing a member's chat experience."
           }
         }
       },
