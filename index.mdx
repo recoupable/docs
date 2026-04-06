@@ -125,6 +125,13 @@ The API is organized into six main sections. Use these links to jump to the righ
     Content creation agent accessible via Slack. Generates images, videos, and captions for artists automatically.
   </Card>
   <Card
+    title="Agent Signup"
+    icon="user-plus"
+    href="/api-reference/agents/signup"
+  >
+    Programmatic account creation. Get an API key with just an email address.
+  </Card>
+  <Card
     title="Authentication"
     icon="key"
     href="/authentication"
@@ -151,6 +158,7 @@ If you are an LLM navigating these docs, here is a summary of the endpoint struc
 - **`/api/organizations/*`** — Organizations (list, create, add-artist)
 - **`/api/sandboxes/*`** — Sandboxes (list, create, snapshot, delete, setup, file, upload)
 - **`/api/content-agent/*`** — Content agent webhooks (webhook, callback)
+- **`/api/agents/*`** — Agent onboarding (signup, verify) — no auth required
 
 Base URL: `https://recoup-api.vercel.app/api`
 

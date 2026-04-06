@@ -11,6 +11,41 @@ All API requests should be made to:
 https://recoup-api.vercel.app/api
 ```
 
+## Agent Onboarding
+
+Agents can create accounts and get API keys programmatically — no browser required.
+
+**Instant signup** (agent+ prefix emails, first time only):
+
+```bash
+curl -X POST "https://recoup-api.vercel.app/api/agents/signup" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "agent+mybot@example.com"}'
+# Returns: { "api_key": "recoup_sk_...", "account_id": "...", "message": "..." }
+```
+
+**Standard signup** (verification required):
+
+```bash
+curl -X POST "https://recoup-api.vercel.app/api/agents/signup" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "you@example.com"}'
+# Returns: { "api_key": null, "account_id": "...", "message": "Check your email..." }
+```
+
+**Verify** with the code from your email:
+
+```bash
+curl -X POST "https://recoup-api.vercel.app/api/agents/verify" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "you@example.com", "code": "123456"}'
+# Returns: { "api_key": "recoup_sk_...", "account_id": "...", "message": "Verified" }
+```
+
+<Info>
+See the full [Agent Signup](/api-reference/agents/signup) and [Verify](/api-reference/agents/verify) API reference for details.
+</Info>
+
 ## API Keys
 
 To access the Recoup API programmatically, you'll need to create an API key.

@@ -104,6 +104,21 @@ Some endpoints accept an `organization_id` parameter. When provided, the API add
 
 ---
 
+## Agent Onboarding
+
+Two unauthenticated endpoints allow agents to create accounts and obtain API keys programmatically:
+
+- **`POST /api/agents/signup`** — Register with an email address. Emails with the `agent+` prefix (e.g. `agent+mybot@example.com`) receive an API key immediately on first signup. All other cases receive a 6-digit verification code via email.
+- **`POST /api/agents/verify`** — Submit the verification code to receive an API key.
+
+Multiple API keys per account are supported — each signup or verification generates a new key without revoking existing ones.
+
+<Info>
+See the [Agent Signup](/api-reference/agents/signup) and [Verify](/api-reference/agents/verify) API reference for request/response details.
+</Info>
+
+---
+
 ## Security Notes
 
 - API keys are **never stored in plaintext** — only an HMAC-SHA256 hash (keyed with your project secret) is persisted in the database

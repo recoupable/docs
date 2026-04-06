@@ -250,6 +250,13 @@
         "tab": "Accounts",
         "groups": [
           {
+            "group": "Agent Onboarding",
+            "pages": [
+              "api-reference/agents/signup",
+              "api-reference/agents/verify"
+            ]
+          },
+          {
             "group": "Pulses",
             "pages": [
               "api-reference/pulses/update",
