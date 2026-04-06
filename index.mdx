@@ -5,7 +5,7 @@ description: "Use the Recoup API to build your record label. Access research, co
 
 # Welcome to the Recoup API
 
-Use the Recoup API to build your record label. Access artist analytics, fan segmentation, AI-powered chat, content creation, and task automation to power your music business.
+Use the Recoup API to build your record label. Generate content, Access artist analytics, Manage your catalogs, AI-powered chat, and task automation to power your music business.
 
 ## What is Recoup?
 
@@ -89,7 +89,7 @@ The API is organized into six main sections. Use these links to jump to the righ
     icon="comments"
     href="/api-reference/chat/chats"
   >
-    AI-powered conversations with artist context. Create, stream, and generate messages. Copy messages, delete trailing messages, and manage chat history.
+    Conversations with artist context. Create, stream, and generate messages. Copy messages, delete trailing messages, and manage chat history.
   </Card>
   <Card
     title="Social Media"
@@ -122,7 +122,7 @@ The API is organized into six main sections. Use these links to jump to the righ
     icon="robot"
     href="/content-agent"
   >
-    AI content creation agent accessible via Slack. Generates images, videos, and captions for artists automatically.
+    Content creation agent accessible via Slack. Generates images, videos, and captions for artists automatically.
   </Card>
   <Card
     title="Authentication"
@@ -137,10 +137,10 @@ The API is organized into six main sections. Use these links to jump to the righ
 
 If you are an LLM navigating these docs, here is a summary of the endpoint structure:
 
+- **`/api/artists/*`** — Artist management (list, create, segments, socials, socials-scrape, profile)
 - **`/api/research/*`** — Artist research (search, lookup, profile, metrics, audience, cities, similar, urls, instagram-posts, playlists, albums, track, tracks, career, insights, genres, festivals, web, deep, people, extract, enrich, milestones, venues, rank, charts, radio, discover, curator, playlist)
 - **`/api/content/*`** — Content creation (create, generate-image, generate-video, generate-caption, transcribe-audio, edit, upscale, analyze-video, templates, validate, estimate)
 - **`/api/chat/*`** — Chat (chats, artist, segment, messages, messages-copy, messages-trailing-delete, create, update, delete, generate, stream, compact)
-- **`/api/artists/*`** — Artist management (list, create, segments, socials, socials-scrape, profile)
 - **`/api/songs/*`** — Songs and catalogs (songs, create, analyze, analyze-presets, catalogs, catalogs-create, catalogs-delete, catalog-songs, catalog-songs-add, catalog-songs-delete)
 - **`/api/tasks/*`** — Task automation (get, create, update, delete, runs)
 - **`/api/spotify/*`** — Spotify (search, artist, artist-albums, artist-top-tracks, album)
