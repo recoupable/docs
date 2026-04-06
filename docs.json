@@ -118,13 +118,6 @@
             ]
           },
           {
-            "group": "Fans & Segments",
-            "pages": [
-              "api-reference/segment/fans",
-              "api-reference/fans/get"
-            ]
-          },
-          {
             "group": "Tasks",
             "pages": [
               "api-reference/tasks/get",
@@ -132,6 +125,13 @@
               "api-reference/tasks/update",
               "api-reference/tasks/delete",
               "api-reference/tasks/runs"
+            ]
+          },
+          {
+            "group": "Fans & Segments",
+            "pages": [
+              "api-reference/segment/fans",
+              "api-reference/fans/get"
             ]
           }
         ]
