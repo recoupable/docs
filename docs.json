@@ -34,7 +34,24 @@
       {
         "tab": "Research",
         "groups": [
-{
+          {
+            "group": "Chat",
+            "pages": [
+              "api-reference/chat/create",
+              "api-reference/chat/chats",
+              "api-reference/chat/artist",
+              "api-reference/chat/segment",
+              "api-reference/chat/messages",
+              "api-reference/chat/messages-copy",
+              "api-reference/chat/messages-trailing-delete",
+              "api-reference/chat/update",
+              "api-reference/chat/delete",
+              "api-reference/chat/generate",
+              "api-reference/chat/stream",
+              "api-reference/chat/compact"
+            ]
+          },
+          {
             "group": "Research",
             "pages": [
               "api-reference/research/search",
@@ -75,23 +92,6 @@
               "api-reference/posts/get",
               "api-reference/post/comments",
               "api-reference/comments/get"
-            ]
-          },
-          {
-            "group": "Chat",
-            "pages": [
-              "api-reference/chat/chats",
-              "api-reference/chat/artist",
-              "api-reference/chat/segment",
-              "api-reference/chat/messages",
-              "api-reference/chat/messages-copy",
-              "api-reference/chat/messages-trailing-delete",
-              "api-reference/chat/create",
-              "api-reference/chat/update",
-              "api-reference/chat/delete",
-              "api-reference/chat/generate",
-              "api-reference/chat/stream",
-              "api-reference/chat/compact"
             ]
           }
         ]
