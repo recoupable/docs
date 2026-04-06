@@ -85,14 +85,6 @@
               "api-reference/research/charts",
               "api-reference/research/radio"
             ]
-          },
-          {
-            "group": "Posts & Comments",
-            "pages": [
-              "api-reference/posts/get",
-              "api-reference/post/comments",
-              "api-reference/comments/get"
-            ]
           }
         ]
       },
@@ -147,6 +139,14 @@
       {
         "tab": "Content",
         "groups": [
+          {
+            "group": "Posts & Comments",
+            "pages": [
+              "api-reference/posts/get",
+              "api-reference/post/comments",
+              "api-reference/comments/get"
+            ]
+          },
           {
             "group": "Content Creation",
             "pages": [
