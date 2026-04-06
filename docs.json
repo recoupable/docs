@@ -140,14 +140,6 @@
         "tab": "Content",
         "groups": [
           {
-            "group": "Posts & Comments",
-            "pages": [
-              "api-reference/posts/get",
-              "api-reference/post/comments",
-              "api-reference/comments/get"
-            ]
-          },
-          {
             "group": "Content Creation",
             "pages": [
               "api-reference/content/create",
@@ -161,6 +153,14 @@
               "api-reference/content/templates",
               "api-reference/content/validate",
               "api-reference/content/estimate"
+            ]
+          },
+          {
+            "group": "Posts & Comments",
+            "pages": [
+              "api-reference/posts/get",
+              "api-reference/post/comments",
+              "api-reference/comments/get"
             ]
           },
           {
