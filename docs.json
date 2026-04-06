@@ -200,6 +200,14 @@
         "tab": "Social Media",
         "groups": [
           {
+            "group": "Connectors",
+            "pages": [
+              "api-reference/connectors/list",
+              "api-reference/connectors/authorize",
+              "api-reference/connectors/disconnect"
+            ]
+          },
+          {
             "group": "Spotify",
             "pages": [
               "api-reference/spotify/search",
@@ -234,14 +242,6 @@
             "group": "Apify",
             "pages": [
               "api-reference/apify/scraper"
-            ]
-          },
-          {
-            "group": "Connectors",
-            "pages": [
-              "api-reference/connectors/list",
-              "api-reference/connectors/authorize",
-              "api-reference/connectors/disconnect"
             ]
           }
         ]
