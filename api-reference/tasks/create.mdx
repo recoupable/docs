@@ -2,3 +2,9 @@
 title: 'Create Task'
 openapi: 'POST /api/tasks'
 ---
+
+Creates a scheduled task.
+
+Authentication is required (`x-api-key` or `Authorization: Bearer <token>`). The server must resolve the effective account identity from auth context; do not treat client-provided `account_id` as ownership proof.
+
+If `account_id` is provided and is outside the caller's authorized scope, the API returns `403`.

@@ -93,6 +93,16 @@ Some endpoints accept an `organization_id` parameter. When provided, the API add
 - A **member** of the organization, or
 - The **organization account itself**
 
+### Task Mutation Identity Binding (`POST /api/tasks`)
+
+Task creation is identity-bound. The server must derive the effective account from authenticated credentials (`x-api-key` or `Authorization: Bearer`) and enforce authorization before persisting the task.
+
+- `account_id` in the JSON body is not a trust signal by itself.
+- If provided, `account_id` must be within the caller's authorized scope or the API returns `403`.
+- Missing or invalid credentials return `401`.
+
+See [Create Task](/api-reference/tasks/create).
+
 ---
 
 ## Error Responses

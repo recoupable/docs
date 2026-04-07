@@ -78,7 +78,15 @@
         }
       },
       "post": {
-        "description": "Create a new scheduled task. All fields are required. The response shape matches the GET endpoint (an array containing the created task).",
+        "description": "Create a new scheduled task. Authentication is required. The effective account identity must be derived from credentials on the server; client-provided account_id must not be blindly trusted. If account_id is provided and is not within the caller's authorized scope, return 403 Forbidden. The response shape matches the GET endpoint (an array containing the created task).",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "description": "Task to create",
           "required": true,
@@ -102,7 +110,37 @@
             }
           },
           "400": {
-            "description": "Bad request",
+            "description": "Bad request - missing required fields or invalid body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account_id is outside caller authorization scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
