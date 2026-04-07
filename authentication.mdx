@@ -123,6 +123,29 @@ Expected responses:
 | `403` | Authenticated caller not authorized for target account |
 | `500` | Internal server error |
 
+Full request/response shapes: [Create Stripe checkout session](/api-reference/subscriptions/create-session).
+
+### Example (Authorized)
+
+Use a valid Privy access token. Send only `successUrl` so the server derives the billing account from the authenticated identity (do not rely on `accountId` in the body as proof of ownership).
+
+```bash
+curl -X POST "https://chat.recoupable.com/api/stripe/session/create" \
+  -H "Authorization: Bearer YOUR_PRIVY_JWT" \
+  -H "Content-Type: application/json" \
+  -d '{"successUrl":"https://chat.recoupable.com/billing/success"}'
+```
+
+### Example (Unauthorized)
+
+Omitting credentials should yield `401`.
+
+```bash
+curl -X POST "https://chat.recoupable.com/api/stripe/session/create" \
+  -H "Content-Type: application/json" \
+  -d '{"successUrl":"https://chat.recoupable.com/billing/success"}'
+```
+
 ---
 
 ## Security Notes
