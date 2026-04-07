@@ -378,7 +378,7 @@
         }
       },
       "patch": {
-        "description": "Update an existing account's profile information including name, organization, image, instruction, job title, role type, company name, and knowledges.",
+        "description": "Update an existing account's profile information including name, organization, image, instruction, job title, role type, company name, and knowledges. Requires authentication via x-api-key or Authorization Bearer token. The authenticated account may update itself or a permitted account_id override.",
         "requestBody": {
           "description": "Account fields to update",
           "required": true,
@@ -403,6 +403,26 @@
           },
           "400": {
             "description": "Bad request - account not found or update failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account override not permitted",
             "content": {
               "application/json": {
                 "schema": {
@@ -7681,9 +7701,9 @@
           "knowledges": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/Knowledge"
             },
-            "description": "List of knowledge areas or expertise"
+            "description": "Knowledge base files attached to this account"
           }
         }
       },
@@ -7772,9 +7792,9 @@
           "knowledges": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/Knowledge"
             },
-            "description": "List of knowledge areas"
+            "description": "Knowledge base files attached to this account"
           }
         }
       },
