@@ -6913,6 +6913,149 @@
         }
       }
     },
+    "/api/research/track/playlists": {
+      "get": {
+        "description": "Get playlists featuring a specific track — editorial, algorithmic, and indie. Returns playlist name, cover image, follower count, and curator.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "description": "Chartmetric track ID. Provide this or `q`.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "description": "Track name to search for. Provide this or `id`.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "description": "Streaming platform.",
+            "schema": {
+              "type": "string",
+              "enum": ["spotify", "applemusic", "deezer", "amazon"],
+              "default": "spotify"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Playlist status.",
+            "schema": {
+              "type": "string",
+              "enum": ["current", "past"],
+              "default": "current"
+            }
+          },
+          {
+            "name": "editorial",
+            "in": "query",
+            "required": false,
+            "description": "Only editorial playlists.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "required": false,
+            "description": "Filter by start date (YYYY-MM-DD).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "required": false,
+            "description": "Filter by end date (YYYY-MM-DD).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Sort results by this field (e.g. followers, added_at, position).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Maximum number of results (max 100).",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Offset for pagination.",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Playlists featuring the track",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchTrackPlaylistsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/research/tracks": {
       "get": {
         "description": "Get all tracks by an artist with popularity data.",
@@ -15083,6 +15226,55 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ResearchPlaylistPlacement"
+            }
+          }
+        }
+      },
+      "ResearchTrackPlaylistsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "placements": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "playlist": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string", "description": "Playlist name" },
+                    "image_url": { "type": "string", "description": "Playlist cover image URL" },
+                    "playlist_id": { "type": "string", "description": "Spotify playlist ID" },
+                    "id": { "type": "integer", "description": "Chartmetric playlist ID" },
+                    "description": { "type": "string" },
+                    "followers": { "type": "integer", "description": "Playlist follower count" },
+                    "num_track": { "type": "integer", "description": "Number of tracks" },
+                    "editorial": { "type": "boolean", "description": "Whether playlist is editorial" },
+                    "owner_name": { "type": "string", "description": "Playlist curator name" },
+                    "position": { "type": "integer", "description": "Track position in playlist" },
+                    "peak_position": { "type": "integer", "description": "Track peak position" },
+                    "added_at": { "type": "string", "description": "When track was added" },
+                    "tags": { "type": "array", "items": { "type": "object" } }
+                  },
+                  "additionalProperties": true
+                },
+                "track": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string", "description": "Track name" },
+                    "cm_track": { "type": "integer", "description": "Chartmetric track ID" },
+                    "isrc": { "type": "string", "description": "Track ISRC" },
+                    "image_url": { "type": "string", "description": "Track image URL" },
+                    "artist_names": { "type": "array", "items": { "type": "string" } },
+                    "spotify_popularity": { "type": "integer" }
+                  },
+                  "additionalProperties": true
+                }
+              },
+              "additionalProperties": true
             }
           }
         }
