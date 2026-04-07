@@ -324,8 +324,11 @@
             "description": "Account ID to look up. Repeat this query parameter to fetch multiple rows.",
             "required": false,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
             },
             "explode": true
           }
