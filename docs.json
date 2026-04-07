@@ -47,7 +47,6 @@
               "api-reference/chat/messages-trailing-delete",
               "api-reference/chat/update",
               "api-reference/chat/delete",
-              "api-reference/chat/scheduled-actions-delete",
               "api-reference/chat/generate",
               "api-reference/chat/compact"
             ]
