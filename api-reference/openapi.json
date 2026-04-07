@@ -6936,6 +6936,15 @@
             }
           },
           {
+            "name": "artist",
+            "in": "query",
+            "required": false,
+            "description": "Artist name — improves track search accuracy when using `q`.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "platform",
             "in": "query",
             "required": false,
