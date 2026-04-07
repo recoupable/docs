@@ -5,7 +5,7 @@ openapi: 'GET /api/accounts/emails'
 
 Retrieve raw `account_emails` rows for one or more accounts the authenticated caller can access.
 
-Repeat the `account_id` query parameter to request multiple accounts:
+Provide at least one `account_id` query parameter. Repeat it to request multiple accounts:
 
 ```bash
 curl --request GET \
@@ -13,4 +13,4 @@ curl --request GET \
   --header 'x-api-key: YOUR_API_KEY'
 ```
 
-The server validates access for every requested `account_id`. If any requested account is unauthorized, the request returns `403`.
+The server validates access for every requested `account_id`. If no `account_id` values are provided, the request returns `400`. If any requested account is unauthorized, the request returns `403`.

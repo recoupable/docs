@@ -311,8 +311,8 @@
           {
             "name": "account_id",
             "in": "query",
-            "description": "Account ID to look up. Repeat this query parameter to fetch multiple rows. The authenticated caller must be allowed to access every requested account.",
-            "required": false,
+            "description": "Account ID to look up. Repeat this query parameter to fetch multiple rows. At least one account_id is required, and the authenticated caller must be allowed to access every requested account.",
+            "required": true,
             "schema": {
               "type": "array",
               "items": {
@@ -333,7 +333,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Account email rows retrieved successfully. Returns an empty array when no matching rows are found, including when no account_id parameters are provided.",
+            "description": "Account email rows retrieved successfully. Returns an empty array when the requested accounts are authorized but have no matching account_emails rows.",
             "content": {
               "application/json": {
                 "schema": {
@@ -343,7 +343,7 @@
             }
           },
           "400": {
-            "description": "Bad request - invalid query parameters",
+            "description": "Bad request - at least one account_id query parameter is required",
             "content": {
               "application/json": {
                 "schema": {
