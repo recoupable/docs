@@ -260,6 +260,7 @@
             "group": "Accounts",
             "pages": [
               "api-reference/accounts/get",
+              "api-reference/accounts/emails",
               "api-reference/accounts/id",
               "api-reference/accounts/create",
               "api-reference/accounts/update",
