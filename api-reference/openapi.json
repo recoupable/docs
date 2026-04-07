@@ -268,16 +268,15 @@
     },
     "/api/accounts/{id}": {
       "get": {
-        "description": "Retrieve detailed account information by ID. Returns the account with associated profile info, emails, and wallet addresses.",
+        "description": "Retrieve detailed account information by ID or email address. Accepts either a UUID account ID or an email address as the path parameter. Returns the account with associated profile info, emails, and wallet addresses.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "The unique identifier (UUID) of the account",
+            "description": "Account ID (UUID) or email address",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           }
         ],
@@ -1814,6 +1813,9 @@
         "security": [
           {
             "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
           }
         ],
         "requestBody": {
@@ -7201,7 +7203,7 @@
         "properties": {
           "slug": {
             "type": "string",
-            "description": "Unique identifier for the connector (e.g., 'googlesheets', 'tiktok')"
+            "description": "Unique identifier for the connector (e.g., 'googlesheets', 'tiktok', 'instagram')"
           },
           "name": {
             "type": "string",
@@ -7244,7 +7246,7 @@
         "properties": {
           "connector": {
             "type": "string",
-            "description": "The connector slug to authorize (e.g., 'googlesheets', 'tiktok')"
+            "description": "The connector slug to authorize (e.g., 'googlesheets', 'tiktok', 'instagram')"
           },
           "callback_url": {
             "type": "string",
@@ -9401,6 +9403,11 @@
           "topic": {
             "type": "string",
             "description": "Topic name for the new chat room (e.g., 'Pulse Feb 2'). Only applies when creating a new room - ignored if room already exists. To edit the topic of an existing room, use [PATCH /api/chats](/api-reference/chat/update)."
+          },
+          "accountId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Override the account used for this chat session. Requires the caller to have access to the target account (same account, shared org membership, or Recoup admin). Useful for admins previewing a member's chat experience."
           }
         }
       },
