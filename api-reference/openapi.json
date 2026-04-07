@@ -306,22 +306,12 @@
     },
     "/api/accounts/emails": {
       "get": {
-        "description": "Retrieve raw account email rows for one or more account IDs after verifying that the authenticated caller has access to the provided artist account.",
+        "description": "Retrieve raw account email rows for one or more account IDs after verifying that the authenticated caller can access every requested account.",
         "parameters": [
-          {
-            "name": "artist_account_id",
-            "in": "query",
-            "description": "Artist account ID used to verify the caller has access to view these account emails.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
           {
             "name": "account_id",
             "in": "query",
-            "description": "Account ID to look up. Repeat this query parameter to fetch multiple rows.",
+            "description": "Account ID to look up. Repeat this query parameter to fetch multiple rows. The authenticated caller must be allowed to access every requested account.",
             "required": false,
             "schema": {
               "type": "array",
@@ -353,7 +343,7 @@
             }
           },
           "400": {
-            "description": "Bad request - artist_account_id is missing",
+            "description": "Bad request - invalid query parameters",
             "content": {
               "application/json": {
                 "schema": {
@@ -373,7 +363,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - authenticated account does not have access to the provided artist account",
+            "description": "Forbidden - authenticated account does not have access to one or more requested account_id values",
             "content": {
               "application/json": {
                 "schema": {

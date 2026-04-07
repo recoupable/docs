@@ -2,3 +2,15 @@
 title: 'Get Account Emails'
 openapi: 'GET /api/accounts/emails'
 ---
+
+Retrieve raw `account_emails` rows for one or more accounts the authenticated caller can access.
+
+Repeat the `account_id` query parameter to request multiple accounts:
+
+```bash
+curl --request GET \
+  --url 'https://recoup-api.vercel.app/api/accounts/emails?account_id=24994fe8-e63c-4c4a-867e-f38976e3fd31&account_id=ab1c64cd-4364-415e-abb4-04abbbda368e' \
+  --header 'x-api-key: YOUR_API_KEY'
+```
+
+The server validates access for every requested `account_id`. If any requested account is unauthorized, the request returns `403`.
