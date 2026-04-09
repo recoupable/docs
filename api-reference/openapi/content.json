@@ -2103,6 +2103,26 @@
             "minItems": 1,
             "description": "Audio file URLs to transcribe"
           },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Language code for transcription (e.g. en, es, fr). Defaults to en."
+          },
+          "chunk_level": {
+            "type": "string",
+            "enum": [
+              "none",
+              "segment",
+              "word"
+            ],
+            "default": "word",
+            "description": "Granularity of timestamp chunks. Defaults to word-level."
+          },
+          "diarize": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enable speaker diarization. Defaults to false."
+          },
           "model": {
             "type": "string",
             "description": "fal.ai model ID. Defaults to fal-ai/whisper"
@@ -2574,17 +2594,17 @@
           "color": {
             "type": "string",
             "description": "Text color as a CSS color value",
-            "example": "#FFFFFF"
+            "example": "white"
           },
           "borderColor": {
             "type": "string",
             "description": "Text border/stroke color as a CSS color value",
-            "example": "#000000"
+            "example": "black"
           },
           "maxFontSize": {
             "type": "number",
             "description": "Maximum font size in pixels",
-            "example": 48
+            "example": 42
           }
         }
       },
@@ -2735,13 +2755,26 @@
       "ContentCreateVideoResponse": {
         "type": "object",
         "required": [
-          "videoUrl"
+          "videoUrl",
+          "mode"
         ],
         "properties": {
           "videoUrl": {
             "type": "string",
             "format": "uri",
             "description": "URL of the generated video"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "prompt",
+              "animate",
+              "reference",
+              "extend",
+              "first-last",
+              "lipsync"
+            ],
+            "description": "The resolved video generation mode (explicit or inferred from inputs)"
           }
         }
       },
