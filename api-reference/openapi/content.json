@@ -292,6 +292,14 @@
     "/api/files": {
       "get": {
         "description": "List files for an artist account the authenticated caller can access. Returns immediate children by default, or all descendants when `recursive=true`. Each file row includes `owner_email` when the file owner's account has an email on record. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "artist_account_id",
@@ -2439,6 +2447,21 @@
       },
       "FileListItem": {
         "type": "object",
+        "required": [
+          "id",
+          "owner_account_id",
+          "artist_account_id",
+          "file_name",
+          "storage_key",
+          "mime_type",
+          "is_directory",
+          "size_bytes",
+          "description",
+          "tags",
+          "created_at",
+          "updated_at",
+          "owner_email"
+        ],
         "properties": {
           "id": {
             "type": "string",
