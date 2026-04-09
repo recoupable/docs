@@ -11,7 +11,7 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Quickstart",
         "groups": [
           {
             "group": "Getting started",
@@ -28,46 +28,93 @@
             "pages": [
               "content-agent"
             ]
-          },
-          {
-            "group": "Content",
-            "pages": [
-              "content"
-            ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "Research",
         "groups": [
-          {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
-            ]
-          },
           {
             "group": "Chat",
             "pages": [
+              "api-reference/chat/stream",
+              "api-reference/chat/create",
               "api-reference/chat/chats",
               "api-reference/chat/artist",
               "api-reference/chat/segment",
               "api-reference/chat/messages",
               "api-reference/chat/messages-copy",
               "api-reference/chat/messages-trailing-delete",
-              "api-reference/chat/create",
               "api-reference/chat/update",
               "api-reference/chat/delete",
               "api-reference/chat/generate",
-              "api-reference/chat/stream",
               "api-reference/chat/compact"
             ]
           },
           {
-            "group": "Pulses",
+            "group": "Research",
             "pages": [
-              "api-reference/pulses/list",
-              "api-reference/pulses/update"
+              "api-reference/research/search",
+              "api-reference/research/lookup",
+              "api-reference/research/profile",
+              "api-reference/research/metrics",
+              "api-reference/research/audience",
+              "api-reference/research/cities",
+              "api-reference/research/similar",
+              "api-reference/research/urls",
+              "api-reference/research/instagram-posts",
+              "api-reference/research/playlists",
+              "api-reference/research/albums",
+              "api-reference/research/tracks",
+              "api-reference/research/track",
+              "api-reference/research/career",
+              "api-reference/research/insights",
+              "api-reference/research/playlist",
+              "api-reference/research/curator",
+              "api-reference/research/discover",
+              "api-reference/research/genres",
+              "api-reference/research/festivals",
+              "api-reference/research/web",
+              "api-reference/research/deep",
+              "api-reference/research/people",
+              "api-reference/research/extract",
+              "api-reference/research/enrich",
+              "api-reference/research/milestones",
+              "api-reference/research/venues",
+              "api-reference/research/rank",
+              "api-reference/research/charts",
+              "api-reference/research/radio"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Releases",
+        "groups": [
+          {
+            "group": "Artists",
+            "pages": [
+              "api-reference/artists/list",
+              "api-reference/artists/create",
+              "api-reference/artist/segments",
+              "api-reference/artist/socials",
+              "api-reference/artist/socials-scrape",
+              "api-reference/artist/profile"
+            ]
+          },
+          {
+            "group": "Songs & Catalogs",
+            "pages": [
+              "api-reference/songs/songs",
+              "api-reference/songs/create",
+              "api-reference/songs/analyze",
+              "api-reference/songs/analyze-presets",
+              "api-reference/songs/catalogs",
+              "api-reference/songs/catalogs-create",
+              "api-reference/songs/catalogs-delete",
+              "api-reference/songs/catalog-songs",
+              "api-reference/songs/catalog-songs-add",
+              "api-reference/songs/catalog-songs-delete"
             ]
           },
           {
@@ -81,76 +128,84 @@
             ]
           },
           {
-            "group": "Accounts",
+            "group": "Fans & Segments",
             "pages": [
-              "api-reference/accounts/get",
-              "api-reference/accounts/id",
-              "api-reference/accounts/create",
-              "api-reference/accounts/update",
-              "api-reference/accounts/add-artist"
-            ]
-          },
-          {
-            "group": "Admins",
-            "pages": [
-              "api-reference/admins/check",
-              "api-reference/admins/sandboxes",
-              "api-reference/admins/sandboxes-orgs",
-              "api-reference/admins/emails",
-              "api-reference/admins/privy",
-              "api-reference/admins/coding-agent-slack-tags",
-              "api-reference/admins/coding-pr",
-              "api-reference/admins/content-slack-tags"
-            ]
-          },
-          {
-            "group": "Artists",
-            "pages": [
-              "api-reference/artists/list",
-              "api-reference/artists/create",
-              "api-reference/artist/segments",
-              "api-reference/artist/socials",
-              "api-reference/artist/socials-scrape",
-              "api-reference/artist/profile"
-            ]
-          },
-          {
-            "group": "Segment",
-            "pages": [
-              "api-reference/segment/fans"
-            ]
-          },
-          {
-            "group": "Fans",
-            "pages": [
+              "api-reference/segment/fans",
               "api-reference/fans/get"
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "Content",
+        "groups": [
           {
-            "group": "Posts",
+            "group": "Content Creation",
             "pages": [
-              "api-reference/posts/get",
-              "api-reference/post/comments"
+              "api-reference/content/create",
+              "api-reference/content/generate-image",
+              "api-reference/content/generate-video",
+              "api-reference/content/generate-caption",
+              "api-reference/content/transcribe-audio",
+              "api-reference/content/edit",
+              "api-reference/content/upscale",
+              "api-reference/content/analyze-video",
+              "api-reference/content/templates",
+              "api-reference/content/template-detail",
+              "api-reference/content/validate",
+              "api-reference/content/estimate"
             ]
           },
           {
-            "group": "Comments",
+            "group": "Posts & Comments",
             "pages": [
+              "api-reference/posts/get",
+              "api-reference/post/comments",
               "api-reference/comments/get"
             ]
           },
           {
-            "group": "Organizations",
+            "group": "Content Agent",
             "pages": [
-              "api-reference/organizations/list",
-              "api-reference/organizations/create",
-              "api-reference/organizations/add-artist"
+              "api-reference/content-agent/webhook",
+              "api-reference/content-agent/callback"
             ]
           },
           {
-            "group": "Workspaces",
+            "group": "Image",
             "pages": [
-              "api-reference/workspaces/create"
+              "api-reference/image/generation"
+            ]
+          },
+          {
+            "group": "Transcribe",
+            "pages": [
+              "api-reference/transcribe/audio"
+            ]
+          },
+          {
+            "group": "Sandboxes",
+            "pages": [
+              "api-reference/sandboxes/list",
+              "api-reference/sandboxes/create",
+              "api-reference/sandboxes/snapshot",
+              "api-reference/sandboxes/delete",
+              "api-reference/sandboxes/setup",
+              "api-reference/sandboxes/file",
+              "api-reference/sandboxes/upload"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Social Media",
+        "groups": [
+          {
+            "group": "Connectors",
+            "pages": [
+              "api-reference/connectors/list",
+              "api-reference/connectors/authorize",
+              "api-reference/connectors/disconnect"
             ]
           },
           {
@@ -185,30 +240,45 @@
             ]
           },
           {
-            "group": "Image",
+            "group": "Apify",
             "pages": [
-              "api-reference/image/generation"
+              "api-reference/apify/scraper"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Accounts",
+        "groups": [
+          {
+            "group": "Pulses",
+            "pages": [
+              "api-reference/pulses/update",
+              "api-reference/pulses/list"
             ]
           },
           {
-            "group": "Transcribe",
+            "group": "Accounts",
             "pages": [
-              "api-reference/transcribe/audio"
+              "api-reference/accounts/get",
+              "api-reference/accounts/id",
+              "api-reference/accounts/create",
+              "api-reference/accounts/update",
+              "api-reference/accounts/add-artist"
             ]
           },
           {
-            "group": "Songs & Catalogs",
+            "group": "Organizations",
             "pages": [
-              "api-reference/songs/songs",
-              "api-reference/songs/create",
-              "api-reference/songs/analyze",
-              "api-reference/songs/analyze-presets",
-              "api-reference/songs/catalogs",
-              "api-reference/songs/catalogs-create",
-              "api-reference/songs/catalogs-delete",
-              "api-reference/songs/catalog-songs",
-              "api-reference/songs/catalog-songs-add",
-              "api-reference/songs/catalog-songs-delete"
+              "api-reference/organizations/list",
+              "api-reference/organizations/create",
+              "api-reference/organizations/add-artist"
+            ]
+          },
+          {
+            "group": "Workspaces",
+            "pages": [
+              "api-reference/workspaces/create"
             ]
           },
           {
@@ -218,59 +288,22 @@
             ]
           },
           {
+            "group": "Admins",
+            "pages": [
+              "api-reference/admins/check",
+              "api-reference/admins/sandboxes",
+              "api-reference/admins/sandboxes-orgs",
+              "api-reference/admins/emails",
+              "api-reference/admins/privy",
+              "api-reference/admins/coding-agent-slack-tags",
+              "api-reference/admins/coding-pr",
+              "api-reference/admins/content-slack-tags"
+            ]
+          },
+          {
             "group": "Notifications",
             "pages": [
               "api-reference/notifications/create"
-            ]
-          },
-          {
-            "group": "Apify",
-            "pages": [
-              "api-reference/apify/scraper"
-            ]
-          },
-          {
-            "group": "Sandboxes",
-            "pages": [
-              "api-reference/sandboxes/list",
-              "api-reference/sandboxes/create",
-              "api-reference/sandboxes/snapshot",
-              "api-reference/sandboxes/delete",
-              "api-reference/sandboxes/setup",
-              "api-reference/sandboxes/file",
-              "api-reference/sandboxes/upload"
-            ]
-          },
-          {
-            "group": "Connectors",
-            "pages": [
-              "api-reference/connectors/list",
-              "api-reference/connectors/authorize",
-              "api-reference/connectors/disconnect"
-            ]
-          },
-          {
-            "group": "Content",
-            "pages": [
-              "api-reference/content/create",
-              "api-reference/content/generate-image",
-              "api-reference/content/generate-video",
-              "api-reference/content/generate-caption",
-              "api-reference/content/transcribe-audio",
-              "api-reference/content/edit",
-              "api-reference/content/upscale",
-              "api-reference/content/analyze-video",
-              "api-reference/content/templates",
-              "api-reference/content/template-detail",
-              "api-reference/content/validate",
-              "api-reference/content/estimate"
-            ]
-          },
-          {
-            "group": "Content Agent",
-            "pages": [
-              "api-reference/content-agent/webhook",
-              "api-reference/content-agent/callback"
             ]
           }
         ]
