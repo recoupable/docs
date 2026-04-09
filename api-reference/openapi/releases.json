@@ -362,6 +362,58 @@
         }
       }
     },
+    "/api/artists/{id}": {
+      "delete": {
+        "description": "Delete an artist accessible to the authenticated account. This removes the caller's direct artist link and, if no owner links remain, deletes the artist account itself.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Artist account ID to delete.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteArtistResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication"
+          },
+          "403": {
+            "description": "Forbidden - the authenticated account cannot delete this artist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteArtistErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Artist not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteArtistErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/artist/segments": {
       "get": {
         "description": "Retrieve all segments associated with an artist. This endpoint should be called before using the Segment Fans endpoint to obtain the necessary segment IDs. Supports pagination.",
@@ -2058,6 +2110,44 @@
         "properties": {
           "artist": {
             "$ref": "#/components/schemas/CreatedArtist"
+          }
+        }
+      },
+      "DeleteArtistErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "DeleteArtistResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "artistId"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the artist delete completed successfully"
+          },
+          "artistId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist account that was deleted or unlinked"
           }
         }
       },
