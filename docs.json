@@ -152,6 +152,7 @@
               "api-reference/content/upscale",
               "api-reference/content/analyze-video",
               "api-reference/content/templates",
+              "api-reference/content/template-detail",
               "api-reference/content/validate",
               "api-reference/content/estimate"
             ]

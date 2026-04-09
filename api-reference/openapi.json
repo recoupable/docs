@@ -268,15 +268,16 @@
     },
     "/api/accounts/{id}": {
       "get": {
-        "description": "Retrieve detailed account information by ID or email address. Accepts either a UUID account ID or an email address as the path parameter. Returns the account with associated profile info, emails, and wallet addresses.",
+        "description": "Retrieve detailed account information by ID. Returns the account with associated profile info, emails, and wallet addresses.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "Account ID (UUID) or email address",
+            "description": "The unique identifier (UUID) of the account",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
@@ -474,7 +475,7 @@
     },
     "/api/artists": {
       "get": {
-        "description": "Retrieve artists. Artists can have socials. Artists can create songs and content.",
+        "description": "Retrieve artists accessible to the authenticated account. The account is derived from the API key or Bearer token. When org_id is omitted, returns only the account's own artists. Pass org_id to view artists in a specific organization. Pass account_id to filter to a specific account the API key has access to.",
         "parameters": [
           {
             "name": "account_id",
@@ -1888,9 +1889,6 @@
         "security": [
           {
             "apiKeyAuth": []
-          },
-          {
-            "bearerAuth": []
           }
         ],
         "requestBody": {
@@ -2898,7 +2896,7 @@
     },
     "/api/sandboxes/files": {
       "post": {
-        "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Accepts an array of file URLs and commits each file to the specified directory path within the repository. Supports submodule resolution \u2014 if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Accepts an array of file URLs and commits each file to the specified directory path within the repository. Supports submodule resolution — if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
         "requestBody": {
           "description": "JSON body containing file URLs and target path",
           "required": true,
@@ -4118,9 +4116,75 @@
         }
       }
     },
+    "/api/content": {
+      "patch": {
+        "description": "Apply edits to content — trim, crop, resize, overlay text, or add an audio track. Accepts video, image, or audio input. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Edit parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentCreateEditRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Edit task triggered successfully. Poll via [GET /api/tasks/runs](/api-reference/tasks/runs) using the returned `runId`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentCreateEditResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed — invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/content/create": {
       "post": {
-        "description": "Trigger the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden via `songs` URLs or `images`, then triggers a background task that generates a short-form video. Returns `runIds` \u2014 an array of run IDs that can each be polled via [GET /api/tasks/runs](/api-reference/tasks/runs).",
+        "description": "Trigger the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden via `songs` URLs or `images`, then triggers a background task that generates a short-form video. Returns `runIds` — an array of run IDs that can each be polled via [GET /api/tasks/runs](/api-reference/tasks/runs).",
         "security": [
           {
             "apiKeyAuth": []
@@ -4142,7 +4206,7 @@
         },
         "responses": {
           "202": {
-            "description": "Pipeline triggered successfully. Returns `runIds` \u2014 an array of run IDs. Poll each via [GET /api/tasks/runs](/api-reference/tasks/runs) to check progress.",
+            "description": "Pipeline triggered successfully. Returns `runIds` — an array of run IDs. Poll each via [GET /api/tasks/runs](/api-reference/tasks/runs) to check progress.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4152,7 +4216,7 @@
             }
           },
           "400": {
-            "description": "Validation failed \u2014 missing artist identifier, artist is missing required files, or template not found",
+            "description": "Validation failed — missing artist identifier, artist is missing required files, or template not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -4162,7 +4226,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -4172,7 +4236,7 @@
             }
           },
           "404": {
-            "description": "Artist not found \u2014 the provided artist_account_id does not match any artist",
+            "description": "Artist not found — the provided artist_account_id does not match any artist",
             "content": {
               "application/json": {
                 "schema": {
@@ -4186,7 +4250,7 @@
     },
     "/api/content/templates": {
       "get": {
-        "description": "List all available content creation templates. Templates define the visual style, scene composition, and default workflow settings for generated videos. Each template includes reference images, style guides, caption rules, and prompt configurations.",
+        "description": "List all available content creation templates. Templates are optional — every content primitive works without one. When you do use a template, it provides a complete creative recipe: image prompts, video motion config, caption style rules, and edit operations. Returns template ID and description only — enough to pick the right one.",
         "security": [
           {
             "apiKeyAuth": []
@@ -4207,11 +4271,78 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/content/templates/{id}": {
+      "get": {
+        "description": "Get the full configuration for a specific content creation template. Returns the complete creative recipe including image prompts, video motion config, caption style rules, and edit operations.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Template identifier",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "artist-caption-bedroom"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Template detail retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentTemplateDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Template not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "error"
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Template not found"
+                    }
+                  }
                 }
               }
             }
@@ -4255,7 +4386,7 @@
             }
           },
           "400": {
-            "description": "Bad request \u2014 artist_account_id is required",
+            "description": "Bad request — artist_account_id is required",
             "content": {
               "application/json": {
                 "schema": {
@@ -4265,7 +4396,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -4275,7 +4406,7 @@
             }
           },
           "404": {
-            "description": "Artist not found \u2014 the provided artist_account_id does not match any artist",
+            "description": "Artist not found — the provided artist_account_id does not match any artist",
             "content": {
               "application/json": {
                 "schema": {
@@ -4289,7 +4420,7 @@
     },
     "/api/content/estimate": {
       "get": {
-        "description": "Estimate the cost of running the content creation pipeline. Calculates per-step and per-video costs based on current pricing. Supports comparing multiple workflow profiles (e.g., premium vs. budget) and projecting batch costs. This endpoint is informational only \u2014 it does not trigger any pipeline execution or spend credits.",
+        "description": "Estimate the cost of running the content creation pipeline. Calculates per-step and per-video costs based on current pricing. Supports comparing multiple workflow profiles (e.g., premium vs. budget) and projecting batch costs. This endpoint is informational only — it does not trigger any pipeline execution or spend credits.",
         "security": [
           {
             "apiKeyAuth": []
@@ -4345,7 +4476,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -4420,7 +4551,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key / Bearer token",
+            "description": "Unauthorized — invalid or missing API key / Bearer token",
             "content": {
               "application/json": {
                 "schema": {
@@ -4434,7 +4565,7 @@
     },
     "/api/songs/analyze": {
       "post": {
-        "description": "Analyze music using a state-of-the-art Audio Language Model that listens directly to the audio waveform. Unlike text-based AI, this model processes the actual sound \u2014 identifying harmony, structure, timbre, lyrics, and cultural context through deep music understanding. Supports audio up to 20 minutes (MP3, WAV, FLAC). Two modes: (1) **Presets** \u2014 pass a `preset` name like `catalog_metadata`, `mood_tags`, or `full_report` for structured, optimized output. (2) **Custom prompt** \u2014 pass a `prompt` for free-form questions. The `full_report` preset runs all 13 presets in parallel and returns a comprehensive music intelligence report. Use `GET /api/songs/analyze/presets` to list available presets.",
+        "description": "Analyze music using a state-of-the-art Audio Language Model that listens directly to the audio waveform. Unlike text-based AI, this model processes the actual sound — identifying harmony, structure, timbre, lyrics, and cultural context through deep music understanding. Supports audio up to 20 minutes (MP3, WAV, FLAC). Two modes: (1) **Presets** — pass a `preset` name like `catalog_metadata`, `mood_tags`, or `full_report` for structured, optimized output. (2) **Custom prompt** — pass a `prompt` for free-form questions. The `full_report` preset runs all 13 presets in parallel and returns a comprehensive music intelligence report. Use `GET /api/songs/analyze/presets` to list available presets.",
         "security": [
           {
             "apiKeyAuth": []
@@ -4466,7 +4597,7 @@
             }
           },
           "400": {
-            "description": "Bad request \u2014 missing or invalid fields",
+            "description": "Bad request — missing or invalid fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -4476,7 +4607,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key / Bearer token",
+            "description": "Unauthorized — invalid or missing API key / Bearer token",
             "content": {
               "application/json": {
                 "schema": {
@@ -4486,7 +4617,7 @@
             }
           },
           "500": {
-            "description": "Server error \u2014 upstream model unavailable or inference failed",
+            "description": "Server error — upstream model unavailable or inference failed",
             "content": {
               "application/json": {
                 "schema": {
@@ -4558,7 +4689,7 @@
     },
     "/api/admins": {
       "get": {
-        "description": "Check if the authenticated account is a Recoup admin. An account is considered an admin if it is a member of the Recoup organization. No input parameters required \u2014 authentication is performed via the x-api-key or Authorization header.",
+        "description": "Check if the authenticated account is a Recoup admin. An account is considered an admin if it is a member of the Recoup organization. No input parameters required — authentication is performed via the x-api-key or Authorization header.",
         "parameters": [],
         "security": [
           {
@@ -5395,7 +5526,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Slack Events API envelope \u2014 the shape depends on the event type"
+                "description": "Slack Events API envelope — the shape depends on the event type"
               }
             }
           }
@@ -5419,13 +5550,12 @@
           "404": {
             "description": "Unknown platform"
           }
-        },
-        "security": []
+        }
       }
     },
     "/api/content-agent/callback": {
       "post": {
-        "description": "Internal callback endpoint for the `poll-content-run` Trigger.dev task. Receives content generation results and posts them back to the originating Slack thread. Authenticated via the `x-callback-secret` header.\n\nThis endpoint is not intended for external use \u2014 it is called automatically by the polling task when content runs complete, fail, or time out.",
+        "description": "Internal callback endpoint for the `poll-content-run` Trigger.dev task. Receives content generation results and posts them back to the originating Slack thread. Authenticated via the `x-callback-secret` header.\n\nThis endpoint is not intended for external use — it is called automatically by the polling task when content runs complete, fail, or time out.",
         "requestBody": {
           "description": "Content generation results from the polling task",
           "required": true,
@@ -5562,7 +5692,7 @@
             }
           },
           "400": {
-            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "description": "Validation failed — invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5572,7 +5702,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5596,7 +5726,7 @@
     },
     "/api/content/analyze": {
       "post": {
-        "description": "Analyze a video and answer questions about it. Pass a video URL and a text prompt \u2014 for example, \"Describe what happens\" or \"Rate the visual quality 1-10.\" Returns the generated text.",
+        "description": "Analyze a video and answer questions about it. Pass a video URL and a text prompt — for example, \"Describe what happens\" or \"Rate the visual quality 1-10.\" Returns the generated text.",
         "security": [
           {
             "apiKeyAuth": []
@@ -5628,7 +5758,7 @@
             }
           },
           "400": {
-            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "description": "Validation failed — invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5638,7 +5768,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5694,7 +5824,7 @@
             }
           },
           "400": {
-            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "description": "Validation failed — invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5704,7 +5834,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5760,7 +5890,7 @@
             }
           },
           "400": {
-            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "description": "Validation failed — invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5770,7 +5900,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5794,7 +5924,7 @@
     },
     "/api/content/video": {
       "post": {
-        "description": "Generate a video. Set `mode` to control what kind of video you get:\n\n- `prompt` \u2014 create a video from a text description\n- `animate` \u2014 animate a still image\n- `reference` \u2014 use an image as a style/subject reference (not the first frame)\n- `extend` \u2014 continue an existing video\n- `first-last` \u2014 generate a video that transitions between two images\n- `lipsync` \u2014 sync face movement to an audio clip\n\nIf `mode` is omitted, it's inferred from the inputs you provide.",
+        "description": "Generate a video. Set `mode` to control what kind of video you get:\n\n- `prompt` — create a video from a text description\n- `animate` — animate a still image\n- `reference` — use an image as a style/subject reference (not the first frame)\n- `extend` — continue an existing video\n- `first-last` — generate a video that transitions between two images\n- `lipsync` — sync face movement to an audio clip\n\nIf `mode` is omitted, it's inferred from the inputs you provide.",
         "security": [
           {
             "apiKeyAuth": []
@@ -5826,7 +5956,7 @@
             }
           },
           "400": {
-            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "description": "Validation failed — invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5836,71 +5966,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "patch": {
-        "description": "Apply edits to a video or audio file \u2014 trim, crop, resize, overlay text, or add an audio track. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array. Everything runs in one pass.",
-        "security": [
-          {
-            "apiKeyAuth": []
-          },
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "description": "Edit parameters",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ContentCreateEditRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "202": {
-            "description": "Edit task triggered successfully. Poll via [GET /api/tasks/runs](/api-reference/tasks/runs) using the returned `runId`.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentCreateEditResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation failed \u2014 invalid or missing request body fields",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5956,7 +6022,7 @@
             }
           },
           "400": {
-            "description": "Validation failed \u2014 invalid or missing request body fields",
+            "description": "Validation failed — invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -5966,7 +6032,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized \u2014 invalid or missing API key",
+            "description": "Unauthorized — invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -5981,6 +6047,496 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/music/compose": {
+      "post": {
+        "description": "Generate a song from a text prompt or a composition plan. The prompt can describe mood, genre, instruments, lyrics, and structure. Alternatively, pass a full composition_plan for fine-grained control over sections, styles, and lyrics. Returns binary audio in the requested format (default MP3).",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Music composition parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MusicComposeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Audio generated successfully",
+            "headers": {
+              "song-id": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Unique identifier for the generated song"
+              }
+            },
+            "content": {
+              "audio/mpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed — invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/music/compose/detailed": {
+      "post": {
+        "description": "Generate a song with metadata and optional word-level timestamps. Returns a multipart/mixed response: the first part is JSON metadata (song ID, duration, seed, etc.) and the second part is binary audio. Use with_timestamps to get precise timing for each word in the lyrics.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Music composition parameters with optional timestamps",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MusicComposeDetailedRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Audio and metadata generated successfully. Response is multipart/mixed: JSON metadata followed by binary audio.",
+            "content": {
+              "multipart/mixed": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed — invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/music/stream": {
+      "post": {
+        "description": "Generate a song and stream audio chunks in real time. Use this endpoint when you want to begin playback before the full song is generated. The response streams binary audio chunks as they are produced.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Music streaming parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MusicStreamRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Audio stream started successfully",
+            "headers": {
+              "song-id": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Unique identifier for the generated song"
+              }
+            },
+            "content": {
+              "audio/mpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed — invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/music/plan": {
+      "post": {
+        "description": "Create a composition plan from a text prompt. A composition plan is a structured representation of a song — sections, styles, lyrics, and durations — that you can review and tweak before passing to the compose endpoint. This endpoint is free and does not consume credits.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Plan creation parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MusicCreatePlanRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Composition plan created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicCreatePlanResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed — invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/music/video-to-music": {
+      "post": {
+        "description": "Generate background music from video files. Upload 1–10 video files via multipart/form-data (max 200 MB total). The AI analyzes the video content and generates music that matches the mood, pacing, and style. Optionally provide a text description and style tags to guide the output.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Video files and optional generation parameters",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "minItems": 1,
+                    "maxItems": 10,
+                    "description": "Video files to analyze (max 200 MB total)"
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "description": "Optional text description to guide the music generation"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "maxItems": 10,
+                    "description": "Optional style tags to influence the output (max 10)"
+                  },
+                  "sign_with_c2pa": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Sign the output with C2PA content credentials"
+                  },
+                  "output_format": {
+                    "type": "string",
+                    "description": "Audio output format (e.g. mp3_44100_192)"
+                  }
+                },
+                "required": [
+                  "files"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Background music generated successfully",
+            "headers": {
+              "song-id": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Unique identifier for the generated song"
+              }
+            },
+            "content": {
+              "audio/mpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed — invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/music/stem-separation": {
+      "post": {
+        "description": "Separate an audio file into individual stems (vocals, drums, bass, etc.). Upload an audio file via multipart/form-data. Choose between two-stem separation (vocals + instrumental) or six-stem separation (vocals, drums, bass, guitar, piano, other). Returns a ZIP archive containing the separated stems.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Audio file and separation parameters",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Audio file to separate into stems"
+                  },
+                  "stem_variation_id": {
+                    "type": "string",
+                    "enum": [
+                      "two_stems_v1",
+                      "six_stems_v1"
+                    ],
+                    "default": "six_stems_v1",
+                    "description": "Stem separation mode. `two_stems_v1` produces vocals + instrumental. `six_stems_v1` produces vocals, drums, bass, guitar, piano, and other."
+                  },
+                  "sign_with_c2pa": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Sign the output with C2PA content credentials"
+                  },
+                  "output_format": {
+                    "type": "string",
+                    "description": "Audio output format (e.g. mp3_44100_192)"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stems separated successfully. Returns a ZIP archive containing the individual stems.",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed — invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicErrorResponse"
                 }
               }
             }
@@ -6046,7 +6602,7 @@
     },
     "/api/research/albums": {
       "get": {
-        "description": "Get an artist's full discography \u2014 albums, EPs, and singles with release dates.",
+        "description": "Get an artist's full discography — albums, EPs, and singles with release dates.",
         "parameters": [
           {
             "name": "artist",
@@ -6074,7 +6630,7 @@
     },
     "/api/research/audience": {
       "get": {
-        "description": "Get audience demographics for an artist on a specific platform \u2014 age, gender, and country breakdown.",
+        "description": "Get audience demographics for an artist on a specific platform — age, gender, and country breakdown.",
         "parameters": [
           {
             "name": "artist",
@@ -6117,7 +6673,7 @@
     },
     "/api/research/career": {
       "get": {
-        "description": "Get an artist's career timeline \u2014 key milestones, trajectory, and career stage.",
+        "description": "Get an artist's career timeline — key milestones, trajectory, and career stage.",
         "parameters": [
           {
             "name": "artist",
@@ -6145,7 +6701,7 @@
     },
     "/api/research/charts": {
       "get": {
-        "description": "Get global chart positions for a platform \u2014 Spotify, Apple Music, TikTok, YouTube, iTunes, Shazam, etc. NOT artist-scoped. Returns ranked entries with track and artist info.",
+        "description": "Get global chart positions for a platform — Spotify, Apple Music, TikTok, YouTube, iTunes, Shazam, etc. NOT artist-scoped. Returns ranked entries with track and artist info.",
         "parameters": [
           {
             "name": "platform",
@@ -6238,7 +6794,7 @@
     },
     "/api/research/curator": {
       "get": {
-        "description": "Get curator profile \u2014 who curates a playlist, their other playlists, and follower reach.",
+        "description": "Get curator profile — who curates a playlist, their other playlists, and follower reach.",
         "parameters": [
           {
             "name": "platform",
@@ -6309,7 +6865,7 @@
     },
     "/api/research/discover": {
       "get": {
-        "description": "Discover artists by criteria \u2014 filter by country, genre, Spotify monthly listener range, and sort by growth metrics.",
+        "description": "Discover artists by criteria — filter by country, genre, Spotify monthly listener range, and sort by growth metrics.",
         "parameters": [
           {
             "name": "country",
@@ -6468,7 +7024,7 @@
     },
     "/api/research/insights": {
       "get": {
-        "description": "Get AI-generated insights about an artist \u2014 automatically surfaced trends, milestones, and observations.",
+        "description": "Get AI-generated insights about an artist — automatically surfaced trends, milestones, and observations.",
         "parameters": [
           {
             "name": "artist",
@@ -6524,7 +7080,7 @@
     },
     "/api/research/lookup": {
       "get": {
-        "description": "Look up an artist by a platform URL or ID \u2014 Spotify URL, Spotify ID, Apple Music URL, etc.",
+        "description": "Look up an artist by a platform URL or ID — Spotify URL, Spotify ID, Apple Music URL, etc.",
         "parameters": [
           {
             "name": "url",
@@ -6552,7 +7108,7 @@
     },
     "/api/research/metrics": {
       "get": {
-        "description": "Get platform-specific metrics for an artist over time \u2014 followers, listeners, views, engagement. Supports 14 platforms.",
+        "description": "Get platform-specific metrics for an artist over time — followers, listeners, views, engagement. Supports 14 platforms.",
         "parameters": [
           {
             "name": "artist",
@@ -6605,7 +7161,7 @@
     },
     "/api/research/milestones": {
       "get": {
-        "description": "Get an artist's activity feed \u2014 playlist adds, chart entries, and other notable events. Each milestone includes a date, summary, platform, track name, and star rating.",
+        "description": "Get an artist's activity feed — playlist adds, chart entries, and other notable events. Each milestone includes a date, summary, platform, track name, and star rating.",
         "parameters": [
           {
             "name": "artist",
@@ -6633,7 +7189,7 @@
     },
     "/api/research/people": {
       "post": {
-        "description": "Search for people in the music industry \u2014 artists, managers, A&R reps, producers. Returns multi-source profiles including LinkedIn data.",
+        "description": "Search for people in the music industry — artists, managers, A&R reps, producers. Returns multi-source profiles including LinkedIn data.",
         "requestBody": {
           "required": true,
           "content": {
@@ -6660,7 +7216,7 @@
     },
     "/api/research/playlist": {
       "get": {
-        "description": "Get playlist metadata \u2014 name, description, follower count, track count, and curator info.",
+        "description": "Get playlist metadata — name, description, follower count, track count, and curator info.",
         "parameters": [
           {
             "name": "platform",
@@ -6704,7 +7260,7 @@
     },
     "/api/research/playlists": {
       "get": {
-        "description": "Get an artist's playlist placements \u2014 editorial, algorithmic, and indie playlists across platforms.",
+        "description": "Get an artist's playlist placements — editorial, algorithmic, and indie playlists across platforms.",
         "parameters": [
           {
             "name": "artist",
@@ -6798,7 +7354,7 @@
     },
     "/api/research/profile": {
       "get": {
-        "description": "Get a full artist profile \u2014 bio, genres, social URLs, label, career stage, and basic metrics.",
+        "description": "Get a full artist profile — bio, genres, social URLs, label, career stage, and basic metrics.",
         "parameters": [
           {
             "name": "artist",
@@ -6964,7 +7520,7 @@
     },
     "/api/research/track": {
       "get": {
-        "description": "Get track metadata \u2014 title, artist, album, release date, popularity, and platform IDs.",
+        "description": "Get track metadata — title, artist, album, release date, popularity, and platform IDs.",
         "parameters": [
           {
             "name": "q",
@@ -7020,7 +7576,7 @@
     },
     "/api/research/urls": {
       "get": {
-        "description": "Get all social and streaming URLs for an artist \u2014 Spotify, Instagram, TikTok, YouTube, Twitter, SoundCloud, and more.",
+        "description": "Get all social and streaming URLs for an artist — Spotify, Instagram, TikTok, YouTube, Twitter, SoundCloud, and more.",
         "parameters": [
           {
             "name": "artist",
@@ -7200,7 +7756,7 @@
         "properties": {
           "slug": {
             "type": "string",
-            "description": "Unique identifier for the connector (e.g., 'googlesheets', 'tiktok', 'instagram')"
+            "description": "Unique identifier for the connector (e.g., 'googlesheets', 'tiktok')"
           },
           "name": {
             "type": "string",
@@ -7243,7 +7799,7 @@
         "properties": {
           "connector": {
             "type": "string",
-            "description": "The connector slug to authorize (e.g., 'googlesheets', 'tiktok', 'instagram')"
+            "description": "The connector slug to authorize (e.g., 'googlesheets', 'tiktok')"
           },
           "callback_url": {
             "type": "string",
@@ -9502,11 +10058,6 @@
           "topic": {
             "type": "string",
             "description": "Topic name for the new chat room (e.g., 'Pulse Feb 2'). Only applies when creating a new room - ignored if room already exists. To edit the topic of an existing room, use [PATCH /api/chats](/api-reference/chat/update)."
-          },
-          "accountId": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Override the account used for this chat session. Requires the caller to have access to the target account (same account, shared org membership, or Recoup admin). Useful for admins previewing a member's chat experience."
           }
         }
       },
@@ -13052,9 +13603,8 @@
           },
           "template": {
             "type": "string",
-            "description": "The template to use for content generation. Defines the visual style, scene, and prompt configuration. If omitted, defaults to `artist-caption-bedroom`. See [GET /api/content/templates](/api-reference/content/templates) for available options.",
-            "example": "artist-caption-stage",
-            "default": "artist-caption-bedroom"
+            "description": "Optional template ID for content generation. Defines the visual style, scene, and prompt configuration. When omitted, the pipeline runs in malleable mode using only the params you provide. See GET /api/content/templates for available options.",
+            "example": "artist-caption-stage"
           },
           "lipsync": {
             "type": "boolean",
@@ -13091,7 +13641,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Optional list of song slugs or public URLs to use for the audio track. Song slugs match filenames without extension from the artist's `songs/` directory (e.g. `\"hiccups\"` for `hiccups.mp3`). Public URLs (e.g. `\"https://example.com/my-song.mp3\"`) are downloaded, transcribed, and clipped directly \u2014 bypassing the Git repo. When omitted, all songs in the artist's repo are eligible.",
+            "description": "Optional list of song slugs or public URLs to use for the audio track. Song slugs match filenames without extension from the artist's `songs/` directory (e.g. `\"hiccups\"` for `hiccups.mp3`). Public URLs (e.g. `\"https://example.com/my-song.mp3\"`) are downloaded, transcribed, and clipped directly — bypassing the Git repo. When omitted, all songs in the artist's repo are eligible.",
             "example": [
               "hiccups",
               "https://example.com/unreleased-track.mp3"
@@ -13118,10 +13668,9 @@
         "required": [
           "runIds",
           "status",
-          "artist_account_id",
-          "template"
+          "artist_account_id"
         ],
-        "description": "Confirmation that the content creation pipeline has been triggered. Always returns `runIds` as an array \u2014 even for a single run, it contains one element.",
+        "description": "Confirmation that the content creation pipeline has been triggered. Always returns `runIds` as an array — even for a single run, it contains one element.",
         "properties": {
           "runIds": {
             "type": "array",
@@ -13147,9 +13696,12 @@
             "example": "1873859c-dd37-4e9a-9bac-80d3558527a9"
           },
           "template": {
-            "type": "string",
-            "description": "The template being used",
-            "example": "artist-caption-bedroom"
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Template ID when a preset pipeline is used; null in malleable mode.",
+            "example": null
           },
           "lipsync": {
             "type": "boolean",
@@ -13232,26 +13784,206 @@
       "ContentTemplate": {
         "type": "object",
         "required": [
-          "name",
-          "description",
-          "defaultLipsync"
+          "id",
+          "description"
         ],
-        "description": "A content creation template that defines the visual style and composition for generated videos.",
+        "description": "A content creation template — a complete creative recipe defining visual style, composition, caption rules, and edit operations. Templates are optional; all primitives work without one.",
         "properties": {
-          "name": {
+          "id": {
             "type": "string",
-            "description": "Template identifier. Pass this as the `template` field in [POST /api/content/create](/api-reference/content/create).",
+            "description": "Template identifier. Pass this as the template field in content primitive requests or POST /api/content/create.",
             "example": "artist-caption-bedroom"
           },
           "description": {
             "type": "string",
             "description": "Human-readable description of the template's visual style",
-            "example": "Moody purple bedroom setting with caption overlay"
+            "example": "Moody bedroom selfie. Artist on camera with deadpan expression, purple LED lighting, dark room. Short blunt captions in lowercase. Vertical 9:16 video, 8 seconds. Best for: introspective songs, vulnerable moments, daily content. Requires: face image, audio."
+          }
+        }
+      },
+      "ContentTemplateDetail": {
+        "type": "object",
+        "required": [
+          "id",
+          "description"
+        ],
+        "description": "Full configuration for a content creation template including image prompts, video motion config, caption style rules, and edit operations.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Template identifier",
+            "example": "artist-caption-bedroom"
           },
-          "defaultLipsync": {
-            "type": "boolean",
-            "description": "Whether this template defaults to lip-sync mode when the `lipsync` flag is not explicitly set",
-            "example": false
+          "description": {
+            "type": "string",
+            "description": "Human-readable description of the template",
+            "example": "Moody bedroom selfie. Artist on camera with deadpan expression, purple LED lighting, dark room."
+          },
+          "image": {
+            "type": "object",
+            "description": "Image generation configuration",
+            "properties": {
+              "prompt": {
+                "type": "string",
+                "description": "Default image prompt used when no caller prompt is provided"
+              },
+              "reference_images": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "description": "Reference image URLs for style conditioning"
+              },
+              "style_rules": {
+                "type": "object",
+                "description": "Style constraints (lighting, colors, composition)"
+              }
+            }
+          },
+          "video": {
+            "type": "object",
+            "description": "Video generation configuration",
+            "properties": {
+              "moods": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Mood descriptors for motion prompt generation"
+              },
+              "movements": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Camera/subject movement descriptors"
+              }
+            }
+          },
+          "caption": {
+            "type": "object",
+            "description": "Caption generation configuration",
+            "properties": {
+              "guide": {
+                "type": "object",
+                "description": "Caption style guide",
+                "properties": {
+                  "tone": {
+                    "type": "string",
+                    "description": "Voice and tone direction"
+                  },
+                  "rules": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Style rules for caption generation"
+                  },
+                  "formats": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Allowed caption formats"
+                  }
+                }
+              },
+              "examples": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Example captions for few-shot prompting"
+              }
+            }
+          },
+          "edit": {
+            "type": "object",
+            "description": "Post-processing edit operations",
+            "properties": {
+              "operations": {
+                "type": "array",
+                "description": "Default edit operations applied during post-processing",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "type"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "trim",
+                        "crop",
+                        "resize",
+                        "overlay_text",
+                        "mux_audio"
+                      ],
+                      "description": "Operation type"
+                    },
+                    "start": {
+                      "type": "number",
+                      "description": "Start time in seconds (trim)"
+                    },
+                    "duration": {
+                      "type": "number",
+                      "description": "Duration in seconds (trim)"
+                    },
+                    "aspect": {
+                      "type": "string",
+                      "description": "Aspect ratio e.g. 9:16 (crop)"
+                    },
+                    "width": {
+                      "type": "integer",
+                      "description": "Width in pixels (crop/resize)"
+                    },
+                    "height": {
+                      "type": "integer",
+                      "description": "Height in pixels (crop/resize)"
+                    },
+                    "content": {
+                      "type": "string",
+                      "description": "Text content (overlay_text)"
+                    },
+                    "font": {
+                      "type": "string",
+                      "description": "Font name (overlay_text)"
+                    },
+                    "color": {
+                      "type": "string",
+                      "description": "Text color (overlay_text)"
+                    },
+                    "stroke_color": {
+                      "type": "string",
+                      "description": "Text stroke color (overlay_text)"
+                    },
+                    "max_font_size": {
+                      "type": "number",
+                      "description": "Maximum font size (overlay_text)"
+                    },
+                    "position": {
+                      "type": "string",
+                      "enum": [
+                        "top",
+                        "center",
+                        "bottom"
+                      ],
+                      "description": "Text position (overlay_text)"
+                    },
+                    "audio_url": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "Audio URL to mux (mux_audio)"
+                    },
+                    "replace": {
+                      "type": "boolean",
+                      "description": "Replace existing audio (mux_audio)"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -13302,12 +14034,6 @@
                 "$ref": "#/components/schemas/ContentValidationCheck"
               },
               "audience_context": {
-                "$ref": "#/components/schemas/ContentValidationCheck"
-              },
-              "era_config": {
-                "$ref": "#/components/schemas/ContentValidationCheck"
-              },
-              "pipeline_config": {
                 "$ref": "#/components/schemas/ContentValidationCheck"
               },
               "songs": {
@@ -13600,7 +14326,7 @@
           "audio_url": {
             "type": "string",
             "format": "uri",
-            "description": "Public URL to an audio file (MP3, WAV, or FLAC \u2014 up to 20 minutes)",
+            "description": "Public URL to an audio file (MP3, WAV, or FLAC — up to 20 minutes)",
             "example": "https://example.com/song.mp3"
           },
           "max_new_tokens": {
@@ -13616,7 +14342,7 @@
             "minimum": 0,
             "maximum": 2,
             "default": 1,
-            "description": "Controls output creativity \u2014 higher values produce more varied responses",
+            "description": "Controls output creativity — higher values produce more varied responses",
             "example": 0.7
           },
           "top_p": {
@@ -14010,6 +14736,10 @@
       "ContentCreateImageRequest": {
         "type": "object",
         "properties": {
+          "template": {
+            "type": "string",
+            "description": "Optional template ID. When provided, uses the template's image prompt, reference images, and style rules. Caller params override template defaults. Artist context overrides template style when available. See [GET /api/content/templates](/api-reference/content/templates) for available options."
+          },
           "prompt": {
             "type": "string",
             "description": "Optional prompt to guide image generation"
@@ -14049,6 +14779,10 @@
       "ContentCreateVideoRequest": {
         "type": "object",
         "properties": {
+          "template": {
+            "type": "string",
+            "description": "Optional template ID. When provided, the template's video config (moods, movements) is used as the motion prompt. Caller params override template defaults. See [GET /api/content/templates](/api-reference/content/templates) for available options."
+          },
           "mode": {
             "type": "string",
             "enum": [
@@ -14150,6 +14884,10 @@
           "topic"
         ],
         "properties": {
+          "template": {
+            "type": "string",
+            "description": "Optional template ID. When provided, injects the template's caption guide (tone, rules, formats) and examples into the LLM prompt. Caller's topic is still required. See [GET /api/content/templates](/api-reference/content/templates) for available options."
+          },
           "topic": {
             "type": "string",
             "description": "The subject or theme for caption generation"
@@ -14278,11 +15016,17 @@
       },
       "ContentCreateEditRequest": {
         "type": "object",
+        "description": "Must provide at least one input (video_url, image_url, or audio_url)",
         "properties": {
           "video_url": {
             "type": "string",
             "format": "uri",
             "description": "Input video URL"
+          },
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Input image URL"
           },
           "audio_url": {
             "type": "string",
@@ -14291,7 +15035,7 @@
           },
           "template": {
             "type": "string",
-            "description": "Template name for deterministic edit config. If provided, operations are read from the template."
+            "description": "Template name for deterministic edit config. If provided, operations are read from the template. See [GET /api/content/templates](/api-reference/content/templates) for available options."
           },
           "operations": {
             "type": "array",
@@ -14540,7 +15284,7 @@
       },
       "ResearchAudienceResponse": {
         "type": "object",
-        "description": "Audience demographics breakdown \u2014 age ranges, gender split, and country distribution for the specified platform.",
+        "description": "Audience demographics breakdown — age ranges, gender split, and country distribution for the specified platform.",
         "properties": {
           "status": {
             "type": "string"
@@ -14571,7 +15315,7 @@
       },
       "ResearchCareerResponse": {
         "type": "object",
-        "description": "Career timeline \u2014 milestones, trajectory, and career stage history.",
+        "description": "Career timeline — milestones, trajectory, and career stage history.",
         "properties": {
           "status": {
             "type": "string"
@@ -14603,7 +15347,7 @@
           },
           "data": {
             "type": "object",
-            "description": "Chart data \u2014 structure varies by platform.",
+            "description": "Chart data — structure varies by platform.",
             "additionalProperties": true
           }
         }
@@ -14685,7 +15429,7 @@
         "properties": {
           "query": {
             "type": "string",
-            "description": "The research question \u2014 be specific and detailed for best results."
+            "description": "The research question — be specific and detailed for best results."
           }
         }
       },
@@ -15064,7 +15808,7 @@
       },
       "ResearchMetricsResponse": {
         "type": "object",
-        "description": "Time-series metrics for a specific platform. Shape varies by source \u2014 typically an array of data points with timestamps and values (followers, listeners, views, etc.).",
+        "description": "Time-series metrics for a specific platform. Shape varies by source — typically an array of data points with timestamps and values (followers, listeners, views, etc.).",
         "properties": {
           "status": {
             "type": "string"
@@ -15227,7 +15971,7 @@
       },
       "ResearchPlaylistResponse": {
         "type": "object",
-        "description": "Playlist metadata \u2014 name, description, follower count, track count, and curator info.",
+        "description": "Playlist metadata — name, description, follower count, track count, and curator info.",
         "properties": {
           "status": {
             "type": "string"
@@ -15273,7 +16017,7 @@
       },
       "ResearchProfileResponse": {
         "type": "object",
-        "description": "Full artist profile \u2014 bio, genres, social links, label, images, and basic stats.",
+        "description": "Full artist profile — bio, genres, social links, label, images, and basic stats.",
         "properties": {
           "status": {
             "type": "string"
@@ -15465,7 +16209,7 @@
       },
       "ResearchTrackResponse": {
         "type": "object",
-        "description": "Track metadata \u2014 title, artist, album, release date, popularity, and platform IDs.",
+        "description": "Track metadata — title, artist, album, release date, popularity, and platform IDs.",
         "properties": {
           "status": {
             "type": "string"
@@ -15598,7 +16342,7 @@
         "properties": {
           "query": {
             "type": "string",
-            "description": "The search query \u2014 what you want to find on the web."
+            "description": "The search query — what you want to find on the web."
           },
           "max_results": {
             "type": "integer",
@@ -15649,6 +16393,160 @@
             "description": "Results formatted as markdown for easy reading."
           }
         }
+      },
+      "MusicComposeRequest": {
+        "type": "object",
+        "description": "Parameters for generating a song. Provide either a text prompt or a composition_plan.",
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "Text prompt describing the desired song — mood, genre, instruments, lyrics, structure."
+          },
+          "composition_plan": {
+            "type": "object",
+            "description": "Full composition plan for fine-grained control over sections, styles, and lyrics. Use POST /api/music/plan to generate one."
+          },
+          "duration": {
+            "type": "number",
+            "description": "Desired duration in seconds.",
+            "default": 30
+          },
+          "output_format": {
+            "type": "string",
+            "description": "Audio output format (e.g. mp3_44100_192).",
+            "default": "mp3_44100_192"
+          },
+          "sign_with_c2pa": {
+            "type": "boolean",
+            "description": "Sign the output with C2PA content credentials.",
+            "default": false
+          }
+        }
+      },
+      "MusicComposeDetailedRequest": {
+        "type": "object",
+        "description": "Parameters for generating a song with metadata and optional word-level timestamps.",
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "Text prompt describing the desired song — mood, genre, instruments, lyrics, structure."
+          },
+          "composition_plan": {
+            "type": "object",
+            "description": "Full composition plan for fine-grained control over sections, styles, and lyrics. Use POST /api/music/plan to generate one."
+          },
+          "duration": {
+            "type": "number",
+            "description": "Desired duration in seconds.",
+            "default": 30
+          },
+          "output_format": {
+            "type": "string",
+            "description": "Audio output format (e.g. mp3_44100_192).",
+            "default": "mp3_44100_192"
+          },
+          "sign_with_c2pa": {
+            "type": "boolean",
+            "description": "Sign the output with C2PA content credentials.",
+            "default": false
+          },
+          "with_timestamps": {
+            "type": "boolean",
+            "description": "Include word-level timestamps in the metadata response.",
+            "default": false
+          }
+        }
+      },
+      "MusicStreamRequest": {
+        "type": "object",
+        "description": "Parameters for generating a song with real-time audio streaming.",
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "Text prompt describing the desired song — mood, genre, instruments, lyrics, structure."
+          },
+          "composition_plan": {
+            "type": "object",
+            "description": "Full composition plan for fine-grained control over sections, styles, and lyrics. Use POST /api/music/plan to generate one."
+          },
+          "duration": {
+            "type": "number",
+            "description": "Desired duration in seconds.",
+            "default": 30
+          },
+          "output_format": {
+            "type": "string",
+            "description": "Audio output format (e.g. mp3_44100_192).",
+            "default": "mp3_44100_192"
+          },
+          "sign_with_c2pa": {
+            "type": "boolean",
+            "description": "Sign the output with C2PA content credentials.",
+            "default": false
+          }
+        }
+      },
+      "MusicCreatePlanRequest": {
+        "type": "object",
+        "required": [
+          "prompt"
+        ],
+        "description": "Parameters for creating a composition plan from a text prompt.",
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "Text prompt describing the desired song."
+          }
+        }
+      },
+      "MusicCreatePlanResponse": {
+        "type": "object",
+        "description": "A structured composition plan that can be reviewed, edited, and passed to the compose endpoint.",
+        "properties": {
+          "plan": {
+            "type": "object",
+            "description": "The composition plan with sections, styles, lyrics, and durations.",
+            "properties": {
+              "sections": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Section name (e.g. intro, verse, chorus)"
+                    },
+                    "duration": {
+                      "type": "number",
+                      "description": "Section duration in seconds"
+                    },
+                    "style": {
+                      "type": "string",
+                      "description": "Style description for this section"
+                    },
+                    "lyrics": {
+                      "type": "string",
+                      "description": "Lyrics for this section"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "MusicErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "description": "Error response from a music endpoint.",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong."
+          }
+        }
       }
     },
     "securitySchemes": {
@@ -15661,12 +16559,6 @@
         "in": "header",
         "name": "x-api-key",
         "description": "Your Recoup API key. [Learn more](/quickstart#api-keys)."
-      },
-      "callbackSecret": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-callback-secret",
-        "description": "Shared secret used by internal Trigger.dev callback requests."
       }
     }
   }
