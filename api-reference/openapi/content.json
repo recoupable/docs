@@ -2112,15 +2112,15 @@
       "ContentCreateAudioResponse": {
         "type": "object",
         "required": [
-          "songUrl",
+          "audioUrl",
           "fullLyrics",
           "segments",
           "segmentCount"
         ],
         "properties": {
-          "songUrl": {
+          "audioUrl": {
             "type": "string",
-            "description": "URL of the transcribed song"
+            "description": "URL of the transcribed audio"
           },
           "fullLyrics": {
             "type": "string",
@@ -2163,17 +2163,12 @@
       },
       "ContentCreateEditRequest": {
         "type": "object",
-        "description": "Must provide at least one input (video_url, image_url, or audio_url)",
+        "description": "Must provide at least one input (video_url or audio_url)",
         "properties": {
           "video_url": {
             "type": "string",
             "format": "uri",
             "description": "Input video URL"
-          },
-          "image_url": {
-            "type": "string",
-            "format": "uri",
-            "description": "Input image URL"
           },
           "audio_url": {
             "type": "string",
@@ -2359,22 +2354,50 @@
             },
             "description": "Optional reference image URLs to guide generation"
           },
+          "num_images": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4,
+            "default": 1,
+            "description": "Number of images to generate (1-4)"
+          },
+          "aspect_ratio": {
+            "type": "string",
+            "enum": ["auto", "21:9", "16:9", "3:2", "4:3", "5:4", "1:1", "4:5", "3:4", "2:3", "9:16", "4:1", "1:4", "8:1", "1:8"],
+            "default": "auto",
+            "description": "Aspect ratio of the generated image"
+          },
+          "resolution": {
+            "type": "string",
+            "enum": ["0.5K", "1K", "2K", "4K"],
+            "default": "1K",
+            "description": "Output resolution"
+          },
           "model": {
             "type": "string",
-            "description": "fal.ai model ID. Defaults to fal-ai/nano-banana-pro/edit"
+            "description": "fal.ai model ID. Defaults to fal-ai/nano-banana-2"
           }
         }
       },
       "ContentCreateImageResponse": {
         "type": "object",
         "required": [
-          "imageUrl"
+          "imageUrl",
+          "images"
         ],
         "properties": {
           "imageUrl": {
             "type": "string",
             "format": "uri",
-            "description": "URL of the generated image"
+            "description": "URL of the first generated image"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
+            "description": "URLs of all generated images. Contains one element when num_images is 1."
           }
         }
       },
@@ -2584,6 +2607,23 @@
               "video"
             ],
             "description": "Whether the input is an image or video"
+          },
+          "upscale_factor": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 4,
+            "default": 2,
+            "description": "Upscale multiplier (1-4x). Defaults to 2x."
+          },
+          "target_resolution": {
+            "type": "string",
+            "enum": [
+              "720p",
+              "1080p",
+              "1440p",
+              "2160p"
+            ],
+            "description": "Target output resolution. When provided, overrides upscale_factor with a resolution-based upscale."
           }
         }
       },
@@ -2602,6 +2642,9 @@
       },
       "ContentCreateVideoRequest": {
         "type": "object",
+        "required": [
+          "image_url"
+        ],
         "properties": {
           "template": {
             "type": "string",
@@ -2626,7 +2669,7 @@
           "image_url": {
             "type": "string",
             "format": "uri",
-            "description": "Image URL. Used as the first frame (animate), style reference (reference), start frame (first-last), or face source (lipsync)"
+            "description": "Required. Image URL used as the input frame. The underlying model (fal-ai/veo3.1/fast/image-to-video) requires an image — text-only prompt mode is not supported. Generate an image first via POST /api/content/image if needed."
           },
           "end_image_url": {
             "type": "string",
