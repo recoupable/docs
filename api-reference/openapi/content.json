@@ -291,7 +291,7 @@
     },
     "/api/files": {
       "get": {
-        "description": "List files for an artist account the authenticated caller can access. Returns immediate children by default, or all descendants when `recursive=true`. Each file row includes `owner_email` when the file owner's account has an email on record. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "description": "List files for an artist account the authenticated caller can access. Returns immediate children by default, or all descendants when `recursive=true`. Each file row always includes `owner_email`, which is `null` when the file owner's account has no email on record. Authentication is handled via the x-api-key header or Authorization Bearer token.",
         "security": [
           {
             "apiKeyAuth": []
@@ -2514,7 +2514,7 @@
           "owner_email": {
             "type": "string",
             "nullable": true,
-            "description": "Primary email address of the file owner account when one exists."
+            "description": "Primary email address of the file owner account, or `null` when no email is on record."
           }
         }
       },
