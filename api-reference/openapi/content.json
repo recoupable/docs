@@ -549,7 +549,7 @@
     },
     "/api/content": {
       "patch": {
-        "description": "Apply edits to content — trim, crop, resize, overlay text, or add an audio track. Accepts video or audio input. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array.",
+        "description": "Apply ffmpeg edits to a video — trim, crop, resize, or overlay text. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array.",
         "security": [
           {
             "apiKeyAuth": []
@@ -2183,17 +2183,15 @@
       },
       "ContentCreateEditRequest": {
         "type": "object",
-        "description": "Must provide at least one input (video_url or audio_url)",
+        "required": [
+          "video_url"
+        ],
+        "description": "Requires a video URL. Operations are applied sequentially via ffmpeg.",
         "properties": {
           "video_url": {
             "type": "string",
             "format": "uri",
-            "description": "Input video URL"
-          },
-          "audio_url": {
-            "type": "string",
-            "format": "uri",
-            "description": "Input audio URL"
+            "description": "Input video URL (required)"
           },
           "template": {
             "type": "string",
@@ -2214,8 +2212,7 @@
                     "trim",
                     "crop",
                     "resize",
-                    "overlay_text",
-                    "mux_audio"
+                    "overlay_text"
                   ],
                   "description": "Operation type"
                 },
@@ -2267,15 +2264,6 @@
                     "bottom"
                   ],
                   "description": "Text position (overlay_text)"
-                },
-                "audio_url": {
-                  "type": "string",
-                  "format": "uri",
-                  "description": "Audio URL to mux (mux_audio)"
-                },
-                "replace": {
-                  "type": "boolean",
-                  "description": "Replace existing audio (mux_audio)"
                 }
               }
             }
