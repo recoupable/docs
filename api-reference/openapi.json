@@ -5911,70 +5911,6 @@
             }
           }
         }
-      },
-      "patch": {
-        "description": "Apply edits to a video or audio file — trim, crop, resize, overlay text, or add an audio track. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array. Everything runs in one pass.",
-        "security": [
-          {
-            "apiKeyAuth": []
-          },
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "description": "Edit parameters",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ContentCreateEditRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "202": {
-            "description": "Edit task triggered successfully. Poll via [GET /api/tasks/runs](/api-reference/tasks/runs) using the returned `runId`.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentCreateEditResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation failed — invalid or missing request body fields",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized — invalid or missing API key",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/api/content/transcribe": {
@@ -13555,8 +13491,7 @@
         "required": [
           "runIds",
           "status",
-          "artist_account_id",
-          "template"
+          "artist_account_id"
         ],
         "description": "Confirmation that the content creation pipeline has been triggered. Always returns `runIds` as an array — even for a single run, it contains one element.",
         "properties": {
@@ -13584,9 +13519,12 @@
             "example": "1873859c-dd37-4e9a-9bac-80d3558527a9"
           },
           "template": {
-            "type": "string",
-            "description": "The template being used",
-            "example": "artist-caption-bedroom"
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Template ID when a preset pipeline is used; null in malleable mode.",
+            "example": null
           },
           "lipsync": {
             "type": "boolean",
@@ -13806,6 +13744,64 @@
                         "mux_audio"
                       ],
                       "description": "Operation type"
+                    },
+                    "start": {
+                      "type": "number",
+                      "description": "Start time in seconds (trim)"
+                    },
+                    "duration": {
+                      "type": "number",
+                      "description": "Duration in seconds (trim)"
+                    },
+                    "aspect": {
+                      "type": "string",
+                      "description": "Aspect ratio e.g. 9:16 (crop)"
+                    },
+                    "width": {
+                      "type": "integer",
+                      "description": "Width in pixels (crop/resize)"
+                    },
+                    "height": {
+                      "type": "integer",
+                      "description": "Height in pixels (crop/resize)"
+                    },
+                    "content": {
+                      "type": "string",
+                      "description": "Text content (overlay_text)"
+                    },
+                    "font": {
+                      "type": "string",
+                      "description": "Font name (overlay_text)"
+                    },
+                    "color": {
+                      "type": "string",
+                      "description": "Text color (overlay_text)"
+                    },
+                    "stroke_color": {
+                      "type": "string",
+                      "description": "Text stroke color (overlay_text)"
+                    },
+                    "max_font_size": {
+                      "type": "number",
+                      "description": "Maximum font size (overlay_text)"
+                    },
+                    "position": {
+                      "type": "string",
+                      "enum": [
+                        "top",
+                        "center",
+                        "bottom"
+                      ],
+                      "description": "Text position (overlay_text)"
+                    },
+                    "audio_url": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "Audio URL to mux (mux_audio)"
+                    },
+                    "replace": {
+                      "type": "boolean",
+                      "description": "Replace existing audio (mux_audio)"
                     }
                   }
                 }
@@ -16218,6 +16214,160 @@
           "formatted": {
             "type": "string",
             "description": "Results formatted as markdown for easy reading."
+          }
+        }
+      },
+      "MusicComposeRequest": {
+        "type": "object",
+        "description": "Parameters for generating a song. Provide either a text prompt or a composition_plan.",
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "Text prompt describing the desired song — mood, genre, instruments, lyrics, structure."
+          },
+          "composition_plan": {
+            "type": "object",
+            "description": "Full composition plan for fine-grained control over sections, styles, and lyrics. Use POST /api/music/plan to generate one."
+          },
+          "duration": {
+            "type": "number",
+            "description": "Desired duration in seconds.",
+            "default": 30
+          },
+          "output_format": {
+            "type": "string",
+            "description": "Audio output format (e.g. mp3_44100_192).",
+            "default": "mp3_44100_192"
+          },
+          "sign_with_c2pa": {
+            "type": "boolean",
+            "description": "Sign the output with C2PA content credentials.",
+            "default": false
+          }
+        }
+      },
+      "MusicComposeDetailedRequest": {
+        "type": "object",
+        "description": "Parameters for generating a song with metadata and optional word-level timestamps.",
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "Text prompt describing the desired song — mood, genre, instruments, lyrics, structure."
+          },
+          "composition_plan": {
+            "type": "object",
+            "description": "Full composition plan for fine-grained control over sections, styles, and lyrics. Use POST /api/music/plan to generate one."
+          },
+          "duration": {
+            "type": "number",
+            "description": "Desired duration in seconds.",
+            "default": 30
+          },
+          "output_format": {
+            "type": "string",
+            "description": "Audio output format (e.g. mp3_44100_192).",
+            "default": "mp3_44100_192"
+          },
+          "sign_with_c2pa": {
+            "type": "boolean",
+            "description": "Sign the output with C2PA content credentials.",
+            "default": false
+          },
+          "with_timestamps": {
+            "type": "boolean",
+            "description": "Include word-level timestamps in the metadata response.",
+            "default": false
+          }
+        }
+      },
+      "MusicStreamRequest": {
+        "type": "object",
+        "description": "Parameters for generating a song with real-time audio streaming.",
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "Text prompt describing the desired song — mood, genre, instruments, lyrics, structure."
+          },
+          "composition_plan": {
+            "type": "object",
+            "description": "Full composition plan for fine-grained control over sections, styles, and lyrics. Use POST /api/music/plan to generate one."
+          },
+          "duration": {
+            "type": "number",
+            "description": "Desired duration in seconds.",
+            "default": 30
+          },
+          "output_format": {
+            "type": "string",
+            "description": "Audio output format (e.g. mp3_44100_192).",
+            "default": "mp3_44100_192"
+          },
+          "sign_with_c2pa": {
+            "type": "boolean",
+            "description": "Sign the output with C2PA content credentials.",
+            "default": false
+          }
+        }
+      },
+      "MusicCreatePlanRequest": {
+        "type": "object",
+        "required": [
+          "prompt"
+        ],
+        "description": "Parameters for creating a composition plan from a text prompt.",
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "Text prompt describing the desired song."
+          }
+        }
+      },
+      "MusicCreatePlanResponse": {
+        "type": "object",
+        "description": "A structured composition plan that can be reviewed, edited, and passed to the compose endpoint.",
+        "properties": {
+          "plan": {
+            "type": "object",
+            "description": "The composition plan with sections, styles, lyrics, and durations.",
+            "properties": {
+              "sections": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Section name (e.g. intro, verse, chorus)"
+                    },
+                    "duration": {
+                      "type": "number",
+                      "description": "Section duration in seconds"
+                    },
+                    "style": {
+                      "type": "string",
+                      "description": "Style description for this section"
+                    },
+                    "lyrics": {
+                      "type": "string",
+                      "description": "Lyrics for this section"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "MusicErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "description": "Error response from a music endpoint.",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong."
           }
         }
       }
