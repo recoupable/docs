@@ -16,7 +16,7 @@
   "paths": {
     "/api/tasks": {
       "get": {
-        "description": "Retrieve scheduled tasks. The response includes recent_runs (last 5 runs) and upcoming (next scheduled run times) sourced directly from the Trigger.dev API. Supports filtering by id, account_id, or artist_account_id.",
+        "description": "Retrieve scheduled tasks. Each task includes `recent_runs` (last 5 runs), `upcoming` (next scheduled run times) sourced directly from the Trigger.dev API, and `owner_email` when an account email exists for the task owner. Supports filtering by id, account_id, or artist_account_id.",
         "parameters": [
           {
             "name": "id",
@@ -2842,6 +2842,11 @@
               "format": "date-time"
             },
             "description": "Next scheduled run times, sourced from the latest Trigger.dev run payload."
+          },
+          "owner_email": {
+            "type": "string",
+            "nullable": true,
+            "description": "Primary email address for the task owner account when one exists."
           }
         }
       },
