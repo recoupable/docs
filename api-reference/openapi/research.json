@@ -1,0 +1,3968 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup API - Research",
+    "description": "API documentation for the Recoup platform - an AI agent platform for the music industry",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://recoup-api.vercel.app"
+    }
+  ],
+  "paths": {
+    "/api/chats": {
+      "get": {
+        "description": "Retrieve chat rooms (conversations) for the authenticated account. If the account has access to organizations, pass account_id to filter to a specific account within those organizations. Optionally filter by an artist_account_id. The endpoint returns metadata about each room, including the topic, associated artist, and last updated timestamp.",
+        "parameters": [
+          {
+            "name": "artist_account_id",
+            "in": "query",
+            "description": "Optional. Filter chats to only include those for the specified artist.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "description": "Filter to a specific account. Only applicable when the authenticated account has access to multiple accounts via organization membership.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chats retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account_id is not a member of the organization or account tried to filter by an account_id they don't have access to",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new chat room. Optionally associate it with an artist and/or provide a client-generated chat ID. Pass accountId to create a chat on behalf of a specific account the API key has access to.",
+        "requestBody": {
+          "description": "Chat creation parameters",
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Chat created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateChatResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - failed to create chat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateChatErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - API key does not have access to the specified accountId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateChatErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "Update a chat room's topic (display name). The chatId is required; the topic field will be updated. Topic must be between 3 and 50 characters.",
+        "requestBody": {
+          "description": "Chat fields to update",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Chat updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateChatResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateChatErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - API key does not have access to this chat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - chat room does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateChatErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a chat room by ID. This operation also removes related room records (memory emails, memories, room-report links, and segment-room links) before deleting the room itself.",
+        "requestBody": {
+          "description": "Chat deletion parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Chat deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteChatResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteChatErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - API key does not have access to this chat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - chat room does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteChatErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error - failed to delete chat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteChatErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chats/{id}/artist": {
+      "get": {
+        "description": "Retrieve the artist associated with a specific chat room. Returns 404 if the chat does not exist or is not accessible by the authenticated caller.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the chat room.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat artist resolved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatArtistResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid chat id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatArtistErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - chat does not exist or is not accessible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatArtistErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chats/{id}/segment": {
+      "get": {
+        "description": "Retrieve the segment associated with a specific chat room. Returns 404 if the chat does not exist or is not accessible by the authenticated caller.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the chat room.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat segment resolved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatSegmentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid chat id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatSegmentErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - chat does not exist or is not accessible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatSegmentErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chats/{id}/messages": {
+      "get": {
+        "description": "Retrieve all messages (memories) for a specific chat room in chronological order.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the chat room.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Messages retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatMessagesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid chat id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatMessagesErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller does not have access to this chat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - chat does not exist or is not accessible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatMessagesErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error - failed to retrieve messages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatMessagesErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chats/{id}/messages/copy": {
+      "post": {
+        "description": "Copy all messages from the source chat (`id` path param) to a target chat (`targetChatId` in request body). By default, existing target messages are cleared before copy.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The source chat room UUID.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Copy target options",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CopyChatMessagesRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Messages copied successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopyChatMessagesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid payload or chat identifiers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopyChatMessagesErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller lacks access to source or target chat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopyChatMessagesErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - source or target chat does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopyChatMessagesErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error - failed to copy messages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopyChatMessagesErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chats/{id}/messages/trailing": {
+      "delete": {
+        "description": "Delete all messages in a chat from a given message onward (inclusive), identified by `from_message_id`.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the chat room.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "from_message_id",
+            "in": "query",
+            "description": "The message UUID from which trailing messages should be deleted (inclusive).",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trailing messages deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteTrailingChatMessagesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid or missing query/path parameters or message does not belong to chat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteTrailingChatMessagesErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteTrailingChatMessagesErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - access denied to this chat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteTrailingChatMessagesErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - chat or message does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteTrailingChatMessagesErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error - failed to delete trailing messages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteTrailingChatMessagesErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chats/compact": {
+      "post": {
+        "description": "Compact one or more chat conversations into summarized versions. This reduces the size of chat history while preserving key information. Optionally provide a prompt to control what information gets preserved in the compacted summary.",
+        "requestBody": {
+          "description": "Chat compaction parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompactChatsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Chats compacted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompactChatsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - one or more chat IDs do not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat/generate": {
+      "post": {
+        "servers": [
+          {
+            "url": "https://recoup-api.vercel.app"
+          }
+        ],
+        "description": "Generate AI-powered text responses using the Recoup chat system. This endpoint processes chat requests and returns generated text along with metadata about the generation process.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Chat generation request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatGenerateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Chat generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatGenerateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatGenerateErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat": {
+      "post": {
+        "servers": [
+          {
+            "url": "https://recoup-api.vercel.app"
+          }
+        ],
+        "description": "Stream AI-powered chat responses using the Recoup chat system. This endpoint mirrors the request payload of the Chat Generate API but returns a streaming response compatible with the Vercel AI SDK `createUIMessageStreamResponse`. The stream emits UI message parts encoded as data chunks that can be parsed with `createUIMessageStreamParser`.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Chat stream request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatStreamRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Streaming response with UI message parts. Events include: message-start (assistant begins message), message-delta (incremental updates), message-end (assistant finishes message), error (stream error), and metadata (usage data).",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-Sent Events stream containing UI message parts"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatStreamErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research": {
+      "get": {
+        "description": "Search for artists by name. Returns matching results with profile summaries.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Artist name to search for.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "description": "Entity type.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "artists",
+                "tracks",
+                "albums",
+                "playlists",
+                "curators",
+                "stations"
+              ],
+              "default": "artists"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Maximum number of results.",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchSearchResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/albums": {
+      "get": {
+        "description": "Get an artist's full discography — albums, EPs, and singles with release dates.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist albums",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchAlbumsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/audience": {
+      "get": {
+        "description": "Get audience demographics for an artist on a specific platform — age, gender, and country breakdown.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "description": "Platform to get demographics for. Defaults to instagram.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "instagram",
+                "tiktok",
+                "youtube"
+              ],
+              "default": "instagram"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Audience demographics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchAudienceResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/career": {
+      "get": {
+        "description": "Get an artist's career timeline — key milestones, trajectory, and career stage.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Career timeline",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchCareerResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/charts": {
+      "get": {
+        "description": "Get global chart positions for a platform — Spotify, Apple Music, TikTok, YouTube, iTunes, Shazam, etc. NOT artist-scoped. Returns ranked entries with track and artist info.",
+        "parameters": [
+          {
+            "name": "platform",
+            "in": "query",
+            "required": true,
+            "description": "Chart platform: spotify, applemusic, tiktok, youtube, itunes, shazam, etc.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "required": false,
+            "description": "Two-letter country code (e.g. US, GB, DE).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "interval",
+            "in": "query",
+            "required": false,
+            "description": "Time interval (e.g. daily, weekly).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "description": "Chart type (varies by platform).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "latest",
+            "in": "query",
+            "required": false,
+            "description": "Return only the latest chart.",
+            "schema": {
+              "type": "string",
+              "default": "true"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chart data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchChartsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/cities": {
+      "get": {
+        "description": "Get the top cities where an artist's fans listen, ranked by listener concentration.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Top listener cities",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchCitiesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/curator": {
+      "get": {
+        "description": "Get curator profile — who curates a playlist, their other playlists, and follower reach.",
+        "parameters": [
+          {
+            "name": "platform",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "spotify",
+                "applemusic",
+                "deezer",
+                "amazon",
+                "youtube"
+              ]
+            },
+            "description": "Streaming platform."
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "Curator ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Curator profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchCuratorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/deep": {
+      "post": {
+        "description": "Perform deep, comprehensive research on a topic. Browses multiple sources extensively and returns a cited report. Use for full artist deep dives, competitive analysis, and any research requiring synthesis across many sources.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchDeepRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Deep research report with citations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchDeepResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/discover": {
+      "get": {
+        "description": "Discover artists by criteria — filter by country, genre, Spotify monthly listener range, and sort by growth metrics.",
+        "parameters": [
+          {
+            "name": "country",
+            "in": "query",
+            "required": false,
+            "description": "ISO country code (e.g., US, BR, GB).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "genre",
+            "in": "query",
+            "required": false,
+            "description": "Genre ID (use GET /api/research/genres to list).",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "sp_monthly_listeners_min",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "sp_monthly_listeners_max",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Sort field (e.g., weekly_diff.sp_monthly_listeners).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Filtered artist list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchDiscoverResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/enrich": {
+      "post": {
+        "description": "Enrich an entity with structured data from web research. Provide a description of who or what to research and a JSON schema defining the fields to extract. Returns typed data with citations.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchEnrichRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Structured enrichment data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchEnrichResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/extract": {
+      "post": {
+        "description": "Extract clean markdown content from one or more public URLs. Handles JavaScript-heavy pages and PDFs. Returns focused excerpts aligned to an objective, or full page content.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchExtractRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Extracted content from URLs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchExtractResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/festivals": {
+      "get": {
+        "description": "List music festivals.",
+        "responses": {
+          "200": {
+            "description": "Festival list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchFestivalsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/genres": {
+      "get": {
+        "description": "List all available genre IDs and names. Use these IDs with the discover endpoint at GET /api/research/discover.",
+        "responses": {
+          "200": {
+            "description": "Genre list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchGenresResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/insights": {
+      "get": {
+        "description": "Get AI-generated insights about an artist — automatically surfaced trends, milestones, and observations.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "AI-generated insights",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchInsightsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/instagram-posts": {
+      "get": {
+        "description": "Get an artist's top Instagram posts and reels, sorted by engagement.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Top Instagram posts and reels",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchInstagramPostsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/lookup": {
+      "get": {
+        "description": "Look up an artist by a platform URL or ID — Spotify URL, Spotify ID, Apple Music URL, etc.",
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "required": true,
+            "description": "Platform URL or ID (e.g., Spotify artist URL, Spotify ID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist profile matching the platform URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchLookupResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/metrics": {
+      "get": {
+        "description": "Get platform-specific metrics for an artist over time — followers, listeners, views, engagement. Supports 14 platforms.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "required": true,
+            "description": "Platform to get metrics for.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "spotify",
+                "instagram",
+                "tiktok",
+                "twitter",
+                "facebook",
+                "youtube_channel",
+                "youtube_artist",
+                "soundcloud",
+                "deezer",
+                "twitch",
+                "line",
+                "melon",
+                "wikipedia",
+                "bandsintown"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Platform metrics over time",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchMetricsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/milestones": {
+      "get": {
+        "description": "Get an artist's activity feed — playlist adds, chart entries, and other notable events. Each milestone includes a date, summary, platform, track name, and star rating.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Milestone list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchMilestonesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/people": {
+      "post": {
+        "description": "Search for people in the music industry — artists, managers, A&R reps, producers. Returns multi-source profiles including LinkedIn data.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchPeopleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "People search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchPeopleResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/playlist": {
+      "get": {
+        "description": "Get playlist metadata — name, description, follower count, track count, and curator info.",
+        "parameters": [
+          {
+            "name": "platform",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "spotify",
+                "applemusic",
+                "deezer",
+                "amazon",
+                "youtube"
+              ]
+            },
+            "description": "Streaming platform."
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "Playlist ID on the platform.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Playlist metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchPlaylistResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/playlists": {
+      "get": {
+        "description": "Get an artist's playlist placements — editorial, algorithmic, and indie playlists across platforms.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "spotify",
+                "applemusic",
+                "deezer",
+                "amazon",
+                "youtube"
+              ],
+              "default": "spotify"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "current",
+                "past"
+              ],
+              "default": "current"
+            }
+          },
+          {
+            "name": "editorial",
+            "in": "query",
+            "required": false,
+            "description": "Only editorial playlists.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "required": false,
+            "description": "Filter by date (YYYY-MM-DD).",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Sort results by this field.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Playlist placements",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchPlaylistsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/profile": {
+      "get": {
+        "description": "Get a full artist profile — bio, genres, social URLs, label, career stage, and basic metrics.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchProfileResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/radio": {
+      "get": {
+        "description": "List radio stations tracked by Chartmetric. NOT artist-scoped. Returns station names, formats, and markets.",
+        "responses": {
+          "200": {
+            "description": "Radio station list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchRadioResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/rank": {
+      "get": {
+        "description": "Get an artist's global Chartmetric ranking as a single integer value.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist rank",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchRankResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/similar": {
+      "get": {
+        "description": "Find similar artists based on audience overlap, genre, mood, and musicality. Use for competitive analysis and collaboration discovery.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "audience",
+            "in": "query",
+            "required": false,
+            "description": "Audience overlap weight.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "high",
+                "medium",
+                "low"
+              ]
+            }
+          },
+          {
+            "name": "genre",
+            "in": "query",
+            "required": false,
+            "description": "Genre similarity weight.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "high",
+                "medium",
+                "low"
+              ]
+            }
+          },
+          {
+            "name": "mood",
+            "in": "query",
+            "required": false,
+            "description": "Mood similarity weight.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "high",
+                "medium",
+                "low"
+              ]
+            }
+          },
+          {
+            "name": "musicality",
+            "in": "query",
+            "required": false,
+            "description": "Musicality similarity weight.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "high",
+                "medium",
+                "low"
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Similar artists with overlap scores",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchSimilarResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/track": {
+      "get": {
+        "description": "Get track metadata — title, artist, album, release date, popularity, and platform IDs.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Track name or Spotify URL.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Track metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchTrackResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/tracks": {
+      "get": {
+        "description": "Get all tracks by an artist with popularity data.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist tracks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchTracksResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/urls": {
+      "get": {
+        "description": "Get all social and streaming URLs for an artist — Spotify, Instagram, TikTok, YouTube, Twitter, SoundCloud, and more.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID (UUID).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Social and streaming URLs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchUrlsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/venues": {
+      "get": {
+        "description": "Get venues an artist has performed at, including capacity and location data.",
+        "parameters": [
+          {
+            "name": "artist",
+            "in": "query",
+            "required": true,
+            "description": "Artist name or Recoup artist ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Venue list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchVenuesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/web": {
+      "post": {
+        "description": "Search the web for real-time information. Returns ranked results with titles, URLs, and content snippets. Use for narrative context, press coverage, and cultural research that structured data endpoints don't cover.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchWebRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Web search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchWebResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Your Recoup API key. [Learn more](/quickstart#api-keys)."
+      }
+    },
+    "schemas": {
+      "ChatGenerateErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "ChatGenerateRequest": {
+        "type": "object",
+        "description": "Request body for chat generation. Exactly one of 'prompt' or 'messages' must be provided.",
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "Single text prompt for the assistant. Required if 'messages' is not provided."
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UIMessage"
+            },
+            "description": "Array of UIMessage objects for context. Required if 'prompt' is not provided."
+          },
+          "artistId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier of the artist (optional)"
+          },
+          "model": {
+            "type": "string",
+            "description": "The AI model to use for text generation (optional)",
+            "example": "openai/gpt-5-mini"
+          },
+          "excludeTools": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of tool names to exclude from execution",
+            "example": [
+              "create_scheduled_actions"
+            ]
+          },
+          "roomId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the chat room. If not provided, one will be generated automatically."
+          },
+          "topic": {
+            "type": "string",
+            "description": "Topic name for the new chat room (e.g., 'Pulse Feb 2'). Only applies when creating a new room - ignored if room already exists. To edit the topic of an existing room, use [PATCH /api/chats](/api-reference/chat/update)."
+          }
+        }
+      },
+      "ChatGenerateResponse": {
+        "type": "object",
+        "description": "Response from the chat generation endpoint",
+        "properties": {
+          "text": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContentPart"
+            },
+            "description": "Array of content parts from the AI model response"
+          },
+          "reasoningText": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional reasoning or explanation for the response"
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Optional array of sources used for the response"
+          },
+          "finishReason": {
+            "type": "string",
+            "description": "The reason why the generation finished",
+            "example": "stop"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/ChatGenerateUsage",
+            "description": "Token usage information"
+          },
+          "response": {
+            "$ref": "#/components/schemas/ChatGenerateResponseMeta",
+            "description": "Additional response metadata"
+          }
+        }
+      },
+      "ChatGenerateResponseMeta": {
+        "type": "object",
+        "description": "Additional response metadata",
+        "properties": {
+          "messages": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Response messages"
+          },
+          "headers": {
+            "type": "object",
+            "description": "Response headers"
+          },
+          "body": {
+            "type": "object",
+            "description": "Response body"
+          }
+        }
+      },
+      "ChatGenerateUsage": {
+        "type": "object",
+        "description": "Token usage information with detailed breakdown",
+        "properties": {
+          "inputTokens": {
+            "type": "integer",
+            "description": "Number of input tokens processed"
+          },
+          "outputTokens": {
+            "type": "integer",
+            "description": "Number of output tokens generated"
+          },
+          "totalTokens": {
+            "type": "integer",
+            "description": "Total tokens used (input + output)"
+          },
+          "reasoningTokens": {
+            "type": "integer",
+            "description": "Number of reasoning tokens used"
+          },
+          "cachedInputTokens": {
+            "type": "integer",
+            "description": "Number of cached input tokens"
+          }
+        }
+      },
+      "ChatMessage": {
+        "type": "object",
+        "required": [
+          "id",
+          "room_id",
+          "content",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the memory message"
+          },
+          "room_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the parent chat room"
+          },
+          "content": {
+            "type": "object",
+            "description": "Structured message payload stored for the memory"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of the memory update"
+          }
+        }
+      },
+      "ChatRoom": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the chat room"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "UUID of the associated account (can be null if not set)"
+          },
+          "topic": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional topic or description of the room (null if not provided)"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of the last update to the room"
+          },
+          "artist_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "UUID of the associated artist account (null when not applicable)"
+          }
+        }
+      },
+      "ChatStreamErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "ChatStreamRequest": {
+        "type": "object",
+        "description": "Request body for chat streaming. Exactly one of 'prompt' or 'messages' must be provided.",
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "Single text prompt for the assistant. Required if 'messages' is not provided."
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UIMessage"
+            },
+            "description": "Array of UIMessage objects for context. Required if 'prompt' is not provided."
+          },
+          "artistId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier of the artist (optional)"
+          },
+          "model": {
+            "type": "string",
+            "description": "The AI model to use for text generation (optional)",
+            "example": "openai/gpt-5-mini"
+          },
+          "excludeTools": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of tool names to exclude from execution",
+            "example": [
+              "create_scheduled_actions"
+            ]
+          },
+          "roomId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the chat room. If not provided, one will be generated automatically."
+          },
+          "topic": {
+            "type": "string",
+            "description": "Topic name for the new chat room (e.g., 'Pulse Feb 2'). Only applies when creating a new room - ignored if room already exists. To edit the topic of an existing room, use [PATCH /api/chats](/api-reference/chat/update)."
+          }
+        }
+      },
+      "CompactChatsRequest": {
+        "type": "object",
+        "required": [
+          "chatId"
+        ],
+        "properties": {
+          "chatId": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Array of chat IDs to compact"
+          },
+          "prompt": {
+            "type": "string",
+            "description": "Optional prompt to control what information gets preserved in the compacted summary"
+          }
+        }
+      },
+      "CompactChatsResponse": {
+        "type": "object",
+        "required": [
+          "chats"
+        ],
+        "properties": {
+          "chats": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompactedChat"
+            },
+            "description": "Array of compacted chat results"
+          }
+        }
+      },
+      "CompactedChat": {
+        "type": "object",
+        "required": [
+          "chatId",
+          "compacted"
+        ],
+        "properties": {
+          "chatId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The ID of the chat that was compacted"
+          },
+          "compacted": {
+            "type": "string",
+            "description": "The compacted summary text of the chat"
+          }
+        }
+      },
+      "ContentPart": {
+        "type": "object",
+        "description": "A part of the response content. See https://ai-sdk.dev/docs/reference/ai-sdk-core/generate-text#content for details.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "tool-call",
+              "tool-result"
+            ],
+            "description": "The type of content part"
+          },
+          "text": {
+            "type": "string",
+            "description": "The text content (present when type is 'text')"
+          }
+        }
+      },
+      "CopyChatMessagesErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong."
+          }
+        }
+      },
+      "CopyChatMessagesRequest": {
+        "type": "object",
+        "required": [
+          "targetChatId"
+        ],
+        "properties": {
+          "targetChatId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Target chat room UUID to receive the copied messages."
+          },
+          "clearExisting": {
+            "type": "boolean",
+            "default": true,
+            "description": "When true, existing messages in the target chat are deleted before copy."
+          }
+        }
+      },
+      "CopyChatMessagesResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "source_chat_id",
+          "target_chat_id",
+          "copied_count",
+          "cleared_existing"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "source_chat_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Source chat room UUID."
+          },
+          "target_chat_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Target chat room UUID."
+          },
+          "copied_count": {
+            "type": "integer",
+            "description": "Number of messages copied from source to target."
+          },
+          "cleared_existing": {
+            "type": "boolean",
+            "description": "Whether existing target messages were deleted before copy."
+          }
+        }
+      },
+      "CreateChatErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "CreateChatRequest": {
+        "type": "object",
+        "properties": {
+          "artistId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist account the chat is associated with"
+          },
+          "chatId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID for the new chat (client-generated). If not provided, one will be generated automatically."
+          },
+          "accountId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account to create the chat for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, the chat is created for the API key's own account."
+          },
+          "topic": {
+            "type": "string",
+            "description": "Topic name for the new chat room (e.g., 'Pulse Feb 2'). To edit the topic of an existing room, use [PATCH /api/chats](/api-reference/chat/update)."
+          }
+        }
+      },
+      "CreateChatResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "chat"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "chat": {
+            "$ref": "#/components/schemas/ChatRoom",
+            "description": "The created chat room object"
+          }
+        }
+      },
+      "DeleteChatErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong."
+          }
+        }
+      },
+      "DeleteChatRequest": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier (UUID) of the chat room to delete."
+          }
+        }
+      },
+      "DeleteChatResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "id",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The UUID of the deleted chat room."
+          },
+          "message": {
+            "type": "string",
+            "description": "Success message describing the deletion result."
+          }
+        }
+      },
+      "DeleteTrailingChatMessagesErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong."
+          },
+          "missing_fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of missing or invalid parameter fields (when validation fails)."
+          }
+        }
+      },
+      "DeleteTrailingChatMessagesResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "chat_id",
+          "from_message_id"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "chat_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The chat UUID where deletion was applied."
+          },
+          "from_message_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The message UUID used as the trailing deletion boundary."
+          }
+        }
+      },
+      "Error": {
+        "required": [
+          "error",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "GetChatArtistErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "GetChatArtistResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "room_id",
+          "artist_id",
+          "artist_exists"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "room_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the chat room"
+          },
+          "artist_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "UUID of the artist account associated with the chat, or null when no artist is linked"
+          },
+          "artist_exists": {
+            "type": "boolean",
+            "description": "Whether an artist is linked to the chat room"
+          }
+        }
+      },
+      "GetChatMessagesErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "GetChatMessagesResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatMessage"
+            },
+            "description": "Chronologically ordered list of messages for the chat"
+          }
+        }
+      },
+      "GetChatSegmentErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "GetChatSegmentResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "room_id",
+          "segment_id",
+          "segment_exists"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "room_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the chat room"
+          },
+          "segment_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "UUID of the segment associated with the chat, or null when no segment is linked"
+          },
+          "segment_exists": {
+            "type": "boolean",
+            "description": "Whether a segment is linked to the chat room"
+          }
+        }
+      },
+      "GetChatsErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "GetChatsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "chats"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "chats": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatRoom"
+            },
+            "description": "Array of chat room objects"
+          }
+        }
+      },
+      "ResearchAlbum": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "release_date": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchAlbumsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "albums": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchAlbum"
+            }
+          }
+        }
+      },
+      "ResearchAudienceResponse": {
+        "type": "object",
+        "description": "Audience demographics breakdown — age ranges, gender split, and country distribution for the specified platform.",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "age": {
+            "type": "array",
+            "description": "Age range breakdown",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "gender": {
+            "type": "object",
+            "description": "Gender split percentages",
+            "additionalProperties": true
+          },
+          "countries": {
+            "type": "array",
+            "description": "Top countries by audience share",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchCareerResponse": {
+        "type": "object",
+        "description": "Career timeline — milestones, trajectory, and career stage history.",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "career_stage": {
+            "type": "string",
+            "description": "Current career stage (e.g., 'Mid-Level', 'Superstar')"
+          },
+          "data": {
+            "type": "array",
+            "description": "Career timeline data points",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchChartsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "data": {
+            "type": "object",
+            "description": "Chart data — structure varies by platform.",
+            "additionalProperties": true
+          }
+        }
+      },
+      "ResearchCitiesEntry": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "City name."
+          },
+          "country": {
+            "type": "string",
+            "description": "ISO country code."
+          },
+          "listeners": {
+            "type": "integer",
+            "description": "Listener count in this city."
+          }
+        }
+      },
+      "ResearchCitiesResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "cities": {
+            "type": "array",
+            "description": "Cities ranked by listener concentration.",
+            "items": {
+              "$ref": "#/components/schemas/ResearchCitiesEntry"
+            }
+          }
+        }
+      },
+      "ResearchCuratorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "num_playlists": {
+            "type": "integer",
+            "nullable": true
+          },
+          "followers": {
+            "type": "integer",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchDeepRequest": {
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "description": "Request body for deep research. Performs comprehensive multi-source analysis.",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "The research question — be specific and detailed for best results."
+          }
+        }
+      },
+      "ResearchDeepResponse": {
+        "type": "object",
+        "description": "Comprehensive research report with citations.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "content": {
+            "type": "string",
+            "description": "The full research report as markdown."
+          },
+          "citations": {
+            "type": "array",
+            "description": "Source URLs cited in the report.",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          }
+        }
+      },
+      "ResearchDiscoverArtist": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "sp_monthly_listeners": {
+            "type": "integer",
+            "nullable": true
+          },
+          "sp_followers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "tiktok_followers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "ins_followers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true,
+            "description": "ISO country code."
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchDiscoverResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchDiscoverArtist"
+            }
+          }
+        }
+      },
+      "ResearchEnrichRequest": {
+        "type": "object",
+        "required": [
+          "input",
+          "schema"
+        ],
+        "properties": {
+          "input": {
+            "type": "string",
+            "description": "What to research (e.g., \"Drake rapper from Dallas Texas\")."
+          },
+          "schema": {
+            "type": "object",
+            "description": "JSON schema defining the fields to extract.",
+            "additionalProperties": true
+          },
+          "processor": {
+            "type": "string",
+            "enum": [
+              "base",
+              "core",
+              "ultra"
+            ],
+            "default": "base",
+            "description": "Research depth: base (fast), core (balanced), ultra (comprehensive)."
+          }
+        }
+      },
+      "ResearchEnrichResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "output": {
+            "type": "object",
+            "description": "Structured data matching the provided schema.",
+            "additionalProperties": true
+          },
+          "research_basis": {
+            "type": "object",
+            "properties": {
+              "citations": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "field": {
+                      "type": "string",
+                      "description": "Which output field this citation supports."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ResearchExtractRequest": {
+        "type": "object",
+        "required": [
+          "urls"
+        ],
+        "properties": {
+          "urls": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
+            "maxItems": 10,
+            "description": "URLs to extract content from (max 10)."
+          },
+          "objective": {
+            "type": "string",
+            "description": "What information to focus on (optional, max 3000 chars)."
+          },
+          "full_content": {
+            "type": "boolean",
+            "default": false,
+            "description": "Return full page content instead of focused excerpts."
+          }
+        }
+      },
+      "ResearchExtractResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchExtractResult"
+            }
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "URLs that failed to extract."
+          }
+        }
+      },
+      "ResearchExtractResult": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "publish_date": {
+            "type": "string",
+            "nullable": true,
+            "description": "Publish date in YYYY-MM-DD format."
+          },
+          "excerpts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "description": "Focused excerpts as markdown."
+          },
+          "full_content": {
+            "type": "string",
+            "nullable": true,
+            "description": "Full page content as markdown."
+          }
+        }
+      },
+      "ResearchFestival": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchFestivalsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "festivals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchFestival"
+            }
+          }
+        }
+      },
+      "ResearchGenre": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          }
+        }
+      },
+      "ResearchGenresResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchGenre"
+            }
+          }
+        }
+      },
+      "ResearchInsight": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "The insight text."
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchInsightsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "insights": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchInsight"
+            }
+          }
+        }
+      },
+      "ResearchInstagramPostsResponse": {
+        "type": "object",
+        "description": "Top Instagram posts and reels sorted by engagement.",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "posts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string"
+                },
+                "likes": {
+                  "type": "integer"
+                },
+                "comments": {
+                  "type": "integer"
+                },
+                "timestamp": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchLookupResponse": {
+        "type": "object",
+        "description": "Artist profile resolved from a platform URL or ID.",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "description": "Chartmetric artist ID"
+          },
+          "spotify_id": {
+            "type": "string"
+          },
+          "apple_music_id": {
+            "type": "string"
+          },
+          "deezer_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchMetricsResponse": {
+        "type": "object",
+        "description": "Time-series metrics for a specific platform. Shape varies by source — typically an array of data points with timestamps and values (followers, listeners, views, etc.).",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "description": "Array of time-series data points. Fields vary by platform.",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchMilestone": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "Date of the milestone event."
+          },
+          "summary": {
+            "type": "string",
+            "description": "Human-readable description of the event."
+          },
+          "platform": {
+            "type": "string",
+            "description": "Platform where the event occurred (e.g. spotify, apple_music)."
+          },
+          "track_name": {
+            "type": "string",
+            "description": "Name of the track involved, if any."
+          },
+          "stars": {
+            "type": "integer",
+            "description": "Importance rating (1-5 stars)."
+          }
+        }
+      },
+      "ResearchMilestonesResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "milestones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchMilestone"
+            }
+          }
+        }
+      },
+      "ResearchPeopleRequest": {
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Natural language search for people (e.g., \"A&R reps at Atlantic Records\")."
+          },
+          "num_results": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 10,
+            "description": "Number of results to return."
+          }
+        }
+      },
+      "ResearchPeopleResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchPeopleResult"
+            }
+          }
+        }
+      },
+      "ResearchPeopleResult": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Person name and role."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Profile URL (often LinkedIn)."
+          },
+          "highlights": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Key excerpts from the profile."
+          },
+          "summary": {
+            "type": "string",
+            "nullable": true,
+            "description": "Brief summary of the person."
+          }
+        }
+      },
+      "ResearchPlaylistPlacement": {
+        "type": "object",
+        "properties": {
+          "playlist_name": {
+            "type": "string"
+          },
+          "track_name": {
+            "type": "string"
+          },
+          "position": {
+            "type": "integer",
+            "nullable": true
+          },
+          "peak_position": {
+            "type": "integer",
+            "nullable": true
+          },
+          "followers": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Playlist follower count."
+          },
+          "added_at": {
+            "type": "string",
+            "nullable": true,
+            "description": "When the track was added."
+          },
+          "removed_at": {
+            "type": "string",
+            "nullable": true,
+            "description": "When the track was removed (past placements only)."
+          },
+          "curator_name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchPlaylistResponse": {
+        "type": "object",
+        "description": "Playlist metadata — name, description, follower count, track count, and curator info.",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "description": {
+            "type": "string"
+          },
+          "followers": {
+            "type": "integer"
+          },
+          "num_tracks": {
+            "type": "integer"
+          },
+          "curator_name": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchPlaylistsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "placements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchPlaylistPlacement"
+            }
+          }
+        }
+      },
+      "ResearchProfileResponse": {
+        "type": "object",
+        "description": "Full artist profile — bio, genres, social links, label, images, and basic stats.",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "description": "Chartmetric artist ID"
+          },
+          "image_url": {
+            "type": "string"
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string"
+          },
+          "hometown": {
+            "type": "string"
+          },
+          "record_label": {
+            "type": "string"
+          },
+          "sp_followers": {
+            "type": "integer"
+          },
+          "sp_monthly_listeners": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchRadioResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "stations": {
+            "type": "array",
+            "description": "Radio stations tracked by Chartmetric.",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        }
+      },
+      "ResearchRankResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "rank": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Global Chartmetric artist rank."
+          }
+        }
+      },
+      "ResearchSearchResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "results": {
+            "type": "array",
+            "description": "Matching artists with IDs, names, and basic metadata.",
+            "items": {
+              "$ref": "#/components/schemas/ResearchSearchResult"
+            }
+          }
+        }
+      },
+      "ResearchSearchResult": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "description": "Internal ID for use with other research endpoints."
+          },
+          "spotify_id": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchSimilarArtist": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "similarity": {
+            "type": "number",
+            "description": "Similarity score (0-1)."
+          },
+          "career_stage": {
+            "type": "string",
+            "description": "undiscovered, developing, mid-level, mainstream, superstar, or legendary."
+          },
+          "recent_momentum": {
+            "type": "string",
+            "description": "decline, gradual decline, steady, growth, or explosive growth."
+          },
+          "sp_followers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "sp_monthly_listeners": {
+            "type": "integer",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchSimilarResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchSimilarArtist"
+            }
+          },
+          "total": {
+            "type": "integer"
+          }
+        }
+      },
+      "ResearchTrackItem": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "album_names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchTrackResponse": {
+        "type": "object",
+        "description": "Track metadata — title, artist, album, release date, popularity, and platform IDs.",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "description": "Chartmetric track ID"
+          },
+          "isrc": {
+            "type": "string"
+          },
+          "album_name": {
+            "type": "string"
+          },
+          "release_date": {
+            "type": "string"
+          },
+          "artist_names": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchTracksResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "tracks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchTrackItem"
+            }
+          }
+        }
+      },
+      "ResearchUrlEntry": {
+        "type": "object",
+        "properties": {
+          "domain": {
+            "type": "string",
+            "description": "Platform name (e.g., spotify, instagram)."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "ResearchUrlsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "urls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchUrlEntry"
+            }
+          }
+        }
+      },
+      "ResearchVenue": {
+        "type": "object",
+        "properties": {
+          "venue_name": {
+            "type": "string",
+            "description": "Name of the venue."
+          },
+          "venue_capacity": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Venue capacity (seats or standing)."
+          },
+          "city_name": {
+            "type": "string",
+            "description": "City where the venue is located."
+          },
+          "country": {
+            "type": "string",
+            "description": "Two-letter country code."
+          },
+          "events": {
+            "type": "array",
+            "description": "Events the artist performed at this venue.",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        }
+      },
+      "ResearchVenuesResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "venues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchVenue"
+            }
+          }
+        }
+      },
+      "ResearchWebRequest": {
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "description": "Request body for web research.",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "The search query — what you want to find on the web."
+          },
+          "max_results": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20,
+            "default": 10,
+            "description": "Maximum number of results to return."
+          },
+          "country": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2,
+            "description": "ISO country code for regional results (e.g., 'US', 'GB')."
+          }
+        }
+      },
+      "ResearchWebResponse": {
+        "type": "object",
+        "description": "Web search results with titles, URLs, and content snippets.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ]
+          },
+          "results": {
+            "type": "array",
+            "description": "Ranked web search results.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "formatted": {
+            "type": "string",
+            "description": "Results formatted as markdown for easy reading."
+          }
+        }
+      },
+      "UIMessage": {
+        "type": "object",
+        "description": "A message in the chat conversation. See https://ai-sdk.dev/docs/reference/ai-sdk-core/ui-message for details.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the message"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "assistant",
+              "system"
+            ],
+            "description": "The role of the message sender"
+          },
+          "content": {
+            "type": "string",
+            "description": "The text content of the message"
+          }
+        }
+      },
+      "UpdateChatErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "UpdateChatRequest": {
+        "type": "object",
+        "required": [
+          "chatId",
+          "topic"
+        ],
+        "properties": {
+          "chatId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier (UUID) of the chat room to update"
+          },
+          "topic": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 50,
+            "description": "The new display name for the chat room. Must be between 3 and 50 characters."
+          }
+        }
+      },
+      "UpdateChatResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "chat"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "chat": {
+            "$ref": "#/components/schemas/ChatRoom",
+            "description": "The updated chat room object"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,2655 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup API - Accounts",
+    "description": "API documentation for the Recoup platform - an AI agent platform for the music industry",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://recoup-api.vercel.app"
+    }
+  ],
+  "paths": {
+    "/api/accounts/{id}": {
+      "get": {
+        "description": "Retrieve detailed account information by ID. Returns the account with associated profile info, emails, and wallet addresses.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the account",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAccountResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/accounts/id": {
+      "get": {
+        "description": "Retrieve the ID of the authenticated account associated with the provided credentials. This is useful when you have an API key or access token but do not yet know the corresponding accountId.",
+        "parameters": [],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account ID retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAccountIdResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/accounts": {
+      "post": {
+        "description": "Create a new account or retrieve an existing account by email or wallet address. If an account with the provided email or wallet already exists, returns that account. Otherwise creates a new account and initializes credits.",
+        "requestBody": {
+          "description": "Account credentials to create or lookup",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAccountRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Account created or retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountDataResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - failed to create account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "Update an existing account's profile information including name, organization, image, instruction, job title, role type, company name, and knowledges. Requires authentication via x-api-key or Authorization Bearer token. The authenticated account may update itself or a permitted account_id override.",
+        "requestBody": {
+          "description": "Account fields to update",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAccountRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Account updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountDataResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - account not found or update failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account override not permitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/accounts/artists": {
+      "post": {
+        "description": "Add an artist to an account's list of associated artists. If the artist is already associated with the account, returns success without modification.",
+        "requestBody": {
+          "description": "Account and artist identifiers",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddArtistToAccountRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Artist added to account successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddArtistSuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/organizations": {
+      "get": {
+        "description": "Retrieve all organizations that the authenticated account belongs to. Pass account_id to retrieve organizations for a specific account the API key has access to.",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "query",
+            "description": "Filter to a specific account. Only applicable when the authenticated account has access to multiple accounts via organization membership.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Organizations retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetOrganizationsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account_id is not a member of the organization or account tried to filter by an account_id they don't have access to",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new organization. The creator is automatically added as a member of the organization.",
+        "requestBody": {
+          "description": "Organization creation parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrganizationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Organization created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateOrganizationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/organizations/artists": {
+      "post": {
+        "description": "Add an artist to an organization. This allows organization members to access and manage the artist. This endpoint is idempotent - calling it multiple times with the same artistId and organizationId will not create duplicate records.",
+        "requestBody": {
+          "description": "Artist-organization association parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddArtistToOrganizationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Artist added to organization successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddArtistToOrganizationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/subscriptions": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Retrieve subscription information for an account. For accounts with enterprise plans, returns a simplified response indicating enterprise status. For standard accounts, returns the full Stripe subscription object.",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "description": "The unique identifier of the account to query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subscription information retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/SubscriptionResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/EnterpriseSubscriptionResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid accountId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/workspaces": {
+      "post": {
+        "description": "Create a new workspace account. Workspaces can optionally be linked to an organization.",
+        "requestBody": {
+          "description": "Workspace creation parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWorkspaceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Workspace created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateWorkspaceResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - access denied to organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/pulses": {
+      "get": {
+        "description": "Retrieve pulse information for the authenticated account. If the account has access to organizations, pass account_id to filter to a specific account within those organizations.",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "query",
+            "description": "Filter to a specific account. Only applicable when the authenticated account has access to multiple accounts via organization membership.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "active",
+            "in": "query",
+            "description": "Filter by active status. Set to 'true' to return only active pulses, 'false' for inactive pulses. If not provided, returns all pulses regardless of active status.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pulses retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PulsesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account_id is not a member of the organization or account tried to filter by an account_id they don't have access to",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "Update the pulse settings for an account. Use this to enable or disable the pulse. Returns an array of pulses for consistency with the GET endpoint.",
+        "requestBody": {
+          "description": "Pulse fields to update",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePulseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pulse updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PulsesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications": {
+      "post": {
+        "description": "Send a notification email to the authenticated account's email address via the Resend API. Emails are sent from `Agent by Recoup <agent@recoupable.com>`. The recipient is automatically resolved from the API key or Bearer token. Supports plain text (rendered as Markdown) or raw HTML bodies, optional CC recipients, custom headers, and an optional room_id to include a chat link in the email footer.",
+        "requestBody": {
+          "description": "Notification email payload",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateNotificationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Notification sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Email delivery failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admins": {
+      "get": {
+        "description": "Check if the authenticated account is a Recoup admin. An account is considered an admin if it is a member of the Recoup organization. No input parameters required — authentication is performed via the x-api-key or Authorization header.",
+        "parameters": [],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Admin status retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckAdminResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admins/sandboxes": {
+      "get": {
+        "description": "Returns a list of all accounts and their sandbox usage statistics. Each item includes the account email, total number of sandboxes created, and the timestamp of the most recently created sandbox. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
+        "parameters": [],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account sandbox statistics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSandboxesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - authenticated account is not a Recoup admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admins/sandboxes/orgs": {
+      "get": {
+        "description": "Returns commit statistics for each repository in the recoupable GitHub organization. Each item includes the repo name, URL, total commit count, latest 5 commit messages, earliest and latest commit timestamps, and the list of account repo URLs that include this org repo as a submodule. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
+        "parameters": [],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Org repo statistics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSandboxOrgsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - authenticated account is not a Recoup admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admins/emails": {
+      "get": {
+        "description": "Returns Resend emails including HTML content. Provide either account_id (returns all emails for an account) or email_id (returns a single email by Resend ID). Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token. Email response shape matches the [Resend Retrieve Email API](https://resend.com/docs/api-reference/emails/retrieve-email).",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "query",
+            "description": "The account ID to fetch all emails for. Required if email_id is not provided.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "email_id",
+            "in": "query",
+            "description": "A Resend email ID to fetch a single email. Required if account_id is not provided.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Emails retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminEmailsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - must provide either account_id or email_id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - authenticated account is not a Recoup admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admins/coding/slack": {
+      "get": {
+        "description": "Returns a list of Slack mentions of the Recoup Coding Agent bot, pulled directly from the Slack API as the source of truth. Each entry includes the tagger's information, the prompt they sent, the timestamp, the channel, and any GitHub pull request URLs opened in response. Also returns aggregate pull request statistics. Supports optional time-period filtering. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "description": "Time period to filter tags. One of: all (no date filter), daily (last 24 hours), weekly (last 7 days), monthly (last 30 days). Defaults to all.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "all",
+                "daily",
+                "weekly",
+                "monthly"
+              ],
+              "default": "all"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Slack tag analytics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "total",
+                    "total_pull_requests",
+                    "tags_with_pull_requests",
+                    "tags"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success"
+                      ],
+                      "description": "Status of the request"
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total number of times the Coding Agent was tagged in the requested period",
+                      "example": 134
+                    },
+                    "total_pull_requests": {
+                      "type": "integer",
+                      "description": "Total number of pull requests opened by the Coding Agent across all tags in the requested period",
+                      "example": 121
+                    },
+                    "tags_with_pull_requests": {
+                      "type": "integer",
+                      "description": "Number of tags that resulted in at least one pull request being opened",
+                      "example": 84
+                    },
+                    "tags": {
+                      "type": "array",
+                      "description": "List of Slack tag events",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "user_id",
+                          "user_name",
+                          "prompt",
+                          "timestamp",
+                          "channel_id",
+                          "channel_name"
+                        ],
+                        "properties": {
+                          "user_id": {
+                            "type": "string",
+                            "description": "Slack ID of the person who tagged the agent",
+                            "example": "U012AB3CD"
+                          },
+                          "user_name": {
+                            "type": "string",
+                            "description": "Display name of the person who tagged the agent",
+                            "example": "Jane Smith"
+                          },
+                          "user_avatar": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "URL of the Slack avatar",
+                            "example": "https://avatars.slack-edge.com/..."
+                          },
+                          "prompt": {
+                            "type": "string",
+                            "description": "The text of the message sent to the agent",
+                            "example": "add dark mode support to the settings page"
+                          },
+                          "timestamp": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "ISO 8601 timestamp of the tag event",
+                            "example": "2024-01-15T10:30:00.000Z"
+                          },
+                          "channel_id": {
+                            "type": "string",
+                            "description": "Slack channel ID where the tag occurred",
+                            "example": "C012AB3CD"
+                          },
+                          "channel_name": {
+                            "type": "string",
+                            "description": "Human-readable name of the Slack channel",
+                            "example": "dev-team"
+                          },
+                          "pull_requests": {
+                            "type": "array",
+                            "description": "GitHub pull request URLs opened by the Coding Agent in response to this prompt, parsed from bot replies in the Slack thread",
+                            "items": {
+                              "type": "string",
+                              "format": "uri",
+                              "example": "https://github.com/recoupable/api/pull/42"
+                            },
+                            "example": [
+                              "https://github.com/recoupable/api/pull/42"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - authenticated account is not a Recoup admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admins/content/slack": {
+      "get": {
+        "description": "Returns a list of Slack mentions of the Recoup Content Agent bot, pulled directly from the Slack API as the source of truth. Each entry includes the tagger's information, the prompt they sent, the timestamp, the channel, and any video link responses. Also returns aggregate video statistics for measuring tag-to-video conversion. Supports optional time-period filtering. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "description": "Time period to filter tags. One of: all (no date filter), daily (last 24 hours), weekly (last 7 days), monthly (last 30 days). Defaults to all.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "all",
+                "daily",
+                "weekly",
+                "monthly"
+              ],
+              "default": "all"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Slack tag analytics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "total",
+                    "total_videos",
+                    "tags_with_videos",
+                    "tags"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success"
+                      ],
+                      "description": "Status of the request"
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total number of times the Content Agent was tagged in the requested period",
+                      "example": 18
+                    },
+                    "total_videos": {
+                      "type": "integer",
+                      "description": "Total number of videos generated by the Content Agent across all tags in the requested period",
+                      "example": 12
+                    },
+                    "tags_with_videos": {
+                      "type": "integer",
+                      "description": "Number of tags that resulted in at least one video being generated",
+                      "example": 10
+                    },
+                    "tags": {
+                      "type": "array",
+                      "description": "List of Slack tag events",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "user_id",
+                          "user_name",
+                          "prompt",
+                          "timestamp",
+                          "channel_id",
+                          "channel_name"
+                        ],
+                        "properties": {
+                          "user_id": {
+                            "type": "string",
+                            "description": "Slack ID of the person who tagged the agent",
+                            "example": "U012AB3CD"
+                          },
+                          "user_name": {
+                            "type": "string",
+                            "description": "Display name of the person who tagged the agent",
+                            "example": "Jane Smith"
+                          },
+                          "user_avatar": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "URL of the Slack avatar",
+                            "example": "https://avatars.slack-edge.com/..."
+                          },
+                          "prompt": {
+                            "type": "string",
+                            "description": "The text of the message sent to the agent",
+                            "example": "create a highlight reel for the new single release"
+                          },
+                          "timestamp": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "ISO 8601 timestamp of the tag event",
+                            "example": "2024-01-15T10:30:00.000Z"
+                          },
+                          "channel_id": {
+                            "type": "string",
+                            "description": "Slack channel ID where the tag occurred",
+                            "example": "C012AB3CD"
+                          },
+                          "channel_name": {
+                            "type": "string",
+                            "description": "Human-readable name of the Slack channel",
+                            "example": "content-team"
+                          },
+                          "video_links": {
+                            "type": "array",
+                            "description": "Video URLs generated by the Content Agent in response to this prompt, parsed from bot replies in the Slack thread",
+                            "items": {
+                              "type": "string",
+                              "format": "uri",
+                              "example": "https://recoupable.com/v/abc123"
+                            },
+                            "example": [
+                              "https://recoupable.com/v/abc123"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - authenticated account is not a Recoup admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admins/coding/pr": {
+      "get": {
+        "description": "Returns the status (open, closed, or merged) for each provided GitHub pull request URL. Accepts one or more `pull_requests` query parameters containing GitHub PR URLs. Uses the GitHub REST API to check each pull request's state. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
+        "parameters": [
+          {
+            "name": "pull_requests",
+            "in": "query",
+            "description": "One or more GitHub pull request URLs to check. Repeat this parameter for each URL. Example: ?pull_requests=https://github.com/org/repo/pull/1&pull_requests=https://github.com/org/repo/pull/2",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uri"
+              },
+              "minItems": 1,
+              "maxItems": 50
+            },
+            "style": "form",
+            "explode": true
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "PR merged status retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "pull_requests"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success"
+                      ],
+                      "description": "Status of the request"
+                    },
+                    "pull_requests": {
+                      "type": "array",
+                      "description": "Status for each provided pull request URL",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "url",
+                          "status"
+                        ],
+                        "properties": {
+                          "url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "The GitHub pull request URL",
+                            "example": "https://github.com/recoupable/api/pull/42"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "open",
+                              "closed",
+                              "merged"
+                            ],
+                            "description": "The current status of the pull request",
+                            "example": "merged"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid pull_requests parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - authenticated account is not a Recoup admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admins/privy": {
+      "get": {
+        "description": "Returns Privy login statistics for a given time period. Results include counts for new accounts (created_at), active accounts (latest_verified_at), total Privy accounts across all time, and the full, unmodified Privy account objects. See [Privy User object documentation](https://docs.privy.io/api-reference/users/get-all) for the complete type definition. Defaults to period=all (no date filter). Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "description": "Time period to filter logins. One of: all (no date filter), daily (last 24 hours), weekly (last 7 days), monthly (last 30 days). Defaults to all.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "all",
+                "daily",
+                "weekly",
+                "monthly"
+              ],
+              "default": "all"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Privy login statistics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "total",
+                    "total_new",
+                    "total_active",
+                    "logins"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success"
+                      ],
+                      "description": "Status of the request"
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total number of accounts in Privy across all time (not filtered by period)",
+                      "example": 42
+                    },
+                    "total_new": {
+                      "type": "integer",
+                      "description": "Number of accounts created (created_at) within the requested period",
+                      "example": 15
+                    },
+                    "total_active": {
+                      "type": "integer",
+                      "description": "Total number of accounts matching either new or active criteria in the requested period",
+                      "example": 30
+                    },
+                    "logins": {
+                      "type": "array",
+                      "description": "Full, unmodified Privy account objects. See [Privy User object docs](https://docs.privy.io/api-reference/users/get-all) for the complete type definition.",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - authenticated account is not a Recoup admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Your Recoup API key. [Learn more](/quickstart#api-keys)."
+      }
+    },
+    "schemas": {
+      "Account": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the account"
+          },
+          "name": {
+            "type": "string",
+            "description": "Account display name"
+          },
+          "image": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profile image URL"
+          },
+          "instruction": {
+            "type": "string",
+            "nullable": true,
+            "description": "Custom AI instructions for this account"
+          },
+          "knowledges": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/Knowledge"
+            },
+            "description": "Knowledge base files attached to this account"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true,
+            "description": "Primary email address"
+          },
+          "wallet_address": {
+            "type": "string",
+            "nullable": true,
+            "description": "Connected wallet address"
+          }
+        }
+      },
+      "AccountData": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier of the account"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The account ID (same as id, for consistency)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Display name of the account"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address associated with the account"
+          },
+          "wallet": {
+            "type": "string",
+            "description": "Wallet address associated with the account"
+          },
+          "image": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the account's profile image"
+          },
+          "instruction": {
+            "type": "string",
+            "description": "Custom instruction or bio"
+          },
+          "organization": {
+            "type": "string",
+            "description": "Organization name"
+          },
+          "job_title": {
+            "type": "string",
+            "description": "Job title"
+          },
+          "role_type": {
+            "type": "string",
+            "description": "Role type"
+          },
+          "company_name": {
+            "type": "string",
+            "description": "Company name"
+          },
+          "knowledges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Knowledge"
+            },
+            "description": "Knowledge base files attached to this account"
+          }
+        }
+      },
+      "AccountDataResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AccountData",
+            "description": "The account data"
+          }
+        }
+      },
+      "AccountErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "AccountSandboxRow": {
+        "type": "object",
+        "required": [
+          "account_id",
+          "total_sandboxes",
+          "last_created_at"
+        ],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier of the account",
+            "example": "04e3aba9-c130-4fb8-8b92-34e95d43e66b"
+          },
+          "total_sandboxes": {
+            "type": "integer",
+            "description": "Total number of sandboxes created for this account",
+            "example": 5
+          },
+          "last_created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of the most recently created sandbox for this account",
+            "example": "2026-03-10T12:00:00Z"
+          },
+          "account_email": {
+            "type": "string",
+            "nullable": true,
+            "description": "The email address of the account. Null if the account has no email set.",
+            "example": "alice@example.com"
+          }
+        },
+        "description": ""
+      },
+      "AddArtistSuccessResponse": {
+        "type": "object",
+        "required": [
+          "success"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [
+              true
+            ],
+            "description": "Indicates the artist was successfully added"
+          }
+        }
+      },
+      "AddArtistToAccountRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "artistId"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the account to add the artist to"
+          },
+          "artistId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier of the artist to add"
+          }
+        }
+      },
+      "AddArtistToOrganizationRequest": {
+        "type": "object",
+        "required": [
+          "artistId",
+          "organizationId"
+        ],
+        "properties": {
+          "artistId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The account ID of the artist to add",
+            "example": "artist-account-uuid"
+          },
+          "organizationId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The account ID of the organization",
+            "example": "org-account-uuid"
+          }
+        }
+      },
+      "AddArtistToOrganizationResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "id"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the created artist-organization link"
+          }
+        }
+      },
+      "AdminEmailsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "emails"
+        ],
+        "description": "Response containing Resend emails sent for an account",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "emails": {
+            "type": "array",
+            "description": "List of emails sent for the account, ordered by created_at descending",
+            "items": {
+              "$ref": "#/components/schemas/PulseEmailRow"
+            }
+          }
+        }
+      },
+      "AdminSandboxOrgsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "repos"
+        ],
+        "description": "Response containing commit statistics for all org repositories",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "repos": {
+            "type": "array",
+            "description": "List of org repos with their commit statistics, ordered by total_commits descending",
+            "items": {
+              "$ref": "#/components/schemas/OrgRepoRow"
+            }
+          }
+        }
+      },
+      "AdminSandboxesResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "accounts"
+        ],
+        "description": "Response containing per-account sandbox statistics for admin use",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "accounts": {
+            "type": "array",
+            "description": "List of accounts with their sandbox statistics, ordered by most recently active first",
+            "items": {
+              "$ref": "#/components/schemas/AccountSandboxRow"
+            }
+          }
+        }
+      },
+      "CheckAdminResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "isAdmin"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "isAdmin": {
+            "type": "boolean",
+            "description": "Whether the authenticated account is a Recoup admin"
+          }
+        }
+      },
+      "CreateAccountRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address to associate with the account. If an account with this email exists, it will be returned."
+          },
+          "wallet": {
+            "type": "string",
+            "description": "Wallet address to associate with the account. If an account with this wallet exists, it will be returned."
+          }
+        },
+        "description": "At least one of email or wallet should be provided to identify or create an account."
+      },
+      "CreateNotificationRequest": {
+        "type": "object",
+        "required": [
+          "subject"
+        ],
+        "properties": {
+          "cc": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "email"
+            },
+            "description": "Optional CC email addresses",
+            "example": [
+              "cc@example.com"
+            ]
+          },
+          "subject": {
+            "type": "string",
+            "description": "Email subject line",
+            "example": "Weekly Pulse Report"
+          },
+          "text": {
+            "type": "string",
+            "description": "Plain text or Markdown body. Rendered as HTML via Markdown if no `html` is provided.",
+            "example": "# Pulse Report\n\nHere's your weekly summary."
+          },
+          "html": {
+            "type": "string",
+            "description": "Raw HTML body. Takes precedence over `text` when both are provided.",
+            "example": "<h1>Pulse Report</h1><p>Here's your weekly summary.</p>"
+          },
+          "headers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional custom email headers"
+          },
+          "room_id": {
+            "type": "string",
+            "description": "Room ID to include a chat link in the email footer"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account to send the notification for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, sends the notification for the API key's own account."
+          }
+        }
+      },
+      "CreateOrganizationRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "accountId"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the organization to create",
+            "example": "My New Label"
+          },
+          "accountId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The account ID of the creator",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          }
+        }
+      },
+      "CreateOrganizationResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "organization"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "organization": {
+            "$ref": "#/components/schemas/CreatedOrganization",
+            "description": "The created organization"
+          }
+        }
+      },
+      "CreateWorkspaceRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the workspace (defaults to \"Untitled\")"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account to create the workspace for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, the workspace is created for the API key's own account."
+          },
+          "organization_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Organization to link the workspace to"
+          }
+        }
+      },
+      "CreateWorkspaceResponse": {
+        "type": "object",
+        "required": [
+          "workspace"
+        ],
+        "properties": {
+          "workspace": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              },
+              "account_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "isWorkspace": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      },
+      "CreatedOrganization": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the new organization account"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the organization"
+          }
+        }
+      },
+      "EnterpriseSubscriptionResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "isEnterprise"
+        ],
+        "description": "Response for accounts with enterprise plans",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "isEnterprise": {
+            "type": "boolean",
+            "enum": [
+              true
+            ],
+            "description": "Indicates that the account has an enterprise plan"
+          }
+        }
+      },
+      "Error": {
+        "required": [
+          "error",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "GetAccountIdResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "accountId"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "accountId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier (UUID) of the authenticated account"
+          }
+        }
+      },
+      "GetAccountResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "account"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "account": {
+            "$ref": "#/components/schemas/Account",
+            "description": "The account details"
+          }
+        }
+      },
+      "GetOrganizationsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "organizations"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "organizations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Organization"
+            },
+            "description": "List of organizations the account belongs to"
+          }
+        }
+      },
+      "Knowledge": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL to the knowledge file"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the knowledge file"
+          },
+          "type": {
+            "type": "string",
+            "description": "MIME type of the file"
+          }
+        }
+      },
+      "NotificationResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the notification was sent successfully",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable result message",
+            "example": "Email sent successfully from Agent by Recoup <agent@recoupable.com> to user@example.com."
+          },
+          "id": {
+            "type": "string",
+            "description": "Resend email ID",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          }
+        }
+      },
+      "OrgRepoRow": {
+        "type": "object",
+        "required": [
+          "repo_name",
+          "repo_url",
+          "total_commits",
+          "latest_commit_messages",
+          "earliest_committed_at",
+          "latest_committed_at",
+          "account_repos"
+        ],
+        "description": "Commit statistics for a single GitHub org repository",
+        "properties": {
+          "repo_name": {
+            "type": "string",
+            "description": "Repository name",
+            "example": "chat"
+          },
+          "repo_url": {
+            "type": "string",
+            "description": "Full GitHub HTML URL of the repository",
+            "example": "https://github.com/recoupable/chat"
+          },
+          "total_commits": {
+            "type": "integer",
+            "description": "Total number of commits in the repository",
+            "example": 5696
+          },
+          "latest_commit_messages": {
+            "type": "array",
+            "description": "Messages from the 5 most recent commits",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "Merge test into main",
+              "fix: duration stuck at 0ms for in-progress tasks"
+            ]
+          },
+          "earliest_committed_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of the earliest (first) commit",
+            "example": "2024-09-27T17:16:01Z"
+          },
+          "latest_committed_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of the most recent commit",
+            "example": "2026-03-10T19:57:37Z"
+          },
+          "account_repos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "account_id": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "repo_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "account_id",
+                "repo_url"
+              ]
+            },
+            "description": "List of accounts using this org repo as a submodule, with account_id, email, and repo_url"
+          }
+        }
+      },
+      "Organization": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the membership record"
+          },
+          "organization_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the organization account"
+          },
+          "organization_name": {
+            "type": "string",
+            "description": "Display name of the organization"
+          },
+          "organization_image": {
+            "type": "string",
+            "nullable": true,
+            "description": "Organization logo/image URL"
+          }
+        }
+      },
+      "OrganizationsErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "Pulse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the pulse"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the associated account"
+          },
+          "active": {
+            "type": "boolean",
+            "description": "Whether the pulse is active (defaults to true)"
+          }
+        }
+      },
+      "PulseEmailRow": {
+        "type": "object",
+        "required": [
+          "id",
+          "from",
+          "to",
+          "subject",
+          "created_at",
+          "last_event"
+        ],
+        "description": "A single email record from Resend (full GetEmailResponseSuccess). See [Resend API docs](https://resend.com/docs/api-reference/emails/retrieve-email) for the source of truth.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The Resend email ID"
+          },
+          "from": {
+            "type": "string",
+            "description": "Sender email address"
+          },
+          "to": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Recipient email addresses"
+          },
+          "cc": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "description": "CC recipient email addresses"
+          },
+          "bcc": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "description": "BCC recipient email addresses"
+          },
+          "reply_to": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "description": "Reply-to email addresses"
+          },
+          "subject": {
+            "type": "string",
+            "description": "Email subject line"
+          },
+          "html": {
+            "type": "string",
+            "nullable": true,
+            "description": "HTML content of the email"
+          },
+          "text": {
+            "type": "string",
+            "nullable": true,
+            "description": "Plain text content of the email"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the email was created"
+          },
+          "scheduled_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Scheduled send time, if any"
+          },
+          "last_event": {
+            "type": "string",
+            "enum": [
+              "bounced",
+              "canceled",
+              "clicked",
+              "complained",
+              "delivered",
+              "delivery_delayed",
+              "failed",
+              "opened",
+              "queued",
+              "scheduled",
+              "sent"
+            ],
+            "description": "Most recent delivery event for this email"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "value"
+              ]
+            },
+            "nullable": true,
+            "description": "Custom tags attached to the email"
+          }
+        }
+      },
+      "PulsesResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "pulses"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "pulses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Pulse"
+            },
+            "description": "Array of pulse objects. Contains pulses for the authenticated account. If the account has access to organizations, all organization accounts are included."
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message (only present if status is error)"
+          }
+        }
+      },
+      "StripeSubscription": {
+        "type": "object",
+        "description": "A Stripe subscription object. For detailed information about all available properties, see the Stripe Subscription API documentation: https://docs.stripe.com/api/subscriptions/retrieve",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the subscription"
+          },
+          "object": {
+            "type": "string",
+            "enum": [
+              "subscription"
+            ],
+            "description": "String representing the object's type"
+          },
+          "customer": {
+            "type": "string",
+            "description": "ID of the customer who owns this subscription"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "canceled",
+              "incomplete",
+              "incomplete_expired",
+              "past_due",
+              "trialing",
+              "unpaid"
+            ],
+            "description": "The status of the subscription"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Three-letter ISO currency code"
+          },
+          "current_period_start": {
+            "type": "integer",
+            "description": "Start of the current period (Unix timestamp)"
+          },
+          "current_period_end": {
+            "type": "integer",
+            "description": "End of the current period (Unix timestamp)"
+          },
+          "cancel_at_period_end": {
+            "type": "boolean",
+            "description": "If true, the subscription will be canceled at the end of the current period"
+          },
+          "created": {
+            "type": "integer",
+            "description": "Time at which the subscription was created (Unix timestamp)"
+          },
+          "items": {
+            "type": "object",
+            "description": "List of subscription items, each with an attached price",
+            "properties": {
+              "object": {
+                "type": "string",
+                "enum": [
+                  "list"
+                ]
+              },
+              "data": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "object": {
+                      "type": "string",
+                      "enum": [
+                        "subscription_item"
+                      ]
+                    },
+                    "price": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "currency": {
+                          "type": "string"
+                        },
+                        "unit_amount": {
+                          "type": "integer",
+                          "description": "Price amount in cents"
+                        },
+                        "recurring": {
+                          "type": "object",
+                          "properties": {
+                            "interval": {
+                              "type": "string",
+                              "enum": [
+                                "day",
+                                "week",
+                                "month",
+                                "year"
+                              ]
+                            },
+                            "interval_count": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "quantity": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              },
+              "has_more": {
+                "type": "boolean"
+              },
+              "total_count": {
+                "type": "integer"
+              }
+            }
+          },
+          "latest_invoice": {
+            "type": "string",
+            "description": "ID of the most recent invoice for this subscription"
+          },
+          "livemode": {
+            "type": "boolean",
+            "description": "Indicates if in live mode (true) or test mode (false)"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Set of key-value pairs attached to the subscription"
+          }
+        }
+      },
+      "SubscriptionErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "SubscriptionResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "subscription"
+        ],
+        "description": "Response for standard accounts with Stripe subscriptions",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "subscription": {
+            "$ref": "#/components/schemas/StripeSubscription",
+            "description": "The full Stripe subscription object"
+          }
+        }
+      },
+      "UpdateAccountRequest": {
+        "type": "object",
+        "required": [
+          "accountId"
+        ],
+        "properties": {
+          "accountId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier of the account to update"
+          },
+          "name": {
+            "type": "string",
+            "description": "Display name for the account"
+          },
+          "instruction": {
+            "type": "string",
+            "description": "Custom instruction or bio for the account"
+          },
+          "organization": {
+            "type": "string",
+            "description": "Organization name associated with the account"
+          },
+          "image": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the account's profile image"
+          },
+          "jobTitle": {
+            "type": "string",
+            "description": "Job title of the account holder"
+          },
+          "roleType": {
+            "type": "string",
+            "description": "Role type within the organization"
+          },
+          "companyName": {
+            "type": "string",
+            "description": "Company name associated with the account"
+          },
+          "knowledges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Knowledge"
+            },
+            "description": "Knowledge base files attached to this account"
+          }
+        }
+      },
+      "UpdatePulseRequest": {
+        "type": "object",
+        "required": [
+          "active"
+        ],
+        "properties": {
+          "active": {
+            "type": "boolean",
+            "description": "Whether to enable or disable the pulse",
+            "example": true
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account to update the pulse for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, updates the pulse for the API key's own account."
+          }
+        }
+      }
+    }
+  }
+}
