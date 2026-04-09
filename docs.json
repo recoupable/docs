@@ -95,7 +95,6 @@
             "group": "Artists",
             "pages": [
               "api-reference/artists/list",
-              "api-reference/artists/get",
               "api-reference/artists/create",
               "api-reference/artist/segments",
               "api-reference/artist/socials",
