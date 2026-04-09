@@ -574,61 +574,6 @@
         }
       }
     },
-    "/api/artists/{id}": {
-      "get": {
-        "description": "Retrieve a single artist detail payload by artist account ID. Returns the merged artist profile used by the chat product, including profile fields and linked social accounts. Requires authentication via x-api-key or Authorization Bearer token, and the caller must be allowed to access the requested artist account.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "The unique identifier of the artist account to retrieve",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Artist retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetArtistResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - invalid artist id",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ArtistsErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - missing or invalid authentication"
-          },
-          "403": {
-            "description": "Forbidden - the requested artist is not accessible with the provided credentials"
-          },
-          "404": {
-            "description": "Artist not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StatusErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/artist/segments": {
       "get": {
         "description": "Retrieve all segments associated with an artist. This endpoint should be called before using the Segment Fans endpoint to obtain the necessary segment IDs. Supports pagination.",
@@ -8504,22 +8449,11 @@
           }
         }
       },
-      "GetArtistResponse": {
-        "type": "object",
-        "required": [
-          "artist"
-        ],
-        "properties": {
-          "artist": {
-            "$ref": "#/components/schemas/ArtistDetail"
-          }
-        }
-      },
       "ArtistsErrorResponse": {
         "type": "object",
         "required": [
           "status",
-          "error"
+          "message"
         ],
         "properties": {
           "status": {
@@ -8529,14 +8463,7 @@
             ],
             "description": "Status of the request"
           },
-          "missing_fields": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "List of missing or invalid field names when validation fails"
-          },
-          "error": {
+          "message": {
             "type": "string",
             "description": "Error message describing what went wrong"
           }
@@ -8664,90 +8591,6 @@
           "account_socials": {
             "type": "array",
             "description": "Linked social media accounts"
-          }
-        }
-      },
-      "ArtistDetail": {
-        "type": "object",
-        "required": [
-          "id",
-          "account_id",
-          "name",
-          "account_socials"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "UUID of the artist account"
-          },
-          "account_id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "UUID of the artist account (same as id)"
-          },
-          "name": {
-            "type": "string",
-            "description": "Name of the artist"
-          },
-          "image": {
-            "type": "string",
-            "nullable": true,
-            "description": "Artist profile image URL"
-          },
-          "instruction": {
-            "type": "string",
-            "nullable": true,
-            "description": "Custom AI instruction or bio for this artist"
-          },
-          "knowledges": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "$ref": "#/components/schemas/Knowledge"
-            },
-            "description": "Knowledge base files attached to this artist"
-          },
-          "label": {
-            "type": "string",
-            "nullable": true,
-            "description": "Record label name"
-          },
-          "account_socials": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ArtistAccountSocial"
-            },
-            "description": "Linked social accounts formatted for artist settings and chat flows"
-          }
-        }
-      },
-      "ArtistAccountSocial": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true,
-            "description": "UUID of the linked social profile"
-          },
-          "profile_url": {
-            "type": "string",
-            "nullable": true,
-            "description": "Canonical social profile URL"
-          },
-          "username": {
-            "type": "string",
-            "nullable": true,
-            "description": "Username or handle for the social profile"
-          },
-          "link": {
-            "type": "string",
-            "description": "Normalized profile URL used by the chat client"
-          },
-          "type": {
-            "type": "string",
-            "description": "Derived platform type such as INSTAGRAM, TIKTOK, or SPOTIFY"
           }
         }
       },
