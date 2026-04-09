@@ -549,7 +549,7 @@
     },
     "/api/content": {
       "patch": {
-        "description": "Apply edits to content — trim, crop, resize, overlay text, or add an audio track. Accepts video, image, or audio input. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array.",
+        "description": "Apply edits to content — trim, crop, resize, overlay text, or add an audio track. Accepts video or audio input. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array.",
         "security": [
           {
             "apiKeyAuth": []
