@@ -289,6 +289,93 @@
         }
       }
     },
+    "/api/files": {
+      "get": {
+        "description": "List files for an artist account the authenticated caller can access. Returns immediate children by default, or all descendants when `recursive=true`. Each file row includes `owner_email` when the file owner's account has an email on record. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "parameters": [
+          {
+            "name": "artist_account_id",
+            "in": "query",
+            "required": true,
+            "description": "Artist account whose files should be listed.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "path",
+            "in": "query",
+            "required": false,
+            "description": "Optional relative path to list files from.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "recursive",
+            "in": "query",
+            "required": false,
+            "description": "When true, return all descendant files under the given path.",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Files retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilesListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or invalid artist_account_id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account does not have access to the artist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/sandboxes/file": {
       "get": {
         "description": "Retrieve the raw contents of a file from the authenticated account's sandbox GitHub repository. Resolves the github_repo from the [account's snapshot](/api-reference/sandboxes/list), then fetches the file at the specified path from the repository's main branch. Authentication is handled via the x-api-key header or Authorization Bearer token.",
@@ -2347,6 +2434,79 @@
               "artist-caption-outside",
               "artist-caption-stage"
             ]
+          }
+        }
+      },
+      "FileListItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "owner_account_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "artist_account_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "file_name": {
+            "type": "string"
+          },
+          "storage_key": {
+            "type": "string"
+          },
+          "mime_type": {
+            "type": "string",
+            "nullable": true
+          },
+          "is_directory": {
+            "type": "boolean"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "owner_email": {
+            "type": "string",
+            "nullable": true,
+            "description": "Primary email address of the file owner account when one exists."
+          }
+        }
+      },
+      "FilesListResponse": {
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "properties": {
+          "files": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FileListItem"
+            },
+            "description": "Array of file and folder rows"
           }
         }
       },
