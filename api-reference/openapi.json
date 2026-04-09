@@ -14565,7 +14565,7 @@
         "properties": {
           "template": {
             "type": "string",
-            "description": "Optional template ID. When provided, uses the template's image prompt, reference images, and style rules. Caller params override template defaults. Artist context overrides template style when available."
+            "description": "Optional template ID. When provided, uses the template's image prompt, reference images, and style rules. Caller params override template defaults. Artist context overrides template style when available. See [GET /api/content/templates](/api-reference/content/templates) for available options."
           },
           "prompt": {
             "type": "string",
@@ -14608,7 +14608,7 @@
         "properties": {
           "template": {
             "type": "string",
-            "description": "Optional template ID. When provided, the template's video config (moods, movements) is used as the motion prompt. Caller params override template defaults."
+            "description": "Optional template ID. When provided, the template's video config (moods, movements) is used as the motion prompt. Caller params override template defaults. See [GET /api/content/templates](/api-reference/content/templates) for available options."
           },
           "mode": {
             "type": "string",
@@ -14713,7 +14713,7 @@
         "properties": {
           "template": {
             "type": "string",
-            "description": "Optional template ID. When provided, injects the template's caption guide (tone, rules, formats) and examples into the LLM prompt. Caller's topic is still required."
+            "description": "Optional template ID. When provided, injects the template's caption guide (tone, rules, formats) and examples into the LLM prompt. Caller's topic is still required. See [GET /api/content/templates](/api-reference/content/templates) for available options."
           },
           "topic": {
             "type": "string",
@@ -14862,7 +14862,7 @@
           },
           "template": {
             "type": "string",
-            "description": "Template name for deterministic edit config. If provided, operations are read from the template."
+            "description": "Template name for deterministic edit config. If provided, operations are read from the template. See [GET /api/content/templates](/api-reference/content/templates) for available options."
           },
           "operations": {
             "type": "array",
