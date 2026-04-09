@@ -186,6 +186,83 @@
         }
       }
     },
+    "/api/files/list": {
+      "get": {
+        "description": "List files for an artist, optionally filtered by relative path. Each returned file row includes `owner_email` inline so clients can render ownership metadata without a secondary account email lookup.",
+        "parameters": [
+          {
+            "name": "ownerAccountId",
+            "in": "query",
+            "description": "Owner account context for the file listing request.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "artistAccountId",
+            "in": "query",
+            "description": "Artist account whose files should be listed.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "path",
+            "in": "query",
+            "description": "Optional relative path to list files from.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "recursive",
+            "in": "query",
+            "description": "When true, return all descendant files under the given path.",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Files retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilesListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing ownerAccountId or artistAccountId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/tasks/runs": {
       "get": {
         "description": "Returns an array of task runs. When runId is provided, the array contains that single run. When omitted, returns recent runs for the authenticated account. Use account_id to query runs for a specific account within your organizations.",
@@ -7899,6 +7976,79 @@
           "error": {
             "type": "string",
             "description": "Error message (only present if status is error)"
+          }
+        }
+      },
+      "FilesListResponse": {
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "properties": {
+          "files": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FileListItem"
+            },
+            "description": "Array of file and folder rows"
+          }
+        }
+      },
+      "FileListItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "owner_account_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "artist_account_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "file_name": {
+            "type": "string"
+          },
+          "storage_key": {
+            "type": "string"
+          },
+          "mime_type": {
+            "type": "string",
+            "nullable": true
+          },
+          "is_directory": {
+            "type": "boolean"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "owner_email": {
+            "type": "string",
+            "nullable": true,
+            "description": "Primary email address of the file owner account when one exists."
           }
         }
       },

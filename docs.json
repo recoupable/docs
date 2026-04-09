@@ -172,6 +172,12 @@
             ]
           },
           {
+            "group": "Files",
+            "pages": [
+              "api-reference/files/list"
+            ]
+          },
+          {
             "group": "Image",
             "pages": [
               "api-reference/image/generation"
