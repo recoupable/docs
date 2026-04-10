@@ -73,7 +73,7 @@
         }
       },
       "post": {
-        "description": "Create a new scheduled task that runs a prompt against an artist on a recurring cron schedule. The response matches the GET endpoint (a `TasksResponse` with the created task in the `tasks` array).",
+        "description": "Create a new scheduled task that runs a prompt against an artist on a recurring cron schedule. The response matches the [GET endpoint](/api-reference/tasks/get) (a `TasksResponse` with the created task in the `tasks` array).",
         "requestBody": {
           "description": "Task to create",
           "required": true,
