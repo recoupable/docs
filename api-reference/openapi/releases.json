@@ -73,7 +73,7 @@
         }
       },
       "post": {
-        "description": "Create a new scheduled task. All fields are required. The response shape matches the GET endpoint (an array containing the created task).",
+        "description": "Create a new scheduled task that runs a prompt against an artist on a recurring cron schedule. The response matches the [GET endpoint](/api-reference/tasks/get) (a `TasksResponse` with the created task in the `tasks` array).",
         "requestBody": {
           "description": "Task to create",
           "required": true,
@@ -97,7 +97,37 @@
             }
           },
           "400": {
-            "description": "Bad request",
+            "description": "Bad request - missing required fields or invalid body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account_id is outside caller authorization scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -2240,7 +2270,6 @@
           "title",
           "prompt",
           "schedule",
-          "account_id",
           "artist_account_id"
         ],
         "properties": {
@@ -2262,7 +2291,7 @@
           "account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the associated account",
+            "description": "UUID of the account to create the task for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, the task is created for the API key's own account.",
             "example": "848cd58d-700f-4b38-ab4c-d9f52a1b2c3d"
           },
           "artist_account_id": {
