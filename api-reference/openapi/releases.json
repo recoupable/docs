@@ -392,23 +392,24 @@
         }
       }
     },
-    "/api/artists/pin": {
+    "/api/artists/{id}/pin": {
       "post": {
-        "description": "Pin or unpin an artist accessible to the authenticated account. This updates the caller's pinned preference for the artist and will create the direct account_artist_ids row when needed for org-access artists.",
-        "requestBody": {
-          "description": "Artist pin parameters",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PinArtistRequest"
-              }
+        "description": "Pin an artist accessible to the authenticated account. This updates the caller's pinned preference for the artist and will create the direct account_artist_ids row when needed for org-access artists.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Artist account ID to pin.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
             }
           }
-        },
+        ],
         "responses": {
           "200": {
-            "description": "Artist pin updated successfully",
+            "description": "Artist pinned successfully",
             "content": {
               "application/json": {
                 "schema": {
@@ -423,6 +424,56 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PinArtistErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication"
+          },
+          "403": {
+            "description": "Forbidden - the authenticated account cannot access this artist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinArtistErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Artist not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinArtistErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Unpin an artist accessible to the authenticated account.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Artist account ID to unpin.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist unpinned successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinArtistResponse"
                 }
               }
             }
@@ -2266,24 +2317,6 @@
           "error": {
             "type": "string",
             "description": "Error message describing what went wrong"
-          }
-        }
-      },
-      "PinArtistRequest": {
-        "type": "object",
-        "required": [
-          "artistId",
-          "pinned"
-        ],
-        "properties": {
-          "artistId": {
-            "type": "string",
-            "format": "uuid",
-            "description": "UUID of the artist account to pin or unpin. Use [GET /api/artists](/api-reference/artists/list) to find artist account IDs."
-          },
-          "pinned": {
-            "type": "boolean",
-            "description": "Whether the authenticated account wants this artist pinned"
           }
         }
       },
