@@ -73,17 +73,9 @@
         }
       },
       "post": {
-        "description": "Create a new scheduled task. Authentication is required (`x-api-key` or `Authorization: Bearer`). The server derives caller identity from credentials and authorizes the required body field `account_id` using the same account override rules as elsewhere (self-access or permitted organization access). A body `account_id` outside the caller's authorized scope returns 403 Forbidden. On success, returns HTTP 200 with a `TasksResponse` object: `status: success` and a `tasks` array containing the created task (same envelope as GET /api/tasks). Missing or invalid authentication returns 401.",
-        "security": [
-          {
-            "apiKeyAuth": []
-          },
-          {
-            "bearerAuth": []
-          }
-        ],
+        "description": "Create a new scheduled task that runs a prompt against an artist on a recurring cron schedule. The response matches the GET endpoint (a `TasksResponse` with the created task in the `tasks` array).",
         "requestBody": {
-          "description": "Task to create. Schema: CreateTaskRequest. Caller must be authenticated (see operation security).",
+          "description": "Task to create",
           "required": true,
           "content": {
             "application/json": {
@@ -2278,7 +2270,6 @@
           "title",
           "prompt",
           "schedule",
-          "account_id",
           "artist_account_id"
         ],
         "properties": {
@@ -2300,7 +2291,7 @@
           "account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "Required. UUID of the Recoup account under which this task is created. Must match the authenticated caller's own account or an account the caller is authorized to act for (organization override rules); otherwise the API returns 403. This field is not proof of ownership by itself—it is validated against credentials server-side.",
+            "description": "UUID of the account to create the task for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, the task is created for the API key's own account.",
             "example": "848cd58d-700f-4b38-ab4c-d9f52a1b2c3d"
           },
           "artist_account_id": {
