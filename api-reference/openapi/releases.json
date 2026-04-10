@@ -74,6 +74,14 @@
       },
       "post": {
         "description": "Create a new scheduled task that runs a prompt against an artist on a recurring cron schedule. The response matches the [GET endpoint](/api-reference/tasks/get) (a `TasksResponse` with the created task in the `tasks` array). Authenticate with exactly one of `x-api-key` or `Authorization: Bearer`. The task owner `account_id` is **always** taken from the authenticated identity — do **not** send `account_id` in the JSON body (unknown fields, including `account_id`, are rejected).",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "description": "Task to create. Required: `title`, `prompt`, `schedule`, `artist_account_id`. Optional: `model`. Do not include `account_id`.",
           "required": true,
@@ -2123,7 +2131,7 @@
           "account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the account to create the artist for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, the artist is created for the API key's own account."
+            "description": "UUID of the account to create the artist for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, the artist is created for the primary account resolved from the authenticated credentials (`x-api-key` or `Authorization: Bearer`)."
           },
           "organization_id": {
             "type": "string",
