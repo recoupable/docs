@@ -96,6 +96,7 @@
             "pages": [
               "api-reference/artists/list",
               "api-reference/artists/create",
+              "api-reference/artists/delete",
               "api-reference/artist/segments",
               "api-reference/artist/socials",
               "api-reference/artist/socials-scrape",
