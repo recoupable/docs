@@ -73,9 +73,9 @@
         }
       },
       "post": {
-        "description": "Create a new scheduled task that runs a prompt against an artist on a recurring cron schedule. The response matches the [GET endpoint](/api-reference/tasks/get) (a `TasksResponse` with the created task in the `tasks` array).",
+        "description": "Create a new scheduled task that runs a prompt against an artist on a recurring cron schedule. The response matches the [GET endpoint](/api-reference/tasks/get) (a `TasksResponse` with the created task in the `tasks` array). Authenticate with exactly one of `x-api-key` or `Authorization: Bearer`. The task owner `account_id` is **always** taken from the authenticated identity — do **not** send `account_id` in the JSON body (unknown fields, including `account_id`, are rejected).",
         "requestBody": {
-          "description": "Task to create",
+          "description": "Task to create. Required: `title`, `prompt`, `schedule`, `artist_account_id`. Optional: `model`. Do not include `account_id`.",
           "required": true,
           "content": {
             "application/json": {
@@ -97,7 +97,7 @@
             }
           },
           "400": {
-            "description": "Bad request - missing required fields or invalid body",
+            "description": "Bad request - missing required fields, invalid JSON, invalid body, or unknown/extra properties (e.g. `account_id` must not appear in the body)",
             "content": {
               "application/json": {
                 "schema": {
@@ -117,7 +117,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - account_id is outside caller authorization scope",
+            "description": "Forbidden - caller is not allowed to perform this action",
             "content": {
               "application/json": {
                 "schema": {
@@ -2266,6 +2266,7 @@
       },
       "CreateTaskRequest": {
         "type": "object",
+        "additionalProperties": false,
         "required": [
           "title",
           "prompt",
@@ -2288,17 +2289,15 @@
             "description": "Cron expression defining when the task runs (e.g., '0 9 * * 4' for Thursdays at 9 AM)",
             "example": "0 9 * * 4"
           },
-          "account_id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "UUID of the account to create the task for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, the task is created for the API key's own account.",
-            "example": "848cd58d-700f-4b38-ab4c-d9f52a1b2c3d"
-          },
           "artist_account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the associated artist account",
+            "description": "UUID of the artist account this task runs for (required)",
             "example": "1873859c-dd37-4e9a-9bac-80d35a1b2c3d"
+          },
+          "model": {
+            "type": "string",
+            "description": "Optional AI model id for this task (e.g. anthropic/claude-sonnet-4.5). If omitted, the default model is used."
           }
         }
       },
