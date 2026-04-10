@@ -418,13 +418,13 @@
               }
             }
           },
-          "400": {
-            "description": "Bad request - validation error or invalid JSON",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PinArtistErrorResponse"
-                }
+      "400": {
+        "description": "Bad request - invalid artist ID path parameter",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PinArtistErrorResponse"
+            }
               }
             }
           },
@@ -468,19 +468,29 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Artist unpinned successfully",
-            "content": {
-              "application/json": {
-                "schema": {
+      "200": {
+        "description": "Artist unpinned successfully",
+        "content": {
+          "application/json": {
+            "schema": {
                   "$ref": "#/components/schemas/PinArtistResponse"
                 }
-              }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad request - invalid artist ID path parameter",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PinArtistErrorResponse"
             }
-          },
-          "401": {
-            "description": "Unauthorized - missing or invalid authentication"
-          },
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized - missing or invalid authentication"
+      },
           "403": {
             "description": "Forbidden - the authenticated account cannot access this artist",
             "content": {
