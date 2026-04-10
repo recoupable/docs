@@ -392,6 +392,67 @@
         }
       }
     },
+    "/api/artists/pin": {
+      "post": {
+        "description": "Pin or unpin an artist accessible to the authenticated account. This updates the caller's pinned preference for the artist and will create the direct account_artist_ids row when needed for org-access artists.",
+        "requestBody": {
+          "description": "Artist pin parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinArtistRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Artist pin updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinArtistResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation error or invalid JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinArtistErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication"
+          },
+          "403": {
+            "description": "Forbidden - the authenticated account cannot access this artist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinArtistErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Artist not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinArtistErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/artists/{id}": {
       "delete": {
         "description": "Delete an artist accessible to the authenticated account. This removes the caller's direct artist link and, if no owner links remain, deletes the artist account itself.",
@@ -2178,6 +2239,74 @@
             "type": "string",
             "format": "uuid",
             "description": "UUID of the artist account that was deleted or unlinked"
+          }
+        }
+      },
+      "PinArtistErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "missing_fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of missing or invalid field names"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "PinArtistRequest": {
+        "type": "object",
+        "required": [
+          "artistId",
+          "pinned"
+        ],
+        "properties": {
+          "artistId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist account to pin or unpin. Use [GET /api/artists](/api-reference/artists/list) to find artist account IDs."
+          },
+          "pinned": {
+            "type": "boolean",
+            "description": "Whether the authenticated account wants this artist pinned"
+          }
+        }
+      },
+      "PinArtistResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "artistId",
+          "pinned"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the artist pin update completed successfully"
+          },
+          "artistId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist account whose pinned state was updated"
+          },
+          "pinned": {
+            "type": "boolean",
+            "description": "The persisted pinned state for the authenticated account"
           }
         }
       },
