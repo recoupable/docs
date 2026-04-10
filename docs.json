@@ -185,6 +185,14 @@
             ]
           },
           {
+            "group": "Predictions",
+            "pages": [
+              "api-reference/predictions/create",
+              "api-reference/predictions/list",
+              "api-reference/predictions/get"
+            ]
+          },
+          {
             "group": "Sandboxes",
             "pages": [
               "api-reference/sandboxes/list",
