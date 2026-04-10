@@ -96,6 +96,7 @@
             "pages": [
               "api-reference/artists/list",
               "api-reference/artists/create",
+              "api-reference/artists/delete",
               "api-reference/artist/segments",
               "api-reference/artist/socials",
               "api-reference/artist/socials-scrape",
@@ -151,6 +152,7 @@
               "api-reference/content/upscale",
               "api-reference/content/analyze-video",
               "api-reference/content/templates",
+              "api-reference/content/template-detail",
               "api-reference/content/validate",
               "api-reference/content/estimate"
             ]
