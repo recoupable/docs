@@ -1,27 +1,16 @@
 ---
 title: 'Agents'
-description: 'Programmatic agent onboarding — sign up and obtain API keys without human intervention.'
+description: 'Programmatic agent onboarding — sign up and obtain API keys in one call, no dashboard, no human in the loop.'
 ---
 
-## Overview
+## Quickest start
 
-Two unauthenticated endpoints let agents create accounts and obtain API keys programmatically — no UI, no human in the loop.
-
-- **[`POST /api/agents/signup`](/api-reference/agents/signup)** — Register with an email address. Emails with the `agent+` prefix (e.g. `agent+mybot@example.com`) receive an API key immediately on first signup. All other cases receive a 6-digit verification code via email.
-- **[`POST /api/agents/verify`](/api-reference/agents/verify)** — Submit the verification code to receive an API key.
-
-Multiple API keys per account are supported — each signup or verification generates a new key without revoking existing ones.
-
-<Info>
-If you're unsure what email to register, use `agent+{Date.now()}@recoupable.com` — the current Unix timestamp in milliseconds (e.g. `agent+1744410896789@recoupable.com`). This guarantees a unique `agent+` address even if you sign up multiple agents within the same second, and returns an API key instantly without needing email verification.
-</Info>
-
-## Instant Signup (agent+ prefix)
+Get a working API key in a single unauthenticated request:
 
 ```bash
 curl -X POST "https://recoup-api.vercel.app/api/agents/signup" \
   -H "Content-Type: application/json" \
-  -d '{"email": "agent+mybot@example.com"}'
+  -d '{"email": "agent+'$(date +%s%3N)'@recoupable.com"}'
 ```
 
 Response:
@@ -34,7 +23,24 @@ Response:
 }
 ```
 
-## Standard Signup (email verification)
+That's it. Store `api_key`, pass it in the `x-api-key` header on every subsequent request, and you're done.
+
+<Tip>
+The `agent+{Date.now()}@recoupable.com` shape guarantees a fresh address on every call — including multiple signups within the same second. This is the recommended path for agents because it always returns an API key instantly, with no email verification required.
+</Tip>
+
+## How it works
+
+Two unauthenticated endpoints power agent onboarding:
+
+- **[`POST /api/agents/signup`](/api-reference/agents/signup)** — Register with an email address. Emails with the `agent+` prefix that have never been seen before receive an API key immediately. Any other email (or a previously-used `agent+` address) receives a 6-digit verification code via email.
+- **[`POST /api/agents/verify`](/api-reference/agents/verify)** — Submit the verification code to receive an API key.
+
+Multiple API keys per account are supported — each signup or verification generates a new key without revoking existing ones.
+
+## Standard signup (email verification)
+
+If you're building a human-facing integration and want the user to verify their real email, use any non-`agent+` address:
 
 Step 1 — request a verification code:
 
@@ -44,7 +50,7 @@ curl -X POST "https://recoup-api.vercel.app/api/agents/signup" \
   -d '{"email": "you@example.com"}'
 ```
 
-Step 2 — submit the code from the verification email:
+Step 2 — submit the 6-digit code from the verification email:
 
 ```bash
 curl -X POST "https://recoup-api.vercel.app/api/agents/verify" \
@@ -62,6 +68,13 @@ Response:
 }
 ```
 
-## Next Steps
+## Using your API key
 
-Once you have an API key, see [Authentication](/authentication) for how to use it, and [Quickstart](/quickstart) for your first API call.
+Pass the returned `api_key` in the `x-api-key` header on every authenticated request:
+
+```bash
+curl -X GET "https://recoup-api.vercel.app/api/tasks" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+See [Authentication](/authentication) for the full authentication model, including organization access and Bearer token support, and [Quickstart](/quickstart) for your first end-to-end request.

@@ -7,6 +7,18 @@ description: "Use the Recoup API to build your record label. Access research, co
 
 Use the Recoup API to build your record label. Generate content, Access artist analytics, Manage catalogs, Team chats, and task automation to power your record labels.
 
+## Quickest start — one curl call
+
+Get a working API key in a single unauthenticated request. No dashboard, no browser, no human in the loop.
+
+```bash
+curl -X POST "https://recoup-api.vercel.app/api/agents/signup" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "agent+'$(date +%s%3N)'@recoupable.com"}'
+```
+
+The response includes an `api_key` you can use immediately. See the [Agents guide](/agents) for the full signup and verification flow.
+
 ## What is Recoup?
 
 Recoup is an AI agent platform for smarter song rollouts, unforgettable fan experiences, and lasting artist growth. Empowering music executives with actionable insights and next-gen tools.
@@ -41,7 +53,14 @@ Keep your API key secure. Do not share it publicly or commit it to version contr
 
 ## Get Started
 
-<CardGroup cols={3}>
+<CardGroup cols={2}>
+  <Card
+    title="Agent Signup"
+    icon="user-plus"
+    href="/agents"
+  >
+    Get an API key in one curl call. The fastest path for AI agents — no dashboard required.
+  </Card>
   <Card
     title="Quickstart"
     icon="rocket"
@@ -123,13 +142,6 @@ The API is organized into six main sections. Use these links to jump to the righ
     href="/content-agent"
   >
     Content creation agent accessible via Slack. Generates images, videos, and captions for artists automatically.
-  </Card>
-  <Card
-    title="Agent Signup"
-    icon="user-plus"
-    href="/api-reference/agents/signup"
-  >
-    Programmatic account creation. Get an API key with just an email address.
   </Card>
   <Card
     title="Authentication"
