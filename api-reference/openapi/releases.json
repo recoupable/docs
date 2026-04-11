@@ -1,0 +1,3315 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup API - Releases",
+    "description": "API documentation for the Recoup platform - an AI agent platform for the music industry",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://recoup-api.vercel.app"
+    }
+  ],
+  "paths": {
+    "/api/tasks": {
+      "get": {
+        "description": "Retrieve scheduled tasks. Each task includes `recent_runs` (last 5 runs), `upcoming` (next scheduled run times) sourced directly from the Trigger.dev API, and `owner_email` when an account email exists for the task owner. Supports filtering by id, account_id, or artist_account_id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Filter by task ID (UUID). Returns a single task matching the provided ID.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "description": "Filter tasks to only include those for the specified account.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "artist_account_id",
+            "in": "query",
+            "description": "Filter tasks to only include those for the specified artist account.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tasks retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new scheduled task that runs a prompt against an artist on a recurring cron schedule. The response matches the [GET endpoint](/api-reference/tasks/get) (a `TasksResponse` with the created task in the `tasks` array).",
+        "requestBody": {
+          "description": "Task to create",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTaskRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required fields or invalid body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account_id is outside caller authorization scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "Update an existing scheduled task. Only the id field is required; any additional fields you include will be updated on the task. The response shape matches the GET endpoint (an array containing the updated task).",
+        "requestBody": {
+          "description": "Task fields to update",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTaskRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete an existing scheduled task by its ID. Returns the status of the delete operation.",
+        "requestBody": {
+          "description": "Task to delete",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteTaskRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteTaskResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tasks/runs": {
+      "get": {
+        "description": "Returns an array of task runs. When runId is provided, the array contains that single run. When omitted, returns recent runs for the authenticated account. Use account_id to query runs for a specific account within your organizations.",
+        "parameters": [
+          {
+            "name": "runId",
+            "in": "query",
+            "description": "The unique identifier of a specific task run to retrieve. If omitted, returns a list of recent runs for the authenticated account.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of runs to return when listing (ignored when runId is provided). Default 20, max 100.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "description": "Filter runs by account ID. When provided, returns runs tagged with account:<account_id>. Only applicable when the authenticated account has access to multiple accounts via organization membership.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task runs retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskRunListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account_id is not accessible with the provided credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Task run not found (only when runId is provided)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/artists": {
+      "get": {
+        "description": "Retrieve artists accessible to the authenticated account. The account is derived from the API key or Bearer token. When org_id is omitted, returns only the account's own artists. Pass org_id to view artists in a specific organization. Pass account_id to filter to a specific account the API key has access to.",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "query",
+            "description": "Filter to a specific account's artists. Only applicable when the authenticated account has access to multiple accounts via organization membership.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "org_id",
+            "in": "query",
+            "description": "Filter to artists in a specific organization. When omitted, returns only personal (non-organization) artists.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artists retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication"
+          },
+          "403": {
+            "description": "Forbidden - account_id is not accessible with the provided credentials"
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new artist account. The artist can optionally be linked to an organization.",
+        "requestBody": {
+          "description": "Artist creation parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateArtistRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Artist created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateArtistResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation error or invalid JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateArtistError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/artists/{id}": {
+      "delete": {
+        "description": "Delete an artist accessible to the authenticated account. This removes the caller's direct artist link and, if no owner links remain, deletes the artist account itself.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Artist account ID to delete.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteArtistResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication"
+          },
+          "403": {
+            "description": "Forbidden - the authenticated account cannot delete this artist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteArtistErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Artist not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteArtistErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/artist/segments": {
+      "get": {
+        "description": "Retrieve all segments associated with an artist. This endpoint should be called before using the Segment Fans endpoint to obtain the necessary segment IDs. Supports pagination.",
+        "parameters": [
+          {
+            "name": "artist_account_id",
+            "in": "query",
+            "description": "The unique identifier of the artist account to fetch segments for",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number to retrieve (default: 1)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The number of records per page (default: 20, max: 100)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Segments retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistSegmentsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistSegmentsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/artist/socials": {
+      "get": {
+        "description": "Retrieve all social media profiles associated with an artist. This endpoint should be called before using the Social Posts endpoint to obtain the necessary social IDs.",
+        "parameters": [
+          {
+            "name": "artist_account_id",
+            "in": "query",
+            "description": "The unique identifier of the artist account to fetch social profiles for",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Social profiles retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistSocialsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistSocialsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/artist/socials/scrape": {
+      "post": {
+        "description": "Trigger scrape jobs for all social profiles linked to an artist. Provide an artist_account_id, and the API will look up the artist's socials and invoke a scraping job for each social profile. Each scrape returns Apify run metadata so you can poll for status and retrieve results.",
+        "requestBody": {
+          "description": "Artist to scrape socials for",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArtistSocialsScrapeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Scrape jobs triggered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistSocialsScrapeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistSocialsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/artist-profile": {
+      "get": {
+        "description": "Retrieve comprehensive profile information for an artist across all connected social media platforms, including profile details and post metrics.",
+        "parameters": [
+          {
+            "name": "artist_account_id",
+            "in": "query",
+            "description": "The unique identifier of the artist account to fetch profile data for",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist profile retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistProfileResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistProfileErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/segment/fans": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Retrieve all social profiles from fans within a specific segment. This endpoint should be called after obtaining segment IDs from the Artist Segments endpoint. Supports pagination for large fan lists.",
+        "parameters": [
+          {
+            "name": "segment_id",
+            "in": "query",
+            "description": "The unique identifier of the segment to fetch fans for",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number to retrieve (default: 1)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The number of records per page (default: 20, max: 100)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Segment fans retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SegmentFansResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SegmentFansErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fans": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Retrieve all social profiles from fans of an artist across all platforms. This endpoint aggregates fan data from all connected social media platforms. Supports pagination for large fan lists.",
+        "parameters": [
+          {
+            "name": "artist_account_id",
+            "in": "query",
+            "description": "The unique identifier of the artist account to fetch fans for",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number to retrieve (default: 1)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The number of records per page (default: 20, max: 100)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist fans retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistFansResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistFansErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/songs": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Retrieve songs from the database with optional filtering by ISRC (International Standard Recording Code) or artist account. This endpoint joins the songs table with song_artists and accounts tables to provide comprehensive song information.",
+        "parameters": [
+          {
+            "name": "isrc",
+            "in": "query",
+            "description": "International Standard Recording Code to filter by specific song",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "artist_account_id",
+            "in": "query",
+            "description": "Artist account ID to filter songs by artist",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Songs retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongsErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No songs found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Bulk create or fetch songs by ISRC. For each song, the API attempts to look up metadata via internal search. If no data is found, optional fallback fields (name, album, notes, artists) are used.",
+        "requestBody": {
+          "description": "Array of songs to create or fetch",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSongsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Songs created or fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/catalogs": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Retrieve catalogs associated with a specific account. The endpoint joins account_catalogs with catalogs to return catalog metadata for the specified account.",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "query",
+            "description": "The unique identifier of the account to query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Catalogs retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid account_id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found or no catalogs found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Create new catalogs or link existing catalogs to an account. If catalog_id is provided, links the existing catalog. If name is provided without catalog_id, creates a new catalog. If both are provided, catalog_id takes priority.",
+        "requestBody": {
+          "description": "Array of catalogs to create or link",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCatalogsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Catalogs created or linked successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters or catalog_id not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Unlink catalogs from an account. If no other accounts are linked to a catalog after removal, the catalog is automatically deleted (cascading to catalog_songs). Otherwise, only the account-catalog relationship is removed.",
+        "requestBody": {
+          "description": "Array of catalog-account pairs to remove",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteCatalogsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Catalogs unlinked successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing catalog_id or account_id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/catalogs/songs": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Retrieve songs within a specific catalog with pagination support. This endpoint joins catalog_songs with songs, song_artists, and accounts to provide comprehensive song information for a given catalog.",
+        "parameters": [
+          {
+            "name": "catalog_id",
+            "in": "query",
+            "description": "The unique identifier of the catalog to query songs for",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "artistName",
+            "in": "query",
+            "description": "Optional. Filters songs to only include those with matching artist name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination (default: 1)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of songs per page (default: 20, max: 100)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Catalog songs retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid catalog_id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Catalog not found or no songs in catalog",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Batch add songs to a catalog by ISRC. For each song, the API attempts to look up metadata via internal search. If no data is found, optional fallback fields (name, album, notes, artists) are used.",
+        "requestBody": {
+          "description": "Array of songs to add to catalog",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddCatalogSongsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Songs added to catalog successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Batch remove songs from a catalog by ISRC. Deletes the relationship in catalog_songs for each catalog_id and ISRC pair.",
+        "requestBody": {
+          "description": "Array of songs to remove from catalog",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteCatalogSongsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Songs removed from catalog successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing catalog_id or isrc",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/songs/analyze/presets": {
+      "get": {
+        "description": "Lists all available music analysis presets. Each preset is a curated prompt with optimized generation parameters for a specific use case (e.g. catalog metadata enrichment, sync licensing analysis, audience profiling). Requires authentication via API key or Bearer token.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Presets listed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success"
+                      ]
+                    },
+                    "presets": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Preset identifier to pass in the analyze request"
+                          },
+                          "label": {
+                            "type": "string",
+                            "description": "Human-readable preset name"
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "What this preset does"
+                          },
+                          "requiresAudio": {
+                            "type": "boolean",
+                            "description": "Whether this preset needs an audio_url"
+                          },
+                          "responseFormat": {
+                            "type": "string",
+                            "enum": [
+                              "json",
+                              "text"
+                            ],
+                            "description": "Expected response format"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key / Bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongAnalyzeErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/songs/analyze": {
+      "post": {
+        "description": "Analyze music using a state-of-the-art Audio Language Model that listens directly to the audio waveform. Unlike text-based AI, this model processes the actual sound — identifying harmony, structure, timbre, lyrics, and cultural context through deep music understanding. Supports audio up to 20 minutes (MP3, WAV, FLAC). Two modes: (1) **Presets** — pass a `preset` name like `catalog_metadata`, `mood_tags`, or `full_report` for structured, optimized output. (2) **Custom prompt** — pass a `prompt` for free-form questions. The `full_report` preset runs all 13 presets in parallel and returns a comprehensive music intelligence report. Use `GET /api/songs/analyze/presets` to list available presets.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Music analysis request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SongAnalyzeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Music analysis completed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongAnalyzeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — missing or invalid fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongAnalyzeErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key / Bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongAnalyzeErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error — upstream model unavailable or inference failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongAnalyzeErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Your Recoup API key. [Learn more](/quickstart#api-keys)."
+      }
+    },
+    "schemas": {
+      "AddCatalogSongInput": {
+        "type": "object",
+        "required": [
+          "catalog_id",
+          "isrc"
+        ],
+        "properties": {
+          "catalog_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Catalog ID to which the song will be added"
+          },
+          "isrc": {
+            "type": "string",
+            "description": "Song ISRC to associate to the catalog"
+          },
+          "name": {
+            "type": "string",
+            "description": "Optional. Applied only if internal search cannot find valid info for ISRC"
+          },
+          "album": {
+            "type": "string",
+            "description": "Optional. Applied only if internal search cannot find valid info for ISRC"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Optional. Applied only if internal search cannot find valid info for ISRC"
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Optional array of artist names. Applied only if internal search lacks info"
+          }
+        }
+      },
+      "AddCatalogSongsRequest": {
+        "type": "object",
+        "required": [
+          "songs"
+        ],
+        "properties": {
+          "songs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AddCatalogSongInput"
+            },
+            "description": "Array of songs for batch updates"
+          }
+        }
+      },
+      "ApifyRunResult": {
+        "type": "object",
+        "properties": {
+          "runId": {
+            "type": "string",
+            "description": "Unique identifier for the Apify run"
+          },
+          "datasetId": {
+            "type": "string",
+            "description": "Unique identifier for the dataset containing scraped data"
+          },
+          "error": {
+            "type": "string",
+            "nullable": true,
+            "description": "Error message if the run failed (null if successful)"
+          }
+        }
+      },
+      "Artist": {
+        "type": "object",
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist account"
+          },
+          "name": {
+            "type": "string",
+            "description": "Artist display name"
+          },
+          "image": {
+            "type": "string",
+            "nullable": true,
+            "description": "Artist profile image URL"
+          },
+          "pinned": {
+            "type": "boolean",
+            "description": "Whether the account has pinned this artist"
+          },
+          "socials": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArtistSocial"
+            },
+            "description": "Social media profiles linked to the artist"
+          }
+        }
+      },
+      "ArtistFan": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the fan's social profile"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username or handle on the platform"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "URL to the fan's avatar/profile image"
+          },
+          "profile_url": {
+            "type": "string",
+            "description": "Full URL to the fan's profile on the platform"
+          },
+          "region": {
+            "type": "string",
+            "description": "Geographic region or location of the fan"
+          },
+          "bio": {
+            "type": "string",
+            "description": "Fan's biography or profile description"
+          },
+          "followerCount": {
+            "type": "integer",
+            "description": "Number of followers the fan has"
+          },
+          "followingCount": {
+            "type": "integer",
+            "description": "Number of accounts the fan is following"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the fan data was last updated"
+          }
+        }
+      },
+      "ArtistFansErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "ArtistFansPagination": {
+        "type": "object",
+        "properties": {
+          "total_count": {
+            "type": "integer",
+            "description": "Total number of records available"
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of records per page"
+          },
+          "total_pages": {
+            "type": "integer",
+            "description": "Total number of pages available"
+          }
+        }
+      },
+      "ArtistFansResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "fans",
+          "pagination"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "fans": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArtistFan"
+            },
+            "description": "List of social profiles from fans across all platforms"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/ArtistFansPagination",
+            "description": "Pagination metadata for the response"
+          }
+        }
+      },
+      "ArtistProfile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the artist"
+          },
+          "profiles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArtistProfileSocialProfile"
+            },
+            "description": "List of social media profiles"
+          },
+          "total_followers": {
+            "type": "integer",
+            "description": "Sum of followers across all platforms"
+          },
+          "total_following": {
+            "type": "integer",
+            "description": "Sum of following across all platforms"
+          },
+          "total_posts": {
+            "type": "integer",
+            "description": "Sum of posts across all platforms"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the data was last updated"
+          }
+        }
+      },
+      "ArtistProfileErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "ArtistProfileResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "profile"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "profile": {
+            "$ref": "#/components/schemas/ArtistProfile",
+            "description": "The artist's comprehensive profile information"
+          }
+        }
+      },
+      "ArtistProfileSocialProfile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the social profile"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username on the platform"
+          },
+          "profile_url": {
+            "type": "string",
+            "description": "Direct URL to the profile"
+          },
+          "avatar": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL to the profile avatar image"
+          },
+          "bio": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profile biography or description"
+          },
+          "follower_count": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Number of followers on this platform"
+          },
+          "following_count": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Number of accounts followed on this platform"
+          },
+          "post_count": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Number of posts on this platform"
+          },
+          "region": {
+            "type": "string",
+            "nullable": true,
+            "description": "Geographic region of the profile"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the profile was last updated"
+          }
+        }
+      },
+      "ArtistSegment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist_segments record"
+          },
+          "artist_account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist's accounts record"
+          },
+          "segment_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the segments record"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the segment data was last updated"
+          },
+          "segment_name": {
+            "type": "string",
+            "description": "Name of the segment (e.g., 'Twitter Followers')"
+          },
+          "artist_name": {
+            "type": "string",
+            "description": "Name of the artist"
+          }
+        }
+      },
+      "ArtistSegmentsErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "ArtistSegmentsPagination": {
+        "type": "object",
+        "properties": {
+          "total_count": {
+            "type": "integer",
+            "description": "Total number of segments available"
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of segments per page"
+          },
+          "total_pages": {
+            "type": "integer",
+            "description": "Total number of pages available"
+          }
+        }
+      },
+      "ArtistSegmentsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "segments",
+          "pagination"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "segments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArtistSegment"
+            },
+            "description": "List of segment objects associated with the artist"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/ArtistSegmentsPagination",
+            "description": "Pagination metadata for the response"
+          }
+        }
+      },
+      "ArtistSocial": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the social profile"
+          },
+          "platform": {
+            "type": "string",
+            "description": "Social media platform (e.g., instagram, twitter, tiktok)"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username on the platform"
+          },
+          "profile_url": {
+            "type": "string",
+            "description": "Full URL to the social media profile"
+          }
+        }
+      },
+      "ArtistSocialsErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "ArtistSocialsPagination": {
+        "type": "object",
+        "properties": {
+          "total_count": {
+            "type": "integer",
+            "description": "Total number of social profiles available"
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of social profiles per page"
+          },
+          "total_pages": {
+            "type": "integer",
+            "description": "Total number of pages available"
+          }
+        }
+      },
+      "ArtistSocialsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "socials",
+          "pagination"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "socials": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SocialProfile"
+            },
+            "description": "List of social media profiles associated with the artist"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/ArtistSocialsPagination",
+            "description": "Pagination metadata for the response"
+          }
+        }
+      },
+      "ArtistSocialsScrapeRequest": {
+        "type": "object",
+        "required": [
+          "artist_account_id"
+        ],
+        "properties": {
+          "artist_account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist account to scrape socials for",
+            "example": "1873859c-dd37-4e9a-9bac-80d35a1b2c3d"
+          }
+        }
+      },
+      "ArtistSocialsScrapeResponse": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ApifyRunResult"
+        },
+        "description": "Array of Apify run results, one for each social profile scraped"
+      },
+      "ArtistsErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "ArtistsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "artists"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Artist"
+            },
+            "description": "List of artist objects"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message (only present if status is error)"
+          }
+        }
+      },
+      "Catalog": {
+        "type": "object",
+        "description": "A catalog with its metadata",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the catalog"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the catalog"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the catalog was created"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the catalog was last updated"
+          }
+        }
+      },
+      "CatalogSong": {
+        "type": "object",
+        "description": "A song within a catalog with its metadata and associated artists",
+        "properties": {
+          "catalog_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Catalog ID this song entry is associated with"
+          },
+          "isrc": {
+            "type": "string",
+            "description": "International Standard Recording Code (primary key)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the song"
+          },
+          "album": {
+            "type": "string",
+            "description": "Name of the album the song belongs to"
+          },
+          "lyrics": {
+            "type": "string",
+            "description": "Full lyrics of the song"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the song data was last updated"
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SongArtist"
+            },
+            "description": "Array of artist objects associated with this song"
+          }
+        }
+      },
+      "CatalogSongsErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "CatalogSongsPagination": {
+        "type": "object",
+        "description": "Pagination metadata for catalog songs response",
+        "properties": {
+          "total_count": {
+            "type": "integer",
+            "description": "Total number of songs in the catalog"
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of songs per page"
+          },
+          "total_pages": {
+            "type": "integer",
+            "description": "Total number of pages available"
+          }
+        }
+      },
+      "CatalogSongsResponse": {
+        "type": "object",
+        "description": "Response containing catalog songs data with pagination",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "songs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogSong"
+            },
+            "description": "Array of song objects with artist information"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/CatalogSongsPagination",
+            "description": "Pagination metadata for the response"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message (only present if status is 'error')"
+          }
+        }
+      },
+      "CatalogsErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "CatalogsResponse": {
+        "type": "object",
+        "description": "Response containing catalogs data",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "catalogs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Catalog"
+            },
+            "description": "Array of catalog objects"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message (only present if status is 'error')"
+          }
+        }
+      },
+      "CreateArtistError": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "missing_fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of missing or invalid field names"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing the validation failure"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message (for invalid JSON or other errors)"
+          }
+        }
+      },
+      "CreateArtistRequest": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The name of the artist to create"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account to create the artist for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, the artist is created for the API key's own account."
+          },
+          "organization_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Optional organization ID to link the new artist to"
+          }
+        }
+      },
+      "CreateArtistResponse": {
+        "type": "object",
+        "required": [
+          "artist"
+        ],
+        "properties": {
+          "artist": {
+            "$ref": "#/components/schemas/CreatedArtist"
+          }
+        }
+      },
+      "DeleteArtistErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "DeleteArtistResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "artistId"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the artist delete completed successfully"
+          },
+          "artistId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist account that was deleted or unlinked"
+          }
+        }
+      },
+      "CreateCatalogInput": {
+        "type": "object",
+        "required": [
+          "account_id"
+        ],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The account to associate the catalog with"
+          },
+          "name": {
+            "type": "string",
+            "description": "Catalog name to create if catalog_id is omitted"
+          },
+          "catalog_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Existing catalog ID to link to the account"
+          }
+        }
+      },
+      "CreateCatalogsRequest": {
+        "type": "object",
+        "required": [
+          "catalogs"
+        ],
+        "properties": {
+          "catalogs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateCatalogInput"
+            },
+            "description": "Array of catalog inputs for bulk create/link operations"
+          }
+        }
+      },
+      "CreateSongInput": {
+        "type": "object",
+        "required": [
+          "isrc"
+        ],
+        "properties": {
+          "isrc": {
+            "type": "string",
+            "description": "International Standard Recording Code of the song to create or fetch"
+          },
+          "name": {
+            "type": "string",
+            "description": "Optional. Song name, applied only if internal search cannot find valid info"
+          },
+          "album": {
+            "type": "string",
+            "description": "Optional. Album name, applied only if internal search cannot find valid info"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Optional. Notes for the song, applied only if internal search cannot find valid info"
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Optional array of artist names, applied only if internal search cannot find valid info"
+          }
+        }
+      },
+      "CreateSongsRequest": {
+        "type": "object",
+        "required": [
+          "songs"
+        ],
+        "properties": {
+          "songs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateSongInput"
+            },
+            "description": "Array of song inputs for bulk create/fetch"
+          }
+        }
+      },
+      "CreateTaskRequest": {
+        "type": "object",
+        "required": [
+          "title",
+          "prompt",
+          "schedule",
+          "artist_account_id"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Descriptive title of the task",
+            "example": "Weekly Genre Pulse Check"
+          },
+          "prompt": {
+            "type": "string",
+            "description": "Instruction/prompt executed by the task",
+            "example": "Execute this weekly genre analysis workflow and email a summary to the team."
+          },
+          "schedule": {
+            "type": "string",
+            "description": "Cron expression defining when the task runs (e.g., '0 9 * * 4' for Thursdays at 9 AM)",
+            "example": "0 9 * * 4"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account to create the task for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, the task is created for the API key's own account.",
+            "example": "848cd58d-700f-4b38-ab4c-d9f52a1b2c3d"
+          },
+          "artist_account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the associated artist account",
+            "example": "1873859c-dd37-4e9a-9bac-80d35a1b2c3d"
+          }
+        }
+      },
+      "CreatedArtist": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the created artist account"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist account (same as id)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the artist"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "ISO timestamp of when the artist was created"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "ISO timestamp of when the artist was last updated"
+          },
+          "image": {
+            "type": "string",
+            "nullable": true,
+            "description": "Artist profile image URL"
+          },
+          "instruction": {
+            "type": "string",
+            "nullable": true,
+            "description": "Custom AI instruction for this artist"
+          },
+          "knowledges": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "description": "Knowledge base references for this artist"
+          },
+          "label": {
+            "type": "string",
+            "nullable": true,
+            "description": "Record label name"
+          },
+          "organization": {
+            "type": "string",
+            "nullable": true,
+            "description": "Organization name"
+          },
+          "company_name": {
+            "type": "string",
+            "nullable": true,
+            "description": "Company name"
+          },
+          "job_title": {
+            "type": "string",
+            "nullable": true,
+            "description": "Job title"
+          },
+          "role_type": {
+            "type": "string",
+            "nullable": true,
+            "description": "Role type"
+          },
+          "onboarding_status": {
+            "type": "string",
+            "nullable": true,
+            "description": "Onboarding status"
+          },
+          "onboarding_data": {
+            "nullable": true,
+            "description": "Onboarding data"
+          },
+          "account_info": {
+            "type": "array",
+            "description": "Account info records"
+          },
+          "account_socials": {
+            "type": "array",
+            "description": "Linked social media accounts"
+          }
+        }
+      },
+      "DeleteCatalogInput": {
+        "type": "object",
+        "required": [
+          "catalog_id",
+          "account_id"
+        ],
+        "properties": {
+          "catalog_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Catalog ID to remove"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Account ID whose relationship will be removed"
+          }
+        }
+      },
+      "DeleteCatalogSongInput": {
+        "type": "object",
+        "required": [
+          "catalog_id",
+          "isrc"
+        ],
+        "properties": {
+          "catalog_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Catalog ID from which the song will be removed"
+          },
+          "isrc": {
+            "type": "string",
+            "description": "Song ISRC to remove from the catalog"
+          }
+        }
+      },
+      "DeleteCatalogSongsRequest": {
+        "type": "object",
+        "required": [
+          "songs"
+        ],
+        "properties": {
+          "songs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeleteCatalogSongInput"
+            },
+            "description": "Array of songs for batch deletes"
+          }
+        }
+      },
+      "DeleteCatalogsRequest": {
+        "type": "object",
+        "required": [
+          "catalogs"
+        ],
+        "properties": {
+          "catalogs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeleteCatalogInput"
+            },
+            "description": "Array of catalog-account pairs to remove"
+          }
+        }
+      },
+      "DeleteTaskRequest": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the task to delete",
+            "example": "aade2bce-55c7-468e-a606-c4e76fb2ea2a"
+          }
+        }
+      },
+      "DeleteTaskResponse": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the delete operation"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message (only present if status is error)"
+          }
+        }
+      },
+      "Error": {
+        "required": [
+          "error",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "SegmentFan": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the fan_segments record"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username or handle on the platform"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "URL to the fan's avatar/profile image"
+          },
+          "profile_url": {
+            "type": "string",
+            "description": "Full URL to the fan's profile on the platform"
+          },
+          "segment_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the fan's segments record"
+          },
+          "segment_name": {
+            "type": "string",
+            "description": "Name of the segment (e.g., 'Twitter Followers')"
+          },
+          "fan_social_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the fan's socials media profile account"
+          },
+          "region": {
+            "type": "string",
+            "description": "Geographic region or location of the fan"
+          },
+          "bio": {
+            "type": "string",
+            "description": "Fan's biography or profile description"
+          },
+          "follower_count": {
+            "type": "integer",
+            "description": "Number of followers the fan has"
+          },
+          "following_count": {
+            "type": "integer",
+            "description": "Number of accounts the fan is following"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the fan data was last updated"
+          }
+        }
+      },
+      "SegmentFansErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "SegmentFansPagination": {
+        "type": "object",
+        "properties": {
+          "total_count": {
+            "type": "integer",
+            "description": "Total number of records available"
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of records per page"
+          },
+          "total_pages": {
+            "type": "integer",
+            "description": "Total number of pages available"
+          }
+        }
+      },
+      "SegmentFansResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "fans",
+          "pagination"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "fans": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SegmentFan"
+            },
+            "description": "List of social profiles from fans in the segment"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/SegmentFansPagination",
+            "description": "Pagination metadata for the response"
+          }
+        }
+      },
+      "SocialProfile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist's account_socials record"
+          },
+          "social_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist's socials account"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username on the platform"
+          },
+          "profile_url": {
+            "type": "string",
+            "description": "Direct URL to the profile"
+          },
+          "avatar": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL to the profile avatar image"
+          },
+          "bio": {
+            "type": "string",
+            "nullable": true,
+            "description": "Profile biography or description"
+          },
+          "follower_count": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Number of followers on this platform"
+          },
+          "following_count": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Number of accounts followed on this platform"
+          },
+          "region": {
+            "type": "string",
+            "nullable": true,
+            "description": "Geographic region of the profile"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the profile was last updated"
+          }
+        }
+      },
+      "Song": {
+        "type": "object",
+        "description": "A song with its metadata and associated artists",
+        "properties": {
+          "isrc": {
+            "type": "string",
+            "description": "International Standard Recording Code (primary key)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the song"
+          },
+          "album": {
+            "type": "string",
+            "description": "Name of the album the song belongs to"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notes for the song"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the song data was last updated"
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SongArtist"
+            },
+            "description": "Array of artist objects associated with this song"
+          }
+        }
+      },
+      "SongAnalyzeErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Error status"
+          },
+          "missing_fields": {
+            "type": "array",
+            "description": "Path to the first invalid or missing field when validation fails",
+            "items": {
+              "type": "string"
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "SongAnalyzeRequest": {
+        "type": "object",
+        "description": "Provide exactly one of `preset` or `prompt`. Use `preset` for structured analysis workflows, or `prompt` for free-form questions.",
+        "properties": {
+          "preset": {
+            "type": "string",
+            "enum": [
+              "catalog_metadata",
+              "mood_tags",
+              "lyric_transcription",
+              "mix_feedback",
+              "song_description",
+              "music_theory",
+              "similar_artists",
+              "sample_detection",
+              "sync_brief_match",
+              "audience_profile",
+              "content_advisory",
+              "playlist_pitch",
+              "artist_development_notes",
+              "full_report"
+            ],
+            "description": "Name of a curated analysis preset. Use instead of prompt for structured, optimized output. The 'full_report' preset runs all 13 presets in parallel and returns a comprehensive report. See [List Analyze Presets](/api-reference/songs/analyze-presets) for the full list of available presets.",
+            "example": "catalog_metadata"
+          },
+          "prompt": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 24000,
+            "description": "Text prompt or question about the music",
+            "example": "Describe the genre, tempo, and mood of this track."
+          },
+          "audio_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public URL to an audio file (MP3, WAV, or FLAC — up to 20 minutes)",
+            "example": "https://example.com/song.mp3"
+          },
+          "max_new_tokens": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2048,
+            "default": 512,
+            "description": "Maximum number of tokens to generate",
+            "example": 512
+          },
+          "temperature": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 2,
+            "default": 1,
+            "description": "Controls output creativity — higher values produce more varied responses",
+            "example": 0.7
+          },
+          "top_p": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 1,
+            "description": "Nucleus sampling probability cutoff",
+            "example": 0.9
+          },
+          "do_sample": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enable sampling (set true when using temperature or top_p)",
+            "example": false
+          }
+        }
+      },
+      "SongAnalyzeResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Request status"
+          },
+          "preset": {
+            "type": "string",
+            "description": "Preset used for analysis, when applicable",
+            "example": "catalog_metadata"
+          },
+          "response": {
+            "description": "Model output for single-preset or custom-prompt analysis. May be plain text or structured JSON depending on the preset."
+          },
+          "report": {
+            "type": "object",
+            "description": "Full report payload returned only when using the `full_report` preset"
+          },
+          "elapsed_seconds": {
+            "type": "number",
+            "format": "float",
+            "description": "Inference time in seconds"
+          }
+        }
+      },
+      "SongArtist": {
+        "type": "object",
+        "description": "Artist associated with a song",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the artist account"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true,
+            "description": "Name of the artist (can be null)"
+          },
+          "timestamp": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Timestamp associated with the artist account (can be null)"
+          }
+        }
+      },
+      "SongsErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "SongsResponse": {
+        "type": "object",
+        "description": "Response containing songs data",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "songs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Song"
+            },
+            "description": "Array of song objects with artist information"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message (only present if status is 'error')"
+          }
+        }
+      },
+      "Task": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the task"
+          },
+          "title": {
+            "type": "string",
+            "description": "Descriptive title or name of the task"
+          },
+          "prompt": {
+            "type": "string",
+            "description": "Detailed instruction or prompt for task execution"
+          },
+          "schedule": {
+            "type": "string",
+            "description": "Cron expression defining when the task should execute (e.g., '0 10 * * *')"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the associated account"
+          },
+          "artist_account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the associated artist account"
+          },
+          "enabled": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Whether the task is enabled. Defaults to true."
+          },
+          "trigger_schedule_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Identifier for the trigger schedule associated with this task"
+          },
+          "recent_runs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TaskRunResponse"
+            },
+            "description": "Last 5 runs for this task, sourced from the Trigger.dev API."
+          },
+          "upcoming": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Next scheduled run times, sourced from the latest Trigger.dev run payload."
+          },
+          "owner_email": {
+            "type": "string",
+            "nullable": true,
+            "description": "Primary email address for the task owner account when one exists."
+          }
+        }
+      },
+      "TaskRunListResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "runs"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Indicates the request was successful"
+          },
+          "runs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TaskRunResponse"
+            },
+            "description": "List of recent task runs for the authenticated account. Each item is a raw Trigger.dev SDK run object (same shape as TaskRunResponse, but without `output` and `error` fields)."
+          }
+        }
+      },
+      "TaskRunResponse": {
+        "type": "object",
+        "description": "Raw Trigger.dev SDK run object. The API passes through the SDK response without field mapping. See https://trigger.dev/docs/management/runs/retrieve for the full reference. When listing runs, `output`, `error`, `payload`, and `attempts` are not included.",
+        "required": [
+          "id",
+          "status",
+          "taskIdentifier",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique run identifier, prefixed with `run_`"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING_VERSION",
+              "DELAYED",
+              "QUEUED",
+              "EXECUTING",
+              "REATTEMPTING",
+              "FROZEN",
+              "COMPLETED",
+              "CANCELED",
+              "FAILED",
+              "CRASHED",
+              "INTERRUPTED",
+              "SYSTEM_FAILURE"
+            ],
+            "description": "Current run status"
+          },
+          "taskIdentifier": {
+            "type": "string",
+            "description": "The task type identifier (e.g. 'setup-sandbox', 'run-sandbox-command')"
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "nullable": true,
+            "description": "Idempotency key used to deduplicate trigger requests"
+          },
+          "version": {
+            "type": "string",
+            "description": "The worker version that executed the run"
+          },
+          "isTest": {
+            "type": "boolean",
+            "description": "Whether this is a test run"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the run was created (ISO 8601)"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the run was last updated (ISO 8601)"
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "When execution started (null if not yet started)"
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "When the run finished (null if still running)"
+          },
+          "delayedUntil": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "If delayed, when the run becomes eligible to execute"
+          },
+          "ttl": {
+            "description": "Time-to-live. If the run is not started within this duration, it expires.",
+            "nullable": true
+          },
+          "expiredAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "When the run expired (null if not expired)"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Tags associated with this run (max 10)"
+          },
+          "metadata": {
+            "type": "object",
+            "nullable": true,
+            "description": "JSON metadata attached to the run"
+          },
+          "costInCents": {
+            "type": "number",
+            "description": "Compute cost of the run in cents"
+          },
+          "baseCostInCents": {
+            "type": "number",
+            "description": "Base invocation cost in cents"
+          },
+          "durationMs": {
+            "type": "number",
+            "description": "Compute duration in milliseconds"
+          },
+          "env": {
+            "type": "object",
+            "description": "Environment the run executed in",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "user": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          },
+          "depth": {
+            "type": "integer",
+            "description": "Nesting depth for child runs"
+          },
+          "batchId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Batch ID if triggered as part of a batch"
+          },
+          "triggerFunction": {
+            "type": "string",
+            "enum": [
+              "trigger",
+              "triggerAndWait",
+              "batchTrigger",
+              "batchTriggerAndWait"
+            ],
+            "description": "The function used to trigger this run"
+          },
+          "payload": {
+            "description": "Input payload for the task. Only present when retrieving by runId.",
+            "nullable": true
+          },
+          "output": {
+            "description": "Task output data. Only present when retrieving by runId.",
+            "nullable": true
+          },
+          "error": {
+            "type": "object",
+            "nullable": true,
+            "description": "Error details if the run failed. Only present when retrieving by runId.",
+            "properties": {
+              "message": {
+                "type": "string",
+                "description": "Human-readable error message"
+              },
+              "name": {
+                "type": "string",
+                "description": "Error name or type"
+              },
+              "stackTrace": {
+                "type": "string",
+                "description": "Stack trace"
+              }
+            }
+          },
+          "attempts": {
+            "type": "array",
+            "description": "Attempt history. Only present when retrieving by runId.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Attempt ID, prefixed with `attempt_`"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "PENDING",
+                    "EXECUTING",
+                    "PAUSED",
+                    "COMPLETED",
+                    "FAILED",
+                    "CANCELED"
+                  ]
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "startedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "nullable": true
+                },
+                "completedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "nullable": true
+                },
+                "error": {
+                  "type": "object",
+                  "nullable": true,
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "stackTrace": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "schedule": {
+            "type": "object",
+            "nullable": true,
+            "description": "Schedule information if triggered by a schedule. Only present when retrieving by runId."
+          },
+          "relatedRuns": {
+            "type": "object",
+            "nullable": true,
+            "description": "Related run references (root, parent, children). Only present when retrieving by runId."
+          }
+        }
+      },
+      "TasksResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "tasks"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "tasks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Task"
+            },
+            "description": "Array of task objects"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message (only present if status is error)"
+          }
+        }
+      },
+      "UpdateTaskRequest": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the task to update",
+            "example": "aade2bce-55c7-468e-a606-c4e76fb2ea2a"
+          },
+          "title": {
+            "type": "string",
+            "description": "New descriptive title of the task",
+            "example": "Weekly Genre Pulse Check (Updated)"
+          },
+          "prompt": {
+            "type": "string",
+            "description": "New instruction/prompt executed by the task",
+            "example": "Execute this weekly genre analysis workflow and email a summary to the team."
+          },
+          "schedule": {
+            "type": "string",
+            "description": "New cron expression defining when the task runs",
+            "example": "0 10 * * 4"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "New UUID of the associated account",
+            "example": "848cd58d-700f-4b38-ab4c-d9f52a1b2c3d"
+          },
+          "artist_account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "New UUID of the associated artist account",
+            "example": "1873859c-dd37-4e9a-9bac-80d35a1b2c3d"
+          },
+          "enabled": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Whether the task is enabled. Can be true, false, or null.",
+            "example": true
+          }
+        }
+      }
+    }
+  }
+}
