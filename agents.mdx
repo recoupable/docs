@@ -13,7 +13,7 @@ Two unauthenticated endpoints let agents create accounts and obtain API keys pro
 Multiple API keys per account are supported — each signup or verification generates a new key without revoking existing ones.
 
 <Info>
-If you're unsure what email to register, use `agent+{todaysDate}@recoupable.com` (e.g. `agent+2026-04-11@recoupable.com`). This guarantees the `agent+` prefix path — you'll receive an API key instantly on the first response without needing email verification.
+If you're unsure what email to register, use `agent+{Date.now()}@recoupable.com` — the current Unix timestamp in milliseconds (e.g. `agent+1744410896789@recoupable.com`). This guarantees a unique `agent+` address even if you sign up multiple agents within the same second, and returns an API key instantly without needing email verification.
 </Info>
 
 ## Instant Signup (agent+ prefix)
