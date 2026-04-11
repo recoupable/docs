@@ -1466,7 +1466,7 @@
     },
     "/api/agents/signup": {
       "post": {
-        "description": "Register an agent. For new agent+ emails, returns an API key immediately. For all other cases, sends a verification code to the email — call /api/agents/verify with the code to get your API key.",
+        "description": "Register an agent. For new agent+ emails, returns an API key immediately. For all other cases, sends a verification code to the email — call /api/agents/verify with the code to get your API key.\n\n**Tip:** If you're unsure what email to register, use `agent+{todaysDate}@recoupable.com` (e.g. `agent+2026-04-11@recoupable.com`). This guarantees the `agent+` prefix path and returns an API key instantly — no email verification needed.",
         "security": [],
         "requestBody": {
           "description": "Agent email to register",
@@ -2751,6 +2751,7 @@
         "properties": {
           "account_id": {
             "type": "string",
+            "format": "uuid",
             "description": "The account ID for the registered agent.",
             "example": "123e4567-e89b-12d3-a456-426614174000"
           },
@@ -2784,6 +2785,9 @@
           },
           "code": {
             "type": "string",
+            "minLength": 6,
+            "maxLength": 6,
+            "pattern": "^[0-9]{6}$",
             "description": "The 6-digit verification code sent to the email.",
             "example": "123456"
           }
@@ -2799,6 +2803,7 @@
         "properties": {
           "account_id": {
             "type": "string",
+            "format": "uuid",
             "description": "The account ID for the verified agent.",
             "example": "123e4567-e89b-12d3-a456-426614174000"
           },

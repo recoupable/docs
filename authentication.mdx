@@ -14,6 +14,10 @@ Every request to the Recoup API must be authenticated using exactly one of two m
 
 Providing both headers in the same request will result in a `401` error.
 
+<Note>
+Agent onboarding endpoints (`POST /api/agents/signup` and `POST /api/agents/verify`) are **unauthenticated** — they exist so agents can obtain their first API key. See the [Agents guide](/agents) for details.
+</Note>
+
 ---
 
 ## API Keys
@@ -101,21 +105,6 @@ Some endpoints accept an `organization_id` parameter. When provided, the API add
 |--------|-------|
 | `401` | Missing or invalid credentials, or both `x-api-key` and `Authorization` headers provided |
 | `403` | Valid credentials but insufficient access to the requested `account_id` or `organization_id` |
-
----
-
-## Agent Onboarding
-
-Two unauthenticated endpoints allow agents to create accounts and obtain API keys programmatically:
-
-- **`POST /api/agents/signup`** — Register with an email address. Emails with the `agent+` prefix (e.g. `agent+mybot@example.com`) receive an API key immediately on first signup. All other cases receive a 6-digit verification code via email.
-- **`POST /api/agents/verify`** — Submit the verification code to receive an API key.
-
-Multiple API keys per account are supported — each signup or verification generates a new key without revoking existing ones.
-
-<Info>
-See the [Agent Signup](/api-reference/agents/signup) and [Verify](/api-reference/agents/verify) API reference for request/response details.
-</Info>
 
 ---
 

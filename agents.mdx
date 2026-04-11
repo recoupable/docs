@@ -1,0 +1,67 @@
+---
+title: 'Agents'
+description: 'Programmatic agent onboarding — sign up and obtain API keys without human intervention.'
+---
+
+## Overview
+
+Two unauthenticated endpoints let agents create accounts and obtain API keys programmatically — no UI, no human in the loop.
+
+- **[`POST /api/agents/signup`](/api-reference/agents/signup)** — Register with an email address. Emails with the `agent+` prefix (e.g. `agent+mybot@example.com`) receive an API key immediately on first signup. All other cases receive a 6-digit verification code via email.
+- **[`POST /api/agents/verify`](/api-reference/agents/verify)** — Submit the verification code to receive an API key.
+
+Multiple API keys per account are supported — each signup or verification generates a new key without revoking existing ones.
+
+<Info>
+If you're unsure what email to register, use `agent+{todaysDate}@recoupable.com` (e.g. `agent+2026-04-11@recoupable.com`). This guarantees the `agent+` prefix path — you'll receive an API key instantly on the first response without needing email verification.
+</Info>
+
+## Instant Signup (agent+ prefix)
+
+```bash
+curl -X POST "https://recoup-api.vercel.app/api/agents/signup" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "agent+mybot@example.com"}'
+```
+
+Response:
+
+```json
+{
+  "account_id": "123e4567-e89b-12d3-a456-426614174000",
+  "api_key": "recoup_sk_abc123...",
+  "message": "If this is a new agent+ email, your API key is included. Otherwise, check your email for a verification code."
+}
+```
+
+## Standard Signup (email verification)
+
+Step 1 — request a verification code:
+
+```bash
+curl -X POST "https://recoup-api.vercel.app/api/agents/signup" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "you@example.com"}'
+```
+
+Step 2 — submit the code from the verification email:
+
+```bash
+curl -X POST "https://recoup-api.vercel.app/api/agents/verify" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "you@example.com", "code": "123456"}'
+```
+
+Response:
+
+```json
+{
+  "account_id": "123e4567-e89b-12d3-a456-426614174000",
+  "api_key": "recoup_sk_abc123...",
+  "message": "Verified"
+}
+```
+
+## Next Steps
+
+Once you have an API key, see [Authentication](/authentication) for how to use it, and [Quickstart](/quickstart) for your first API call.
