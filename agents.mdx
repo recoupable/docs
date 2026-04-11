@@ -26,6 +26,22 @@ Response:
 That's it. Store `api_key`, pass it in the `x-api-key` header on every subsequent request, and you're done.
 
 <Tip>
+**One-liner — sign up and export the key in one shot.** Drop this into your shell and you'll have `$RECOUP_API_KEY` ready to use on the next line:
+
+```bash
+export RECOUP_API_KEY=$(curl -s -X POST "https://recoup-api.vercel.app/api/agents/signup" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "agent+'$(date +%s%3N)'@recoupable.com"}' | jq -r .api_key)
+```
+
+Verify it worked:
+
+```bash
+curl -H "x-api-key: $RECOUP_API_KEY" https://recoup-api.vercel.app/api/accounts/id
+```
+</Tip>
+
+<Tip>
 The `agent+{Date.now()}@recoupable.com` shape guarantees a fresh address on every call — including multiple signups within the same second. This is the recommended path for agents because it always returns an API key instantly, with no email verification required.
 </Tip>
 

@@ -5,22 +5,18 @@ description: "Get a Recoup API key in one call and make your first request — n
 
 ## Quickest start
 
-Sign up your agent and get an API key in a single API call — no dashboard, no browser.
+Sign up your agent and get an API key in a single API call — no dashboard, no browser, no human in the loop. This one-liner signs up a fresh `agent+` address and exports the returned key to `$RECOUP_API_KEY`:
 
 ```bash
-curl -X POST "https://recoup-api.vercel.app/api/agents/signup" \
+export RECOUP_API_KEY=$(curl -s -X POST "https://recoup-api.vercel.app/api/agents/signup" \
   -H "Content-Type: application/json" \
-  -d '{"email": "agent+'$(date +%s%3N)'@recoupable.com"}'
+  -d '{"email": "agent+'$(date +%s%3N)'@recoupable.com"}' | jq -r .api_key)
 ```
 
-Response:
+Verify it worked:
 
-```json
-{
-  "account_id": "123e4567-e89b-12d3-a456-426614174000",
-  "api_key": "recoup_sk_abc123...",
-  "message": "If this is a new agent+ email, your API key is included. Otherwise, check your email for a verification code."
-}
+```bash
+curl -H "x-api-key: $RECOUP_API_KEY" https://recoup-api.vercel.app/api/accounts/id
 ```
 
 <Tip>
