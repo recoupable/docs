@@ -7,6 +7,18 @@ description: "Use the Recoup API to build your record label. Access research, co
 
 Use the Recoup API to build your record label. Generate content, Access artist analytics, Manage catalogs, Team chats, and task automation to power your record labels.
 
+## Quickest start — one curl call
+
+Get a working API key in a single unauthenticated request. No dashboard, no browser, no human in the loop.
+
+```bash
+export RECOUP_API_KEY=$(curl -s -X POST "https://recoup-api.vercel.app/api/agents/signup" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "agent+'$(date +%s)-$RANDOM'@recoupable.com"}' | jq -r .api_key)
+```
+
+`$RECOUP_API_KEY` is now ready to pass in the `x-api-key` header on any request. See the [Agents guide](/agents) for the full signup and verification flow.
+
 ## What is Recoup?
 
 Recoup is an AI agent platform for smarter song rollouts, unforgettable fan experiences, and lasting artist growth. Empowering music executives with actionable insights and next-gen tools.
@@ -23,7 +35,7 @@ https://recoup-api.vercel.app/api
 
 ## Authentication
 
-All API endpoints are authenticated using an API key passed in the `x-api-key` header.
+Most API endpoints are authenticated using an API key passed in the `x-api-key` header. The only exceptions are the [agent onboarding](/agents) endpoints — [`POST /api/agents/signup`](/api-reference/agents/signup) and [`POST /api/agents/verify`](/api-reference/agents/verify) — which are intentionally unauthenticated so agents can obtain their first API key.
 
 1. Navigate to the [API Keys Management Page](https://chat.recoupable.com/keys)
 2. Sign in with your account
@@ -41,7 +53,14 @@ Keep your API key secure. Do not share it publicly or commit it to version contr
 
 ## Get Started
 
-<CardGroup cols={3}>
+<CardGroup cols={2}>
+  <Card
+    title="Agent Signup"
+    icon="user-plus"
+    href="/agents"
+  >
+    Get an API key in one curl call. The fastest path for AI agents — no dashboard required.
+  </Card>
   <Card
     title="Quickstart"
     icon="rocket"
@@ -151,6 +170,7 @@ If you are an LLM navigating these docs, here is a summary of the endpoint struc
 - **`/api/organizations/*`** — Organizations (list, create, add-artist)
 - **`/api/sandboxes/*`** — Sandboxes (list, create, snapshot, delete, setup, file, upload)
 - **`/api/content-agent/*`** — Content agent webhooks (webhook, callback)
+- **`/api/agents/*`** — Agent onboarding (signup, verify) — no auth required
 
 Base URL: `https://recoup-api.vercel.app/api`
 

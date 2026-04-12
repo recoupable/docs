@@ -14,6 +14,10 @@ Every request to the Recoup API must be authenticated using exactly one of two m
 
 Providing both headers in the same request will result in a `401` error.
 
+<Note>
+Agent onboarding endpoints (`POST /api/agents/signup` and `POST /api/agents/verify`) are **unauthenticated** — they exist so agents can obtain their first API key. See the [Agents guide](/agents) for details.
+</Note>
+
 ---
 
 ## API Keys

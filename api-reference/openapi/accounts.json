@@ -1463,6 +1463,84 @@
           }
         }
       }
+    },
+    "/api/agents/signup": {
+      "post": {
+        "description": "Register an agent. For new agent+ emails, returns an API key immediately. For all other cases, sends a verification code to the email — call [POST /api/agents/verify](/api-reference/agents/verify) with the code to get your API key.\n\n**Tip:** If you're unsure what email to register, generate a unique `agent+{suffix}@recoupable.com` address (e.g. `agent+1744410896-28439@recoupable.com`, combining a Unix timestamp with a random integer). This guarantees a fresh `agent+` address on every call — including multiple signups within the same second — and returns an API key instantly with no email verification required.",
+        "security": [],
+        "requestBody": {
+          "description": "Agent email to register",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentSignupRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Signup processed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentSignupResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agents/verify": {
+      "post": {
+        "description": "Verify an agent's email with the code sent during signup. Returns an API key on success.",
+        "security": [],
+        "requestBody": {
+          "description": "Email and verification code",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentVerifyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentVerifyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or expired verification code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many failed verification attempts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2647,6 +2725,97 @@
             "type": "string",
             "format": "uuid",
             "description": "UUID of the account to update the pulse for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, updates the pulse for the API key's own account."
+          }
+        }
+      },
+      "AgentSignupRequest": {
+        "type": "object",
+        "required": [
+          "email"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "The agent email address. Emails with the agent+ prefix (e.g. agent+mybot@example.com) get an API key immediately on first signup.",
+            "example": "agent+mybot@example.com"
+          }
+        }
+      },
+      "AgentSignupResponse": {
+        "type": "object",
+        "required": [
+          "account_id",
+          "message"
+        ],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The account ID for the registered agent.",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "api_key": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "API key returned immediately for new agent+ prefix emails. Null for all other cases — check your email for a verification code.",
+            "example": "recoup_sk_abc123..."
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable status message.",
+            "example": "If this is a new agent+ email, your API key is included. Otherwise, check your email for a verification code."
+          }
+        }
+      },
+      "AgentVerifyRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "code"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "The email address used during signup.",
+            "example": "you@example.com"
+          },
+          "code": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 6,
+            "pattern": "^[0-9]{6}$",
+            "description": "The 6-digit verification code sent to the email.",
+            "example": "123456"
+          }
+        }
+      },
+      "AgentVerifyResponse": {
+        "type": "object",
+        "required": [
+          "account_id",
+          "api_key",
+          "message"
+        ],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The account ID for the verified agent.",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "api_key": {
+            "type": "string",
+            "description": "API key for the verified account.",
+            "example": "recoup_sk_abc123..."
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable status message.",
+            "example": "Verified"
           }
         }
       }
