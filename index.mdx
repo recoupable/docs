@@ -1,9 +1,11 @@
 ---
 title: "Recoup API"
-description: "Music intelligence API — research any artist, generate content, and automate music operations. Built for developers and AI agents."
+description: "Music intelligence API — the infrastructure for agents to run record labels. 40+ tools for artist research, content creation, and music business automation."
 ---
 
-Music intelligence for every team in music. 40+ tools for artist research, content creation, social analytics, and business automation — accessible from your code, your CLI, or your AI agent.
+The infrastructure for agents to run record labels. 40+ tools that give artists the power of a major label in their pocket, and executives a way to scale operations without headcount.
+
+Recoup captures context around your catalog, artists, releases, and fans — then context-engineers it so agents get exactly what they need, exactly when they need it, to perform the work of a major label. Programmatically.
 
 ## Get an API key
 
@@ -16,7 +18,7 @@ export RECOUP_API_KEY=$(curl -s -X POST "https://recoup-api.vercel.app/api/agent
 ```
 
 <Tip>
-The `agent+` prefix bypasses email verification entirely. Your API key comes back in the response — ready to use immediately.
+The `agent+` prefix bypasses email verification. Your API key comes back in the response — ready to use immediately.
 </Tip>
 
 ---
@@ -36,7 +38,7 @@ The `agent+` prefix bypasses email verification entirely. Your API key comes bac
     icon="cpu"
     href="/mcp"
   >
-    Connect Claude, ChatGPT, Cursor, or any MCP-compatible agent directly to Recoup. One URL.
+    Connect Claude, ChatGPT, Cursor, or any MCP-compatible agent directly. One URL.
   </Card>
   <Card
     title="CLI"
@@ -51,43 +53,45 @@ The `agent+` prefix bypasses email verification entirely. Your API key comes bac
 
 ## What's in the API
 
+Organized by what agents actually do when running a label.
+
 <CardGroup cols={2}>
   <Card
-    title="Research — 30 endpoints"
+    title="Research"
     icon="search"
     href="/api-reference/research/search"
   >
-    Search any artist. Pull streaming metrics across 14 platforms, audience demographics, playlist placements, career timelines, competitive analysis, web intelligence, and people search.
+    Everything about any artist from any source. 30 research endpoints across 14 platforms, plus AI chat, Spotify, Instagram, X, web intelligence, and deep research reports.
   </Card>
   <Card
-    title="Content — 7 primitives"
+    title="Artists"
+    icon="users"
+    href="/api-reference/artists/list"
+  >
+    Manage the roster. Artists, profiles, social accounts, songs, catalogs, fan segments, posts, and comments — the full context layer.
+  </Card>
+  <Card
+    title="Content"
     icon="sparkles"
     href="/api-reference/content/create"
   >
-    Generate images, videos, and captions with AI. Transcribe audio, edit media, upscale resolution, and analyze video content. Each primitive works independently.
+    Seven independent primitives for images, videos, captions, transcription, editing, upscaling, and analysis. Run the full pipeline or call each primitive directly.
   </Card>
   <Card
-    title="Releases"
-    icon="disc-3"
-    href="/api-reference/songs/songs"
+    title="Automation"
+    icon="repeat"
+    href="/api-reference/tasks/get"
   >
-    Manage artists, songs, and catalogs. Analyze tracks with AI. Schedule cron-based tasks to automate recurring work.
-  </Card>
-  <Card
-    title="Social"
-    icon="share-2"
-    href="/api-reference/connectors/list"
-  >
-    Spotify, Instagram, X, and generic social scraping. Search artists, pull profiles and comments, track trends, and manage OAuth connectors.
+    Scheduled tasks, sandboxed code execution, OAuth connectors, automated pulses, and notifications. The engine that lets agents work while you sleep.
   </Card>
 </CardGroup>
 
 <Card
-  title="Platform"
+  title="Accounts"
   icon="building-2"
   href="/api-reference/accounts/get"
 >
-  Accounts, organizations, workspaces, subscriptions, automated pulses, notifications, and sandboxed code execution.
+  Accounts, organizations, workspaces, subscriptions, and agent onboarding. The business infrastructure.
 </Card>
 
 ---
@@ -144,26 +148,26 @@ If you are an LLM or AI agent, here is the complete endpoint map. All paths are 
 | Domain | Endpoints |
 |--------|-----------|
 | `/research/*` | search, lookup, profile, metrics, audience, cities, similar, urls, instagram-posts, playlists, albums, tracks, track, career, insights, playlist, curator, discover, genres, festivals, web, deep, people, extract, enrich, milestones, venues, rank, charts, radio |
-| `/content/*` | create, generate-image, generate-video, generate-caption, transcribe-audio, edit, upscale, analyze-video, templates, template-detail, validate, estimate |
 | `/chat/*` | stream, create, chats, artist, segment, messages, messages-copy, messages-trailing-delete, update, delete, generate, compact |
+| `/content/*` | create, generate-image, generate-video, generate-caption, transcribe-audio, edit, upscale, analyze-video, templates, template-detail, validate, estimate |
 | `/artists/*` | list, create, delete |
-| `/artist/*` | segments, socials, socials-scrape, profile |
+| `/artist/*` | profile, segments, socials, socials-scrape |
 | `/songs/*` | songs, create, analyze, analyze-presets, catalogs, catalogs-create, catalogs-delete, catalog-songs, catalog-songs-add, catalog-songs-delete |
 | `/tasks/*` | get, create, update, delete, runs |
+| `/sandboxes/*` | list, create, snapshot, delete, setup, file, upload |
 | `/spotify/*` | search, artist, artist-albums, artist-top-tracks, album |
 | `/instagram/*` | comments, profiles |
 | `/x/*` | search, trends |
 | `/connectors/*` | list, authorize, disconnect |
 | `/accounts/*` | get, id, create, update, add-artist |
 | `/organizations/*` | list, create, add-artist |
-| `/sandboxes/*` | list, create, snapshot, delete, setup, file, upload |
 | `/content-agent/*` | webhook, callback |
 | `/agents/*` | signup, verify *(unauthenticated)* |
 | `/pulses/*` | update, list |
+| `/notifications/*` | create |
 | `/workspaces/*` | create |
 | `/subscriptions/*` | get |
-| `/notifications/*` | create |
 
-Authentication: `x-api-key` header (or `Authorization: Bearer <token>` for Privy). Get a key instantly via `POST /api/agents/signup` with an `agent+` email — no verification required.
+Authentication: `x-api-key` header (or `Authorization: Bearer <token>` for Privy). Get a key instantly via `POST /api/agents/signup` with an `agent+` email.
 
 [OpenAPI specification →](https://github.com/sweetmantech/docs/blob/main/api-reference/openapi.json)
