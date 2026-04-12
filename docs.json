@@ -1,60 +1,59 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
+  "theme": "sequoia",
   "name": "Recoup",
   "colors": {
-    "primary": "#345A5D",
-    "light": "#4A7A7D",
-    "dark": "#1E3A3D"
+    "primary": "#0a0a0a",
+    "light": "#ededed",
+    "dark": "#0a0a0a"
   },
   "favicon": "/favicon.ico",
+  "appearance": {
+    "default": "system"
+  },
+  "fonts": {
+    "heading": {
+      "family": "Plus Jakarta Sans",
+      "weight": 700
+    },
+    "body": {
+      "family": "Inter",
+      "weight": 400
+    }
+  },
+  "background": {
+    "decoration": "windows",
+    "color": {
+      "dark": "#080808"
+    }
+  },
+  "styling": {
+    "eyebrows": "breadcrumbs",
+    "codeblocks": "dark"
+  },
+  "icons": {
+    "library": "lucide"
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Quickstart",
+        "tab": "Overview",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Start here",
             "pages": [
               "index",
               "quickstart",
+              "authentication",
+              "agents"
+            ]
+          },
+          {
+            "group": "Interfaces",
+            "pages": [
               "cli",
               "mcp",
-              "authentication"
-            ]
-          },
-          {
-            "group": "Agents",
-            "pages": [
-              "agents",
               "content-agent"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Artists",
-        "groups": [
-          {
-            "group": "Artists",
-            "pages": [
-              "api-reference/artists/list",
-              "api-reference/artists/create",
-              "api-reference/artists/delete",
-              "api-reference/artist/segments",
-              "api-reference/artist/socials",
-              "api-reference/artist/socials-scrape",
-              "api-reference/artist/profile"
-            ]
-          },
-          {
-            "group": "Tasks",
-            "pages": [
-              "api-reference/tasks/get",
-              "api-reference/tasks/create",
-              "api-reference/tasks/update",
-              "api-reference/tasks/delete",
-              "api-reference/tasks/runs"
             ]
           }
         ]
@@ -120,6 +119,18 @@
         "tab": "Releases",
         "groups": [
           {
+            "group": "Artists",
+            "pages": [
+              "api-reference/artists/list",
+              "api-reference/artists/create",
+              "api-reference/artists/delete",
+              "api-reference/artist/segments",
+              "api-reference/artist/socials",
+              "api-reference/artist/socials-scrape",
+              "api-reference/artist/profile"
+            ]
+          },
+          {
             "group": "Songs & Catalogs",
             "pages": [
               "api-reference/songs/songs",
@@ -132,6 +143,16 @@
               "api-reference/songs/catalog-songs",
               "api-reference/songs/catalog-songs-add",
               "api-reference/songs/catalog-songs-delete"
+            ]
+          },
+          {
+            "group": "Tasks",
+            "pages": [
+              "api-reference/tasks/get",
+              "api-reference/tasks/create",
+              "api-reference/tasks/update",
+              "api-reference/tasks/delete",
+              "api-reference/tasks/runs"
             ]
           },
           {
@@ -205,13 +226,14 @@
         ]
       },
       {
-        "tab": "Social Media",
+        "tab": "Social",
         "groups": [
           {
-            "group": "Social",
+            "group": "Connectors",
             "pages": [
-              "api-reference/social/posts",
-              "api-reference/social/scrape"
+              "api-reference/connectors/list",
+              "api-reference/connectors/authorize",
+              "api-reference/connectors/disconnect"
             ]
           },
           {
@@ -239,6 +261,13 @@
             ]
           },
           {
+            "group": "Social",
+            "pages": [
+              "api-reference/social/scrape",
+              "api-reference/social/posts"
+            ]
+          },
+          {
             "group": "Apify",
             "pages": [
               "api-reference/apify/scraper"
@@ -247,28 +276,13 @@
         ]
       },
       {
-        "tab": "Accounts",
+        "tab": "Platform",
         "groups": [
           {
             "group": "Agent Onboarding",
             "pages": [
               "api-reference/agents/signup",
               "api-reference/agents/verify"
-            ]
-          },
-          {
-            "group": "Connectors",
-            "pages": [
-              "api-reference/connectors/list",
-              "api-reference/connectors/authorize",
-              "api-reference/connectors/disconnect"
-            ]
-          },
-          {
-            "group": "Pulses",
-            "pages": [
-              "api-reference/pulses/update",
-              "api-reference/pulses/list"
             ]
           },
           {
@@ -290,6 +304,13 @@
             ]
           },
           {
+            "group": "Pulses",
+            "pages": [
+              "api-reference/pulses/update",
+              "api-reference/pulses/list"
+            ]
+          },
+          {
             "group": "Workspaces",
             "pages": [
               "api-reference/workspaces/create"
@@ -299,6 +320,12 @@
             "group": "Subscriptions",
             "pages": [
               "api-reference/subscriptions/get"
+            ]
+          },
+          {
+            "group": "Notifications",
+            "pages": [
+              "api-reference/notifications/create"
             ]
           },
           {
@@ -313,12 +340,6 @@
               "api-reference/admins/coding-pr",
               "api-reference/admins/content-slack-tags"
             ]
-          },
-          {
-            "group": "Notifications",
-            "pages": [
-              "api-reference/notifications/create"
-            ]
           }
         ]
       }
@@ -326,29 +347,29 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Recoup App",
+          "anchor": "Launch App",
           "href": "https://chat.recoupable.com",
-          "icon": "rocket"
+          "icon": "arrow-up-right"
         },
         {
-          "anchor": "Website",
-          "href": "https://recoupable.com",
-          "icon": "globe"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://research.recoupable.com/",
-          "icon": "newspaper"
+          "anchor": "GitHub",
+          "href": "https://github.com/recoupable",
+          "icon": "github"
         }
       ]
     }
   },
   "logo": {
     "light": "/logo/light.svg",
-    "dark": "/logo/dark.png"
+    "dark": "/logo/dark.png",
+    "href": "https://recoupable.com"
   },
   "navbar": {
     "links": [
+      {
+        "label": "Blog",
+        "href": "https://research.recoupable.com/"
+      },
       {
         "label": "Support",
         "href": "mailto:agent@recoupable.com"
@@ -356,8 +377,8 @@
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://chat.recoupable.com"
+      "label": "Get API Key",
+      "href": "https://chat.recoupable.com/keys"
     }
   },
   "contextual": {
@@ -375,13 +396,15 @@
   "footer": {
     "socials": {
       "x": "https://x.com/recoupai",
-      "github": "https://github.com/recoupable-com",
-      "linkedin": "https://www.linkedin.com/company/recoupable"
+      "github": "https://github.com/recoupable",
+      "linkedin": "https://www.linkedin.com/company/recoupable",
+      "website": "https://recoupable.com"
     }
   },
   "metatags": {
     "og:image": "/images/icon-with-background.png",
-    "og:site_name": "Recoup",
+    "og:site_name": "Recoup API",
+    "og:description": "Music intelligence API — 40+ tools for artist research, content creation, and music business automation. Built for developers and AI agents.",
     "twitter:card": "summary_large_image"
   }
 }

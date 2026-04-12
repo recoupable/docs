@@ -1,11 +1,13 @@
 ---
-title: 'Agents'
-description: 'Programmatic agent onboarding — sign up and obtain API keys in one call, no dashboard, no human in the loop.'
+title: "Agent Onboarding"
+description: "Get an API key programmatically — one call, no browser, no verification, no human in the loop."
 ---
 
-## Quickest start
+Two unauthenticated endpoints let any AI agent create an account and get an API key instantly.
 
-Get a working API key in a single unauthenticated request:
+## Get a key
+
+One POST. No auth required. Key comes back in the response.
 
 ```bash
 curl -X POST "https://recoup-api.vercel.app/api/agents/signup" \
@@ -13,20 +15,18 @@ curl -X POST "https://recoup-api.vercel.app/api/agents/signup" \
   -d '{"email": "agent+'$(date +%s)-$RANDOM'@recoupable.com"}'
 ```
 
-Response:
-
 ```json
 {
   "account_id": "123e4567-e89b-12d3-a456-426614174000",
   "api_key": "recoup_sk_abc123...",
-  "message": "If this is a new agent+ email, your API key is included. Otherwise, check your email for a verification code."
+  "message": "If this is a new agent+ email, your API key is included."
 }
 ```
 
-That's it. Store `api_key`, pass it in the `x-api-key` header on every subsequent request, and you're done.
+Store `api_key`. Pass it as `x-api-key` on every request. Done.
 
 <Tip>
-**One-liner — sign up and export the key in one shot.** Drop this into your shell and you'll have `$RECOUP_API_KEY` ready to use on the next line:
+**One-liner** — sign up and export in one command:
 
 ```bash
 export RECOUP_API_KEY=$(curl -s -X POST "https://recoup-api.vercel.app/api/agents/signup" \
@@ -34,63 +34,36 @@ export RECOUP_API_KEY=$(curl -s -X POST "https://recoup-api.vercel.app/api/agent
   -d '{"email": "agent+'$(date +%s)-$RANDOM'@recoupable.com"}' | jq -r .api_key)
 ```
 
-Verify it worked:
-
-```bash
-curl -H "x-api-key: $RECOUP_API_KEY" https://recoup-api.vercel.app/api/accounts/id
-```
 </Tip>
 
-<Tip>
-The `agent+{unique-suffix}@recoupable.com` shape is the recommended path for agents — it always returns an API key instantly, with no email verification required. Combining `$(date +%s)` with `$RANDOM` guarantees a fresh, collision-free address on every call (including multiple signups within the same second) and is portable across macOS and Linux shells.
-</Tip>
+---
 
-## How it works
+## Endpoints
 
-Two unauthenticated endpoints power agent onboarding:
+| Endpoint | Auth | What it does |
+|----------|------|-------------|
+| [`POST /api/agents/signup`](/api-reference/agents/signup) | None | New `agent+` emails → instant API key. Other emails → verification code sent via email. |
+| [`POST /api/agents/verify`](/api-reference/agents/verify) | None | Submit verification code → receive API key. |
 
-- **[`POST /api/agents/signup`](/api-reference/agents/signup)** — Register with an email address. Emails with the `agent+` prefix that have never been seen before receive an API key immediately. Any other email (or a previously-used `agent+` address) receives a 6-digit verification code via email.
-- **[`POST /api/agents/verify`](/api-reference/agents/verify)** — Submit the verification code to receive an API key.
+<Note>
+`agent+{unique}@recoupable.com` emails always return a key immediately — no verification step. Combining `$(date +%s)` with `$RANDOM` guarantees unique addresses across calls.
+</Note>
 
-Multiple API keys per account are supported — each signup or verification generates a new key without revoking existing ones.
+Each signup or verification creates a new key without revoking existing ones.
 
-## Standard signup (email verification)
+---
 
-If you're building a human-facing integration and want the user to verify their real email, use any non-`agent+` address:
-
-Step 1 — request a verification code:
-
-```bash
-curl -X POST "https://recoup-api.vercel.app/api/agents/signup" \
-  -H "Content-Type: application/json" \
-  -d '{"email": "you@example.com"}'
-```
-
-Step 2 — submit the 6-digit code from the verification email:
+## Use the key
 
 ```bash
-curl -X POST "https://recoup-api.vercel.app/api/agents/verify" \
-  -H "Content-Type: application/json" \
-  -d '{"email": "you@example.com", "code": "123456"}'
+curl "https://recoup-api.vercel.app/api/research?q=Drake" \
+  -H "x-api-key: $RECOUP_API_KEY"
 ```
 
-Response:
+That request searches the entire music industry for "Drake" and returns structured artist data. From here, you have access to 40+ tools — see the [Quickstart](/quickstart) for a guided walkthrough, or browse the [endpoint map](/#for-ai-agents) for the full API surface.
 
-```json
-{
-  "account_id": "123e4567-e89b-12d3-a456-426614174000",
-  "api_key": "recoup_sk_abc123...",
-  "message": "Verified"
-}
-```
+---
 
-## Using your API key
+## For humans
 
-Pass the returned `api_key` in the `x-api-key` header on every authenticated request:
-
-```bash
-curl -X GET "https://recoup-api.vercel.app/api/tasks" \
-  -H "x-api-key: YOUR_API_KEY"
-```
-
-See [Authentication](/authentication) for the full authentication model, including organization access and Bearer token support, and [Quickstart](/quickstart) for your first end-to-end request.
+If your integration requires email verification (real email, not `agent+`), see the **Create a key** section in [Authentication](/authentication).
