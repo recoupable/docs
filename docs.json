@@ -168,21 +168,6 @@
             ]
           },
           {
-            "group": "Songs & Catalogs",
-            "pages": [
-              "api-reference/songs/songs",
-              "api-reference/songs/create",
-              "api-reference/songs/analyze",
-              "api-reference/songs/analyze-presets",
-              "api-reference/songs/catalogs",
-              "api-reference/songs/catalogs-create",
-              "api-reference/songs/catalogs-delete",
-              "api-reference/songs/catalog-songs",
-              "api-reference/songs/catalog-songs-add",
-              "api-reference/songs/catalog-songs-delete"
-            ]
-          },
-          {
             "group": "Fans & Segments",
             "pages": [
               "api-reference/artist/segments",
@@ -191,6 +176,31 @@
               "api-reference/posts/get",
               "api-reference/post/comments",
               "api-reference/comments/get"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Catalog",
+        "groups": [
+          {
+            "group": "Songs",
+            "pages": [
+              "api-reference/songs/songs",
+              "api-reference/songs/create",
+              "api-reference/songs/analyze",
+              "api-reference/songs/analyze-presets"
+            ]
+          },
+          {
+            "group": "Catalogs",
+            "pages": [
+              "api-reference/songs/catalogs",
+              "api-reference/songs/catalogs-create",
+              "api-reference/songs/catalogs-delete",
+              "api-reference/songs/catalog-songs",
+              "api-reference/songs/catalog-songs-add",
+              "api-reference/songs/catalog-songs-delete"
             ]
           }
         ]
@@ -209,7 +219,7 @@
             ]
           },
           {
-            "group": "Primitives",
+            "group": "Content Tools",
             "pages": [
               "api-reference/content/generate-image",
               "api-reference/content/generate-video",
@@ -257,14 +267,6 @@
             ]
           },
           {
-            "group": "Connectors",
-            "pages": [
-              "api-reference/connectors/list",
-              "api-reference/connectors/authorize",
-              "api-reference/connectors/disconnect"
-            ]
-          },
-          {
             "group": "Pulses",
             "pages": [
               "api-reference/pulses/update",
@@ -305,6 +307,14 @@
               "api-reference/organizations/list",
               "api-reference/organizations/create",
               "api-reference/organizations/add-artist"
+            ]
+          },
+          {
+            "group": "Connectors",
+            "pages": [
+              "api-reference/connectors/list",
+              "api-reference/connectors/authorize",
+              "api-reference/connectors/disconnect"
             ]
           },
           {
