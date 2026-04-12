@@ -1,7 +1,29 @@
 ---
 title: "Quickstart"
-description: "Get your API key and make your first request to the Recoup API."
+description: "Get a Recoup API key in one call and make your first request — no browser, no dashboard."
 ---
+
+## Quickest start
+
+Sign up your agent and get an API key in a single API call — no dashboard, no browser, no human in the loop. This one-liner signs up a fresh `agent+` address and exports the returned key to `$RECOUP_API_KEY`:
+
+```bash
+export RECOUP_API_KEY=$(curl -s -X POST "https://recoup-api.vercel.app/api/agents/signup" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "agent+'$(date +%s)-$RANDOM'@recoupable.com"}' | jq -r .api_key)
+```
+
+Verify it worked:
+
+```bash
+curl -H "x-api-key: $RECOUP_API_KEY" https://recoup-api.vercel.app/api/accounts/id
+```
+
+<Tip>
+The `agent+{timestamp}@recoupable.com` shape is the fastest path for agents — it guarantees a fresh `agent+` address and returns an API key instantly without email verification.
+</Tip>
+
+For the full signup + email-verification flow, see the [Agents guide](/agents).
 
 ## Base URL
 
@@ -11,28 +33,9 @@ All API requests should be made to:
 https://recoup-api.vercel.app/api
 ```
 
-## API Keys
+## Your First Request
 
-To access the Recoup API programmatically, you'll need to create an API key.
-
-### Step 1: Access the API Keys Management Page
-
-1. Navigate to the [Recoup API Keys Management Page](https://chat.recoupable.com/keys)
-2. Sign in with your account if you haven't already
-
-### Step 2: Create Your API Key
-
-1. On the API Keys page, you'll see a form to create a new API key
-2. Enter a descriptive name for your API key (e.g., "My Development Key", "Production API Key")
-3. Click the "Create API Key" button
-
-<Warning>
-Copy and securely store your API key immediately - it will only be shown once!
-</Warning>
-
-### Step 3: Use Your API Key
-
-Once you have your API key, include it in the `x-api-key` header for all authenticated requests. Here's a simple example that retrieves your scheduled tasks:
+Once you have an API key, include it in the `x-api-key` header on every request. Here's a simple call that retrieves your scheduled tasks:
 
 <CodeGroup>
 
@@ -118,6 +121,19 @@ console.log(data.tasks);
 <Info>
 For full documentation on the Tasks API including filtering options, see the [Tasks API Reference](/api-reference/tasks/get).
 </Info>
+
+## Prefer the dashboard?
+
+If you're a human building an integration, you can also create API keys from the web console instead of the signup endpoint:
+
+1. Navigate to the [Recoup API Keys Management Page](https://chat.recoupable.com/keys)
+2. Sign in with your account
+3. Enter a descriptive name (e.g. "Production Server")
+4. Click **Create API Key**
+
+<Warning>
+Copy and securely store your API key immediately — it will only be shown once.
+</Warning>
 
 ## Next Steps
 
