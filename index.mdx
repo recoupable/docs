@@ -14,7 +14,7 @@ Get a working API key in a single unauthenticated request. No dashboard, no brow
 ```bash
 export RECOUP_API_KEY=$(curl -s -X POST "https://recoup-api.vercel.app/api/agents/signup" \
   -H "Content-Type: application/json" \
-  -d '{"email": "agent+'$(date +%s%3N)'@recoupable.com"}' | jq -r .api_key)
+  -d '{"email": "agent+'$(date +%s)-$RANDOM'@recoupable.com"}' | jq -r .api_key)
 ```
 
 `$RECOUP_API_KEY` is now ready to pass in the `x-api-key` header on any request. See the [Agents guide](/agents) for the full signup and verification flow.

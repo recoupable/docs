@@ -1466,7 +1466,7 @@
     },
     "/api/agents/signup": {
       "post": {
-        "description": "Register an agent. For new agent+ emails, returns an API key immediately. For all other cases, sends a verification code to the email — call [POST /api/agents/verify](/api-reference/agents/verify) with the code to get your API key.\n\n**Tip:** If you're unsure what email to register, use `agent+{Date.now()}@recoupable.com` — the current Unix timestamp in milliseconds (e.g. `agent+1744410896789@recoupable.com`). This guarantees a unique `agent+` address even when signing up multiple agents within the same second, and returns an API key instantly with no email verification required.",
+        "description": "Register an agent. For new agent+ emails, returns an API key immediately. For all other cases, sends a verification code to the email — call [POST /api/agents/verify](/api-reference/agents/verify) with the code to get your API key.\n\n**Tip:** If you're unsure what email to register, generate a unique `agent+{suffix}@recoupable.com` address (e.g. `agent+1744410896-28439@recoupable.com`, combining a Unix timestamp with a random integer). This guarantees a fresh `agent+` address on every call — including multiple signups within the same second — and returns an API key instantly with no email verification required.",
         "security": [],
         "requestBody": {
           "description": "Agent email to register",

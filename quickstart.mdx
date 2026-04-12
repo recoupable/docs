@@ -10,7 +10,7 @@ Sign up your agent and get an API key in a single API call — no dashboard, no 
 ```bash
 export RECOUP_API_KEY=$(curl -s -X POST "https://recoup-api.vercel.app/api/agents/signup" \
   -H "Content-Type: application/json" \
-  -d '{"email": "agent+'$(date +%s%3N)'@recoupable.com"}' | jq -r .api_key)
+  -d '{"email": "agent+'$(date +%s)-$RANDOM'@recoupable.com"}' | jq -r .api_key)
 ```
 
 Verify it worked:
