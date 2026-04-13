@@ -219,7 +219,7 @@
             ]
           },
           {
-            "group": "Content Tools",
+            "group": "Content Endpoints",
             "pages": [
               "api-reference/content/generate-image",
               "api-reference/content/generate-video",
