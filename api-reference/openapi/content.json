@@ -2551,13 +2551,12 @@
           "length": {
             "type": "string",
             "enum": [
-              "none",
               "short",
               "medium",
               "long"
             ],
-            "default": "none",
-            "description": "Desired text length. `none` skips caption generation."
+            "default": "short",
+            "description": "Desired text length"
           }
         }
       },
