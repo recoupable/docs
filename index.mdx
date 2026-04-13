@@ -1,11 +1,51 @@
 ---
-title: "Recoup API"
-description: "Music intelligence API — the infrastructure for agents to run record labels. 40+ tools for artist research, content creation, and music business automation."
+title: "Recoupable API"
+description: "The infrastructure for agents to run record labels. Research, content, catalog management, and automation — all programmable."
 ---
 
-The infrastructure for agents to run record labels. 40+ tools that give artists the power of a major label in their pocket, and executives a way to scale operations without headcount.
+## The problem
 
-Recoup captures context around your catalog, artists, releases, and fans — then context-engineers it so agents get exactly what they need, exactly when they need it, to perform the work of a major label. Programmatically.
+Running a record label takes a team. Research, content, marketing, distribution, fan engagement, catalog management — it's a full company of work. Most artists can't afford that team. Most executives can't scale it.
+
+## What is Recoupable?
+
+Recoupable is the infrastructure that lets AI agents run record labels. It captures all the context around your catalog, artists, releases, and fans — then context-engineers it so agents get exactly what they need, exactly when they need it, to perform the work of a major label. Programmatically.
+
+It gives artists the power of a major label in their pocket, and executives a way to scale operations without headcount.
+
+## Core concepts
+
+| Concept | What it is |
+|---------|------------|
+| **Artist** | A managed artist account with profile, social handles, and linked catalog. The unit agents work on behalf of. |
+| **Catalog** | A collection of songs belonging to a label or artist. Catalogs can be analyzed, organized, and used as context for content creation. |
+| **Chat** | An AI conversation with artist context. Agents use chats to research, plan, and execute — with full memory of prior work. |
+| **Task** | A scheduled prompt that runs on a cron against an artist. Tasks automate recurring agent work — daily reports, weekly content, monthly analysis. |
+| **Sandbox** | An isolated Linux environment where agents can run code, manage files, and execute complex workflows. Persistent across calls. |
+| **Pulse** | An automated digest channel. When enabled, Recoupable sends periodic intelligence updates about an artist to the account owner. |
+| **Connector** | An OAuth connection to an external platform (Spotify, Google Sheets, TikTok, etc.) linked to an account. |
+
+## How it works
+
+<Steps>
+  <Step title="Connect">
+    Get an API key via the agent signup endpoint. Connect via REST API, MCP server, or CLI — whichever interface your agent prefers.
+  </Step>
+  <Step title="Research">
+    Pull data on any artist from 14+ platforms. Streaming metrics, audience demographics, playlist placements, career history, web intelligence, and competitive analysis.
+  </Step>
+  <Step title="Build context">
+    Create artists, link social accounts, build catalogs of songs, and segment fans. Recoupable captures this context so every subsequent agent call is informed.
+  </Step>
+  <Step title="Create">
+    Generate images, videos, and captions with AI. Transcribe audio, edit media, upscale quality. Seven independent content endpoints, or run the full pipeline in one call.
+  </Step>
+  <Step title="Automate">
+    Schedule recurring tasks, spin up sandboxes for complex workflows, enable pulses for automated intelligence, and send notifications. Agents work while you sleep.
+  </Step>
+</Steps>
+
+---
 
 ## Get an API key
 
@@ -23,7 +63,7 @@ The `agent+` prefix bypasses email verification. Your API key comes back in the 
 
 ---
 
-## How you access it
+## Three interfaces
 
 <CardGroup cols={3}>
   <Card
@@ -61,7 +101,7 @@ Organized by what agents actually do when running a label.
     icon="search"
     href="/api-reference/research/search"
   >
-    Everything about any artist from any source. 30+ research tools across 14 platforms, plus AI chat, Spotify, Instagram, X, web intelligence, and deep research reports.
+    Everything about any artist from any source. 30+ research endpoints across 14 platforms, plus AI chat, Spotify, Instagram, X, web intelligence, and deep research reports.
   </Card>
   <Card
     title="Artists"
@@ -82,7 +122,7 @@ Organized by what agents actually do when running a label.
     icon="sparkles"
     href="/api-reference/content/create"
   >
-    7 endpoints for images, videos, captions, transcription, editing, upscaling, and analysis. Run the full pipeline or call each endpoint directly.
+    7 content endpoints for images, videos, captions, transcription, editing, upscaling, and analysis. Run the full pipeline or call each one directly.
   </Card>
   <Card
     title="Automation"
