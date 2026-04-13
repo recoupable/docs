@@ -394,7 +394,7 @@
     },
     "/api/artists/{id}/pin": {
       "post": {
-        "description": "Pin an artist.",
+        "description": "Pin an artist. This updates the caller's pinned preference for the artist.",
         "parameters": [
           {
             "name": "id",
@@ -454,7 +454,7 @@
         }
       },
       "delete": {
-        "description": "Unpin an artist.",
+        "description": "Unpin an artist. This updates the caller's pinned preference for the artist.",
         "parameters": [
           {
             "name": "id",
