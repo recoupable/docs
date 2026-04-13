@@ -394,12 +394,12 @@
     },
     "/api/artists/{id}/pin": {
       "post": {
-        "description": "Pin an artist accessible to the authenticated account. This updates the caller's pinned preference for the artist and will create the direct account_artist_ids row when needed for org-access artists.",
+        "description": "Pin an artist.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "Artist account ID to pin.",
+            "description": "Artist ID.",
             "required": true,
             "schema": {
               "type": "string",
@@ -409,7 +409,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Artist pinned successfully",
+            "description": "Artist pinned.",
             "content": {
               "application/json": {
                 "schema": {
@@ -454,12 +454,12 @@
         }
       },
       "delete": {
-        "description": "Unpin an artist accessible to the authenticated account.",
+        "description": "Unpin an artist.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "Artist account ID to unpin.",
+            "description": "Artist ID.",
             "required": true,
             "schema": {
               "type": "string",
@@ -469,7 +469,7 @@
         ],
         "responses": {
       "200": {
-        "description": "Artist unpinned successfully",
+        "description": "Artist unpinned.",
         "content": {
           "application/json": {
             "schema": {
@@ -2340,16 +2340,16 @@
         "properties": {
           "success": {
             "type": "boolean",
-            "description": "Whether the artist pin update completed successfully"
+            "description": "Whether the request succeeded"
           },
           "artistId": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the artist account whose pinned state was updated"
+            "description": "The artist ID"
           },
           "pinned": {
             "type": "boolean",
-            "description": "The persisted pinned state for the authenticated account"
+            "description": "The current pinned state"
           }
         }
       },
