@@ -32,9 +32,9 @@ curl -X POST "https://recoup-api.vercel.app/api/agents/verify" \
 
 The verify response includes `api_key`. Store it and pass it as `x-api-key` on every subsequent request.
 
-<Note>
-`agent+` emails (e.g. `agent+test@recoupable.com`) skip verification and return a key instantly — but create a blank account with no roster or catalog. Use this for testing, not for working on behalf of an existing user.
-</Note>
+<Warning>
+`agent+` emails create a **separate account** — `agent+sidney@recoupable.com` is NOT linked to `sidney@recoupable.com`. To get a key for an existing user, use their actual email and go through the verification flow above.
+</Warning>
 
 ---
 
