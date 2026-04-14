@@ -392,6 +392,128 @@
         }
       }
     },
+    "/api/artists/{id}/pin": {
+      "post": {
+        "description": "Pin an artist. This updates the caller's pinned preference for the artist.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Artist ID.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist pinned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinArtistResponse"
+                }
+              }
+            }
+          },
+      "400": {
+        "description": "Bad request - invalid artist ID path parameter",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PinArtistErrorResponse"
+            }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication"
+          },
+          "403": {
+            "description": "Forbidden - the authenticated account cannot access this artist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinArtistErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Artist not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinArtistErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Unpin an artist. This updates the caller's pinned preference for the artist.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Artist ID.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+      "200": {
+        "description": "Artist unpinned.",
+        "content": {
+          "application/json": {
+            "schema": {
+                  "$ref": "#/components/schemas/PinArtistResponse"
+                }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad request - invalid artist ID path parameter",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PinArtistErrorResponse"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized - missing or invalid authentication"
+      },
+          "403": {
+            "description": "Forbidden - the authenticated account cannot access this artist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinArtistErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Artist not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinArtistErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/artists/{id}": {
       "delete": {
         "description": "Delete an artist accessible to the authenticated account. This removes the caller's direct artist link and, if no owner links remain, deletes the artist account itself.",
@@ -2178,6 +2300,56 @@
             "type": "string",
             "format": "uuid",
             "description": "UUID of the artist account that was deleted or unlinked"
+          }
+        }
+      },
+      "PinArtistErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "missing_fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of missing or invalid field names"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "PinArtistResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "artistId",
+          "pinned"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the request succeeded"
+          },
+          "artistId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The artist ID"
+          },
+          "pinned": {
+            "type": "boolean",
+            "description": "The current pinned state"
           }
         }
       },
