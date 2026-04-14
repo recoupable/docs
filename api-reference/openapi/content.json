@@ -616,7 +616,7 @@
     "/api/content/create": {
       "post": {
         "deprecated": true,
-        "description": "This pipeline endpoint is being phased out. Use the individual content endpoints directly. Triggers the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden via `songs` URLs or `images`, then triggers a background task that generates a short-form video. Returns `runIds` — an array of run IDs that can each be polled via [GET /api/tasks/runs](/api-reference/tasks/runs).",
+        "description": "This pipeline endpoint is being phased out. Use the individual content endpoints (`generate-image`, `generate-video`, `generate-caption`, etc.) directly. Triggers the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden via `songs` URLs or `images`, then triggers a background task that generates a short-form video. Returns `runIds` — an array of run IDs that can each be polled via [GET /api/tasks/runs](/api-reference/tasks/runs).",
         "security": [
           {
             "apiKeyAuth": []
