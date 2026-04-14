@@ -66,15 +66,15 @@ Once you have an artist, pull data across 14 platforms:
 
 ```bash
 # Streaming metrics (Spotify, Instagram, TikTok, YouTube, and 10 more)
-curl "https://recoup-api.vercel.app/api/research/metrics?q=Drake&source=spotify" \
+curl "https://recoup-api.vercel.app/api/research/metrics?artist=Drake&source=spotify" \
   -H "x-api-key: $RECOUP_API_KEY"
 
 # Audience demographics (age, gender, geography)
-curl "https://recoup-api.vercel.app/api/research/audience?q=Drake" \
+curl "https://recoup-api.vercel.app/api/research/audience?artist=Drake" \
   -H "x-api-key: $RECOUP_API_KEY"
 
 # Editorial playlist placements
-curl "https://recoup-api.vercel.app/api/research/playlists?q=Drake&editorial=true" \
+curl "https://recoup-api.vercel.app/api/research/playlists?artist=Drake&editorial=true" \
   -H "x-api-key: $RECOUP_API_KEY"
 ```
 
