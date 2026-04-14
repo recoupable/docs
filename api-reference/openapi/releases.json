@@ -516,7 +516,7 @@
     },
     "/api/artists/{id}": {
       "patch": {
-        "description": "Update an artist's settings. Sets profile fields, artist account info, any provided socials, and the caller's pin state for this artist, then returns the merged artist payload.",
+        "description": "Update an artist's settings. This updates profile fields, artist account info, and any provided socials, then returns the merged artist payload.",
         "parameters": [
           {
             "name": "id",
