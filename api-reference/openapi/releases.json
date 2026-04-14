@@ -516,7 +516,7 @@
     },
     "/api/artists/{id}": {
       "patch": {
-        "description": "Update manual artist settings for an artist accessible to the authenticated account. This updates profile fields, artist account info, and any provided socials, then returns the merged artist payload.",
+        "description": "Update an artist's settings. Sets profile fields, artist account info, any provided socials, and the caller's pin state for this artist, then returns the merged artist payload.",
         "parameters": [
           {
             "name": "id",
@@ -3572,7 +3572,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Path to the first invalid field when validation fails"
+            "description": "List of missing or invalid field names"
           },
           "error": {
             "type": "string",
@@ -3640,6 +3640,10 @@
           },
           "profileUrls": {
             "$ref": "#/components/schemas/UpdateArtistProfileUrls"
+          },
+          "pinned": {
+            "type": "boolean",
+            "description": "Pin or unpin this artist for the authenticated account"
           }
         }
       },
