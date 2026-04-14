@@ -246,7 +246,7 @@
         ]
       },
       {
-        "tab": "Automation",
+        "tab": "Tasks",
         "groups": [
           {
             "group": "Scheduled Tasks",
@@ -256,18 +256,6 @@
               "api-reference/tasks/update",
               "api-reference/tasks/delete",
               "api-reference/tasks/runs"
-            ]
-          },
-          {
-            "group": "Sandboxes",
-            "pages": [
-              "api-reference/sandboxes/list",
-              "api-reference/sandboxes/create",
-              "api-reference/sandboxes/snapshot",
-              "api-reference/sandboxes/delete",
-              "api-reference/sandboxes/setup",
-              "api-reference/sandboxes/file",
-              "api-reference/sandboxes/upload"
             ]
           },
           {
@@ -311,6 +299,18 @@
               "api-reference/organizations/list",
               "api-reference/organizations/create",
               "api-reference/organizations/add-artist"
+            ]
+          },
+          {
+            "group": "Sandboxes",
+            "pages": [
+              "api-reference/sandboxes/list",
+              "api-reference/sandboxes/create",
+              "api-reference/sandboxes/snapshot",
+              "api-reference/sandboxes/delete",
+              "api-reference/sandboxes/setup",
+              "api-reference/sandboxes/file",
+              "api-reference/sandboxes/upload"
             ]
           },
           {

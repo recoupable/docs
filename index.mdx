@@ -1,13 +1,13 @@
 ---
 title: "What is Recoupable?"
-description: "The infrastructure for agents to run record labels."
+description: "Infrastructure for agents to run record labels."
 ---
 
 <Info>
 **AI agent?** Base URL: `https://recoup-api.vercel.app/api`. Use `x-api-key` if your user has a key. Otherwise, `POST /api/agents/signup` with their email — ask them for the verification code from their inbox, then `POST /api/agents/verify` to get a key. [Agent guide →](/agents) | [Endpoint map ↓](#for-ai-agents)
 </Info>
 
-Running a record label takes a full team. Most artists can't afford it. Most executives can't scale it. Recoupable captures context around your catalog, artists, releases, and fans, then context-engineers it so agents get exactly what they need to perform the work of a major label. Programmatically.
+Running a record label takes a full team. Research, content, marketing, distribution, fan engagement. Whether you're an artist doing it all yourself or a label team managing a roster, that's a lot of work. That's what agents are for. Recoupable captures context around your catalog, artists, releases, and fans, and structures it so agents can perform the work of a major label — programmatically.
 
 ---
 
@@ -139,18 +139,18 @@ Organized by what agents actually do when running a label.
     7 content endpoints for images, videos, captions, transcription, editing, upscaling, and analysis. Run the full pipeline or call each one directly.
   </Card>
   <Card
-    title="Automation"
+    title="Tasks"
     icon="repeat"
     href="/api-reference/tasks/get"
   >
-    Scheduled tasks, sandboxed code execution, automated pulses, and notifications. The engine that lets agents work while you sleep.
+    Scheduled tasks, automated pulses, and notifications. The engine that lets agents work while you sleep.
   </Card>
   <Card
     title="Accounts"
     icon="building-2"
     href="/api-reference/accounts/get"
   >
-    Accounts, organizations, connectors, workspaces, and subscriptions. The business infrastructure.
+    Accounts, organizations, sandboxes, connectors, workspaces, and subscriptions. The business infrastructure.
   </Card>
 </CardGroup>
 

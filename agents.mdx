@@ -1,46 +1,46 @@
 ---
 title: "Agent Onboarding"
-description: "The operating manual for AI agents using the Recoupable API. Authentication, roster awareness, sandbox filesystem, and decision-making."
+description: "The operating manual for AI agents using the Recoupable API."
 ---
 
-This page is for AI agents. It tells you how to authenticate, understand your user's roster, navigate the sandbox filesystem, and decide what to do.
+This page is for AI agents. Follow these steps in order.
 
 ## 1. Authenticate
 
-If your user already has an API key, use it:
+If your human has an API key, pass it via `x-api-key`. If not, generate one:
 
-```bash
-curl "https://recoup-api.vercel.app/api/accounts/id" \
-  -H "x-api-key: USER_API_KEY"
-```
+<Steps>
+  <Step title="Call signup with their email">
+    ```bash
+    curl -X POST "https://recoup-api.vercel.app/api/agents/signup" \
+      -H "Content-Type: application/json" \
+      -d '{"email": "user@example.com"}'
+    ```
+  </Step>
+  <Step title="Ask the human for the code">
+    A 6-digit code was sent to their inbox. Ask them: *"Check your email for a verification code and share it with me."*
+  </Step>
+  <Step title="Call verify with the code">
+    ```bash
+    curl -X POST "https://recoup-api.vercel.app/api/agents/verify" \
+      -H "Content-Type: application/json" \
+      -d '{"email": "user@example.com", "code": "123456"}'
+    ```
+    Store the returned `api_key`. Pass it as `x-api-key` on every request.
+  </Step>
+</Steps>
 
-If they don't have a key, generate one from their email. This sends a 6-digit verification code to their inbox — ask the user for the code.
-
-```bash
-# Step 1 — request verification code
-curl -X POST "https://recoup-api.vercel.app/api/agents/signup" \
-  -H "Content-Type: application/json" \
-  -d '{"email": "user@example.com"}'
-
-# Step 2 — ask the user: "Check your email for a verification code and share it with me."
-
-# Step 3 — submit the code
-curl -X POST "https://recoup-api.vercel.app/api/agents/verify" \
-  -H "Content-Type: application/json" \
-  -d '{"email": "user@example.com", "code": "123456"}'
-```
-
-The verify response includes `api_key`. Store it and pass it as `x-api-key` on every subsequent request. **Then immediately check the roster** — don't wait for the user to tell you what to do.
+**After authenticating, immediately check the roster.** Don't wait for the human to tell you what to do.
 
 <Warning>
-`agent+` emails create a **separate account** — `agent+sidney@recoupable.com` is NOT linked to `sidney@recoupable.com`. To get a key for an existing user, call signup with their real email, ask them to check their inbox for the 6-digit code, then call verify with that code.
+`agent+` emails create a **separate account** — `agent+user@example.com` is NOT linked to `user@example.com`. To work on behalf of an existing human, use their real email.
 </Warning>
 
 ---
 
 ## 2. Understand the roster
 
-After getting a key, your next call should always be to check what the user has:
+After getting a key, your next call should always be to check what the human has:
 
 ```bash
 # List all artists available to this account
@@ -52,17 +52,17 @@ curl "https://recoup-api.vercel.app/api/organizations" \
   -H "x-api-key: $API_KEY"
 ```
 
-**If the user has artists**, you can scope work to a specific artist by passing `artist_account_id` on supported endpoints. Research, content, tasks, and fan segments all become artist-specific.
+**If the human has artists**, you can scope work to a specific artist by passing `artist_account_id` on supported endpoints. Research, content, tasks, and fan segments all become artist-specific.
 
-**If the user has organizations**, pass `organization_id` to scope to a specific label's roster.
+**If the human has organizations**, pass `organization_id` to scope to a specific label's roster.
 
-**If neither is specified**, you operate at the account level and can see everything available to the user.
+**If neither is specified**, you operate at the account level and can see everything available to the human.
 
 ---
 
-## 3. Know the sandbox filesystem
+## 3. Know the filesystem
 
-Each account has a persistent sandbox backed by a GitHub repo. This is where artist context lives — the files agents use to do informed work.
+Each account has a persistent filesystem backed by a GitHub repo. This is where artist context lives — the files agents use to do informed work.
 
 ### Artist directory structure
 
@@ -108,19 +108,29 @@ curl -X POST "https://recoup-api.vercel.app/api/sandboxes/files" \
 ## 4. Decide what to do
 
 <Steps>
-  <Step title="Does the user have a roster?">
+  <Step title="Does the human have a roster?">
     Call `GET /api/artists`. If they have artists, list them and ask which one to work with. If not, you can research any artist with `GET /api/research?q=...` or create one with `POST /api/artists`.
   </Step>
-  <Step title="Are you researching or creating?">
+  <Step title="What kind of work?">
     **Research** — use the 30+ research endpoints. Pass `artist_account_id` to scope to a rostered artist, or search by name for any artist globally.
 
-    **Content** — check readiness with `POST /api/content/validate`, then generate with the content endpoints. Artist context from the sandbox filesystem makes output more on-brand.
+    **Content** — generate images, videos, and captions with the content endpoints. Artist context from the filesystem makes output more on-brand.
+
+    **Manage** — plan and track releases by creating and updating `RELEASE.md` files in the artist's `releases/` directory. Add songs to catalogs, update artist context, and organize the roster.
   </Step>
   <Step title="Should you save the work?">
-    Research and generated content can be saved to the artist's sandbox directory for future context. Use `POST /api/sandboxes/files` to upload files, or use `POST /api/sandboxes` with a prompt to run complex file operations in the sandbox directly.
+    Save research, generated content, or notes to the artist's directory in the filesystem so future calls have more context. Use `POST /api/sandboxes/files` to upload files to the repo.
   </Step>
   <Step title="Should this be recurring?">
-    If the work should happen automatically, create a task with `POST /api/tasks` — set a cron schedule and a prompt. The task runs on schedule against the specified artist.
+    If the human asks for something more than once, or if the work is time-sensitive and repeating, turn it into a task with `POST /api/tasks`.
+
+    Good candidates for tasks:
+    - Daily or weekly reports (streaming stats, fan growth, playlist adds)
+    - Monitoring competitors or trending artists
+    - Generating recurring content (weekly social posts, monthly recaps)
+    - Checking release milestones as a date approaches
+
+    If the human only needs it once, just do it. Don't create a task for everything.
   </Step>
 </Steps>
 
