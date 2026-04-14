@@ -1,69 +1,148 @@
 ---
 title: "Agent Onboarding"
-description: "Get an API key programmatically — one call, no browser, no verification, no human in the loop."
+description: "The operating manual for AI agents using the Recoupable API. Authentication, roster awareness, sandbox filesystem, and decision-making."
 ---
 
-Two unauthenticated endpoints let any AI agent create an account and get an API key instantly.
+This page is for AI agents. It tells you how to authenticate, understand your user's roster, navigate the sandbox filesystem, and decide what to do.
 
-## Get a key
+## 1. Authenticate
 
-One POST. No auth required. Key comes back in the response.
+If your user already has an API key, use it:
 
 ```bash
+curl "https://recoup-api.vercel.app/api/accounts/id" \
+  -H "x-api-key: USER_API_KEY"
+```
+
+If they don't have a key, generate one from their email. This sends a 6-digit verification code to their inbox — ask the user for the code.
+
+```bash
+# Step 1 — request verification code
 curl -X POST "https://recoup-api.vercel.app/api/agents/signup" \
   -H "Content-Type: application/json" \
-  -d '{"email": "agent+'$(date +%s)-$RANDOM'@recoupable.com"}'
-```
+  -d '{"email": "user@example.com"}'
 
-```json
-{
-  "account_id": "123e4567-e89b-12d3-a456-426614174000",
-  "api_key": "recoup_sk_abc123...",
-  "message": "If this is a new agent+ email, your API key is included."
-}
-```
+# Step 2 — ask the user: "Check your email for a verification code and share it with me."
 
-Store `api_key`. Pass it as `x-api-key` on every request. Done.
-
-<Tip>
-**One-liner** — sign up and export in one command:
-
-```bash
-export RECOUP_API_KEY=$(curl -s -X POST "https://recoup-api.vercel.app/api/agents/signup" \
+# Step 3 — submit the code
+curl -X POST "https://recoup-api.vercel.app/api/agents/verify" \
   -H "Content-Type: application/json" \
-  -d '{"email": "agent+'$(date +%s)-$RANDOM'@recoupable.com"}' | jq -r .api_key)
+  -d '{"email": "user@example.com", "code": "123456"}'
 ```
 
-</Tip>
-
----
-
-## Endpoints
-
-| Endpoint | Auth | What it does |
-|----------|------|-------------|
-| [`POST /api/agents/signup`](/api-reference/agents/signup) | None | New `agent+` emails → instant API key. Other emails → verification code sent via email. |
-| [`POST /api/agents/verify`](/api-reference/agents/verify) | None | Submit verification code → receive API key. |
+The verify response includes `api_key`. Store it and pass it as `x-api-key` on every subsequent request.
 
 <Note>
-`agent+{unique}@recoupable.com` emails always return a key immediately — no verification step. Combining `$(date +%s)` with `$RANDOM` guarantees unique addresses across calls.
+`agent+` emails (e.g. `agent+test@recoupable.com`) skip verification and return a key instantly — but create a blank account with no roster or catalog. Use this for testing, not for working on behalf of an existing user.
 </Note>
 
-Each signup or verification creates a new key without revoking existing ones.
-
 ---
 
-## Use the key
+## 2. Understand the roster
+
+After authenticating, check what the user has:
 
 ```bash
-curl "https://recoup-api.vercel.app/api/research?q=Drake" \
-  -H "x-api-key: $RECOUP_API_KEY"
+# List all artists available to this account
+curl "https://recoup-api.vercel.app/api/artists" \
+  -H "x-api-key: $API_KEY"
+
+# List organizations (labels/teams) the account belongs to
+curl "https://recoup-api.vercel.app/api/organizations" \
+  -H "x-api-key: $API_KEY"
 ```
 
-That request searches the entire music industry for "Drake" and returns structured artist data. From here, you have access to 40+ endpoints — see the [Quickstart](/quickstart) for a guided walkthrough, or browse the [endpoint map](/#for-ai-agents) for the full API surface.
+**If the user has artists**, you can scope work to a specific artist by passing `artist_account_id` on supported endpoints. Research, content, tasks, and fan segments all become artist-specific.
+
+**If the user has organizations**, pass `organization_id` to scope to a specific label's roster.
+
+**If neither is specified**, you operate at the account level and can see everything available to the user.
 
 ---
 
-## For humans
+## 3. Know the sandbox filesystem
 
-If your integration requires email verification (real email, not `agent+`), see the **Create a key** section in [Authentication](/authentication).
+Each account has a persistent sandbox backed by a GitHub repo. This is where artist context lives — the files agents use to do informed work.
+
+### Artist directory structure
+
+```
+orgs/{org-name}/artists/{artist-slug}/
+├── RECOUP.md                              # Identity file (artistName, artistSlug, artistId)
+├── context/
+│   ├── artist.md                          # Brand voice, bio, constraints
+│   ├── audience.md                        # Audience insights, resonance
+│   └── images/
+│       └── face-guide.png                 # Face reference for visual content
+├── songs/{song-slug}/
+│   └── {song-slug}.mp3                    # Audio files
+├── releases/{release-slug}/
+│   └── RELEASE.md                         # Release plan and metadata
+└── config/
+    └── content-creation/
+        └── config.json                    # Pipeline overrides
+```
+
+The `RECOUP.md` file ties the folder to the platform — it contains YAML frontmatter with `artistName`, `artistSlug`, and `artistId`.
+
+### Content readiness
+
+Before generating content for an artist, the minimum required files are:
+- `context/images/face-guide.png` (face reference)
+- At least one `.mp3` file under the artist tree
+
+Recommended for better output:
+- `context/artist.md` (brand/voice)
+- `context/audience.md` (audience insights)
+- `context/era.json` (current era metadata)
+
+Use `POST /api/content/validate` with `artist_account_id` to check readiness programmatically.
+
+### Accessing sandbox files
+
+```bash
+# List the full file tree
+curl "https://recoup-api.vercel.app/api/sandboxes" \
+  -H "x-api-key: $API_KEY"
+
+# Read a specific file
+curl "https://recoup-api.vercel.app/api/sandboxes/file?path=orgs/my-label/artists/drake/context/artist.md" \
+  -H "x-api-key: $API_KEY"
+
+# Upload files to the repo
+curl -X POST "https://recoup-api.vercel.app/api/sandboxes/files" \
+  -H "x-api-key: $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"files": [{"url": "https://...", "path": "orgs/my-label/artists/drake/context/audience.md"}]}'
+```
+
+---
+
+## 4. Decide what to do
+
+<Steps>
+  <Step title="Does the user have a roster?">
+    Call `GET /api/artists`. If they have artists, list them and ask which one to work with. If not, you can research any artist with `GET /api/research?q=...` or create one with `POST /api/artists`.
+  </Step>
+  <Step title="Are you researching or creating?">
+    **Research** — use the 30+ research endpoints. Pass `artist_account_id` to scope to a rostered artist, or search by name for any artist globally.
+
+    **Content** — check readiness with `POST /api/content/validate`, then generate with the content endpoints. Artist context from the sandbox filesystem makes output more on-brand.
+  </Step>
+  <Step title="Should you save the work?">
+    Research and generated content can be saved to the artist's sandbox directory for future context. Use `POST /api/sandboxes/files` to upload files, or use `POST /api/sandboxes` with a prompt to run complex file operations in the sandbox directly.
+  </Step>
+  <Step title="Should this be recurring?">
+    If the work should happen automatically, create a task with `POST /api/tasks` — set a cron schedule and a prompt. The task runs on schedule against the specified artist.
+  </Step>
+</Steps>
+
+---
+
+## Base URL
+
+```
+https://recoup-api.vercel.app/api
+```
+
+All endpoints require `x-api-key` header unless noted. See [Authentication](/authentication) for the full auth model, and the [endpoint map](/#for-ai-agents) for every available endpoint.

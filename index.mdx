@@ -1,29 +1,43 @@
 ---
-title: "Recoupable API"
-description: "The infrastructure for agents to run record labels. Research, content, catalog management, and automation — all programmable."
+title: "What is Recoupable?"
+description: "The infrastructure for agents to run record labels."
 ---
 
-## The problem
+<Info>
+**AI agent?** Base URL: `https://recoup-api.vercel.app/api`. Use `x-api-key` if your user has a key. Otherwise, `POST /api/agents/signup` with their email — ask them for the verification code from their inbox, then `POST /api/agents/verify` to get a key. [Agent guide →](/agents) | [Endpoint map ↓](#for-ai-agents)
+</Info>
 
-Running a record label takes a team. Research, content, marketing, distribution, fan engagement, catalog management — it's a full company of work. Most artists can't afford that team. Most executives can't scale it.
+Running a record label takes a full team. Most artists can't afford it. Most executives can't scale it. Recoupable captures context around your catalog, artists, releases, and fans, then context-engineers it so agents get exactly what they need to perform the work of a major label. Programmatically.
 
-## What is Recoupable?
-
-Recoupable is the infrastructure that lets AI agents run record labels. It captures all the context around your catalog, artists, releases, and fans — then context-engineers it so agents get exactly what they need, exactly when they need it, to perform the work of a major label. Programmatically.
-
-It gives artists the power of a major label in their pocket, and executives a way to scale operations without headcount.
+---
 
 ## Core concepts
 
-| Concept | What it is |
-|---------|------------|
-| **Artist** | A managed artist account with profile, social handles, and linked catalog. The unit agents work on behalf of. |
-| **Catalog** | A collection of songs belonging to a label or artist. Catalogs can be analyzed, organized, and used as context for content creation. |
-| **Chat** | An AI conversation with artist context. Agents use chats to research, plan, and execute — with full memory of prior work. |
-| **Task** | A scheduled prompt that runs on a cron against an artist. Tasks automate recurring agent work — daily reports, weekly content, monthly analysis. |
-| **Sandbox** | An isolated Linux environment where agents can run code, manage files, and execute complex workflows. Persistent across calls. |
-| **Pulse** | An automated digest channel. When enabled, Recoupable sends periodic intelligence updates about an artist to the account owner. |
-| **Connector** | An OAuth connection to an external platform (Spotify, Google Sheets, TikTok, etc.) linked to an account. |
+<AccordionGroup>
+  <Accordion title="Accounts and scoping" defaultOpen>
+    Recoupable has three levels of identity. You can scope agent work at any level.
+
+    | Concept | What it is |
+    |---------|------------|
+    | **Account** | A user or agent that authenticates with an API key. Your account owns artists, chats, tasks, and connectors. When no artist is specified, you see everything available to you. |
+    | **Organization** | A label or team that groups multiple accounts. Pass `organization_id` to scope to a specific roster. Accounts can belong to multiple organizations, each with different artists. |
+    | **Artist** | A managed artist with profile, social handles, and linked catalog. Pass `artist_account_id` to scope to a specific artist. When omitted, agents see all artists available to the account. |
+  </Accordion>
+  <Accordion title="Data and context">
+    | Concept | What it is |
+    |---------|------------|
+    | **Catalog** | A collection of songs belonging to a label or artist. Catalogs can be analyzed, organized, and used as context for content creation. |
+    | **Chat** | An AI conversation with artist context. Agents use chats to research, plan, and execute — with full memory of prior work. |
+    | **Connector** | An OAuth connection to an external platform (Spotify, Google Sheets, TikTok, etc.) linked to an account. |
+  </Accordion>
+  <Accordion title="Automation">
+    | Concept | What it is |
+    |---------|------------|
+    | **Task** | A scheduled prompt that runs on a cron. Automates recurring agent work — daily reports, weekly content, monthly analysis. Scope to a specific artist or run across the whole roster. |
+    | **Sandbox** | An isolated Linux environment where agents can run code, manage files, and execute complex workflows. Persistent across calls. |
+    | **Pulse** | An automated digest channel. When enabled, Recoupable sends periodic intelligence updates about an artist to the account owner. |
+  </Accordion>
+</AccordionGroup>
 
 ## How it works
 
