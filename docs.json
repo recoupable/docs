@@ -41,6 +41,8 @@
               "api-reference/artists/list",
               "api-reference/artists/create",
               "api-reference/artists/update",
+              "api-reference/artists/pin",
+              "api-reference/artists/unpin",
               "api-reference/artists/delete",
               "api-reference/artist/segments",
               "api-reference/artist/socials",
