@@ -199,6 +199,15 @@ If you are an LLM or AI agent, here is the complete endpoint map. All paths are 
 | `/spotify/*` | search, artist, artist-albums, artist-top-tracks, album |
 | `/instagram/*` | comments, profiles |
 | `/x/*` | search, trends |
+| `/segment/*` | fans |
+| `/fans/*` | get |
+| `/posts/*` | get |
+| `/post/*` | comments |
+| `/comments/*` | get |
+| `/image/*` | generation |
+| `/transcribe/*` | audio |
+| `/social/*` | scrape, posts |
+| `/apify/*` | scraper |
 | `/connectors/*` | list, authorize, disconnect |
 | `/accounts/*` | get, id, create, update, add-artist |
 | `/organizations/*` | list, create, add-artist |
@@ -208,6 +217,7 @@ If you are an LLM or AI agent, here is the complete endpoint map. All paths are 
 | `/notifications/*` | create |
 | `/workspaces/*` | create |
 | `/subscriptions/*` | get |
+| `/admins/*` | check, sandboxes, sandboxes-orgs, emails, privy, coding-agent-slack-tags, coding-pr, content-slack-tags |
 
 Authentication: `x-api-key` header (or `Authorization: Bearer <token>` for Privy). Get a key instantly via `POST /api/agents/signup` with an `agent+` email.
 
