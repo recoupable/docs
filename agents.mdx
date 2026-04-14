@@ -30,17 +30,17 @@ curl -X POST "https://recoup-api.vercel.app/api/agents/verify" \
   -d '{"email": "user@example.com", "code": "123456"}'
 ```
 
-The verify response includes `api_key`. Store it and pass it as `x-api-key` on every subsequent request.
+The verify response includes `api_key`. Store it and pass it as `x-api-key` on every subsequent request. **Then immediately check the roster** — don't wait for the user to tell you what to do.
 
 <Warning>
-`agent+` emails create a **separate account** — `agent+sidney@recoupable.com` is NOT linked to `sidney@recoupable.com`. To get a key for an existing user, use their actual email and go through the verification flow above.
+`agent+` emails create a **separate account** — `agent+sidney@recoupable.com` is NOT linked to `sidney@recoupable.com`. To get a key for an existing user, call signup with their real email, ask them to check their inbox for the 6-digit code, then call verify with that code.
 </Warning>
 
 ---
 
 ## 2. Understand the roster
 
-After authenticating, check what the user has:
+After getting a key, your next call should always be to check what the user has:
 
 ```bash
 # List all artists available to this account
@@ -84,19 +84,6 @@ orgs/{org-name}/artists/{artist-slug}/
 ```
 
 The `RECOUP.md` file ties the folder to the platform — it contains YAML frontmatter with `artistName`, `artistSlug`, and `artistId`.
-
-### Content readiness
-
-Before generating content for an artist, the minimum required files are:
-- `context/images/face-guide.png` (face reference)
-- At least one `.mp3` file under the artist tree
-
-Recommended for better output:
-- `context/artist.md` (brand/voice)
-- `context/audience.md` (audience insights)
-- `context/era.json` (current era metadata)
-
-Use `POST /api/content/validate` with `artist_account_id` to check readiness programmatically.
 
 ### Accessing sandbox files
 

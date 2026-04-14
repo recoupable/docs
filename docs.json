@@ -208,16 +208,6 @@
         "tab": "Content",
         "groups": [
           {
-            "group": "Content Pipeline",
-            "pages": [
-              "api-reference/content/create",
-              "api-reference/content/templates",
-              "api-reference/content/template-detail",
-              "api-reference/content/validate",
-              "api-reference/content/estimate"
-            ]
-          },
-          {
             "group": "Content Endpoints",
             "pages": [
               "api-reference/content/generate-image",
@@ -229,6 +219,21 @@
               "api-reference/content/analyze-video",
               "api-reference/image/generation",
               "api-reference/transcribe/audio"
+            ]
+          },
+          {
+            "group": "Templates",
+            "pages": [
+              "api-reference/content/templates",
+              "api-reference/content/template-detail",
+              "api-reference/content/validate",
+              "api-reference/content/estimate"
+            ]
+          },
+          {
+            "group": "Pipeline (Legacy)",
+            "pages": [
+              "api-reference/content/create"
             ]
           },
           {
