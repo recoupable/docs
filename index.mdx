@@ -13,31 +13,12 @@ Running a record label takes a full team. Research, content, marketing, distribu
 
 ## Core concepts
 
-<AccordionGroup>
-  <Accordion title="Accounts and scoping" defaultOpen>
-    Recoupable has three levels of identity. You can scope agent work at any level.
-
-    | Concept | What it is |
-    |---------|------------|
-    | **Account** | A user or agent that authenticates with an API key. Your account owns artists, chats, tasks, and connectors. When no artist is specified, you see everything available to you. |
-    | **Organization** | A label or team that groups multiple accounts. Pass `organization_id` to scope to a specific roster. Accounts can belong to multiple organizations, each with different artists. |
-    | **Artist** | A managed artist with profile, social handles, and linked catalog. Pass `artist_account_id` to scope to a specific artist. When omitted, agents see all artists available to the account. |
-  </Accordion>
-  <Accordion title="Data and context">
-    | Concept | What it is |
-    |---------|------------|
-    | **Catalog** | A collection of songs belonging to a label or artist. Catalogs can be analyzed, organized, and used as context for content creation. |
-    | **Chat** | An AI conversation with artist context. Agents use chats to research, plan, and execute — with full memory of prior work. |
-    | **Connector** | An OAuth connection to an external platform (Spotify, Google Sheets, TikTok, etc.) linked to an account. |
-  </Accordion>
-  <Accordion title="Automation">
-    | Concept | What it is |
-    |---------|------------|
-    | **Task** | A scheduled prompt that runs on a cron. Automates recurring agent work — daily reports, weekly content, monthly analysis. Scope to a specific artist or run across the whole roster. |
-    | **Sandbox** | An isolated Linux environment where agents can run code, manage files, and execute complex workflows. Persistent across calls. |
-    | **Pulse** | An automated digest channel. When enabled, Recoupable sends periodic intelligence updates about an artist to the account owner. |
-  </Accordion>
-</AccordionGroup>
+| Concept | What it is |
+|---------|------------|
+| **Account** | A user or agent that authenticates with an API key. When no artist is specified, you see everything available to the account. |
+| **Organization** | A label or team that groups multiple accounts. Pass `organization_id` to scope to a specific roster. |
+| **Artist** | A managed artist with profile, social handles, and linked catalog. Pass `artist_account_id` to scope to a specific artist. |
+| **Filesystem** | A persistent Git repo where artist context lives — brand voice, audience insights, songs, release plans, and generated content. |
 
 ## How it works
 
