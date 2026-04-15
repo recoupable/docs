@@ -1187,7 +1187,7 @@
     },
     "/api/research/curator": {
       "get": {
-        "description": "Get curator profile — who curates a playlist, their other playlists, and follower reach.",
+        "description": "Get curator profile — name, image, follower counts across platforms, tag-based genre info, and Chartmetric playlist reach statistics. Requires a numeric Chartmetric curator ID (e.g. `2` for Spotify's own account). Use `GET /api/research/playlists` to discover curators via their playlists.",
         "parameters": [
           {
             "name": "platform",
@@ -1198,20 +1198,20 @@
               "enum": [
                 "spotify",
                 "applemusic",
-                "deezer",
-                "amazon",
-                "youtube"
+                "deezer"
               ]
             },
-            "description": "Streaming platform."
+            "description": "Streaming platform. Only Spotify, Apple Music, and Deezer have curator metadata on Chartmetric. (YouTube and Amazon are not supported by this endpoint.)"
           },
           {
             "name": "id",
             "in": "query",
             "required": true,
-            "description": "Curator ID.",
+            "description": "Numeric Chartmetric curator ID (e.g. `2` for Spotify's own account). Non-numeric values will be rejected.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^[0-9]+$",
+              "example": "2"
             }
           }
         ],
@@ -1227,7 +1227,7 @@
             }
           },
           "400": {
-            "description": "Validation error",
+            "description": "Validation error — missing/invalid `platform` or `id`.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1238,6 +1238,16 @@
           },
           "401": {
             "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Curator not found for the given platform/id.",
             "content": {
               "application/json": {
                 "schema": {
