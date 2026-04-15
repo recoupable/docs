@@ -854,6 +854,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error (e.g., missing required query parameter `q`)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -879,6 +899,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchAlbumsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error (e.g., missing `artist` parameter)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -925,6 +965,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -953,6 +1013,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -974,37 +1054,51 @@
             "name": "country",
             "in": "query",
             "required": false,
-            "description": "Two-letter country code (e.g. US, GB, DE).",
+            "description": "Two-letter ISO country code (e.g. US, GB, DE). Defaults to `US` if omitted.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "US",
+              "minLength": 2,
+              "maxLength": 2,
+              "pattern": "^[A-Z]{2}$"
             }
           },
           {
             "name": "interval",
             "in": "query",
             "required": false,
-            "description": "Time interval (e.g. daily, weekly).",
+            "description": "Time interval: `daily` or `weekly`. Defaults to `daily`.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "daily",
+              "enum": [
+                "daily",
+                "weekly"
+              ]
             }
           },
           {
             "name": "type",
             "in": "query",
             "required": false,
-            "description": "Chart type (varies by platform).",
+            "description": "Chart type (e.g. `regional`, `viral`). Defaults to `regional`.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "regional",
+              "enum": [
+                "regional",
+                "viral"
+              ]
             }
           },
           {
             "name": "latest",
             "in": "query",
             "required": false,
-            "description": "Return only the latest chart.",
+            "description": "Return only the latest chart. Defaults to `true`.",
             "schema": {
-              "type": "string",
-              "default": "true"
+              "type": "boolean",
+              "default": true
             }
           }
         ],
@@ -1015,6 +1109,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchChartsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -1043,6 +1157,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchCitiesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -1090,6 +1224,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -1114,6 +1268,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchDeepResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -1188,13 +1362,33 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/research/enrich": {
       "post": {
-        "description": "Enrich an entity with structured data from web research. Provide a description of who or what to research and a JSON schema defining the fields to extract. Returns typed data with citations.",
+        "description": "Enrich an entity with structured data from web research. Provide a description of who or what to research and a JSON schema defining the fields to extract. Returns typed data with citations. **Important:** The `schema` object must include `\"type\": \"object\"` at the top level — requests without an explicit type will be rejected.",
         "requestBody": {
           "required": true,
           "content": {
@@ -1212,6 +1406,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchEnrichResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -1242,6 +1456,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -1259,6 +1493,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -1273,6 +1527,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchGenresResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -1304,6 +1578,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -1332,6 +1626,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -1357,6 +1671,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchLookupResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -1413,6 +1747,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -1441,6 +1795,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -1465,6 +1839,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchPeopleResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -1509,6 +1903,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchPlaylistResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -1606,6 +2020,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -1634,6 +2068,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -1648,6 +2102,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchRadioResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -1676,6 +2150,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchRankResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -1772,6 +2266,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -1797,6 +2311,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchTrackResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -1828,6 +2362,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -1853,6 +2407,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchUrlsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -1884,6 +2458,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -1908,6 +2502,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchWebResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -2335,7 +2949,8 @@
             "enum": [
               "success"
             ],
-            "description": "Status of the request"
+            "description": "Status of the request",
+            "example": "success"
           },
           "source_chat_id": {
             "type": "string",
@@ -2413,7 +3028,8 @@
             "enum": [
               "success"
             ],
-            "description": "Status of the request"
+            "description": "Status of the request",
+            "example": "success"
           },
           "chat": {
             "$ref": "#/components/schemas/ChatRoom",
@@ -2467,7 +3083,8 @@
             "enum": [
               "success"
             ],
-            "description": "Status of the request"
+            "description": "Status of the request",
+            "example": "success"
           },
           "id": {
             "type": "string",
@@ -2520,7 +3137,8 @@
             "enum": [
               "success"
             ],
-            "description": "Status of the request"
+            "description": "Status of the request",
+            "example": "success"
           },
           "chat_id": {
             "type": "string",
@@ -2584,7 +3202,8 @@
             "enum": [
               "success"
             ],
-            "description": "Status of the request"
+            "description": "Status of the request",
+            "example": "success"
           },
           "room_id": {
             "type": "string",
@@ -2672,7 +3291,8 @@
             "enum": [
               "success"
             ],
-            "description": "Status of the request"
+            "description": "Status of the request",
+            "example": "success"
           },
           "room_id": {
             "type": "string",
@@ -2723,7 +3343,8 @@
             "enum": [
               "success"
             ],
-            "description": "Status of the request"
+            "description": "Status of the request",
+            "example": "success"
           },
           "chats": {
             "type": "array",
@@ -2758,7 +3379,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "albums": {
             "type": "array",
@@ -2770,27 +3392,47 @@
       },
       "ResearchAudienceResponse": {
         "type": "object",
-        "description": "Audience demographics breakdown — age ranges, gender split, and country distribution for the specified platform.",
+        "description": "Audience demographics from Chartmetric — includes gender breakdown, age-by-gender splits, top countries and cities, and brand affinities. Over 20 fields may be returned; only the most common are listed here.",
         "properties": {
           "status": {
-            "type": "string"
+            "type": "string",
+            "example": "success"
           },
-          "age": {
+          "audience_genders": {
             "type": "array",
-            "description": "Age range breakdown",
+            "description": "Gender breakdown with percentages.",
             "items": {
               "type": "object",
               "additionalProperties": true
             }
           },
-          "gender": {
-            "type": "object",
-            "description": "Gender split percentages",
-            "additionalProperties": true
-          },
-          "countries": {
+          "audience_genders_per_age": {
             "type": "array",
-            "description": "Top countries by audience share",
+            "description": "Gender split per age bracket.",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "top_countries": {
+            "type": "array",
+            "description": "Top countries by audience share.",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "top_cities": {
+            "type": "array",
+            "description": "Top cities by audience concentration.",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "audience_brand_affinities": {
+            "type": "array",
+            "description": "Brand affinity scores for the audience.",
             "items": {
               "type": "object",
               "additionalProperties": true
@@ -2804,13 +3446,10 @@
         "description": "Career timeline — milestones, trajectory, and career stage history.",
         "properties": {
           "status": {
-            "type": "string"
-          },
-          "career_stage": {
             "type": "string",
-            "description": "Current career stage (e.g., 'Mid-Level', 'Superstar')"
+            "example": "success"
           },
-          "data": {
+          "career": {
             "type": "array",
             "description": "Career timeline data points",
             "items": {
@@ -2818,8 +3457,7 @@
               "additionalProperties": true
             }
           }
-        },
-        "additionalProperties": true
+        }
       },
       "ResearchChartsResponse": {
         "type": "object",
@@ -2829,7 +3467,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "data": {
             "type": "object",
@@ -2863,7 +3502,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "cities": {
             "type": "array",
@@ -2882,7 +3522,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "name": {
             "type": "string"
@@ -2928,7 +3569,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "content": {
             "type": "string",
@@ -2985,7 +3627,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "artists": {
             "type": "array",
@@ -3008,8 +3651,26 @@
           },
           "schema": {
             "type": "object",
-            "description": "JSON schema defining the fields to extract.",
-            "additionalProperties": true
+            "description": "JSON schema defining the fields to extract. Must include `\"type\": \"object\"` at the top level.",
+            "additionalProperties": true,
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "object"
+                ],
+                "description": "Must be \"object\""
+              },
+              "properties": {
+                "type": "object",
+                "description": "Field definitions to extract",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "type",
+              "properties"
+            ]
           },
           "processor": {
             "type": "string",
@@ -3028,36 +3689,29 @@
         "properties": {
           "status": {
             "type": "string",
-            "enum": [
-              "success",
-              "error"
-            ]
+            "example": "success"
           },
           "output": {
             "type": "object",
             "description": "Structured data matching the provided schema.",
             "additionalProperties": true
           },
-          "research_basis": {
-            "type": "object",
-            "properties": {
-              "citations": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "url": {
-                      "type": "string",
-                      "format": "uri"
-                    },
-                    "title": {
-                      "type": "string"
-                    },
-                    "field": {
-                      "type": "string",
-                      "description": "Which output field this citation supports."
-                    }
-                  }
+          "citations": {
+            "type": "array",
+            "description": "Source citations supporting the enriched output.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "field": {
+                  "type": "string",
+                  "description": "Which output field this citation supports."
                 }
               }
             }
@@ -3092,13 +3746,18 @@
       },
       "ResearchExtractResponse": {
         "type": "object",
+        "required": [
+          "status",
+          "results"
+        ],
         "properties": {
           "status": {
             "type": "string",
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "results": {
             "type": "array",
@@ -3111,7 +3770,7 @@
             "items": {
               "type": "object"
             },
-            "description": "URLs that failed to extract."
+            "description": "URLs that failed to extract. Only present when one or more URLs could not be processed."
           }
         }
       },
@@ -3171,7 +3830,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "festivals": {
             "type": "array",
@@ -3200,7 +3860,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "genres": {
             "type": "array",
@@ -3228,7 +3889,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "insights": {
             "type": "array",
@@ -3240,13 +3902,37 @@
       },
       "ResearchInstagramPostsResponse": {
         "type": "object",
-        "description": "Top Instagram posts and reels sorted by engagement.",
+        "description": "Top Instagram posts and reels sorted by engagement. Fields are returned directly from Chartmetric's DeepSocial integration.",
         "properties": {
           "status": {
-            "type": "string"
+            "type": "string",
+            "example": "success"
           },
-          "posts": {
+          "top_posts": {
             "type": "array",
+            "description": "Top posts ranked by engagement.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string"
+                },
+                "likes": {
+                  "type": "integer"
+                },
+                "comments": {
+                  "type": "integer"
+                },
+                "timestamp": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "top_reels": {
+            "type": "array",
+            "description": "Top reels ranked by engagement.",
             "items": {
               "type": "object",
               "properties": {
@@ -3271,26 +3957,33 @@
       },
       "ResearchLookupResponse": {
         "type": "object",
-        "description": "Artist profile resolved from a platform URL or ID.",
+        "description": "Artist profile resolved from a platform URL or ID. Cross-platform IDs are nested inside a `data` object.",
         "properties": {
           "status": {
-            "type": "string"
+            "type": "string",
+            "example": "success"
           },
-          "id": {
-            "type": "integer",
-            "description": "Chartmetric artist ID"
-          },
-          "spotify_id": {
-            "type": "string"
-          },
-          "apple_music_id": {
-            "type": "string"
-          },
-          "deezer_id": {
-            "type": "string"
+          "data": {
+            "type": "object",
+            "description": "Cross-platform artist identifiers returned by Chartmetric.",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "description": "Chartmetric artist ID"
+              },
+              "spotify_id": {
+                "type": "string"
+              },
+              "apple_music_id": {
+                "type": "string"
+              },
+              "deezer_id": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": true
           }
-        },
-        "additionalProperties": true
+        }
       },
       "ResearchMetricsResponse": {
         "type": "object",
@@ -3343,7 +4036,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "milestones": {
             "type": "array",
@@ -3380,7 +4074,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "results": {
             "type": "array",
@@ -3402,11 +4097,26 @@
             "format": "uri",
             "description": "Profile URL (often LinkedIn)."
           },
+          "id": {
+            "type": "string",
+            "description": "Unique result identifier from the search provider."
+          },
+          "publishedDate": {
+            "type": "string",
+            "nullable": true,
+            "description": "Date the profile or page was published."
+          },
+          "author": {
+            "type": "string",
+            "nullable": true,
+            "description": "Author of the page, if available."
+          },
           "highlights": {
             "type": "array",
             "items": {
               "type": "string"
             },
+            "nullable": true,
             "description": "Key excerpts from the profile."
           },
           "summary": {
@@ -3491,7 +4201,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "placements": {
             "type": "array",
@@ -3556,7 +4267,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "stations": {
             "type": "array",
@@ -3576,7 +4288,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "rank": {
             "type": "integer",
@@ -3593,7 +4306,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "results": {
             "type": "array",
@@ -3661,7 +4375,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "artists": {
             "type": "array",
@@ -3730,7 +4445,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "tracks": {
             "type": "array",
@@ -3761,7 +4477,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "urls": {
             "type": "array",
@@ -3809,7 +4526,8 @@
             "enum": [
               "success",
               "error"
-            ]
+            ],
+            "example": "success"
           },
           "venues": {
             "type": "array",
@@ -3851,10 +4569,7 @@
         "properties": {
           "status": {
             "type": "string",
-            "enum": [
-              "success",
-              "error"
-            ]
+            "example": "success"
           },
           "results": {
             "type": "array",
@@ -3868,8 +4583,19 @@
                 "url": {
                   "type": "string"
                 },
-                "content": {
-                  "type": "string"
+                "snippet": {
+                  "type": "string",
+                  "description": "Content snippet from the search result."
+                },
+                "date": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Publication date if available."
+                },
+                "last_updated": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Last updated date if available."
                 }
               }
             }
@@ -3955,11 +4681,34 @@
             "enum": [
               "success"
             ],
-            "description": "Status of the request"
+            "description": "Status of the request",
+            "example": "success"
           },
           "chat": {
             "$ref": "#/components/schemas/ChatRoom",
             "description": "The updated chat room object"
+          }
+        }
+      },
+      "ResearchErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "description": "Error response returned by all research endpoints for validation failures (400) and authentication errors (401).",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "example": "error"
+          },
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message describing what went wrong.",
+            "example": "Missing required parameter: artist"
           }
         }
       }
