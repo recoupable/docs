@@ -2528,6 +2528,249 @@
           }
         }
       }
+    },
+    "/api/research/track/playlists": {
+      "get": {
+        "description": "Returns playlists featuring a specific track. Accepts a Chartmetric track ID (`id`) or a track name + optional artist (`q`, `artist`) for a Spotify-powered lookup. When no filter flag is passed, defaults to editorial + indie + majorCurator + popularIndie = `true`. Costs 5 credits per request.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Chartmetric track ID. Required if `q` is not provided.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Track name to look up. Required if `id` is not provided. Combine with `artist` to narrow the match.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "artist",
+            "in": "query",
+            "description": "Artist name to disambiguate the track lookup when using `q`.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "description": "Streaming platform to return playlists for. Defaults to `spotify`.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "spotify",
+                "applemusic",
+                "deezer",
+                "amazon"
+              ],
+              "default": "spotify"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Return current or past playlist placements. Defaults to `current`.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "current",
+                "past"
+              ],
+              "default": "current"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of placements to return.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Pagination offset.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "description": "ISO date lower bound for placements.",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "description": "ISO date upper bound for placements.",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sort column.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "editorial",
+            "in": "query",
+            "description": "Include editorial playlists. When no filter flags are set, defaults to `true` along with `indie`, `majorCurator`, `popularIndie`.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "indie",
+            "in": "query",
+            "description": "Include indie playlists.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "majorCurator",
+            "in": "query",
+            "description": "Include major-curator playlists.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "popularIndie",
+            "in": "query",
+            "description": "Include popular indie playlists.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "personalized",
+            "in": "query",
+            "description": "Include personalized playlists.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "chart",
+            "in": "query",
+            "description": "Include chart playlists.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "newMusicFriday",
+            "in": "query",
+            "description": "Include New Music Friday playlists.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "thisIs",
+            "in": "query",
+            "description": "Include \"This Is\" artist playlists.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "radio",
+            "in": "query",
+            "description": "Include algorithmic radio playlists.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "brand",
+            "in": "query",
+            "description": "Include brand playlists.",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Playlist placements for the track.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "placements"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success"
+                      ],
+                      "example": "success"
+                    },
+                    "placements": {
+                      "type": "array",
+                      "description": "Playlist placement objects returned by Chartmetric (shape varies per platform).",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error — missing `id`/`q`, invalid `platform`, or invalid `status`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Track not found when resolving via `q` + `artist`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
