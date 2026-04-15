@@ -566,14 +566,14 @@
         }
       }
     },
-    "/api/artist/segments": {
+    "/api/artists/{id}/segments": {
       "get": {
         "description": "Retrieve all segments associated with an artist. This endpoint should be called before using the Segment Fans endpoint to obtain the necessary segment IDs. Supports pagination.",
         "parameters": [
           {
-            "name": "artist_account_id",
-            "in": "query",
-            "description": "The unique identifier of the artist account to fetch segments for",
+            "name": "id",
+            "in": "path",
+            "description": "Artist account ID to fetch segments for.",
             "required": true,
             "schema": {
               "type": "string",
@@ -614,7 +614,30 @@
             }
           },
           "400": {
-            "description": "Bad request - missing required parameters",
+            "description": "Bad request - invalid artist ID path parameter or query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistSegmentsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication"
+          },
+          "403": {
+            "description": "Forbidden - the authenticated account cannot access this artist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistSegmentsErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error while retrieving segments",
             "content": {
               "application/json": {
                 "schema": {
