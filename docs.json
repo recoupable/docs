@@ -82,74 +82,69 @@
             ]
           },
           {
-            "group": "Research",
+            "group": "Artist discovery",
             "pages": [
-              {
-                "group": "Artist discovery",
-                "pages": [
-                  "api-reference/research/search",
-                  "api-reference/research/lookup",
-                  "api-reference/research/profile"
-                ]
-              },
-              {
-                "group": "Metrics & insights",
-                "pages": [
-                  "api-reference/research/metrics",
-                  "api-reference/research/audience",
-                  "api-reference/research/cities",
-                  "api-reference/research/genres",
-                  "api-reference/research/insights",
-                  "api-reference/research/career",
-                  "api-reference/research/milestones",
-                  "api-reference/research/rank",
-                  "api-reference/research/similar",
-                  "api-reference/research/urls"
-                ]
-              },
-              {
-                "group": "Catalog",
-                "pages": [
-                  "api-reference/research/albums",
-                  "api-reference/research/tracks",
-                  "api-reference/research/track"
-                ]
-              },
-              {
-                "group": "Playlists & curators",
-                "pages": [
-                  "api-reference/research/playlists",
-                  "api-reference/research/playlist",
-                  "api-reference/research/track-playlists",
-                  "api-reference/research/curator"
-                ]
-              },
-              {
-                "group": "Charts & radio",
-                "pages": [
-                  "api-reference/research/charts",
-                  "api-reference/research/radio",
-                  "api-reference/research/discover"
-                ]
-              },
-              {
-                "group": "Touring & live",
-                "pages": [
-                  "api-reference/research/festivals",
-                  "api-reference/research/venues"
-                ]
-              },
-              {
-                "group": "Web & social",
-                "pages": [
-                  "api-reference/research/instagram-posts",
-                  "api-reference/research/web",
-                  "api-reference/research/deep",
-                  "api-reference/research/people",
-                  "api-reference/research/extract",
-                  "api-reference/research/enrich"
-                ]
-              }
+              "api-reference/research/search",
+              "api-reference/research/lookup",
+              "api-reference/research/profile"
+            ]
+          },
+          {
+            "group": "Metrics & insights",
+            "pages": [
+              "api-reference/research/metrics",
+              "api-reference/research/audience",
+              "api-reference/research/cities",
+              "api-reference/research/genres",
+              "api-reference/research/insights",
+              "api-reference/research/career",
+              "api-reference/research/milestones",
+              "api-reference/research/rank",
+              "api-reference/research/similar",
+              "api-reference/research/urls"
+            ]
+          },
+          {
+            "group": "Catalog",
+            "pages": [
+              "api-reference/research/albums",
+              "api-reference/research/tracks",
+              "api-reference/research/track"
+            ]
+          },
+          {
+            "group": "Playlists & curators",
+            "pages": [
+              "api-reference/research/playlists",
+              "api-reference/research/playlist",
+              "api-reference/research/track-playlists",
+              "api-reference/research/curator"
+            ]
+          },
+          {
+            "group": "Charts & radio",
+            "pages": [
+              "api-reference/research/charts",
+              "api-reference/research/radio",
+              "api-reference/research/discover"
+            ]
+          },
+          {
+            "group": "Touring & live",
+            "pages": [
+              "api-reference/research/festivals",
+              "api-reference/research/venues"
+            ]
+          },
+          {
+            "group": "Web & social",
+            "pages": [
+              "api-reference/research/instagram-posts",
+              "api-reference/research/web",
+              "api-reference/research/deep",
+              "api-reference/research/people",
+              "api-reference/research/extract",
+              "api-reference/research/enrich"
             ]
           }
         ]
