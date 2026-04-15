@@ -653,7 +653,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Segments generated successfully",
             "content": {
               "application/json": {
