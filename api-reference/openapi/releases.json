@@ -626,6 +626,89 @@
         }
       }
     },
+    "/api/artists/{id}/segments": {
+      "post": {
+        "description": "Generate fan segments for an artist from a natural-language prompt. The API inspects the artist's linked social profiles and fans, uses the prompt to propose segment definitions, creates new segments, and links matching fans to them. This is the manual creation path that complements the chat-driven `create_segments` MCP tool and shares the same underlying generation handler.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Artist account ID to create segments for. The caller must be permitted to act on this artist.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Segment generation prompt. The artist target is path-encoded and is not accepted in the body.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateArtistSegmentsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Segments generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateArtistSegmentsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid `prompt`, or invalid artist ID path parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateArtistSegmentsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication"
+          },
+          "403": {
+            "description": "Forbidden - the authenticated account cannot act on this artist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateArtistSegmentsErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - the artist has no linked social profiles or no fans available to segment. The response includes a `feedback` message suitable for surfacing to the caller.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateArtistSegmentsErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error - segment generation or insertion failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateArtistSegmentsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/artist/socials": {
       "get": {
         "description": "Retrieve all social media profiles associated with an artist. This endpoint should be called before using the Social Posts endpoint to obtain the necessary social IDs.",
@@ -2262,6 +2345,67 @@
         "properties": {
           "artist": {
             "$ref": "#/components/schemas/CreatedArtist"
+          }
+        }
+      },
+      "CreateArtistSegmentsRequest": {
+        "type": "object",
+        "required": [
+          "prompt"
+        ],
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Natural-language description of how the artist's fans should be segmented. Example: \"Segment my fans to help me fund my next project.\""
+          }
+        }
+      },
+      "CreateArtistSegmentsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "segments_created",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "segments_created": {
+            "type": "integer",
+            "description": "Number of segments created for the artist in this call"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable success message"
+          }
+        }
+      },
+      "CreateArtistSegmentsErrorResponse": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          },
+          "feedback": {
+            "type": "string",
+            "description": "Human-readable feedback suitable for surfacing to the caller. Populated when the artist has no linked social profiles or no fans available to segment."
           }
         }
       },
