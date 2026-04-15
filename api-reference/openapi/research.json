@@ -1047,7 +1047,8 @@
             "required": true,
             "description": "Chart platform: spotify, applemusic, tiktok, youtube, itunes, shazam, etc.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^[a-z]+$"
             }
           },
           {
@@ -1305,7 +1306,9 @@
             "required": false,
             "description": "ISO country code (e.g., US, BR, GB).",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 2
             }
           },
           {
@@ -1348,7 +1351,9 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "default": 20
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100
             }
           }
         ],
@@ -2008,6 +2013,46 @@
               "type": "integer",
               "default": 20
             }
+          },
+          {
+            "name": "indie",
+            "in": "query",
+            "description": "Include indie playlists.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "majorCurator",
+            "in": "query",
+            "description": "Include major-curator playlists.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "popularIndie",
+            "in": "query",
+            "description": "Include popular indie playlists.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "personalized",
+            "in": "query",
+            "description": "Include personalized playlists.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "chart",
+            "in": "query",
+            "description": "Include chart playlists.",
+            "schema": {
+              "type": "boolean"
+            }
           }
         ],
         "responses": {
@@ -2201,7 +2246,8 @@
                 "high",
                 "medium",
                 "low"
-              ]
+              ],
+              "default": "medium"
             }
           },
           {
@@ -2215,7 +2261,8 @@
                 "high",
                 "medium",
                 "low"
-              ]
+              ],
+              "default": "medium"
             }
           },
           {
@@ -2229,7 +2276,8 @@
                 "high",
                 "medium",
                 "low"
-              ]
+              ],
+              "default": "medium"
             }
           },
           {
@@ -2243,7 +2291,8 @@
                 "high",
                 "medium",
                 "low"
-              ]
+              ],
+              "default": "medium"
             }
           },
           {
@@ -3974,7 +4023,8 @@
               "format": "uri"
             },
             "maxItems": 10,
-            "description": "URLs to extract content from (max 10)."
+            "description": "URLs to extract content from (max 10).",
+            "minItems": 1
           },
           "objective": {
             "type": "string",
