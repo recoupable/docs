@@ -2351,13 +2351,22 @@
     },
     "/api/research/track": {
       "get": {
-        "description": "Get track metadata — title, artist, album, release date, popularity, and platform IDs.",
+        "description": "Get track metadata — title, artist, album, release date, popularity, and platform IDs.\n\nResolves `q` against Chartmetric's track search and returns details for the top-ranked match. Common track names are ambiguous (e.g. \"Flowers\", \"God's Plan\") — for reliable disambiguation, either pass a Spotify track URL as `q`, or pair `q` with the `artist` query param.",
         "parameters": [
           {
             "name": "q",
             "in": "query",
             "required": true,
-            "description": "Track name or Spotify URL.",
+            "description": "Track name or Spotify track URL. URLs (e.g. `https://open.spotify.com/track/<id>`) resolve directly without ambiguity. Plain names are searched via Chartmetric's track search; results may not match user intent without an `artist` filter.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "artist",
+            "in": "query",
+            "required": false,
+            "description": "Optional artist name used to disambiguate when `q` is a plain track name. Matched case-insensitively against the candidate tracks' artist names; the top-ranked candidate whose artist names contain this value wins. Recommended whenever `q` is not a Spotify URL.",
             "schema": {
               "type": "string"
             }
@@ -2386,6 +2395,16 @@
           },
           "401": {
             "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No track matched the supplied `q` (and `artist`, when present)",
             "content": {
               "application/json": {
                 "schema": {
@@ -4713,29 +4732,121 @@
       },
       "ResearchTrackResponse": {
         "type": "object",
-        "description": "Track metadata — title, artist, album, release date, popularity, and platform IDs.",
+        "description": "Track metadata — title, artists, albums, release date, genres, popularity, and platform IDs. Only the most commonly-used fields are enumerated here; the upstream Chartmetric response includes additional fields (e.g. `cm_statistics`, `activities`, `moods`) that pass through under `additionalProperties`.",
         "properties": {
           "status": {
-            "type": "string"
-          },
-          "name": {
             "type": "string"
           },
           "id": {
             "type": "integer",
             "description": "Chartmetric track ID"
           },
-          "isrc": {
-            "type": "string"
+          "name": {
+            "type": "string",
+            "description": "Track title"
           },
-          "album_name": {
-            "type": "string"
+          "isrc": {
+            "type": "string",
+            "nullable": true
+          },
+          "image_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "duration_ms": {
+            "type": "integer",
+            "nullable": true
           },
           "release_date": {
-            "type": "string"
+            "type": "string",
+            "description": "ISO date string",
+            "nullable": true
           },
-          "artist_names": {
-            "type": "string"
+          "album_label": {
+            "type": "string",
+            "nullable": true
+          },
+          "score": {
+            "type": "integer",
+            "description": "Chartmetric track score",
+            "nullable": true
+          },
+          "explicit": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "artists": {
+            "type": "array",
+            "description": "Credited artists. Each entry is a Chartmetric artist object; at minimum `id` and `name` are populated.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "description": "Chartmetric artist ID"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "image_url": {
+                  "type": "string",
+                  "nullable": true
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "albums": {
+            "type": "array",
+            "description": "Albums the track appears on.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "description": "Chartmetric album ID"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "upc": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "release_date": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "label": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "image_url": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "popularity": {
+                  "type": "integer",
+                  "nullable": true
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
           }
         },
         "additionalProperties": true
