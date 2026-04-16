@@ -1883,7 +1883,7 @@
     },
     "/api/research/playlist": {
       "get": {
-        "description": "Get playlist metadata — name, description, follower count, track count, and curator info.\n\nThin proxy over Chartmetric's `/playlist/:platform/:id` detail lookup. Discovery by name is the caller's job via `GET /api/research?q=<name>&type=playlists&beta=true`.",
+        "description": "Get playlist metadata — name, description, follower count, track count, and curator info.\n\nThin proxy over Chartmetric's `/playlist/:platform/:id` detail lookup. **`id` is Chartmetric's own numeric playlist ID, not the streaming-platform's native ID.** Discovery is the caller's job via `GET /api/research?q=<name>&type=playlists&beta=true` — the `id` field in each result is the Chartmetric ID to pass here.",
         "parameters": [
           {
             "name": "platform",
@@ -1899,15 +1899,17 @@
                 "youtube"
               ]
             },
-            "description": "Streaming platform."
+            "description": "Streaming platform the Chartmetric playlist is sourced from."
           },
           {
             "name": "id",
             "in": "query",
             "required": true,
-            "description": "Platform-native playlist ID. Format varies by platform — Spotify base62 (e.g. `37i9dQZF1DXcBWIGoYBM5M`), Apple/Deezer numeric, Amazon ASIN-style.",
+            "description": "Chartmetric playlist ID (positive integer). This is **not** the streaming platform's native ID — e.g. Spotify's base62 ID `37i9dQZF1DXcBWIGoYBM5M` for RapCaviar maps to Chartmetric ID `848051`. Obtain via `GET /api/research?type=playlists&beta=true`.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$",
+              "example": "848051"
             }
           }
         ],
