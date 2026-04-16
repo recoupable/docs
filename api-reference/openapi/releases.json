@@ -628,7 +628,7 @@
     },
     "/api/artists/{id}/segments": {
       "post": {
-        "description": "Generate fan segments for an artist from a natural-language prompt. The API inspects the artist's linked social profiles and fans, uses the prompt to propose segment definitions, creates new segments, and links matching fans to them. This is the manual creation path that complements the chat-driven `create_segments` MCP tool and shares the same underlying generation handler.",
+        "description": "Generate fan segments for an artist from a natural-language prompt. The API inspects the artist's linked social profiles and fans, uses the prompt to propose segment definitions, creates new segments, and links matching fans to them.",
         "parameters": [
           {
             "name": "id",
