@@ -880,7 +880,7 @@
     },
     "/api/research/albums": {
       "get": {
-        "description": "Get the album discography — albums, EPs, and singles with release dates — for a Chartmetric `artist_id`.\n\nThin proxy over Chartmetric's `/artist/:id/albums`. Discovery by name is the caller's job via `GET /api/research?q=<name>&type=artists&beta=true`. This endpoint does not resolve artist names itself.",
+        "description": "Get the album discography — albums, EPs, and singles with release dates — for a Chartmetric `artist_id`.\n\nThin proxy over Chartmetric's `/artist/:id/albums`. By default `is_primary=true`, so only albums where the artist is a main artist are returned — DJ compilations, soundtracks, and pure feature appearances are excluded. Pass `is_primary=false` to include them. Discovery by name is the caller's job via `GET /api/research?q=<name>&type=artists&beta=true`.",
         "parameters": [
           {
             "name": "artist_id",
@@ -891,6 +891,37 @@
               "type": "string",
               "pattern": "^[1-9][0-9]*$",
               "example": "3380"
+            }
+          },
+          {
+            "name": "is_primary",
+            "in": "query",
+            "required": false,
+            "description": "When `true` (default), returns only albums where the artist is a main artist. Set to `false` to include feature appearances, DJ compilations, and soundtracks.",
+            "schema": {
+              "type": "string",
+              "enum": ["true", "false"],
+              "default": "true"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Number of albums to return. Defaults to Chartmetric's default (100) when omitted.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Pagination offset. Defaults to 0 when omitted.",
+            "schema": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$"
             }
           }
         ],
