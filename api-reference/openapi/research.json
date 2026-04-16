@@ -1253,7 +1253,7 @@
     },
     "/api/research/curator": {
       "get": {
-        "description": "Get curator profile — name, image, follower counts across platforms, tag-based genre info, and Chartmetric playlist reach statistics. Requires a numeric Chartmetric curator ID (e.g. `2` for Spotify's own account). Use `GET /api/research/playlists` to discover curators via their playlists.",
+        "description": "Get curator profile — name, image, follower counts across platforms, tag-based genre info, and Chartmetric playlist reach statistics. Requires a numeric Chartmetric curator ID (e.g. `2` for Spotify's own account). Discover a Chartmetric curator ID via [GET /api/research](/api-reference/research/search) with `type=curators&beta=true`. You can also find curators indirectly by looking up their playlists via [GET /api/research/playlists](/api-reference/research/playlists).",
         "parameters": [
           {
             "name": "platform",
@@ -1273,7 +1273,7 @@
             "name": "id",
             "in": "query",
             "required": true,
-            "description": "Numeric Chartmetric curator ID (e.g. `2` for Spotify's own account). Non-numeric values will be rejected.",
+            "description": "Numeric Chartmetric curator ID (e.g. `2` for Spotify's own account). Non-numeric values will be rejected. Obtain via [GET /api/research](/api-reference/research/search) with `type=curators&beta=true`.",
             "schema": {
               "type": "string",
               "pattern": "^[0-9]+$",
@@ -2670,12 +2670,12 @@
     },
     "/api/research/track/playlists": {
       "get": {
-        "description": "Returns playlists featuring a specific track. Accepts a Chartmetric track ID (`id`) or a track name + optional artist (`q`, `artist`) for a Spotify-powered lookup. When no filter flag is passed, defaults to editorial + indie + majorCurator + popularIndie = `true`. Costs 5 credits per request.",
+        "description": "Returns playlists featuring a specific track. Accepts a Chartmetric track ID (`id`) or a track name + optional artist (`q`, `artist`) for a Spotify-powered lookup. When no filter flag is passed, defaults to editorial + indie + majorCurator + popularIndie = `true`. Costs 5 credits per request.\n\nDiscover a Chartmetric track `id` via [GET /api/research](/api-reference/research/search) with `type=tracks&beta=true` — then pass the resulting `id` here for the most reliable match (avoids the ambiguity of name-based lookup).",
         "parameters": [
           {
             "name": "id",
             "in": "query",
-            "description": "Chartmetric track ID. Required if `q` is not provided.",
+            "description": "Chartmetric track ID. Required if `q` is not provided. Obtain via [GET /api/research](/api-reference/research/search) with `type=tracks&beta=true`.",
             "schema": {
               "type": "string"
             }
