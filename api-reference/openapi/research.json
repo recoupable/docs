@@ -1883,7 +1883,7 @@
     },
     "/api/research/playlist": {
       "get": {
-        "description": "Get playlist metadata — name, description, follower count, track count, and curator info.",
+        "description": "Get playlist metadata — name, description, follower count, track count, and curator info.\n\nThin proxy over Chartmetric's `/playlist/:platform/:id` detail lookup. Discovery by name is the caller's job via `GET /api/research?q=<name>&type=playlists&beta=true`.",
         "parameters": [
           {
             "name": "platform",
@@ -1905,7 +1905,7 @@
             "name": "id",
             "in": "query",
             "required": true,
-            "description": "Playlist ID on the platform.",
+            "description": "Platform-native playlist ID. Format varies by platform — Spotify base62 (e.g. `37i9dQZF1DXcBWIGoYBM5M`), Apple/Deezer numeric, Amazon ASIN-style.",
             "schema": {
               "type": "string"
             }
@@ -2351,24 +2351,17 @@
     },
     "/api/research/track": {
       "get": {
-        "description": "Get track metadata — title, artist, album, release date, popularity, and platform IDs.\n\nResolves `q` against Chartmetric's track search and returns details for the top-ranked match. Common track names are ambiguous (e.g. \"Flowers\", \"God's Plan\") — for reliable disambiguation, either pass a Spotify track URL as `q`, or pair `q` with the `artist` query param.",
+        "description": "Get full Chartmetric track metadata by numeric track `id` — title, artists, albums, release date, genres, popularity, and platform IDs.\n\nThis endpoint is a thin proxy over Chartmetric's `/track/:id` detail lookup. Discovery by name is the caller's job: use `GET /api/research?q=<name>&type=tracks&beta=true` to search, pick a result's `id`, then call this endpoint. Keeping the two concerns separate means predictable credit charging and no silent wrong-match behavior for ambiguous queries.",
         "parameters": [
           {
-            "name": "q",
+            "name": "id",
             "in": "query",
             "required": true,
-            "description": "Track name or Spotify track URL. URLs (e.g. `https://open.spotify.com/track/<id>`) resolve directly without ambiguity. Plain names are searched via Chartmetric's track search; results may not match user intent without an `artist` filter.",
+            "description": "Chartmetric track ID (positive integer). Obtain via `GET /api/research?type=tracks&beta=true` — beta-ranked search results include the `id` field directly.",
             "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "artist",
-            "in": "query",
-            "required": false,
-            "description": "Optional artist name used to disambiguate when `q` is a plain track name. Matched case-insensitively against the candidate tracks' artist names; the top-ranked candidate whose artist names contain this value wins. Recommended whenever `q` is not a Spotify URL.",
-            "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$",
+              "example": "15194376"
             }
           }
         ],
@@ -2384,7 +2377,7 @@
             }
           },
           "400": {
-            "description": "Validation error",
+            "description": "Validation error — `id` missing or not a positive integer",
             "content": {
               "application/json": {
                 "schema": {
@@ -2404,7 +2397,7 @@
             }
           },
           "404": {
-            "description": "No track matched the supplied `q` (and `artist`, when present)",
+            "description": "No Chartmetric track exists with the supplied `id`",
             "content": {
               "application/json": {
                 "schema": {
