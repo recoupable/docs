@@ -3774,51 +3774,98 @@
       },
       "ResearchAudienceResponse": {
         "type": "object",
-        "description": "Audience demographics from Chartmetric — includes gender breakdown, age-by-gender splits, top countries and cities, and brand affinities. Over 20 fields may be returned; only the most common are listed here.",
+        "description": "Audience demographics and engagement metrics from Chartmetric. Contains two parallel families of fields: **followers** (`audience_*` and `top_*`) describe the artist's follower base, while **likers** (`audience_likers_*`, `likers_top_*`) describe the people who engage (like/comment) with the artist's posts. Engagement aggregates (`followers`, `avg_likes_per_post`, `engagement_rate`) and `notable_followers` round out the payload. All array shapes are upstream Chartmetric objects that pass through via `additionalProperties`.",
         "properties": {
           "status": {
             "type": "string",
             "example": "success"
           },
-          "audience_genders": {
-            "type": "array",
-            "description": "Gender breakdown with percentages.",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
+          "timestp": {
+            "type": "string",
+            "description": "ISO timestamp at which this audience snapshot was captured."
           },
-          "audience_genders_per_age": {
-            "type": "array",
-            "description": "Gender split per age bracket.",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
+          "followers": {
+            "type": "integer",
+            "description": "Follower count on the underlying platform at snapshot time."
+          },
+          "avg_likes_per_post": {
+            "type": "integer"
+          },
+          "avg_commments_per_post": {
+            "type": "integer",
+            "description": "Note: field name is misspelled upstream as `avg_commments_per_post`."
+          },
+          "engagement_rate": {
+            "type": "number"
           },
           "top_countries": {
             "type": "array",
             "description": "Top countries by audience share.",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
+            "items": { "type": "object", "additionalProperties": true }
           },
           "top_cities": {
             "type": "array",
             "description": "Top cities by audience concentration.",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "likers_top_countries": {
+            "type": "array",
+            "description": "Top countries for the likers (engagement) cohort.",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "likers_top_cities": {
+            "type": "array",
+            "description": "Top cities for the likers cohort.",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "audience_genders": {
+            "type": "array",
+            "description": "Gender breakdown of the follower base.",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "audience_genders_per_age": {
+            "type": "array",
+            "description": "Follower gender split per age bracket.",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "audience_ethnicities": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "audience_interests": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
           },
           "audience_brand_affinities": {
             "type": "array",
-            "description": "Brand affinity scores for the audience.",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
+            "description": "Brand affinity scores for the follower cohort.",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "audience_likers_genders": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "audience_likers_genders_per_age": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "audience_likers_ethnicities": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "audience_likers_interests": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "audience_likers_brand_affinities": {
+            "type": "array",
+            "description": "Brand affinity scores for the likers cohort.",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "notable_followers": {
+            "type": "array",
+            "description": "Notable public/influential accounts in the follower base.",
+            "items": { "type": "object", "additionalProperties": true }
           }
         },
         "additionalProperties": true
@@ -3852,10 +3899,17 @@
             ],
             "example": "success"
           },
+          "length": {
+            "type": "integer",
+            "description": "Number of entries returned in `data` (typically 50)."
+          },
           "data": {
-            "type": "object",
-            "description": "Chart data — structure varies by platform.",
-            "additionalProperties": true
+            "type": "array",
+            "description": "Chart entries for the requested platform/type/country/interval combination. Entry shape varies by platform; common fields include track/artist names, ranks, and platform-specific metrics.",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           }
         }
       },
@@ -3898,6 +3952,7 @@
       },
       "ResearchCuratorResponse": {
         "type": "object",
+        "description": "Curator profile. Follower counts are split by platform (`instagram_followers`, `facebook_followers`, `twitter_followers`, `youtube_subscribers`, `soundcloud_followers`, `tiktok_followers`), each nullable when unknown. Aggregated signals live under `cm_statistics`.",
         "properties": {
           "status": {
             "type": "string",
@@ -3907,22 +3962,93 @@
             ],
             "example": "success"
           },
+          "id": {
+            "type": "integer",
+            "description": "Chartmetric curator ID."
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Platform-native curator/user ID (e.g. Spotify user ID)."
+          },
           "name": {
             "type": "string"
-          },
-          "id": {
-            "type": "integer"
           },
           "image_url": {
             "type": "string",
             "format": "uri",
             "nullable": true
           },
-          "num_playlists": {
+          "submithub_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "last_updated": {
+            "type": "string",
+            "description": "ISO timestamp of the last Chartmetric sync."
+          },
+          "suspicion_score": {
+            "type": "integer",
+            "description": "Chartmetric's internal suspicion score (lower is better)."
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "tag_ids": {
+            "type": "array",
+            "items": { "type": "integer" }
+          },
+          "tag_names": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "spotifySocialUrls": {
+            "type": "array",
+            "description": "Spotify-linked social URLs for the curator.",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "cm_statistics": {
+            "type": "object",
+            "description": "Aggregated Chartmetric statistics — playlist reach, editorial counts, velocity deltas, etc.",
+            "additionalProperties": true
+          },
+          "instagram_followers": {
             "type": "integer",
             "nullable": true
           },
-          "followers": {
+          "facebook_followers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "facebook_fans": {
+            "type": "integer",
+            "nullable": true
+          },
+          "twitter_followers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "twitter_retweets": {
+            "type": "integer",
+            "nullable": true
+          },
+          "youtube_subscribers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "youtube_views": {
+            "type": "integer",
+            "nullable": true
+          },
+          "soundcloud_followers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "tiktok_followers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "tiktok_likes": {
             "type": "integer",
             "nullable": true
           }
@@ -4370,16 +4496,60 @@
       },
       "ResearchMetricsResponse": {
         "type": "object",
-        "description": "Time-series metrics for a specific platform. Shape varies by source — typically an array of data points with timestamps and values (followers, listeners, views, etc.).",
+        "description": "Time-series metrics for the artist on the selected platform. Shape varies by platform — fields at the root (not wrapped in a `data` envelope) each hold their own time-series array of `{timestp, value}` points.\n\nFor Spotify, expect `followers`, `listeners`, `popularity`, and `followers_to_listeners_ratio`. Other platforms expose their own set (e.g. `subscribers` and `views` for `youtube_channel`).",
         "properties": {
           "status": {
             "type": "string"
           },
-          "data": {
+          "link": {
+            "type": "string",
+            "description": "Canonical source URL on the upstream platform (e.g. the artist's Spotify URL)."
+          },
+          "followers": {
             "type": "array",
-            "description": "Array of time-series data points. Fields vary by platform.",
+            "description": "Time series of follower counts, when applicable to the source.",
             "items": {
               "type": "object",
+              "properties": {
+                "timestp": { "type": "string" },
+                "value": { "type": "number" }
+              },
+              "additionalProperties": true
+            }
+          },
+          "listeners": {
+            "type": "array",
+            "description": "Time series of listener counts (e.g. Spotify monthly listeners), when applicable.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "timestp": { "type": "string" },
+                "value": { "type": "number" }
+              },
+              "additionalProperties": true
+            }
+          },
+          "popularity": {
+            "type": "array",
+            "description": "Time series of the platform's popularity score, when applicable.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "timestp": { "type": "string" },
+                "value": { "type": "number" }
+              },
+              "additionalProperties": true
+            }
+          },
+          "followers_to_listeners_ratio": {
+            "type": "array",
+            "description": "Derived time series, when both followers and listeners are available (Spotify).",
+            "items": {
+              "type": "object",
+              "properties": {
+                "timestp": { "type": "string" },
+                "value": { "type": "number" }
+              },
               "additionalProperties": true
             }
           }
@@ -4550,28 +4720,114 @@
       },
       "ResearchPlaylistResponse": {
         "type": "object",
-        "description": "Playlist metadata — name, description, follower count, track count, and curator info.",
+        "description": "Playlist metadata — name, description, follower count, track count, curator info, and Chartmetric-derived signals (editorial flag, suspicion score, active-ratio, week/month delta, mood/activity/genre tags).",
         "properties": {
           "status": {
             "type": "string"
           },
+          "id": {
+            "type": "integer",
+            "description": "Chartmetric playlist ID (same as the `id` query param)."
+          },
           "name": {
             "type": "string"
           },
-          "id": {
-            "type": "integer"
-          },
           "description": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
+          },
+          "image_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "playlist_id": {
+            "type": "string",
+            "description": "Platform-native playlist ID (e.g. Spotify base62)."
+          },
+          "owner_name": {
+            "type": "string",
+            "description": "Curator display name (what used to be advertised as `curator_name`).",
+            "nullable": true
+          },
+          "owner_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "user_id": {
+            "type": "string",
+            "nullable": true
           },
           "followers": {
-            "type": "integer"
+            "type": "integer",
+            "nullable": true
           },
-          "num_tracks": {
-            "type": "integer"
+          "num_track": {
+            "type": "integer",
+            "description": "Track count on the playlist (note: field is `num_track`, not `num_tracks`)."
           },
-          "curator_name": {
-            "type": "string"
+          "editorial": {
+            "type": "boolean",
+            "description": "True if this is a first-party editorial playlist (e.g. Spotify's RapCaviar)."
+          },
+          "personalized": {
+            "type": "boolean"
+          },
+          "code2": {
+            "type": "string",
+            "nullable": true,
+            "description": "ISO-3166 alpha-2 country code associated with the playlist, when known."
+          },
+          "catalog": {
+            "type": "string",
+            "nullable": true
+          },
+          "active_ratio": {
+            "type": "integer",
+            "description": "Fraction of days recently that the playlist was updated (Chartmetric-internal)."
+          },
+          "suspicion_score": {
+            "type": "integer",
+            "description": "Chartmetric's internal playlist-suspicion score (lower is better)."
+          },
+          "fdiff_week": {
+            "type": "integer",
+            "description": "Follower change over the last week."
+          },
+          "fdiff_month": {
+            "type": "integer",
+            "description": "Follower change over the last month."
+          },
+          "last_updated": {
+            "type": "string",
+            "description": "ISO timestamp the playlist was last modified upstream."
+          },
+          "sys_last_updated": {
+            "type": "string",
+            "description": "ISO timestamp Chartmetric last synced the playlist."
+          },
+          "genres": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "moods": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "activities": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "mood_smart_ordered": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "activity_smart_ordered": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
           }
         },
         "additionalProperties": true
@@ -4597,47 +4853,140 @@
       },
       "ResearchProfileResponse": {
         "type": "object",
-        "description": "Full artist profile — bio, genres, social links, label, images, and basic stats.",
+        "description": "Full artist profile — identity, biography, genres, geography, label/management, and Chartmetric-derived ranks/statistics. For longitudinal platform metrics (Spotify followers/listeners over time, social stats, etc.) call `GET /api/research/metrics` instead.",
         "properties": {
           "status": {
             "type": "string"
           },
+          "id": {
+            "type": "integer",
+            "description": "Chartmetric artist ID."
+          },
           "name": {
             "type": "string"
           },
-          "id": {
-            "type": "integer",
-            "description": "Chartmetric artist ID"
+          "description": {
+            "type": "string",
+            "nullable": true
           },
           "image_url": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
+          },
+          "cover_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "code2": {
+            "type": "string",
+            "nullable": true,
+            "description": "ISO country code associated with the artist."
+          },
+          "isni": {
+            "type": "string",
+            "nullable": true
+          },
+          "band": {
+            "type": "boolean",
+            "description": "True if the artist is a band/group rather than a solo act."
+          },
+          "band_members": {
+            "nullable": true,
+            "description": "Band-member objects when known."
+          },
+          "gender": {
+            "type": "string",
+            "nullable": true
+          },
+          "gender_title": {
+            "type": "string",
+            "nullable": true
+          },
+          "pronoun_title": {
+            "type": "string",
+            "nullable": true
+          },
+          "hometown_city": {
+            "nullable": true,
+            "description": "Chartmetric hometown-city object (null when unknown)."
+          },
+          "current_city": {
+            "type": "string",
+            "nullable": true
+          },
+          "current_city_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "cm_artist_rank": {
+            "type": "integer",
+            "description": "Overall Chartmetric artist rank (lower is better)."
+          },
+          "cm_artist_score": {
+            "type": "number",
+            "description": "Chartmetric artist-score aggregate (higher is better)."
+          },
+          "cm_statistics": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Aggregated cross-platform snapshot — Spotify followers/monthly_listeners, Instagram/TikTok/YouTube counts, chart positions, etc. Fields may be null per-platform."
+          },
+          "career_status": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Current career stage + momentum (e.g. `superstar`/`mainstream`/`developing` + `growth`/`steady`/`decline`)."
           },
           "genres": {
+            "description": "Primary/secondary/sub-genre breakdown. Object with keyed subgroups, not a flat array.",
+            "type": "object",
+            "additionalProperties": true
+          },
+          "genre_smart_ordered": {
             "type": "array",
-            "items": {
-              "type": "string"
-            }
+            "items": { "type": "object", "additionalProperties": true }
           },
-          "tags": {
+          "genreRank": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "subGenreRank1": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "subGenreRank2": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "moods": {
             "type": "array",
-            "items": {
-              "type": "string"
-            }
+            "items": { "type": "object", "additionalProperties": true }
           },
-          "description": {
-            "type": "string"
-          },
-          "hometown": {
-            "type": "string"
+          "activities": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
           },
           "record_label": {
+            "type": "string",
+            "nullable": true
+          },
+          "booking_agent": {
+            "type": "string",
+            "nullable": true
+          },
+          "press_contact": {
+            "type": "string",
+            "nullable": true
+          },
+          "general_manager": {
+            "type": "string",
+            "nullable": true
+          },
+          "topSongwriterCollaborators": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "created_at": {
             "type": "string"
-          },
-          "sp_followers": {
-            "type": "integer"
-          },
-          "sp_monthly_listeners": {
-            "type": "integer"
           }
         },
         "additionalProperties": true
@@ -4940,6 +5289,28 @@
               },
               "additionalProperties": true
             }
+          },
+          "cm_statistics": {
+            "type": "object",
+            "description": "Chartmetric's aggregated cross-platform statistics for the track — Spotify popularity/streams, TikTok video counts, YouTube views, Shazam counts, Apple/Deezer/Amazon playlist reach, weekly deltas, etc. Fields are often null for less-popular tracks. Opaque object; inspect an actual response for the full field set.",
+            "additionalProperties": true
+          },
+          "tempo": {
+            "type": "number",
+            "nullable": true,
+            "description": "Track tempo in BPM, when available."
+          },
+          "moods": {
+            "type": "array",
+            "nullable": true,
+            "description": "Chartmetric-inferred mood tags (e.g. `Happy`, `Melancholic`).",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "activities": {
+            "type": "array",
+            "nullable": true,
+            "description": "Chartmetric-inferred activity tags (e.g. `Workout`, `Studying`).",
+            "items": { "type": "object", "additionalProperties": true }
           }
         },
         "additionalProperties": true
