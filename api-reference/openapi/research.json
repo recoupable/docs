@@ -880,15 +880,17 @@
     },
     "/api/research/albums": {
       "get": {
-        "description": "Get an artist's full discography — albums, EPs, and singles with release dates.",
+        "description": "Get the album discography — albums, EPs, and singles with release dates — for a Chartmetric `artist_id`.\n\nThin proxy over Chartmetric's `/artist/:id/albums`. Discovery by name is the caller's job via `GET /api/research?q=<name>&type=artists&beta=true`. This endpoint does not resolve artist names itself.",
         "parameters": [
           {
-            "name": "artist",
+            "name": "artist_id",
             "in": "query",
             "required": true,
-            "description": "Artist name or Recoup artist ID (UUID).",
+            "description": "Chartmetric artist ID (positive integer). Obtain via `GET /api/research?type=artists&beta=true` — the `id` field in each result is the Chartmetric ID to pass here.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$",
+              "example": "3380"
             }
           }
         ],
@@ -904,7 +906,7 @@
             }
           },
           "400": {
-            "description": "Validation error (e.g., missing `artist` parameter)",
+            "description": "Validation error — `artist_id` missing or not a positive integer",
             "content": {
               "application/json": {
                 "schema": {
