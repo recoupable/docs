@@ -804,7 +804,7 @@
     },
     "/api/research": {
       "get": {
-        "description": "Unified Chartmetric search. This is the discovery primitive for the detail-lookup endpoints — use `type=artists` to find an `id` for `/api/research/albums`, `type=tracks` for `/api/research/track`, `type=playlists` for `/api/research/playlist`, etc. Pick the right `id` from the returned results and pass it to the appropriate detail endpoint.\n\nThin proxy over Chartmetric's `/search`. Chartmetric's default search engine is narrow — for ambiguous queries like `Hotline Bling` or `Flowers` it often returns a single low-quality match. **Pass `beta=true` for higher relevance and accuracy**, which switches Chartmetric to its improved ranking engine. Beta results include a numeric `match_strength` score and have a slightly different shape than the default engine (see the response schema).",
+        "description": "Unified Chartmetric search. This is the discovery primitive for the detail-lookup endpoints — use `type=artists` to find an `id` for [GET /api/research/albums](/api-reference/research/albums), `type=tracks` for [GET /api/research/track](/api-reference/research/track), `type=playlists` for [GET /api/research/playlist](/api-reference/research/playlist), etc. Pick the right `id` from the returned results and pass it to the appropriate detail endpoint.\n\nThin proxy over Chartmetric's `/search`. Chartmetric's default search engine is narrow — for ambiguous queries like `Hotline Bling` or `Flowers` it often returns a single low-quality match. **Pass `beta=true` for higher relevance and accuracy**, which switches Chartmetric to its improved ranking engine. Beta results include a numeric `match_strength` score and have a slightly different shape than the default engine (see the response schema).",
         "parameters": [
           {
             "name": "q",
@@ -913,13 +913,13 @@
     },
     "/api/research/albums": {
       "get": {
-        "description": "Get the album discography — albums, EPs, and singles with release dates — for a Chartmetric `artist_id`.\n\nThin proxy over Chartmetric's `/artist/:id/albums`. By default `is_primary=true`, so only albums where the artist is a main artist are returned — DJ compilations, soundtracks, and pure feature appearances are excluded. Pass `is_primary=false` to include them. Discovery by name is the caller's job via `GET /api/research?q=<name>&type=artists&beta=true`.",
+        "description": "Get the album discography — albums, EPs, and singles with release dates — for a Chartmetric `artist_id`.\n\nThin proxy over Chartmetric's `/artist/:id/albums`. By default `is_primary=true`, so only albums where the artist is a main artist are returned — DJ compilations, soundtracks, and pure feature appearances are excluded. Pass `is_primary=false` to include them. Discover a Chartmetric `artist_id` via [GET /api/research](/api-reference/research/search) with `type=artists&beta=true`.",
         "parameters": [
           {
             "name": "artist_id",
             "in": "query",
             "required": true,
-            "description": "Chartmetric artist ID (positive integer). Obtain via `GET /api/research?type=artists&beta=true` — the `id` field in each result is the Chartmetric ID to pass here.",
+            "description": "Chartmetric artist ID (positive integer). Obtain via [GET /api/research](/api-reference/research/search) with `type=artists&beta=true` — the `id` field in each result is the Chartmetric ID to pass here.",
             "schema": {
               "type": "string",
               "pattern": "^[1-9][0-9]*$",
@@ -1949,7 +1949,7 @@
     },
     "/api/research/playlist": {
       "get": {
-        "description": "Get playlist metadata — name, description, follower count, track count, and curator info.\n\nThin proxy over Chartmetric's `/playlist/:platform/:id` detail lookup. **`id` is Chartmetric's own numeric playlist ID, not the streaming-platform's native ID.** Discovery is the caller's job via `GET /api/research?q=<name>&type=playlists&beta=true` — the `id` field in each result is the Chartmetric ID to pass here.",
+        "description": "Get playlist metadata — name, description, follower count, track count, and curator info.\n\nThin proxy over Chartmetric's `/playlist/:platform/:id` detail lookup. **`id` is Chartmetric's own numeric playlist ID, not the streaming-platform's native ID.** Discover the Chartmetric playlist ID via [GET /api/research](/api-reference/research/search) with `type=playlists&beta=true` — the `id` field in each result is the Chartmetric ID to pass here.",
         "parameters": [
           {
             "name": "platform",
@@ -1971,7 +1971,7 @@
             "name": "id",
             "in": "query",
             "required": true,
-            "description": "Chartmetric playlist ID (positive integer). This is **not** the streaming platform's native ID — e.g. Spotify's base62 ID `37i9dQZF1DXcBWIGoYBM5M` for RapCaviar maps to Chartmetric ID `848051`. Obtain via `GET /api/research?type=playlists&beta=true`.",
+            "description": "Chartmetric playlist ID (positive integer). This is **not** the streaming platform's native ID — e.g. Spotify's base62 ID `37i9dQZF1DXcBWIGoYBM5M` for RapCaviar maps to Chartmetric ID `848051`. Obtain via [GET /api/research](/api-reference/research/search) with `type=playlists&beta=true`.",
             "schema": {
               "type": "string",
               "pattern": "^[1-9][0-9]*$",
@@ -2419,13 +2419,13 @@
     },
     "/api/research/track": {
       "get": {
-        "description": "Get full Chartmetric track metadata by numeric track `id` — title, artists, albums, release date, genres, popularity, and platform IDs.\n\nThis endpoint is a thin proxy over Chartmetric's `/track/:id` detail lookup. Discovery by name is the caller's job: use `GET /api/research?q=<name>&type=tracks&beta=true` to search, pick a result's `id`, then call this endpoint. Keeping the two concerns separate means predictable credit charging and no silent wrong-match behavior for ambiguous queries.",
+        "description": "Get full Chartmetric track metadata by numeric track `id` — title, artists, albums, release date, genres, popularity, and platform IDs.\n\nThis endpoint is a thin proxy over Chartmetric's `/track/:id` detail lookup. Discover a Chartmetric track ID via [GET /api/research](/api-reference/research/search) with `type=tracks&beta=true` — pick a result's `id`, then call this endpoint. Keeping the two concerns separate means predictable credit charging and no silent wrong-match behavior for ambiguous queries.",
         "parameters": [
           {
             "name": "id",
             "in": "query",
             "required": true,
-            "description": "Chartmetric track ID (positive integer). Obtain via `GET /api/research?type=tracks&beta=true` — beta-ranked search results include the `id` field directly.",
+            "description": "Chartmetric track ID (positive integer). Obtain via [GET /api/research](/api-reference/research/search) with `type=tracks&beta=true` — beta-ranked search results include the `id` field directly.",
             "schema": {
               "type": "string",
               "pattern": "^[1-9][0-9]*$",
