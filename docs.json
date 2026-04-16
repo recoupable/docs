@@ -166,7 +166,7 @@
             ]
           },
           {
-            "group": "Fans & Segments",
+            "group": "Fans",
             "pages": [
               "api-reference/fans/get"
             ]
