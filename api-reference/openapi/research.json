@@ -804,13 +804,13 @@
     },
     "/api/research": {
       "get": {
-        "description": "Search for artists by name. Returns matching results with profile summaries.",
+        "description": "Unified Chartmetric search. This is the discovery primitive for the detail-lookup endpoints — use `type=artists` to find an `id` for `/api/research/albums`, `type=tracks` for `/api/research/track`, `type=playlists` for `/api/research/playlist`, etc. Pick the right `id` from the returned results and pass it to the appropriate detail endpoint.\n\nThin proxy over Chartmetric's `/search`. Chartmetric's default search engine is narrow — for ambiguous queries like `Hotline Bling` or `Flowers` it often returns a single low-quality match. **Pass `beta=true` for higher relevance and accuracy**, which switches Chartmetric to its improved ranking engine. Beta results include a numeric `match_strength` score and have a slightly different shape than the default engine (see the response schema).",
         "parameters": [
           {
             "name": "q",
             "in": "query",
             "required": true,
-            "description": "Artist name to search for.",
+            "description": "Search query. Can be a name (e.g. `Drake`, `Flowers`) or a streaming-platform URL (e.g. `https://open.spotify.com/artist/...`).",
             "schema": {
               "type": "string"
             }
@@ -819,7 +819,7 @@
             "name": "type",
             "in": "query",
             "required": false,
-            "description": "Entity type.",
+            "description": "Entity type to search.",
             "schema": {
               "type": "string",
               "enum": [
@@ -841,6 +841,39 @@
             "schema": {
               "type": "integer",
               "default": 10
+            }
+          },
+          {
+            "name": "beta",
+            "in": "query",
+            "required": false,
+            "description": "When `true`, switches Chartmetric to its improved beta search engine — recommended for ambiguous queries. Results come back sorted by `match_strength` (higher is better) and include `target`/`platform` fields instead of the default-mode shape.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            }
+          },
+          {
+            "name": "platforms",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated platforms to include in beta results (e.g. `cm,spotify`). Only valid with `beta=true`; ignored otherwise.",
+            "schema": {
+              "type": "string",
+              "example": "cm,spotify"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Pagination offset. Defaults to 0 when omitted.",
+            "schema": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$"
             }
           }
         ],
@@ -4670,17 +4703,49 @@
       },
       "ResearchSearchResult": {
         "type": "object",
+        "description": "Shape varies by `type` and search engine. Common fields are listed here; `additionalProperties: true` lets engine-specific fields pass through.\n\n**Default engine (`beta=false`):** entries include `name`, `id`, `image_url`, plus type-specific fields like `artist_names[]` (tracks), `isrc` (tracks), `sp_followers`/`sp_monthly_listeners`/`cm_artist_score` (artists), `owner_name` (playlists), etc.\n\n**Beta engine (`beta=true`):** entries include `name`, `id`, `imageUrl`, `target` (the entity type — e.g. `track`, `artist`, `playlist`), `platform` (e.g. `cm`, `spotify`), and `match_strength` (numeric relevance score, higher is better).",
         "properties": {
           "name": {
             "type": "string"
           },
           "id": {
-            "type": "integer",
-            "description": "Internal ID for use with other research endpoints."
+            "description": "Chartmetric internal ID for use with the detail-lookup endpoints (`/api/research/track`, `/api/research/playlist`, `/api/research/albums`, etc.). Usually an integer; some playlist sources return a string.",
+            "oneOf": [
+              { "type": "integer" },
+              { "type": "string" }
+            ]
+          },
+          "image_url": {
+            "type": "string",
+            "nullable": true,
+            "description": "Default-engine image URL. (Beta engine returns `imageUrl` instead.)"
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "Beta-engine image URL. (Default engine returns `image_url` instead.)"
+          },
+          "match_strength": {
+            "type": "number",
+            "description": "Beta-only relevance score — sort entries by this descending. Not present in default-engine results."
+          },
+          "target": {
+            "type": "string",
+            "description": "Beta-only entity type (`track`, `artist`, `playlist`, etc.). Not present in default-engine results."
+          },
+          "platform": {
+            "type": "string",
+            "description": "Beta-only source platform (e.g. `cm`, `spotify`). Not present in default-engine results."
           },
           "spotify_id": {
             "type": "string",
             "nullable": true
+          },
+          "artist_names": {
+            "type": "array",
+            "nullable": true,
+            "items": { "type": "string" },
+            "description": "Default-engine tracks only."
           }
         },
         "additionalProperties": true
