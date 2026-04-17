@@ -566,13 +566,13 @@
         }
       }
     },
-    "/api/artist/socials": {
+    "/api/artists/{id}/socials": {
       "get": {
         "description": "Retrieve all social media profiles associated with an artist. This endpoint should be called before using the Social Posts endpoint to obtain the necessary social IDs.",
         "parameters": [
           {
-            "name": "artist_account_id",
-            "in": "query",
+            "name": "id",
+            "in": "path",
             "description": "The unique identifier of the artist account to fetch social profiles for",
             "required": true,
             "schema": {
