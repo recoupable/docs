@@ -195,7 +195,7 @@
         }
       },
       "delete": {
-        "description": "Delete a chat room by ID. This operation also removes related room records (memory emails, memories, room-report links, and segment-room links) before deleting the room itself.",
+        "description": "Delete a chat room by ID. This operation also removes related room records (memory emails, memories) before deleting the room itself.",
         "requestBody": {
           "description": "Chat deletion parameters",
           "required": true,
@@ -323,65 +323,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GetChatArtistErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/chats/{id}/segment": {
-      "get": {
-        "description": "Retrieve the segment associated with a specific chat room. Returns 404 if the chat does not exist or is not accessible by the authenticated caller.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "The unique identifier (UUID) of the chat room.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Chat segment resolved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetChatSegmentResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - invalid chat id",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetChatSegmentErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - invalid or missing credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found - chat does not exist or is not accessible",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetChatSegmentErrorResponse"
                 }
               }
             }
@@ -3636,60 +3577,6 @@
               "$ref": "#/components/schemas/ChatMessage"
             },
             "description": "Chronologically ordered list of messages for the chat"
-          }
-        }
-      },
-      "GetChatSegmentErrorResponse": {
-        "type": "object",
-        "required": [
-          "status",
-          "error"
-        ],
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "error"
-            ],
-            "description": "Status of the request"
-          },
-          "error": {
-            "type": "string",
-            "description": "Error message describing what went wrong"
-          }
-        }
-      },
-      "GetChatSegmentResponse": {
-        "type": "object",
-        "required": [
-          "status",
-          "room_id",
-          "segment_id",
-          "segment_exists"
-        ],
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "success"
-            ],
-            "description": "Status of the request",
-            "example": "success"
-          },
-          "room_id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "UUID of the chat room"
-          },
-          "segment_id": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true,
-            "description": "UUID of the segment associated with the chat, or null when no segment is linked"
-          },
-          "segment_exists": {
-            "type": "boolean",
-            "description": "Whether a segment is linked to the chat room"
           }
         }
       },
