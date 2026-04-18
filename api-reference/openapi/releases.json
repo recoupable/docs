@@ -140,7 +140,7 @@
       },
       "patch": {
         "summary": "Update scheduled task",
-        "description": "Updates an existing scheduled task using a **partial update**: include the task `id` (required) plus any fields you want to change. Omitted fields are left unchanged.\n\nWhen `schedule` changes, the API updates the stored cron expression and syncs the linked Trigger.dev schedule. Use `enabled` to pause or resume execution.\n\nOn success, the response matches [GET /api/tasks](/api-reference/tasks/get) and [POST /api/tasks](/api-reference/tasks/create): a `TasksResponse` with `status: \"success\"` and the updated task as the only element in `tasks`.\n\nRequires authentication with an API key or Bearer token, same as [POST /api/tasks](/api-reference/tasks/create). Optional body `account_id` is only accepted when it falls within the caller's authorization scope.",
+        "description": "Updates an existing scheduled task using a **partial update**: include the task `id` (required) plus any fields you want to change. Omitted fields are left unchanged.\n\nWhen `schedule` changes, the API updates the stored cron expression and syncs the linked Trigger.dev schedule. Use `enabled` to pause or resume execution.\n\nOn success, the response matches [GET /api/tasks](/api-reference/tasks/get) and [POST /api/tasks](/api-reference/tasks/create): a `TasksResponse` with `status: \"success\"` and the updated task as the only element in `tasks`.\n\n**Authentication:** After validating the JSON body, the handler runs **`validateAuthContext`** with optional `account_id` from the body—the same authorization step as [POST /api/tasks](/api-reference/tasks/create) (exactly one of `x-api-key` or `Authorization: Bearer`, then optional account override within allowed scope). Requests that fail this step return **401** or **403** as documented below.",
         "security": [
           {
             "apiKeyAuth": []
@@ -150,7 +150,7 @@
           }
         ],
         "x-mint": {
-          "content": "## 401 and 403 responses\n\nThis operation documents **401 Unauthorized** and **403 Forbidden** in OpenAPI (`Error` body: numeric `error`, string `message`). The interactive playground may not show a tab for every status code even when they are defined on the endpoint.\n\n| Status | When |\n|--------|------|\n| **401** | Missing or invalid `x-api-key` header or Bearer token. |\n| **403** | Optional `account_id` is outside the caller's authorization scope. |"
+          "content": "## Auth: `validateAuthContext`\n\nThis endpoint uses the same **`validateAuthContext`** pipeline as **Create task** after body validation: resolve the caller via `x-api-key` **or** `Authorization: Bearer`, then apply optional `account_id` override rules.\n\n## 401 and 403 responses\n\nDocumented in OpenAPI with the `Error` schema (numeric `error`, string `message`). The interactive playground may not show a tab for every status code.\n\n| Status | When |\n|--------|------|\n| **401** | Missing or invalid `x-api-key` header or Bearer token. |\n| **403** | Optional `account_id` is outside the caller's authorization scope. |"
         },
         "requestBody": {
           "description": "JSON object with `id` and optional fields to merge onto the task.",
