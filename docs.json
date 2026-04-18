@@ -68,7 +68,6 @@
               "api-reference/chat/create",
               "api-reference/chat/chats",
               "api-reference/chat/artist",
-              "api-reference/chat/segment",
               "api-reference/chat/messages",
               "api-reference/chat/messages-copy",
               "api-reference/chat/messages-trailing-delete",
@@ -102,6 +101,7 @@
               "api-reference/research/career",
               "api-reference/research/insights",
               "api-reference/research/playlist",
+              "api-reference/research/track-playlists",
               "api-reference/research/curator",
               "api-reference/research/discover",
               "api-reference/research/genres",
@@ -165,17 +165,17 @@
             "pages": [
               "api-reference/artists/list",
               "api-reference/artists/create",
+              "api-reference/artists/pin",
+              "api-reference/artists/unpin",
               "api-reference/artists/delete",
               "api-reference/artist/profile",
-              "api-reference/artist/socials",
+              "api-reference/artists/socials",
               "api-reference/artist/socials-scrape"
             ]
           },
           {
-            "group": "Fans & Segments",
+            "group": "Fans & Posts",
             "pages": [
-              "api-reference/artist/segments",
-              "api-reference/segment/fans",
               "api-reference/fans/get",
               "api-reference/posts/get",
               "api-reference/post/comments",
@@ -346,6 +346,7 @@
               "api-reference/admins/sandboxes-orgs",
               "api-reference/admins/emails",
               "api-reference/admins/privy",
+              "api-reference/admins/agent-signups",
               "api-reference/admins/coding-agent-slack-tags",
               "api-reference/admins/coding-pr",
               "api-reference/admins/content-slack-tags"

@@ -2433,13 +2433,14 @@
           "caption_length": {
             "type": "string",
             "enum": [
+              "none",
               "short",
               "medium",
               "long"
             ],
-            "description": "Controls the length of the generated caption text. `short` produces 1-2 lines (punchy, minimal). `medium` produces 1-2 sentences. `long` produces a paragraph (stream of consciousness style). Defaults to `short`.",
-            "default": "short",
-            "example": "short"
+            "description": "Controls the length of the generated caption text. `none` skips caption generation. `short` produces 1-2 lines (punchy, minimal). `medium` produces 1-2 sentences. `long` produces a paragraph (stream of consciousness style). Defaults to `none`.",
+            "default": "none",
+            "example": "none"
           },
           "upscale": {
             "type": "boolean",
