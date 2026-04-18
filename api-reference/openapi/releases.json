@@ -140,7 +140,7 @@
       },
       "patch": {
         "summary": "Update scheduled task",
-        "description": "Partial update: required `id`, optional fields to change. Omitted fields stay the same. Response shape matches [GET /api/tasks](/api-reference/tasks/get). Authenticate with `x-api-key` **or** `Authorization: Bearer` (see [Authentication](/authentication)).",
+        "description": "Send `id` and any fields to change; omitted fields stay the same. Updating `schedule` updates the cron expression and linked Trigger.dev schedule. Success body matches [GET /api/tasks](/api-reference/tasks/get) (`TasksResponse`). Authenticate with exactly one of `x-api-key` or `Authorization: Bearer` — see [Authentication](/authentication).",
         "security": [
           {
             "apiKeyAuth": []
@@ -156,13 +156,37 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UpdateTaskRequest"
+              },
+              "examples": {
+                "updateTitleAndSchedule": {
+                  "summary": "Change title and cron",
+                  "value": {
+                    "id": "aade2bce-55c7-468e-a606-c4e76fb2ea2a",
+                    "title": "Weekly Genre Pulse Check (rev)",
+                    "schedule": "0 10 * * 4"
+                  }
+                },
+                "toggleEnabled": {
+                  "summary": "Pause or resume",
+                  "value": {
+                    "id": "aade2bce-55c7-468e-a606-c4e76fb2ea2a",
+                    "enabled": false
+                  }
+                },
+                "changeModel": {
+                  "summary": "Change model only",
+                  "value": {
+                    "id": "aade2bce-55c7-468e-a606-c4e76fb2ea2a",
+                    "model": "claude-sonnet-4-20250514"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Updated task in `tasks`",
+            "description": "Success: `TasksResponse` with the updated task in `tasks`",
             "content": {
               "application/json": {
                 "schema": {
@@ -172,7 +196,7 @@
             }
           },
           "400": {
-            "description": "Bad request",
+            "description": "Validation failed (e.g. missing `id`, empty string on an optional field). Body includes `status`, `missing_fields`, and `error` for the first issue.",
             "content": {
               "application/json": {
                 "schema": {
@@ -181,18 +205,47 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account_id is outside caller authorization scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
           "404": {
-            "description": "Task not found",
+            "description": "No task with the given `id`",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UpdateTaskFailureResponse"
+                },
+                "examples": {
+                  "notFound": {
+                    "summary": "Unknown task id",
+                    "value": {
+                      "status": "error",
+                      "error": "Task not found"
+                    }
+                  }
                 }
               }
             }
           },
           "500": {
-            "description": "Internal server error",
+            "description": "Internal server error while updating the task or syncing the schedule",
             "content": {
               "application/json": {
                 "schema": {
@@ -2819,7 +2872,7 @@
             "type": "string",
             "nullable": true,
             "minLength": 1,
-            "description": "Model id when set"
+            "description": "Model identifier when configured; string values are non-empty"
           }
         }
       },
@@ -3128,10 +3181,12 @@
             "type": "string",
             "enum": [
               "error"
-            ]
+            ],
+            "description": "Always `error`"
           },
           "error": {
-            "type": "string"
+            "type": "string",
+            "description": "Message (e.g. `Task not found`)"
           }
         }
       },
@@ -3147,10 +3202,12 @@
             "type": "string",
             "enum": [
               "error"
-            ]
+            ],
+            "description": "Always `error`"
           },
           "missing_fields": {
             "type": "array",
+            "description": "JSON path to the first invalid field (e.g. `[\"id\"]`)",
             "items": {
               "oneOf": [
                 {
@@ -3163,7 +3220,8 @@
             }
           },
           "error": {
-            "type": "string"
+            "type": "string",
+            "description": "First validation error message"
           }
         }
       },
@@ -3176,49 +3234,49 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "Task id",
+            "description": "Task UUID to update",
             "example": "aade2bce-55c7-468e-a606-c4e76fb2ea2a"
           },
           "title": {
             "type": "string",
             "minLength": 1,
-            "description": "Title",
+            "description": "New title (non-empty if sent)",
             "example": "Weekly Genre Pulse Check (Updated)"
           },
           "prompt": {
             "type": "string",
             "minLength": 1,
-            "description": "Prompt",
+            "description": "New prompt (non-empty if sent)",
             "example": "Execute this weekly genre analysis workflow and email a summary to the team."
           },
           "schedule": {
             "type": "string",
             "minLength": 1,
-            "description": "Cron expression",
+            "description": "New cron expression (non-empty if sent)",
             "example": "0 10 * * 4"
           },
           "account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "Account id (optional)",
+            "description": "Account UUID (optional)",
             "example": "848cd58d-700f-4b38-ab4c-d9f52a1b2c3d"
           },
           "artist_account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "Artist account id (optional)",
+            "description": "Artist account UUID (optional)",
             "example": "1873859c-dd37-4e9a-9bac-80d35a1b2c3d"
           },
           "enabled": {
             "type": "boolean",
             "nullable": true,
-            "description": "Enabled (optional)",
+            "description": "Whether the task is enabled (`true` / `false` / `null`)",
             "example": true
           },
           "model": {
             "type": "string",
             "minLength": 1,
-            "description": "Model id (optional)",
+            "description": "Model identifier (non-empty if sent)",
             "example": "claude-sonnet-4-20250514"
           }
         }
