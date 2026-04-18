@@ -140,7 +140,7 @@
       },
       "patch": {
         "summary": "Update scheduled task",
-        "description": "Updates an existing scheduled task using a **partial update**: include the task `id` (required) plus any fields you want to change. Omitted fields are left unchanged.\n\nWhen `schedule` changes, the API updates the stored cron expression and syncs the linked Trigger.dev schedule. Use `enabled` to pause or resume execution.\n\nOn success, the response matches [GET /api/tasks](/api-reference/tasks/get) and [POST /api/tasks](/api-reference/tasks/create): a `TasksResponse` with `status: \"success\"` and the updated task as the only element in `tasks`.\n\n**Authentication:** After validating the JSON body, the handler runs **`validateAuthContext`** with optional `account_id` from the body—the same authorization step as [POST /api/tasks](/api-reference/tasks/create) (exactly one of `x-api-key` or `Authorization: Bearer`, then optional account override within allowed scope). Requests that fail this step return **401** or **403** as documented below.",
+        "description": "Partial update: required `id`, optional fields to change. Omitted fields stay the same. Response shape matches [GET /api/tasks](/api-reference/tasks/get). Authenticate with `x-api-key` **or** `Authorization: Bearer` (see [Authentication](/authentication)).",
         "security": [
           {
             "apiKeyAuth": []
@@ -149,47 +149,20 @@
             "bearerAuth": []
           }
         ],
-        "x-mint": {
-          "content": "## Auth: `validateAuthContext`\n\nThis endpoint uses the same **`validateAuthContext`** pipeline as **Create task** after body validation: resolve the caller via `x-api-key` **or** `Authorization: Bearer`, then apply optional `account_id` override rules.\n\n## 401 and 403 responses\n\nDocumented in OpenAPI with the `Error` schema (numeric `error`, string `message`). The interactive playground may not show a tab for every status code.\n\n| Status | When |\n|--------|------|\n| **401** | Missing or invalid `x-api-key` header or Bearer token. |\n| **403** | Optional `account_id` is outside the caller's authorization scope. |"
-        },
         "requestBody": {
-          "description": "JSON object with `id` and optional fields to merge onto the task.",
+          "description": "Task fields to update",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UpdateTaskRequest"
-              },
-              "examples": {
-                "updateTitleAndSchedule": {
-                  "summary": "Change title and cron",
-                  "value": {
-                    "id": "aade2bce-55c7-468e-a606-c4e76fb2ea2a",
-                    "title": "Weekly Genre Pulse Check (rev)",
-                    "schedule": "0 10 * * 4"
-                  }
-                },
-                "toggleEnabled": {
-                  "summary": "Pause or resume a task",
-                  "value": {
-                    "id": "aade2bce-55c7-468e-a606-c4e76fb2ea2a",
-                    "enabled": false
-                  }
-                },
-                "changeModel": {
-                  "summary": "Switch model only",
-                  "value": {
-                    "id": "aade2bce-55c7-468e-a606-c4e76fb2ea2a",
-                    "model": "claude-sonnet-4-20250514"
-                  }
-                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Task updated successfully. Body is a `TasksResponse` with the updated task in `tasks` (typically one task).",
+            "description": "Updated task in `tasks`",
             "content": {
               "application/json": {
                 "schema": {
@@ -199,7 +172,7 @@
             }
           },
           "400": {
-            "description": "Bad request — missing `id`, empty strings where a field is provided, or other validation failure from the request body. The body reports the first Zod issue via `missing_fields` and `error`.",
+            "description": "Bad request",
             "content": {
               "application/json": {
                 "schema": {
@@ -208,65 +181,18 @@
               }
             }
           },
-          "401": {
-            "description": "Unauthorized - missing or invalid credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "examples": {
-                  "unauthorized": {
-                    "summary": "Invalid or missing credentials",
-                    "value": {
-                      "error": 401,
-                      "message": "Unauthorized"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - account_id is outside caller authorization scope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "examples": {
-                  "forbiddenAccountScope": {
-                    "summary": "account_id outside allowed scope",
-                    "value": {
-                      "error": 403,
-                      "message": "Forbidden"
-                    }
-                  }
-                }
-              }
-            }
-          },
           "404": {
-            "description": "No task exists with the given `id`.",
+            "description": "Task not found",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UpdateTaskFailureResponse"
-                },
-                "examples": {
-                  "notFound": {
-                    "summary": "Unknown task id",
-                    "value": {
-                      "status": "error",
-                      "error": "Task not found"
-                    }
-                  }
                 }
               }
             }
           },
           "500": {
-            "description": "Internal server error while updating the task or syncing the Trigger.dev schedule.",
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -2893,7 +2819,7 @@
             "type": "string",
             "nullable": true,
             "minLength": 1,
-            "description": "AI model identifier used when the task runs. When present as a string, must be non-empty; otherwise `null` if unset."
+            "description": "Model id when set"
           }
         }
       },
@@ -3202,12 +3128,10 @@
             "type": "string",
             "enum": [
               "error"
-            ],
-            "description": "Always `error` for this response shape"
+            ]
           },
           "error": {
-            "type": "string",
-            "description": "Human-readable error message (for example `Task not found` on 404)"
+            "type": "string"
           }
         }
       },
@@ -3223,12 +3147,10 @@
             "type": "string",
             "enum": [
               "error"
-            ],
-            "description": "Always `error` when validation fails"
+            ]
           },
           "missing_fields": {
             "type": "array",
-            "description": "JSON path segments to the first field that failed validation (from Zod), e.g. `[\"id\"]` or `[\"schedule\"]`",
             "items": {
               "oneOf": [
                 {
@@ -3241,8 +3163,7 @@
             }
           },
           "error": {
-            "type": "string",
-            "description": "Validation message for the first failing field"
+            "type": "string"
           }
         }
       },
@@ -3255,49 +3176,49 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the task to update",
+            "description": "Task id",
             "example": "aade2bce-55c7-468e-a606-c4e76fb2ea2a"
           },
           "title": {
             "type": "string",
             "minLength": 1,
-            "description": "New descriptive title. If sent, must be a non-empty string.",
+            "description": "Title",
             "example": "Weekly Genre Pulse Check (Updated)"
           },
           "prompt": {
             "type": "string",
             "minLength": 1,
-            "description": "New instruction/prompt executed by the task. If sent, must be a non-empty string.",
+            "description": "Prompt",
             "example": "Execute this weekly genre analysis workflow and email a summary to the team."
           },
           "schedule": {
             "type": "string",
             "minLength": 1,
-            "description": "New cron expression. If sent, must be non-empty and valid for your environment.",
+            "description": "Cron expression",
             "example": "0 10 * * 4"
           },
           "account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the account that should own the task after update. Use when the authenticated principal may act on behalf of another account (for example organization/API-key access patterns).",
+            "description": "Account id (optional)",
             "example": "848cd58d-700f-4b38-ab4c-d9f52a1b2c3d"
           },
           "artist_account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the artist account to associate with the task after update",
+            "description": "Artist account id (optional)",
             "example": "1873859c-dd37-4e9a-9bac-80d35a1b2c3d"
           },
           "enabled": {
             "type": "boolean",
             "nullable": true,
-            "description": "Controls whether the task runs on its schedule. Send `true` to enable, `false` to disable. Send `null` only when you intend to persist a null `enabled` value in storage (clearing an explicit boolean); omit this property entirely to leave the current enabled/disabled state unchanged.",
+            "description": "Enabled (optional)",
             "example": true
           },
           "model": {
             "type": "string",
             "minLength": 1,
-            "description": "AI model identifier to use when the task runs. If sent, must be a non-empty string.",
+            "description": "Model id (optional)",
             "example": "claude-sonnet-4-20250514"
           }
         }
