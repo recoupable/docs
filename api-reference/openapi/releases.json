@@ -139,21 +139,46 @@
         }
       },
       "patch": {
-        "description": "Update an existing scheduled task. Only the id field is required; any additional fields you include will be updated on the task. The response shape matches the GET endpoint (an array containing the updated task).",
+        "summary": "Update scheduled task",
+        "description": "Updates an existing scheduled task using a **partial update**: include the task `id` (required) plus any fields you want to change. Omitted fields are left unchanged.\n\nWhen `schedule` changes, the API updates the stored cron expression and syncs the linked Trigger.dev schedule. Use `enabled` to pause or resume execution.\n\nOn success, the response matches [GET /api/tasks](/api-reference/tasks/get) and [POST /api/tasks](/api-reference/tasks/create): a `TasksResponse` with `status: \"success\"` and the updated task as the only element in `tasks`.",
         "requestBody": {
-          "description": "Task fields to update",
+          "description": "JSON object with `id` and optional fields to merge onto the task.",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UpdateTaskRequest"
+              },
+              "examples": {
+                "updateTitleAndSchedule": {
+                  "summary": "Change title and cron",
+                  "value": {
+                    "id": "aade2bce-55c7-468e-a606-c4e76fb2ea2a",
+                    "title": "Weekly Genre Pulse Check (rev)",
+                    "schedule": "0 10 * * 4"
+                  }
+                },
+                "toggleEnabled": {
+                  "summary": "Pause or resume a task",
+                  "value": {
+                    "id": "aade2bce-55c7-468e-a606-c4e76fb2ea2a",
+                    "enabled": false
+                  }
+                },
+                "changeModel": {
+                  "summary": "Switch model only",
+                  "value": {
+                    "id": "aade2bce-55c7-468e-a606-c4e76fb2ea2a",
+                    "model": "claude-sonnet-4-20250514"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Task updated successfully",
+            "description": "Task updated successfully. Body is a `TasksResponse` with the updated task in `tasks` (typically one task).",
             "content": {
               "application/json": {
                 "schema": {
@@ -163,11 +188,40 @@
             }
           },
           "400": {
-            "description": "Bad request",
+            "description": "Bad request — missing `id`, empty strings where a field is provided, or other validation failure from the request body. The body reports the first Zod issue via `missing_fields` and `error`.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/UpdateTaskValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No task exists with the given `id`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateTaskFailureResponse"
+                },
+                "examples": {
+                  "notFound": {
+                    "summary": "Unknown task id",
+                    "value": {
+                      "status": "error",
+                      "error": "Task not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error while updating the task or syncing the Trigger.dev schedule.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateTaskFailureResponse"
                 }
               }
             }
@@ -2785,6 +2839,11 @@
             "type": "string",
             "nullable": true,
             "description": "Primary email address for the task owner account when one exists."
+          },
+          "model": {
+            "type": "string",
+            "nullable": true,
+            "description": "AI model identifier used when the task runs, when configured."
           }
         }
       },
@@ -3082,6 +3141,61 @@
           }
         }
       },
+      "UpdateTaskFailureResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Always `error` for this response shape"
+          },
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message (for example `Task not found` on 404)"
+          }
+        }
+      },
+      "UpdateTaskValidationErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "missing_fields",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Always `error` when validation fails"
+          },
+          "missing_fields": {
+            "type": "array",
+            "description": "JSON path segments to the first field that failed validation (from Zod), e.g. `[\"id\"]` or `[\"schedule\"]`",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Validation message for the first failing field"
+          }
+        }
+      },
       "UpdateTaskRequest": {
         "type": "object",
         "required": [
@@ -3096,36 +3210,44 @@
           },
           "title": {
             "type": "string",
-            "description": "New descriptive title of the task",
+            "minLength": 1,
+            "description": "New descriptive title. If sent, must be a non-empty string.",
             "example": "Weekly Genre Pulse Check (Updated)"
           },
           "prompt": {
             "type": "string",
-            "description": "New instruction/prompt executed by the task",
+            "minLength": 1,
+            "description": "New instruction/prompt executed by the task. If sent, must be a non-empty string.",
             "example": "Execute this weekly genre analysis workflow and email a summary to the team."
           },
           "schedule": {
             "type": "string",
-            "description": "New cron expression defining when the task runs",
+            "minLength": 1,
+            "description": "New cron expression. If sent, must be non-empty and valid for your environment.",
             "example": "0 10 * * 4"
           },
           "account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "New UUID of the associated account",
+            "description": "UUID of the account that should own the task after update. Use when the authenticated principal may act on behalf of another account (for example organization/API-key access patterns).",
             "example": "848cd58d-700f-4b38-ab4c-d9f52a1b2c3d"
           },
           "artist_account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "New UUID of the associated artist account",
+            "description": "UUID of the artist account to associate with the task after update",
             "example": "1873859c-dd37-4e9a-9bac-80d35a1b2c3d"
           },
           "enabled": {
             "type": "boolean",
             "nullable": true,
-            "description": "Whether the task is enabled. Can be true, false, or null.",
+            "description": "Whether the task is enabled (`true` / `false`), or `null` to clear an explicit override depending on server rules.",
             "example": true
+          },
+          "model": {
+            "type": "string",
+            "description": "AI model identifier to use when the task runs",
+            "example": "claude-sonnet-4-20250514"
           }
         }
       }
