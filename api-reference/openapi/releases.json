@@ -141,6 +141,17 @@
       "patch": {
         "summary": "Update scheduled task",
         "description": "Updates an existing scheduled task using a **partial update**: include the task `id` (required) plus any fields you want to change. Omitted fields are left unchanged.\n\nWhen `schedule` changes, the API updates the stored cron expression and syncs the linked Trigger.dev schedule. Use `enabled` to pause or resume execution.\n\nOn success, the response matches [GET /api/tasks](/api-reference/tasks/get) and [POST /api/tasks](/api-reference/tasks/create): a `TasksResponse` with `status: \"success\"` and the updated task as the only element in `tasks`.\n\nRequires authentication with an API key or Bearer token, same as [POST /api/tasks](/api-reference/tasks/create). Optional body `account_id` is only accepted when it falls within the caller's authorization scope.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-mint": {
+          "content": "## 401 and 403 responses\n\nThis operation documents **401 Unauthorized** and **403 Forbidden** in OpenAPI (`Error` body: numeric `error`, string `message`). The interactive playground may not show a tab for every status code even when they are defined on the endpoint.\n\n| Status | When |\n|--------|------|\n| **401** | Missing or invalid `x-api-key` header or Bearer token. |\n| **403** | Optional `account_id` is outside the caller's authorization scope. |"
+        },
         "requestBody": {
           "description": "JSON object with `id` and optional fields to merge onto the task.",
           "required": true,
@@ -203,6 +214,15 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "unauthorized": {
+                    "summary": "Invalid or missing credentials",
+                    "value": {
+                      "error": 401,
+                      "message": "Unauthorized"
+                    }
+                  }
                 }
               }
             }
@@ -213,6 +233,15 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "forbiddenAccountScope": {
+                    "summary": "account_id outside allowed scope",
+                    "value": {
+                      "error": 403,
+                      "message": "Forbidden"
+                    }
+                  }
                 }
               }
             }
