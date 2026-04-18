@@ -139,54 +139,21 @@
         }
       },
       "patch": {
-        "summary": "Update scheduled task",
-        "description": "Send `id` and any fields to change; omitted fields stay the same. Updating `schedule` updates the cron expression and linked Trigger.dev schedule. Success body matches [GET /api/tasks](/api-reference/tasks/get) (`TasksResponse`). Authenticate with exactly one of `x-api-key` or `Authorization: Bearer` — see [Authentication](/authentication).",
-        "security": [
-          {
-            "apiKeyAuth": []
-          },
-          {
-            "bearerAuth": []
-          }
-        ],
+        "description": "Updates an existing scheduled task. Only the `id` field is required; any additional fields you include are updated on the task. The response matches the [GET endpoint](/api-reference/tasks/get) (a `TasksResponse` with the updated task in the `tasks` array).",
         "requestBody": {
-          "description": "Task fields to update",
+          "description": "Task to update",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UpdateTaskRequest"
-              },
-              "examples": {
-                "updateTitleAndSchedule": {
-                  "summary": "Change title and cron",
-                  "value": {
-                    "id": "aade2bce-55c7-468e-a606-c4e76fb2ea2a",
-                    "title": "Weekly Genre Pulse Check (rev)",
-                    "schedule": "0 10 * * 4"
-                  }
-                },
-                "toggleEnabled": {
-                  "summary": "Pause or resume",
-                  "value": {
-                    "id": "aade2bce-55c7-468e-a606-c4e76fb2ea2a",
-                    "enabled": false
-                  }
-                },
-                "changeModel": {
-                  "summary": "Change model only",
-                  "value": {
-                    "id": "aade2bce-55c7-468e-a606-c4e76fb2ea2a",
-                    "model": "claude-sonnet-4-20250514"
-                  }
-                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Success: `TasksResponse` with the updated task in `tasks`",
+            "description": "Task updated successfully",
             "content": {
               "application/json": {
                 "schema": {
@@ -196,7 +163,7 @@
             }
           },
           "400": {
-            "description": "Validation failed (e.g. missing `id`, empty string on an optional field). Body includes `status`, `missing_fields`, and `error` for the first issue.",
+            "description": "Bad request - missing required fields or invalid body",
             "content": {
               "application/json": {
                 "schema": {
@@ -226,26 +193,17 @@
             }
           },
           "404": {
-            "description": "No task with the given `id`",
+            "description": "Task not found",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UpdateTaskFailureResponse"
-                },
-                "examples": {
-                  "notFound": {
-                    "summary": "Unknown task id",
-                    "value": {
-                      "status": "error",
-                      "error": "Task not found"
-                    }
-                  }
                 }
               }
             }
           },
           "500": {
-            "description": "Internal server error while updating the task or syncing the schedule",
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
