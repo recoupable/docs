@@ -2,9 +2,3 @@
 title: 'Update Task'
 openapi: "/api-reference/openapi/releases.json PATCH /api/tasks"
 ---
-
-Use **`PATCH /api/tasks`** to change an existing scheduled task. Send the task **`id`** (required) and any combination of optional fields; every field you omit is left as-is on the server.
-
-Updating **`schedule`** updates the cron expression and keeps the linked Trigger.dev schedule in sync. Use **`enabled`** to pause or resume runs. Successful responses use the same **`TasksResponse`** shape as [list tasks](/api-reference/tasks/get) and [create task](/api-reference/tasks/create): `status`, `tasks` (with the updated task), and optional `error` when `status` is `error`.
-
-See [Authentication](/authentication) for how to call Recoup APIs with your API key or Bearer token.

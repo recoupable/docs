@@ -2843,7 +2843,8 @@
           "model": {
             "type": "string",
             "nullable": true,
-            "description": "AI model identifier used when the task runs, when configured."
+            "minLength": 1,
+            "description": "AI model identifier used when the task runs. When present as a string, must be non-empty; otherwise `null` if unset."
           }
         }
       },
@@ -3241,12 +3242,13 @@
           "enabled": {
             "type": "boolean",
             "nullable": true,
-            "description": "Whether the task is enabled (`true` / `false`), or `null` to clear an explicit override depending on server rules.",
+            "description": "Controls whether the task runs on its schedule. Send `true` to enable, `false` to disable. Send `null` only when you intend to persist a null `enabled` value in storage (clearing an explicit boolean); omit this property entirely to leave the current enabled/disabled state unchanged.",
             "example": true
           },
           "model": {
             "type": "string",
-            "description": "AI model identifier to use when the task runs",
+            "minLength": 1,
+            "description": "AI model identifier to use when the task runs. If sent, must be a non-empty string.",
             "example": "claude-sonnet-4-20250514"
           }
         }
