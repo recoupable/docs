@@ -809,13 +809,10 @@
     },
     "/api/artists/{id}/fans": {
       "get": {
-        "description": "Retrieve paginated fans for an artist, ordered by most recent engagement. Fans are sourced from `social_fans` (trigger-populated from `post_comments`) and aggregated across every social profile the artist account owns. Requires authentication via API key or Bearer token.",
+        "description": "Retrieve paginated fans for an artist, ordered by most recent engagement. Fans are sourced from `social_fans` (trigger-populated from `post_comments`) and aggregated across every social profile the artist account owns. Requires authentication via API key.",
         "security": [
           {
             "apiKeyAuth": []
-          },
-          {
-            "bearerAuth": []
           }
         ],
         "parameters": [
@@ -867,7 +864,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ArtistFansErrorResponse"
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -887,7 +884,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ArtistFansErrorResponse"
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -1596,26 +1593,6 @@
             "type": "string",
             "format": "date-time",
             "description": "ISO timestamp of when the fan data was last updated"
-          }
-        }
-      },
-      "ArtistFansErrorResponse": {
-        "type": "object",
-        "required": [
-          "status",
-          "error"
-        ],
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "error"
-            ],
-            "description": "Status of the request"
-          },
-          "error": {
-            "type": "string",
-            "description": "Error message describing what went wrong"
           }
         }
       },
