@@ -809,7 +809,15 @@
     },
     "/api/artists/{id}/fans": {
       "get": {
-        "description": "Retrieve all social profiles from fans of an artist across all platforms. This endpoint aggregates fan data from all connected social media platforms. Supports pagination for large fan lists.",
+        "description": "Retrieve paginated fans for an artist, ordered by most recent engagement. Fans are sourced from `social_fans` (trigger-populated from `post_comments`) and aggregated across every social profile the artist account owns. Requires authentication via API key or Bearer token.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
@@ -855,7 +863,27 @@
             }
           },
           "400": {
-            "description": "Bad request - missing required parameters",
+            "description": "Bad request - invalid id, page, or limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistFansErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
