@@ -1,6 +1,6 @@
 ---
 title: "content-creation"
-description: "Compose the content endpoints (generate-image, generate-video, generate-caption, etc.) into short-form videos, Reels, TikToks, and lipsync clips."
+description: "Compose the content endpoints (image, video, caption, transcribe, edit, upscale, analyze) into short-form videos, Reels, TikToks, and lipsync clips."
 ---
 
 Turns the seven content primitives into finished assets. Picks the right combination of generate, transcribe, edit, upscale, and analyze for the specific output the user asked for — and iterates on quality (regenerate, re-prompt, re-mux) when the first pass isn't right.
@@ -15,13 +15,13 @@ A finished asset (image, video, captioned clip, lipsync, upscaled version) saved
 
 ## Endpoints it uses
 
-- [`POST /api/content/generate-image`](/api-reference/content/generate-image)
-- [`POST /api/content/generate-video`](/api-reference/content/generate-video)
-- [`POST /api/content/generate-caption`](/api-reference/content/generate-caption)
-- [`POST /api/content/transcribe-audio`](/api-reference/content/transcribe-audio)
-- [`PATCH /api/content/edit`](/api-reference/content/edit)
+- [`POST /api/content/image`](/api-reference/content/generate-image)
+- [`POST /api/content/video`](/api-reference/content/generate-video)
+- [`POST /api/content/caption`](/api-reference/content/generate-caption)
+- [`POST /api/content/transcribe`](/api-reference/content/transcribe-audio)
+- [`PATCH /api/content`](/api-reference/content/edit)
 - [`POST /api/content/upscale`](/api-reference/content/upscale)
-- [`POST /api/content/analyze-video`](/api-reference/content/analyze-video)
+- [`POST /api/content/analyze`](/api-reference/content/analyze-video)
 
 ## Source
 

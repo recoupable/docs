@@ -254,9 +254,11 @@ recoup content estimate --artist <artistAccountId>
 recoup content estimate --artist <artistAccountId> --template <name>
 ```
 
-### Create
+### Create (legacy pipeline)
 
-Trigger the full content creation pipeline:
+<Note>
+`recoup content create` runs the legacy full-pipeline command (backed by the deprecated `POST /api/content/create` endpoint). New integrations should call the individual `recoup content image`, `recoup content video`, and `recoup content caption` subcommands directly instead.
+</Note>
 
 ```bash
 recoup content create --artist <artistAccountId>

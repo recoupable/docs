@@ -77,11 +77,22 @@ The API validates the JWT against Privy, extracts the user's email, and resolves
 
 ## Access control
 
+Scoping parameters follow the same organization-membership rule:
+
 ```
 Request includes account_id?
   ├── Same as key owner → allowed
   ├── Shares an organization → allowed
   └── No shared org → 403
+
+Request includes organization_id?
+  ├── Key owner is a member of that org → allowed
+  └── Not a member → 403
+
+Request includes artist_account_id?
+  ├── Artist belongs to the key owner → allowed
+  ├── Artist belongs to an org the key owner is a member of → allowed
+  └── Neither → 403
 ```
 
 ## Errors

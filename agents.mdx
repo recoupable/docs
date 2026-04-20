@@ -98,10 +98,11 @@ curl "https://recoup-api.vercel.app/api/sandboxes/file?path=orgs/my-label/artist
   -H "x-api-key: $API_KEY"
 
 # Upload files to the repo
+# path is top-level (target directory); each file needs url + name
 curl -X POST "https://recoup-api.vercel.app/api/sandboxes/files" \
   -H "x-api-key: $API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"files": [{"url": "https://...", "path": "orgs/my-label/artists/drake/context/audience.md"}]}'
+  -d '{"path": "orgs/my-label/artists/drake/context", "files": [{"url": "https://...", "name": "audience.md"}]}'
 ```
 
 ---

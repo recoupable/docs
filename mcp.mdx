@@ -17,6 +17,8 @@ Pass your API key as a Bearer token when connecting:
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 
+const RECOUP_API_KEY = process.env.RECOUP_API_KEY;
+
 const transport = new StreamableHTTPClientTransport(
   new URL("https://recoup-api.vercel.app/mcp"),
   { requestInit: { headers: { Authorization: `Bearer ${RECOUP_API_KEY}` } } },

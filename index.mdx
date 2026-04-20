@@ -130,7 +130,7 @@ Organized by what agents actually do when running a label.
   <Card
     title="Content"
     icon="sparkles"
-    href="/api-reference/content/create"
+    href="/api-reference/content/generate-image"
   >
     7 endpoints — generate images, videos, captions; transcribe audio; edit, upscale, analyze video. Compose them yourself, end to end.
   </Card>
@@ -174,7 +174,7 @@ Organized by what agents actually do when running a label.
     icon="user-plus"
     href="/agents"
   >
-    Programmatic signup for AI agents. API key in one call — no browser required.
+    Programmatic signup for AI agents. API key in two calls (signup + verify) — no browser required.
   </Card>
   <Card
     title="Content Agent"
@@ -199,41 +199,16 @@ All endpoints require `x-api-key` header authentication unless noted.
 
 ## For AI agents
 
-If you are an LLM or AI agent, here is the complete endpoint map. All paths are relative to `https://recoup-api.vercel.app/api`.
+If you are an LLM or AI agent, fetch the canonical OpenAPI specifications — they're the single source of truth for endpoint paths, parameters, and response shapes. Base URL: `https://recoup-api.vercel.app/api`.
 
-| Domain | Endpoints |
-|--------|-----------|
-| `/research/*` | search, lookup, profile, metrics, audience, cities, similar, urls, instagram-posts, playlists, albums, tracks, track, career, insights, playlist, curator, discover, genres, festivals, web, deep, people, extract, enrich, milestones, venues, rank, charts, radio |
-| `/chat/*` | stream, create, chats, artist, segment, messages, messages-copy, messages-trailing-delete, update, delete, generate, compact |
-| `/content/*` | create, generate-image, generate-video, generate-caption, transcribe-audio, edit, upscale, analyze-video, templates, template-detail, validate, estimate |
-| `/artists/*` | list, create, delete |
-| `/artist/*` | profile, segments, socials, socials-scrape |
-| `/songs/*` | songs, create, analyze, analyze-presets, catalogs, catalogs-create, catalogs-delete, catalog-songs, catalog-songs-add, catalog-songs-delete |
-| `/tasks/*` | get, create, update, delete, runs |
-| `/sandboxes/*` | list, create, snapshot, delete, setup, file, upload |
-| `/spotify/*` | search, artist, artist-albums, artist-top-tracks, album |
-| `/instagram/*` | comments, profiles |
-| `/x/*` | search, trends |
-| `/segment/*` | fans |
-| `/fans/*` | get |
-| `/posts/*` | get |
-| `/post/*` | comments |
-| `/comments/*` | get |
-| `/image/*` | generation |
-| `/transcribe/*` | audio |
-| `/social/*` | scrape, posts |
-| `/apify/*` | scraper |
-| `/connectors/*` | list, authorize, disconnect |
-| `/accounts/*` | get, id, create, update, add-artist |
-| `/organizations/*` | list, create, add-artist |
-| `/content-agent/*` | webhook, callback |
-| `/agents/*` | signup, verify *(unauthenticated)* |
-| `/pulses/*` | update, list |
-| `/notifications/*` | create |
-| `/workspaces/*` | create |
-| `/subscriptions/*` | get |
-| `/admins/*` | check, sandboxes, sandboxes-orgs, emails, privy, coding-agent-slack-tags, coding-pr, content-slack-tags |
+| Domain | OpenAPI spec |
+|--------|--------------|
+| Research (streaming metrics, audience, playlists, charts, web intelligence) | [`openapi/research.json`](https://developers.recoupable.com/api-reference/openapi/research.json) |
+| Content (images, videos, captions, transcription, editing, upscaling, analysis) | [`openapi/content.json`](https://developers.recoupable.com/api-reference/openapi/content.json) |
+| Releases (artists, songs, catalogs) | [`openapi/releases.json`](https://developers.recoupable.com/api-reference/openapi/releases.json) |
+| Accounts (agents, accounts, organizations, sandboxes, connectors, subscriptions, admins) | [`openapi/accounts.json`](https://developers.recoupable.com/api-reference/openapi/accounts.json) |
+| Social (Spotify, Instagram, X, social scraping) | [`openapi/social.json`](https://developers.recoupable.com/api-reference/openapi/social.json) |
 
 Authentication: `x-api-key` header (or `Authorization: Bearer <token>` for Privy). To get a key, `POST /api/agents/signup` with the human's email, then `POST /api/agents/verify` with the code from their inbox. Full flow at [/agents](/agents).
 
-[OpenAPI specification →](https://github.com/sweetmantech/docs/blob/main/api-reference/openapi.json)
+For a guided entry point by category, use the top navigation — every endpoint has its own reference page.

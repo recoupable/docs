@@ -51,7 +51,9 @@ The content API provides seven independent endpoints. Each does one thing well. 
 | Upscale | [POST /api/content/upscale](/api-reference/content/upscale) | Upscale image or video resolution (up to 4x) |
 | Analyze Video | [POST /api/content/analyze](/api-reference/content/analyze-video) | AI video analysis — describe scenes, check quality |
 
-Use [POST /api/content/create](/api-reference/content/create) to run the full pipeline in one call.
+<Note>
+[`POST /api/content/create`](/api-reference/content/create) is the legacy full-pipeline endpoint. It still works, but new integrations should call the individual endpoints above directly — the pipeline is being phased out.
+</Note>
 
 ## Video modes
 
