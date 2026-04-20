@@ -139,21 +139,50 @@
         }
       },
       "patch": {
+        "summary": "Update scheduled task",
         "description": "Update an existing scheduled task. Only the id field is required; any additional fields you include will be updated on the task. The response shape matches the GET endpoint (an array containing the updated task).",
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
         "requestBody": {
-          "description": "Task fields to update",
+          "description": "JSON object with `id` and optional fields to merge onto the task.",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UpdateTaskRequest"
+              },
+              "examples": {
+                "updateTitleAndSchedule": {
+                  "summary": "Change title and cron",
+                  "value": {
+                    "id": "aade2bce-55c7-468e-a606-c4e76fb2ea2a",
+                    "title": "Weekly Genre Pulse Check (rev)",
+                    "schedule": "0 10 * * 4"
+                  }
+                },
+                "toggleEnabled": {
+                  "summary": "Pause or resume a task",
+                  "value": {
+                    "id": "aade2bce-55c7-468e-a606-c4e76fb2ea2a",
+                    "enabled": false
+                  }
+                },
+                "changeModel": {
+                  "summary": "Switch model only",
+                  "value": {
+                    "id": "aade2bce-55c7-468e-a606-c4e76fb2ea2a",
+                    "model": "claude-sonnet-4-20250514"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Task updated successfully",
+            "description": "Task updated successfully. Body is a `TasksResponse` with the updated task in `tasks` (typically one task).",
             "content": {
               "application/json": {
                 "schema": {
@@ -163,11 +192,60 @@
             }
           },
           "400": {
-            "description": "Bad request",
+            "description": "Bad request — missing `id`, empty strings where a field is provided, or other validation failure from the request body. The body reports the first Zod issue via `missing_fields` and `error`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateTaskValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account_id is outside caller authorization scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No task exists with the given `id`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateTaskFailureResponse"
+                },
+                "examples": {
+                  "notFound": {
+                    "summary": "Unknown task id",
+                    "value": {
+                      "status": "error",
+                      "error": "Task not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error while updating the task or syncing the Trigger.dev schedule.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateTaskFailureResponse"
                 }
               }
             }
@@ -2785,6 +2863,12 @@
             "type": "string",
             "nullable": true,
             "description": "Primary email address for the task owner account when one exists."
+          },
+          "model": {
+            "type": "string",
+            "nullable": true,
+            "minLength": 1,
+            "description": "AI model identifier used when the task runs. When present as a string, must be non-empty; otherwise `null` if unset."
           }
         }
       },
@@ -3082,6 +3166,61 @@
           }
         }
       },
+      "UpdateTaskFailureResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Always `error` for this response shape"
+          },
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message (for example `Task not found` on 404)"
+          }
+        }
+      },
+      "UpdateTaskValidationErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "missing_fields",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Always `error` when validation fails"
+          },
+          "missing_fields": {
+            "type": "array",
+            "description": "JSON path segments to the first field that failed validation (from Zod), e.g. `[\"id\"]` or `[\"schedule\"]`",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Validation message for the first failing field"
+          }
+        }
+      },
       "UpdateTaskRequest": {
         "type": "object",
         "required": [
@@ -3096,36 +3235,45 @@
           },
           "title": {
             "type": "string",
-            "description": "New descriptive title of the task",
+            "minLength": 1,
+            "description": "New descriptive title. If sent, must be a non-empty string.",
             "example": "Weekly Genre Pulse Check (Updated)"
           },
           "prompt": {
             "type": "string",
-            "description": "New instruction/prompt executed by the task",
+            "minLength": 1,
+            "description": "New instruction/prompt executed by the task. If sent, must be a non-empty string.",
             "example": "Execute this weekly genre analysis workflow and email a summary to the team."
           },
           "schedule": {
             "type": "string",
-            "description": "New cron expression defining when the task runs",
+            "minLength": 1,
+            "description": "New cron expression. If sent, must be non-empty and valid for your environment.",
             "example": "0 10 * * 4"
           },
           "account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "New UUID of the associated account",
+            "description": "UUID of the account to update the task for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, the task is updated for the API key's own account.",
             "example": "848cd58d-700f-4b38-ab4c-d9f52a1b2c3d"
           },
           "artist_account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "New UUID of the associated artist account",
+            "description": "UUID of the artist account to associate with the task after update",
             "example": "1873859c-dd37-4e9a-9bac-80d35a1b2c3d"
           },
           "enabled": {
             "type": "boolean",
             "nullable": true,
-            "description": "Whether the task is enabled. Can be true, false, or null.",
+            "description": "Whether the task is enabled (`true` / `false`), or `null` to clear an explicit override depending on server rules.",
             "example": true
+          },
+          "model": {
+            "type": "string",
+            "minLength": 1,
+            "description": "AI model identifier to use when the task runs. If sent, must be a non-empty string.",
+            "example": "claude-sonnet-4-20250514"
           }
         }
       }
