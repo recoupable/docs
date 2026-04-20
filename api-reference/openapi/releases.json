@@ -1451,11 +1451,11 @@
             "type": "string",
             "description": "Fan's biography or profile description"
           },
-          "followerCount": {
+          "follower_count": {
             "type": "integer",
             "description": "Number of followers the fan has"
           },
-          "followingCount": {
+          "following_count": {
             "type": "integer",
             "description": "Number of accounts the fan is following"
           },
