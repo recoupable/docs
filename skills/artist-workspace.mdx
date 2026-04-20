@@ -1,0 +1,25 @@
+---
+title: "artist-workspace"
+description: "Manage artist directories — identity, brand, voice, audience, songs, face guides."
+---
+
+Every managed artist has a workspace at `orgs/{org}/artists/{artist-slug}/`. This skill teaches the agent the conventions for what files belong where, when to create them, and how to read existing context before overwriting anything.
+
+## When to use it
+
+Adding or updating any artist-specific context — identity, brand, voice, audience, songs, face guides — or the user mentions an artist by name and the task touches their files. Also runs implicitly before research, content, or release work that needs to be artist-scoped.
+
+## What it produces
+
+Updates inside the artist directory: `RECOUP.md` (workspace anchor), `context/artist.md` (source of truth for who the artist is), `brand/`, `audience/`, `songs/`, `face-guide/` — populated only when there's real content for them.
+
+## Endpoints it uses
+
+- [`GET /api/artists`](/api-reference/artists/list)
+- [`POST /api/artists`](/api-reference/artists/create)
+- [`GET /api/artist/profile`](/api-reference/artist/profile)
+- [`GET /api/artists/{id}/socials`](/api-reference/artists/socials)
+
+## Source
+
+[`recoupable/skills/skills/artist-workspace`](https://github.com/recoupable/skills/tree/main/skills/artist-workspace)

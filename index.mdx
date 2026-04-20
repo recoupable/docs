@@ -1,5 +1,5 @@
 ---
-title: "What is Recoupable?"
+title: "What is Recoup?"
 description: "Infrastructure for agents to run record labels."
 ---
 
@@ -7,7 +7,7 @@ description: "Infrastructure for agents to run record labels."
 **AI agent?** Base URL: `https://recoup-api.vercel.app/api`. Use `x-api-key` if your human has a key. Otherwise, `POST /api/agents/signup` with their email — ask them for the verification code from their inbox, then `POST /api/agents/verify` to get a key. [Agent guide →](/agents) | [Endpoint map ↓](#for-ai-agents)
 </Info>
 
-Running a record label takes a full team. Research, content, marketing, distribution, fan engagement. Whether you're an artist doing it all yourself or a label team managing a roster, that's a lot of work. That's what agents are for. Recoupable captures context around your catalog, artists, releases, and fans, and structures it so agents can perform the work of a major label — programmatically.
+Running a record label takes a full team. Research, content, marketing, distribution, fan engagement. Whether you're an artist doing it all yourself or a label team managing a roster, that's a lot of work. That's what agents are for. Recoup captures context around your catalog, artists, releases, and fans, and structures it so agents can perform the work of a major label — programmatically.
 
 ---
 
@@ -22,21 +22,23 @@ Running a record label takes a full team. Research, content, marketing, distribu
 
 ## How it works
 
+The shape of an agent loop on Recoup.
+
 <Steps>
-  <Step title="Connect">
-    Get an API key via the agent signup endpoint. Connect via REST API, MCP server, or CLI — whichever interface your agent prefers.
+  <Step title="Authenticate">
+    Use the human's API key — that's how the agent inherits their roster, label, and history. If they don't have one, `POST /agents/signup` with their email, then pass the verification code from their inbox to `/agents/verify`.
   </Step>
-  <Step title="Research">
-    Pull data on any artist from 14+ platforms. Streaming metrics, audience demographics, playlist placements, career history, web intelligence, and competitive analysis.
+  <Step title="Find scope">
+    `GET /accounts` and `/organizations` tell you what the human gave the agent access to. Pass `artist_account_id` or `organization_id` on subsequent calls to scope the work.
   </Step>
-  <Step title="Build context">
-    Create artists, link social accounts, build catalogs of songs, and segment fans. Recoupable captures this context so every subsequent agent call is informed.
+  <Step title="Read context">
+    `/research/*` for outside-world data on any artist. `/artists/*` and `/songs/*` for what's already inside the label. The Filesystem holds the agent's persistent notes — brand voice, audience insights, prior decisions.
   </Step>
-  <Step title="Create">
-    Generate images, videos, and captions with AI. Transcribe audio, edit media, upscale quality. Seven independent content endpoints, or run the full pipeline in one call.
+  <Step title="Decide, then act">
+    Your LLM reasons over the context. Recoup doesn't decide; it gives you the inputs and accepts the outputs. Call `/content/*` to make assets, `/tasks/*` to schedule recurring work, `/notifications/*` to message the human.
   </Step>
-  <Step title="Automate">
-    Schedule recurring tasks, spin up sandboxes for complex workflows, enable pulses for automated intelligence, and send notifications. Agents work while you sleep.
+  <Step title="Persist">
+    Write the new state back to the Filesystem. The next agent run picks up exactly where this one stopped.
   </Step>
 </Steps>
 
@@ -44,16 +46,22 @@ Running a record label takes a full team. Research, content, marketing, distribu
 
 ## Get an API key
 
-One call. No signup form. No dashboard.
+Two calls. No dashboard.
 
 ```bash
-export RECOUP_API_KEY=$(curl -s -X POST "https://recoup-api.vercel.app/api/agents/signup" \
+# 1. Trigger a verification code to the human's inbox
+curl -s -X POST "https://recoup-api.vercel.app/api/agents/signup" \
   -H "Content-Type: application/json" \
-  -d '{"email": "agent+'$(date +%s)-$RANDOM'@recoupable.com"}' | jq -r .api_key)
+  -d '{"email": "human@example.com"}'
+
+# 2. Ask the human for the code, then exchange it for a key
+export RECOUP_API_KEY=$(curl -s -X POST "https://recoup-api.vercel.app/api/agents/verify" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "human@example.com", "code": "123456"}' | jq -r .api_key)
 ```
 
 <Tip>
-The `agent+` prefix bypasses email verification. Your API key comes back in the response — ready to use immediately.
+The key is tied to the human's account, so the agent inherits everything they've already set up — artists, organizations, prior work. See the [Agents guide](/agents) for the full flow.
 </Tip>
 
 ---
@@ -92,46 +100,53 @@ Organized by what agents actually do when running a label.
 
 <CardGroup cols={2}>
   <Card
+    title="Chat"
+    icon="messages-square"
+    href="/api-reference/chat/stream"
+  >
+    Stream completions, manage threads, copy or delete messages, compact long histories. 11 endpoints. Pass `artist_account_id` to scope responses to a specific artist.
+  </Card>
+  <Card
     title="Research"
     icon="search"
     href="/api-reference/research/search"
   >
-    Everything about any artist from any source. 30+ research endpoints across 14 platforms, plus AI chat, Spotify, Instagram, X, web intelligence, and deep research reports.
+    31 endpoints. Streaming metrics, audience demographics, playlist placements, festivals, charts, deep research, and web extraction across Chartmetric, Spotify, Instagram, and X.
   </Card>
   <Card
     title="Artists"
     icon="users"
     href="/api-reference/artists/list"
   >
-    Manage the roster. Artist profiles, social accounts, fan segments, posts, and comments — the people side of your label.
+    Add artists, link social accounts, pin priority work, browse fans, posts, and comments. The people side of your label.
   </Card>
   <Card
     title="Catalog"
     icon="disc-3"
     href="/api-reference/songs/songs"
   >
-    Songs, catalogs, and AI-powered audio analysis. Organize releases into collections. The music side of your label.
+    Songs, catalogs, and AI-driven audio analysis. Organize releases into collections. The music side of your label.
   </Card>
   <Card
     title="Content"
     icon="sparkles"
     href="/api-reference/content/create"
   >
-    7 content endpoints for images, videos, captions, transcription, editing, upscaling, and analysis. Run the full pipeline or call each one directly.
+    7 endpoints — generate images, videos, captions; transcribe audio; edit, upscale, analyze video. Compose them yourself, end to end.
   </Card>
   <Card
     title="Automation"
     icon="repeat"
     href="/api-reference/tasks/get"
   >
-    Scheduled tasks, automated pulses, and notifications. The engine that lets agents work while you sleep.
+    Schedule recurring tasks. Trigger pulses on events. Dispatch notifications when work completes.
   </Card>
   <Card
     title="Accounts"
     icon="building-2"
     href="/api-reference/accounts/get"
   >
-    Accounts, organizations, sandboxes, connectors, workspaces, and subscriptions. The business infrastructure.
+    Sign up agents, scope to organizations, connect external platforms via OAuth, run isolated sandboxes, manage subscriptions.
   </Card>
 </CardGroup>
 
@@ -219,6 +234,6 @@ If you are an LLM or AI agent, here is the complete endpoint map. All paths are 
 | `/subscriptions/*` | get |
 | `/admins/*` | check, sandboxes, sandboxes-orgs, emails, privy, coding-agent-slack-tags, coding-pr, content-slack-tags |
 
-Authentication: `x-api-key` header (or `Authorization: Bearer <token>` for Privy). Get a key instantly via `POST /api/agents/signup` with an `agent+` email.
+Authentication: `x-api-key` header (or `Authorization: Bearer <token>` for Privy). To get a key, `POST /api/agents/signup` with the human's email, then `POST /api/agents/verify` with the code from their inbox. Full flow at [/agents](/agents).
 
 [OpenAPI specification →](https://github.com/sweetmantech/docs/blob/main/api-reference/openapi.json)

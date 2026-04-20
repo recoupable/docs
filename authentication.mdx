@@ -18,17 +18,7 @@ description: "API keys and Bearer tokens — how to authenticate every request t
 
 ## Create a key
 
-### Instant (for agents)
-
-One call, no verification:
-
-```bash
-export RECOUP_API_KEY=$(curl -s -X POST "https://recoup-api.vercel.app/api/agents/signup" \
-  -H "Content-Type: application/json" \
-  -d '{"email": "agent+'$(date +%s)-$RANDOM'@recoupable.com"}' | jq -r .api_key)
-```
-
-### With email verification (for humans)
+### Sign up via API
 
 ```bash
 # Step 1 — request a code
@@ -36,11 +26,13 @@ curl -X POST "https://recoup-api.vercel.app/api/agents/signup" \
   -H "Content-Type: application/json" \
   -d '{"email": "you@example.com"}'
 
-# Step 2 — submit the code
+# Step 2 — submit the code from your inbox
 curl -X POST "https://recoup-api.vercel.app/api/agents/verify" \
   -H "Content-Type: application/json" \
   -d '{"email": "you@example.com", "code": "123456"}'
 ```
+
+When an agent runs the same flow on behalf of a human, the agent passes the code the human reads back from their inbox.
 
 ### From the dashboard
 

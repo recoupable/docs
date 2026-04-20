@@ -1,20 +1,24 @@
 ---
 title: "Quickstart"
-description: "API key in 10 seconds. First request in 30. No signup form, no dashboard."
+description: "API key in 2 calls. First request in minutes. No signup form, no dashboard."
 ---
 
 ## 1. Get your API key
 
 ```bash
-export RECOUP_API_KEY=$(curl -s -X POST "https://recoup-api.vercel.app/api/agents/signup" \
+# 1. Trigger a verification code to your inbox
+curl -s -X POST "https://recoup-api.vercel.app/api/agents/signup" \
   -H "Content-Type: application/json" \
-  -d '{"email": "agent+'$(date +%s)-$RANDOM'@recoupable.com"}' | jq -r .api_key)
+  -d '{"email": "you@example.com"}'
+
+# 2. Check your email, then exchange the code for a key
+export RECOUP_API_KEY=$(curl -s -X POST "https://recoup-api.vercel.app/api/agents/verify" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "you@example.com", "code": "123456"}' | jq -r .api_key)
 ```
 
-That's it. The `agent+...@recoupable.com` pattern returns a key instantly — no email verification, no waiting.
-
 <Tip>
-Prefer the dashboard? Create keys at [chat.recoupable.com/keys](https://chat.recoupable.com/keys). See the [Agents guide](/agents) for the full signup flow with email verification.
+Prefer the dashboard? Create keys at [chat.recoupable.com/keys](https://chat.recoupable.com/keys). See the [Agents guide](/agents) for the full flow including how an agent passes the code on behalf of a human.
 </Tip>
 
 ---
