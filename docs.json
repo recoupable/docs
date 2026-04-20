@@ -332,6 +332,12 @@
             ]
           },
           {
+            "group": "Stripe",
+            "pages": [
+              "api-reference/stripe/session-create"
+            ]
+          },
+          {
             "group": "Admins",
             "pages": [
               "api-reference/admins/check",
