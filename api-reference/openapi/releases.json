@@ -140,7 +140,7 @@
       },
       "patch": {
         "summary": "Update scheduled task",
-        "description": "Updates an existing scheduled task using a **partial update**: include the task `id` (required) plus any fields you want to change. Omitted fields are left unchanged.\n\nWhen `schedule` changes, the API updates the stored cron expression and syncs the linked Trigger.dev schedule. Use `enabled` to pause or resume execution.\n\nOn success, the response matches [GET /api/tasks](/api-reference/tasks/get) and [POST /api/tasks](/api-reference/tasks/create): a `TasksResponse` with `status: \"success\"` and the updated task as the only element in `tasks`.\n\nRequires authentication via `x-api-key` or `Authorization: Bearer`. The caller's identity is always derived from the provided credentials — see [Authentication](/authentication). Optional `account_id` is validated against the caller's organization membership; passing an out-of-scope value returns `403`.",
+        "description": "Updates an existing scheduled task using a **partial update**: include the task `id` (required) plus any fields you want to change. Omitted fields are left unchanged.\n\nWhen `schedule` changes, the API updates the stored cron expression and syncs the linked Trigger.dev schedule. Use `enabled` to pause or resume execution.\n\nOn success, the response matches [GET /api/tasks](/api-reference/tasks/get) and [POST /api/tasks](/api-reference/tasks/create): a `TasksResponse` with `status: \"success\"` and the updated task as the only element in `tasks`.",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
