@@ -140,7 +140,7 @@
       },
       "patch": {
         "summary": "Update scheduled task",
-        "description": "Updates an existing scheduled task using a **partial update**: include the task `id` (required) plus any fields you want to change. Omitted fields are left unchanged.\n\nWhen `schedule` changes, the API updates the stored cron expression and syncs the linked Trigger.dev schedule. Use `enabled` to pause or resume execution.\n\nOn success, the response matches [GET /api/tasks](/api-reference/tasks/get) and [POST /api/tasks](/api-reference/tasks/create): a `TasksResponse` with `status: \"success\"` and the updated task as the only element in `tasks`.",
+        "description": "Updates an existing scheduled task using a **partial update**: include the task `id` (required) plus any fields you want to change. Omitted fields are left unchanged.\n\nWhen `schedule` changes, the API updates the stored cron expression and syncs the linked Trigger.dev schedule. Use `enabled` to pause or resume execution.\n\nOn success, the response matches [GET /api/tasks](/api-reference/tasks/get) and [POST /api/tasks](/api-reference/tasks/create): a `TasksResponse` with `status: \"success\"` and the updated task as the only element in `tasks`.\n\n**Authentication:** After validating the JSON body, the handler runs **`validateAuthContext`** with optional `account_id` from the body—the same authorization step as [POST /api/tasks](/api-reference/tasks/create) (exactly one of `x-api-key` or `Authorization: Bearer`, then optional account override within allowed scope). Requests that fail this step return **401** or **403** as documented below.",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
@@ -2867,7 +2867,8 @@
           "model": {
             "type": "string",
             "nullable": true,
-            "description": "AI model identifier used when the task runs, when configured."
+            "minLength": 1,
+            "description": "AI model identifier used when the task runs. When present as a string, must be non-empty; otherwise `null` if unset."
           }
         }
       },
@@ -3270,7 +3271,8 @@
           },
           "model": {
             "type": "string",
-            "description": "AI model identifier to use when the task runs",
+            "minLength": 1,
+            "description": "AI model identifier to use when the task runs. If sent, must be a non-empty string.",
             "example": "claude-sonnet-4-20250514"
           }
         }
