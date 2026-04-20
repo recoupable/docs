@@ -684,11 +684,6 @@
     },
     "/api/artists/{id}/fans": {
       "get": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
         "description": "Retrieve all social profiles from fans of an artist across all platforms. This endpoint aggregates fan data from all connected social media platforms. Supports pagination for large fan lists.",
         "parameters": [
           {
