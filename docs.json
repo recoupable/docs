@@ -43,8 +43,7 @@
               "api-reference/artists/pin",
               "api-reference/artists/unpin",
               "api-reference/artists/delete",
-              "api-reference/artist/segments",
-              "api-reference/artist/socials",
+              "api-reference/artists/socials",
               "api-reference/artist/socials-scrape",
               "api-reference/artist/profile"
             ]
@@ -71,7 +70,6 @@
               "api-reference/chat/create",
               "api-reference/chat/chats",
               "api-reference/chat/artist",
-              "api-reference/chat/segment",
               "api-reference/chat/messages",
               "api-reference/chat/messages-copy",
               "api-reference/chat/messages-trailing-delete",
@@ -168,9 +166,8 @@
             ]
           },
           {
-            "group": "Fans & Segments",
+            "group": "Fans",
             "pages": [
-              "api-reference/segment/fans",
               "api-reference/fans/get"
             ]
           }

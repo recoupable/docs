@@ -195,7 +195,7 @@
         }
       },
       "delete": {
-        "description": "Delete a chat room by ID. This operation also removes related room records (memory emails, memories, room-report links, and segment-room links) before deleting the room itself.",
+        "description": "Delete a chat room by ID. This operation also removes related room records (memory emails, memories) before deleting the room itself.",
         "requestBody": {
           "description": "Chat deletion parameters",
           "required": true,
@@ -323,65 +323,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GetChatArtistErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/chats/{id}/segment": {
-      "get": {
-        "description": "Retrieve the segment associated with a specific chat room. Returns 404 if the chat does not exist or is not accessible by the authenticated caller.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "The unique identifier (UUID) of the chat room.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Chat segment resolved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetChatSegmentResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - invalid chat id",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetChatSegmentErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - invalid or missing credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found - chat does not exist or is not accessible",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetChatSegmentErrorResponse"
                 }
               }
             }
@@ -804,13 +745,13 @@
     },
     "/api/research": {
       "get": {
-        "description": "Search for artists by name. Returns matching results with profile summaries.",
+        "description": "Unified Chartmetric search. This is the discovery primitive for the detail-lookup endpoints — use `type=artists` to find an `id` for [GET /api/research/albums](/api-reference/research/albums), `type=tracks` for [GET /api/research/track](/api-reference/research/track), `type=playlists` for [GET /api/research/playlist](/api-reference/research/playlist), etc. Pick the right `id` from the returned results and pass it to the appropriate detail endpoint.\n\nThin proxy over Chartmetric's `/search`. Chartmetric's default search engine is narrow — for ambiguous queries like `Hotline Bling` or `Flowers` it often returns a single low-quality match. **Pass `beta=true` for higher relevance and accuracy**, which switches Chartmetric to its improved ranking engine. Beta results include a numeric `match_strength` score and have a slightly different shape than the default engine (see the response schema).",
         "parameters": [
           {
             "name": "q",
             "in": "query",
             "required": true,
-            "description": "Artist name to search for.",
+            "description": "Search query. Can be a name (e.g. `Drake`, `Flowers`) or a streaming-platform URL (e.g. `https://open.spotify.com/artist/...`).",
             "schema": {
               "type": "string"
             }
@@ -819,7 +760,7 @@
             "name": "type",
             "in": "query",
             "required": false,
-            "description": "Entity type.",
+            "description": "Entity type to search.",
             "schema": {
               "type": "string",
               "enum": [
@@ -841,6 +782,39 @@
             "schema": {
               "type": "integer",
               "default": 10
+            }
+          },
+          {
+            "name": "beta",
+            "in": "query",
+            "required": false,
+            "description": "When `true`, switches Chartmetric to its improved beta search engine — recommended for ambiguous queries. Results come back sorted by `match_strength` (higher is better) and include `target`/`platform` fields instead of the default-mode shape.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            }
+          },
+          {
+            "name": "platforms",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated platforms to include in beta results (e.g. `cm,spotify`). Only valid with `beta=true`; ignored otherwise.",
+            "schema": {
+              "type": "string",
+              "example": "cm,spotify"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Pagination offset. Defaults to 0 when omitted.",
+            "schema": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$"
             }
           }
         ],
@@ -880,15 +854,48 @@
     },
     "/api/research/albums": {
       "get": {
-        "description": "Get an artist's full discography — albums, EPs, and singles with release dates.",
+        "description": "Get the album discography — albums, EPs, and singles with release dates — for a Chartmetric `artist_id`.\n\nThin proxy over Chartmetric's `/artist/:id/albums`. By default `is_primary=true`, so only albums where the artist is a main artist are returned — DJ compilations, soundtracks, and pure feature appearances are excluded. Pass `is_primary=false` to include them. Discover a Chartmetric `artist_id` via [GET /api/research](/api-reference/research/search) with `type=artists&beta=true`.",
         "parameters": [
           {
-            "name": "artist",
+            "name": "artist_id",
             "in": "query",
             "required": true,
-            "description": "Artist name or Recoup artist ID (UUID).",
+            "description": "Chartmetric artist ID (positive integer). Obtain via [GET /api/research](/api-reference/research/search) with `type=artists&beta=true` — the `id` field in each result is the Chartmetric ID to pass here.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$",
+              "example": "3380"
+            }
+          },
+          {
+            "name": "is_primary",
+            "in": "query",
+            "required": false,
+            "description": "When `true` (default), returns only albums where the artist is a main artist. Set to `false` to include feature appearances, DJ compilations, and soundtracks.",
+            "schema": {
+              "type": "string",
+              "enum": ["true", "false"],
+              "default": "true"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Number of albums to return. Defaults to Chartmetric's default (100) when omitted.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Pagination offset. Defaults to 0 when omitted.",
+            "schema": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$"
             }
           }
         ],
@@ -904,7 +911,7 @@
             }
           },
           "400": {
-            "description": "Validation error (e.g., missing `artist` parameter)",
+            "description": "Validation error — `artist_id` missing or not a positive integer",
             "content": {
               "application/json": {
                 "schema": {
@@ -1187,7 +1194,7 @@
     },
     "/api/research/curator": {
       "get": {
-        "description": "Get curator profile — who curates a playlist, their other playlists, and follower reach.",
+        "description": "Get curator profile — name, image, follower counts across platforms, tag-based genre info, and Chartmetric playlist reach statistics. Requires a numeric Chartmetric curator ID (e.g. `2` for Spotify's own account). Discover a Chartmetric curator ID via [GET /api/research](/api-reference/research/search) with `type=curators&beta=true`. You can also find curators indirectly by looking up their playlists via [GET /api/research/playlists](/api-reference/research/playlists).",
         "parameters": [
           {
             "name": "platform",
@@ -1198,20 +1205,20 @@
               "enum": [
                 "spotify",
                 "applemusic",
-                "deezer",
-                "amazon",
-                "youtube"
+                "deezer"
               ]
             },
-            "description": "Streaming platform."
+            "description": "Streaming platform. Only Spotify, Apple Music, and Deezer have curator metadata on Chartmetric. (YouTube and Amazon are not supported by this endpoint.)"
           },
           {
             "name": "id",
             "in": "query",
             "required": true,
-            "description": "Curator ID.",
+            "description": "Numeric Chartmetric curator ID (e.g. `2` for Spotify's own account). Non-numeric values will be rejected. Obtain via [GET /api/research](/api-reference/research/search) with `type=curators&beta=true`.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^[0-9]+$",
+              "example": "2"
             }
           }
         ],
@@ -1227,7 +1234,7 @@
             }
           },
           "400": {
-            "description": "Validation error",
+            "description": "Validation error — missing/invalid `platform` or `id`.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1238,6 +1245,16 @@
           },
           "401": {
             "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Curator not found for the given platform/id.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1873,7 +1890,7 @@
     },
     "/api/research/playlist": {
       "get": {
-        "description": "Get playlist metadata — name, description, follower count, track count, and curator info.",
+        "description": "Get playlist metadata — name, description, follower count, track count, and curator info.\n\nThin proxy over Chartmetric's `/playlist/:platform/:id` detail lookup. **`id` is Chartmetric's own numeric playlist ID, not the streaming-platform's native ID.** Discover the Chartmetric playlist ID via [GET /api/research](/api-reference/research/search) with `type=playlists&beta=true` — the `id` field in each result is the Chartmetric ID to pass here.",
         "parameters": [
           {
             "name": "platform",
@@ -1889,15 +1906,17 @@
                 "youtube"
               ]
             },
-            "description": "Streaming platform."
+            "description": "Streaming platform the Chartmetric playlist is sourced from."
           },
           {
             "name": "id",
             "in": "query",
             "required": true,
-            "description": "Playlist ID on the platform.",
+            "description": "Chartmetric playlist ID (positive integer). This is **not** the streaming platform's native ID — e.g. Spotify's base62 ID `37i9dQZF1DXcBWIGoYBM5M` for RapCaviar maps to Chartmetric ID `848051`. Obtain via [GET /api/research](/api-reference/research/search) with `type=playlists&beta=true`.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$",
+              "example": "848051"
             }
           }
         ],
@@ -2341,15 +2360,17 @@
     },
     "/api/research/track": {
       "get": {
-        "description": "Get track metadata — title, artist, album, release date, popularity, and platform IDs.",
+        "description": "Get full Chartmetric track metadata by numeric track `id` — title, artists, albums, release date, genres, popularity, and platform IDs.\n\nThis endpoint is a thin proxy over Chartmetric's `/track/:id` detail lookup. Discover a Chartmetric track ID via [GET /api/research](/api-reference/research/search) with `type=tracks&beta=true` — pick a result's `id`, then call this endpoint. Keeping the two concerns separate means predictable credit charging and no silent wrong-match behavior for ambiguous queries.",
         "parameters": [
           {
-            "name": "q",
+            "name": "id",
             "in": "query",
             "required": true,
-            "description": "Track name or Spotify URL.",
+            "description": "Chartmetric track ID (positive integer). Obtain via [GET /api/research](/api-reference/research/search) with `type=tracks&beta=true` — beta-ranked search results include the `id` field directly.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$",
+              "example": "15194376"
             }
           }
         ],
@@ -2365,7 +2386,7 @@
             }
           },
           "400": {
-            "description": "Validation error",
+            "description": "Validation error — `id` missing or not a positive integer",
             "content": {
               "application/json": {
                 "schema": {
@@ -2376,6 +2397,16 @@
           },
           "401": {
             "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No Chartmetric track exists with the supplied `id`",
             "content": {
               "application/json": {
                 "schema": {
@@ -2580,12 +2611,12 @@
     },
     "/api/research/track/playlists": {
       "get": {
-        "description": "Returns playlists featuring a specific track. Accepts a Chartmetric track ID (`id`) or a track name + optional artist (`q`, `artist`) for a Spotify-powered lookup. When no filter flag is passed, defaults to editorial + indie + majorCurator + popularIndie = `true`. Costs 5 credits per request.",
+        "description": "Returns playlists featuring a specific track. Accepts a Chartmetric track ID (`id`) or a track name + optional artist (`q`, `artist`) for a Spotify-powered lookup. When no filter flag is passed, defaults to editorial + indie + majorCurator + popularIndie = `true`. Costs 5 credits per request.\n\nDiscover a Chartmetric track `id` via [GET /api/research](/api-reference/research/search) with `type=tracks&beta=true` — then pass the resulting `id` here for the most reliable match (avoids the ambiguity of name-based lookup).",
         "parameters": [
           {
             "name": "id",
             "in": "query",
-            "description": "Chartmetric track ID. Required if `q` is not provided.",
+            "description": "Chartmetric track ID. Required if `q` is not provided. Obtain via [GET /api/research](/api-reference/research/search) with `type=tracks&beta=true`.",
             "schema": {
               "type": "string"
             }
@@ -3549,60 +3580,6 @@
           }
         }
       },
-      "GetChatSegmentErrorResponse": {
-        "type": "object",
-        "required": [
-          "status",
-          "error"
-        ],
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "error"
-            ],
-            "description": "Status of the request"
-          },
-          "error": {
-            "type": "string",
-            "description": "Error message describing what went wrong"
-          }
-        }
-      },
-      "GetChatSegmentResponse": {
-        "type": "object",
-        "required": [
-          "status",
-          "room_id",
-          "segment_id",
-          "segment_exists"
-        ],
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "success"
-            ],
-            "description": "Status of the request",
-            "example": "success"
-          },
-          "room_id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "UUID of the chat room"
-          },
-          "segment_id": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true,
-            "description": "UUID of the segment associated with the chat, or null when no segment is linked"
-          },
-          "segment_exists": {
-            "type": "boolean",
-            "description": "Whether a segment is linked to the chat room"
-          }
-        }
-      },
       "GetChatsErrorResponse": {
         "type": "object",
         "required": [
@@ -3684,51 +3661,98 @@
       },
       "ResearchAudienceResponse": {
         "type": "object",
-        "description": "Audience demographics from Chartmetric — includes gender breakdown, age-by-gender splits, top countries and cities, and brand affinities. Over 20 fields may be returned; only the most common are listed here.",
+        "description": "Audience demographics and engagement metrics from Chartmetric. Contains two parallel families of fields: **followers** (`audience_*` and `top_*`) describe the artist's follower base, while **likers** (`audience_likers_*`, `likers_top_*`) describe the people who engage (like/comment) with the artist's posts. Engagement aggregates (`followers`, `avg_likes_per_post`, `engagement_rate`) and `notable_followers` round out the payload. All array shapes are upstream Chartmetric objects that pass through via `additionalProperties`.",
         "properties": {
           "status": {
             "type": "string",
             "example": "success"
           },
-          "audience_genders": {
-            "type": "array",
-            "description": "Gender breakdown with percentages.",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
+          "timestp": {
+            "type": "string",
+            "description": "ISO timestamp at which this audience snapshot was captured."
           },
-          "audience_genders_per_age": {
-            "type": "array",
-            "description": "Gender split per age bracket.",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
+          "followers": {
+            "type": "integer",
+            "description": "Follower count on the underlying platform at snapshot time."
+          },
+          "avg_likes_per_post": {
+            "type": "integer"
+          },
+          "avg_commments_per_post": {
+            "type": "integer",
+            "description": "Note: field name is misspelled upstream as `avg_commments_per_post`."
+          },
+          "engagement_rate": {
+            "type": "number"
           },
           "top_countries": {
             "type": "array",
             "description": "Top countries by audience share.",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
+            "items": { "type": "object", "additionalProperties": true }
           },
           "top_cities": {
             "type": "array",
             "description": "Top cities by audience concentration.",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "likers_top_countries": {
+            "type": "array",
+            "description": "Top countries for the likers (engagement) cohort.",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "likers_top_cities": {
+            "type": "array",
+            "description": "Top cities for the likers cohort.",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "audience_genders": {
+            "type": "array",
+            "description": "Gender breakdown of the follower base.",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "audience_genders_per_age": {
+            "type": "array",
+            "description": "Follower gender split per age bracket.",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "audience_ethnicities": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "audience_interests": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
           },
           "audience_brand_affinities": {
             "type": "array",
-            "description": "Brand affinity scores for the audience.",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
+            "description": "Brand affinity scores for the follower cohort.",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "audience_likers_genders": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "audience_likers_genders_per_age": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "audience_likers_ethnicities": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "audience_likers_interests": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "audience_likers_brand_affinities": {
+            "type": "array",
+            "description": "Brand affinity scores for the likers cohort.",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "notable_followers": {
+            "type": "array",
+            "description": "Notable public/influential accounts in the follower base.",
+            "items": { "type": "object", "additionalProperties": true }
           }
         },
         "additionalProperties": true
@@ -3762,10 +3786,17 @@
             ],
             "example": "success"
           },
+          "length": {
+            "type": "integer",
+            "description": "Number of entries returned in `data` (typically 50)."
+          },
           "data": {
-            "type": "object",
-            "description": "Chart data — structure varies by platform.",
-            "additionalProperties": true
+            "type": "array",
+            "description": "Chart entries for the requested platform/type/country/interval combination. Entry shape varies by platform; common fields include track/artist names, ranks, and platform-specific metrics.",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           }
         }
       },
@@ -3808,6 +3839,7 @@
       },
       "ResearchCuratorResponse": {
         "type": "object",
+        "description": "Curator profile. Follower counts are split by platform (`instagram_followers`, `facebook_followers`, `twitter_followers`, `youtube_subscribers`, `soundcloud_followers`, `tiktok_followers`), each nullable when unknown. Aggregated signals live under `cm_statistics`.",
         "properties": {
           "status": {
             "type": "string",
@@ -3817,22 +3849,93 @@
             ],
             "example": "success"
           },
+          "id": {
+            "type": "integer",
+            "description": "Chartmetric curator ID."
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Platform-native curator/user ID (e.g. Spotify user ID)."
+          },
           "name": {
             "type": "string"
-          },
-          "id": {
-            "type": "integer"
           },
           "image_url": {
             "type": "string",
             "format": "uri",
             "nullable": true
           },
-          "num_playlists": {
+          "submithub_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "last_updated": {
+            "type": "string",
+            "description": "ISO timestamp of the last Chartmetric sync."
+          },
+          "suspicion_score": {
+            "type": "integer",
+            "description": "Chartmetric's internal suspicion score (lower is better)."
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "tag_ids": {
+            "type": "array",
+            "items": { "type": "integer" }
+          },
+          "tag_names": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "spotifySocialUrls": {
+            "type": "array",
+            "description": "Spotify-linked social URLs for the curator.",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "cm_statistics": {
+            "type": "object",
+            "description": "Aggregated Chartmetric statistics — playlist reach, editorial counts, velocity deltas, etc.",
+            "additionalProperties": true
+          },
+          "instagram_followers": {
             "type": "integer",
             "nullable": true
           },
-          "followers": {
+          "facebook_followers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "facebook_fans": {
+            "type": "integer",
+            "nullable": true
+          },
+          "twitter_followers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "twitter_retweets": {
+            "type": "integer",
+            "nullable": true
+          },
+          "youtube_subscribers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "youtube_views": {
+            "type": "integer",
+            "nullable": true
+          },
+          "soundcloud_followers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "tiktok_followers": {
+            "type": "integer",
+            "nullable": true
+          },
+          "tiktok_likes": {
             "type": "integer",
             "nullable": true
           }
@@ -4280,16 +4383,60 @@
       },
       "ResearchMetricsResponse": {
         "type": "object",
-        "description": "Time-series metrics for a specific platform. Shape varies by source — typically an array of data points with timestamps and values (followers, listeners, views, etc.).",
+        "description": "Time-series metrics for the artist on the selected platform. Shape varies by platform — fields at the root (not wrapped in a `data` envelope) each hold their own time-series array of `{timestp, value}` points.\n\nFor Spotify, expect `followers`, `listeners`, `popularity`, and `followers_to_listeners_ratio`. Other platforms expose their own set (e.g. `subscribers` and `views` for `youtube_channel`).",
         "properties": {
           "status": {
             "type": "string"
           },
-          "data": {
+          "link": {
+            "type": "string",
+            "description": "Canonical source URL on the upstream platform (e.g. the artist's Spotify URL)."
+          },
+          "followers": {
             "type": "array",
-            "description": "Array of time-series data points. Fields vary by platform.",
+            "description": "Time series of follower counts, when applicable to the source.",
             "items": {
               "type": "object",
+              "properties": {
+                "timestp": { "type": "string" },
+                "value": { "type": "number" }
+              },
+              "additionalProperties": true
+            }
+          },
+          "listeners": {
+            "type": "array",
+            "description": "Time series of listener counts (e.g. Spotify monthly listeners), when applicable.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "timestp": { "type": "string" },
+                "value": { "type": "number" }
+              },
+              "additionalProperties": true
+            }
+          },
+          "popularity": {
+            "type": "array",
+            "description": "Time series of the platform's popularity score, when applicable.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "timestp": { "type": "string" },
+                "value": { "type": "number" }
+              },
+              "additionalProperties": true
+            }
+          },
+          "followers_to_listeners_ratio": {
+            "type": "array",
+            "description": "Derived time series, when both followers and listeners are available (Spotify).",
+            "items": {
+              "type": "object",
+              "properties": {
+                "timestp": { "type": "string" },
+                "value": { "type": "number" }
+              },
               "additionalProperties": true
             }
           }
@@ -4460,28 +4607,114 @@
       },
       "ResearchPlaylistResponse": {
         "type": "object",
-        "description": "Playlist metadata — name, description, follower count, track count, and curator info.",
+        "description": "Playlist metadata — name, description, follower count, track count, curator info, and Chartmetric-derived signals (editorial flag, suspicion score, active-ratio, week/month delta, mood/activity/genre tags).",
         "properties": {
           "status": {
             "type": "string"
           },
+          "id": {
+            "type": "integer",
+            "description": "Chartmetric playlist ID (same as the `id` query param)."
+          },
           "name": {
             "type": "string"
           },
-          "id": {
-            "type": "integer"
-          },
           "description": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
+          },
+          "image_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "playlist_id": {
+            "type": "string",
+            "description": "Platform-native playlist ID (e.g. Spotify base62)."
+          },
+          "owner_name": {
+            "type": "string",
+            "description": "Curator display name (what used to be advertised as `curator_name`).",
+            "nullable": true
+          },
+          "owner_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "user_id": {
+            "type": "string",
+            "nullable": true
           },
           "followers": {
-            "type": "integer"
+            "type": "integer",
+            "nullable": true
           },
-          "num_tracks": {
-            "type": "integer"
+          "num_track": {
+            "type": "integer",
+            "description": "Track count on the playlist (note: field is `num_track`, not `num_tracks`)."
           },
-          "curator_name": {
-            "type": "string"
+          "editorial": {
+            "type": "boolean",
+            "description": "True if this is a first-party editorial playlist (e.g. Spotify's RapCaviar)."
+          },
+          "personalized": {
+            "type": "boolean"
+          },
+          "code2": {
+            "type": "string",
+            "nullable": true,
+            "description": "ISO-3166 alpha-2 country code associated with the playlist, when known."
+          },
+          "catalog": {
+            "type": "string",
+            "nullable": true
+          },
+          "active_ratio": {
+            "type": "integer",
+            "description": "Fraction of days recently that the playlist was updated (Chartmetric-internal)."
+          },
+          "suspicion_score": {
+            "type": "integer",
+            "description": "Chartmetric's internal playlist-suspicion score (lower is better)."
+          },
+          "fdiff_week": {
+            "type": "integer",
+            "description": "Follower change over the last week."
+          },
+          "fdiff_month": {
+            "type": "integer",
+            "description": "Follower change over the last month."
+          },
+          "last_updated": {
+            "type": "string",
+            "description": "ISO timestamp the playlist was last modified upstream."
+          },
+          "sys_last_updated": {
+            "type": "string",
+            "description": "ISO timestamp Chartmetric last synced the playlist."
+          },
+          "genres": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "moods": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "activities": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "mood_smart_ordered": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "activity_smart_ordered": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
           }
         },
         "additionalProperties": true
@@ -4507,47 +4740,140 @@
       },
       "ResearchProfileResponse": {
         "type": "object",
-        "description": "Full artist profile — bio, genres, social links, label, images, and basic stats.",
+        "description": "Full artist profile — identity, biography, genres, geography, label/management, and Chartmetric-derived ranks/statistics. For longitudinal platform metrics (Spotify followers/listeners over time, social stats, etc.) call `GET /api/research/metrics` instead.",
         "properties": {
           "status": {
             "type": "string"
           },
+          "id": {
+            "type": "integer",
+            "description": "Chartmetric artist ID."
+          },
           "name": {
             "type": "string"
           },
-          "id": {
-            "type": "integer",
-            "description": "Chartmetric artist ID"
+          "description": {
+            "type": "string",
+            "nullable": true
           },
           "image_url": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
+          },
+          "cover_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "code2": {
+            "type": "string",
+            "nullable": true,
+            "description": "ISO country code associated with the artist."
+          },
+          "isni": {
+            "type": "string",
+            "nullable": true
+          },
+          "band": {
+            "type": "boolean",
+            "description": "True if the artist is a band/group rather than a solo act."
+          },
+          "band_members": {
+            "nullable": true,
+            "description": "Band-member objects when known."
+          },
+          "gender": {
+            "type": "string",
+            "nullable": true
+          },
+          "gender_title": {
+            "type": "string",
+            "nullable": true
+          },
+          "pronoun_title": {
+            "type": "string",
+            "nullable": true
+          },
+          "hometown_city": {
+            "nullable": true,
+            "description": "Chartmetric hometown-city object (null when unknown)."
+          },
+          "current_city": {
+            "type": "string",
+            "nullable": true
+          },
+          "current_city_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "cm_artist_rank": {
+            "type": "integer",
+            "description": "Overall Chartmetric artist rank (lower is better)."
+          },
+          "cm_artist_score": {
+            "type": "number",
+            "description": "Chartmetric artist-score aggregate (higher is better)."
+          },
+          "cm_statistics": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Aggregated cross-platform snapshot — Spotify followers/monthly_listeners, Instagram/TikTok/YouTube counts, chart positions, etc. Fields may be null per-platform."
+          },
+          "career_status": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Current career stage + momentum (e.g. `superstar`/`mainstream`/`developing` + `growth`/`steady`/`decline`)."
           },
           "genres": {
+            "description": "Primary/secondary/sub-genre breakdown. Object with keyed subgroups, not a flat array.",
+            "type": "object",
+            "additionalProperties": true
+          },
+          "genre_smart_ordered": {
             "type": "array",
-            "items": {
-              "type": "string"
-            }
+            "items": { "type": "object", "additionalProperties": true }
           },
-          "tags": {
+          "genreRank": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "subGenreRank1": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "subGenreRank2": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "moods": {
             "type": "array",
-            "items": {
-              "type": "string"
-            }
+            "items": { "type": "object", "additionalProperties": true }
           },
-          "description": {
-            "type": "string"
-          },
-          "hometown": {
-            "type": "string"
+          "activities": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
           },
           "record_label": {
+            "type": "string",
+            "nullable": true
+          },
+          "booking_agent": {
+            "type": "string",
+            "nullable": true
+          },
+          "press_contact": {
+            "type": "string",
+            "nullable": true
+          },
+          "general_manager": {
+            "type": "string",
+            "nullable": true
+          },
+          "topSongwriterCollaborators": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "created_at": {
             "type": "string"
-          },
-          "sp_followers": {
-            "type": "integer"
-          },
-          "sp_monthly_listeners": {
-            "type": "integer"
           }
         },
         "additionalProperties": true
@@ -4613,17 +4939,49 @@
       },
       "ResearchSearchResult": {
         "type": "object",
+        "description": "Shape varies by `type` and search engine. Common fields are listed here; `additionalProperties: true` lets engine-specific fields pass through.\n\n**Default engine (`beta=false`):** entries include `name`, `id`, `image_url`, plus type-specific fields like `artist_names[]` (tracks), `isrc` (tracks), `sp_followers`/`sp_monthly_listeners`/`cm_artist_score` (artists), `owner_name` (playlists), etc.\n\n**Beta engine (`beta=true`):** entries include `name`, `id`, `imageUrl`, `target` (the entity type — e.g. `track`, `artist`, `playlist`), `platform` (e.g. `cm`, `spotify`), and `match_strength` (numeric relevance score, higher is better).",
         "properties": {
           "name": {
             "type": "string"
           },
           "id": {
-            "type": "integer",
-            "description": "Internal ID for use with other research endpoints."
+            "description": "Chartmetric internal ID for use with the detail-lookup endpoints (`/api/research/track`, `/api/research/playlist`, `/api/research/albums`, etc.). Usually an integer; some playlist sources return a string.",
+            "oneOf": [
+              { "type": "integer" },
+              { "type": "string" }
+            ]
+          },
+          "image_url": {
+            "type": "string",
+            "nullable": true,
+            "description": "Default-engine image URL. (Beta engine returns `imageUrl` instead.)"
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "Beta-engine image URL. (Default engine returns `image_url` instead.)"
+          },
+          "match_strength": {
+            "type": "number",
+            "description": "Beta-only relevance score — sort entries by this descending. Not present in default-engine results."
+          },
+          "target": {
+            "type": "string",
+            "description": "Beta-only entity type (`track`, `artist`, `playlist`, etc.). Not present in default-engine results."
+          },
+          "platform": {
+            "type": "string",
+            "description": "Beta-only source platform (e.g. `cm`, `spotify`). Not present in default-engine results."
           },
           "spotify_id": {
             "type": "string",
             "nullable": true
+          },
+          "artist_names": {
+            "type": "array",
+            "nullable": true,
+            "items": { "type": "string" },
+            "description": "Default-engine tracks only."
           }
         },
         "additionalProperties": true
@@ -4703,29 +5061,143 @@
       },
       "ResearchTrackResponse": {
         "type": "object",
-        "description": "Track metadata — title, artist, album, release date, popularity, and platform IDs.",
+        "description": "Track metadata — title, artists, albums, release date, genres, popularity, and platform IDs. Only the most commonly-used fields are enumerated here; the upstream Chartmetric response includes additional fields (e.g. `cm_statistics`, `activities`, `moods`) that pass through under `additionalProperties`.",
         "properties": {
           "status": {
-            "type": "string"
-          },
-          "name": {
             "type": "string"
           },
           "id": {
             "type": "integer",
             "description": "Chartmetric track ID"
           },
-          "isrc": {
-            "type": "string"
+          "name": {
+            "type": "string",
+            "description": "Track title"
           },
-          "album_name": {
-            "type": "string"
+          "isrc": {
+            "type": "string",
+            "nullable": true
+          },
+          "image_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "duration_ms": {
+            "type": "integer",
+            "nullable": true
           },
           "release_date": {
-            "type": "string"
+            "type": "string",
+            "description": "ISO date string",
+            "nullable": true
           },
-          "artist_names": {
-            "type": "string"
+          "album_label": {
+            "type": "string",
+            "nullable": true
+          },
+          "score": {
+            "type": "integer",
+            "description": "Chartmetric track score",
+            "nullable": true
+          },
+          "explicit": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "artists": {
+            "type": "array",
+            "description": "Credited artists. Each entry is a Chartmetric artist object; at minimum `id` and `name` are populated.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "description": "Chartmetric artist ID"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "image_url": {
+                  "type": "string",
+                  "nullable": true
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "albums": {
+            "type": "array",
+            "description": "Albums the track appears on.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "description": "Chartmetric album ID"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "upc": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "release_date": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "label": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "image_url": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "popularity": {
+                  "type": "integer",
+                  "nullable": true
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "cm_statistics": {
+            "type": "object",
+            "description": "Chartmetric's aggregated cross-platform statistics for the track — Spotify popularity/streams, TikTok video counts, YouTube views, Shazam counts, Apple/Deezer/Amazon playlist reach, weekly deltas, etc. Fields are often null for less-popular tracks. Opaque object; inspect an actual response for the full field set.",
+            "additionalProperties": true
+          },
+          "tempo": {
+            "type": "number",
+            "nullable": true,
+            "description": "Track tempo in BPM, when available."
+          },
+          "moods": {
+            "type": "array",
+            "nullable": true,
+            "description": "Chartmetric-inferred mood tags (e.g. `Happy`, `Melancholic`).",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "activities": {
+            "type": "array",
+            "nullable": true,
+            "description": "Chartmetric-inferred activity tags (e.g. `Workout`, `Studying`).",
+            "items": { "type": "object", "additionalProperties": true }
           }
         },
         "additionalProperties": true
