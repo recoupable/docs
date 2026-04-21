@@ -811,12 +811,12 @@
     },
     "/api/socials/{id}/scrape": {
       "post": {
-        "description": "Trigger a social profile scraping job for a given social profile. Use the Get Artist Socials endpoint first to retrieve the social profile id values. The response returns Apify run metadata for polling status and retrieving results via the Apify Scraper Results API.",
+        "description": "Trigger a social profile scraping job for a given social profile. Use the [Get Artist Socials](/api-reference/artists/socials) endpoint first to retrieve the social profile id values. The response returns Apify run metadata for polling status and retrieving results via the [Apify Scraper Results API](https://docs.apify.com/api/v2).",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "The unique identifier (UUID) of the social profile to scrape. Obtain this from the Get Artist Socials API.",
+            "description": "The unique identifier (UUID) of the social profile to scrape. Obtain this from the [Get Artist Socials](/api-reference/artists/socials) API.",
             "required": true,
             "schema": {
               "type": "string",
