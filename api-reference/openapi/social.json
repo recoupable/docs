@@ -809,25 +809,21 @@
         }
       }
     },
-    "/api/social/scrape": {
+    "/api/socials/{id}/scrape": {
       "post": {
-        "servers": [
+        "description": "Trigger a social profile scraping job for a given social profile. Use the [Get Artist Socials](/api-reference/artists/socials) endpoint first to retrieve the social profile id values. The response returns Apify run metadata for polling status and retrieving results via the [Apify Scraper Results API](/api-reference/apify/scraper).",
+        "parameters": [
           {
-            "url": "https://api.recoupable.com"
-          }
-        ],
-        "description": "Trigger a social profile scraping job for a given social_id. Use the Get Artist Socials endpoint first to retrieve the social_id values. The response returns Apify run metadata for polling status and retrieving results via the Apify Scraper Results API.",
-        "requestBody": {
-          "description": "Social profile to scrape",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SocialScrapeRequest"
-              }
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the social profile to scrape. Obtain this from the [Get Artist Socials](/api-reference/artists/socials) API.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
             }
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "Scrape job triggered successfully",
@@ -1791,19 +1787,6 @@
           },
           "pagination": {
             "$ref": "#/components/schemas/SocialPostsPagination"
-          }
-        }
-      },
-      "SocialScrapeRequest": {
-        "type": "object",
-        "required": [
-          "social_id"
-        ],
-        "properties": {
-          "social_id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "UUID of the social profile to scrape. Obtain this from the Get Artist Socials API."
           }
         }
       },
