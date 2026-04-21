@@ -842,7 +842,7 @@
     },
     "/api/songs": {
       "get": {
-        "description": "Retrieve songs from the database with optional filtering by ISRC (International Standard Recording Code) or artist account. This endpoint joins the songs table with song_artists and accounts tables to provide comprehensive song information. Results are ordered by `updated_at` descending.",
+        "description": "Retrieve songs from the database with optional filtering by ISRC (International Standard Recording Code) or artist account. This endpoint joins the songs table with song_artists and accounts tables to provide comprehensive song information.",
         "parameters": [
           {
             "name": "isrc",
