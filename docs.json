@@ -49,6 +49,12 @@
             ]
           },
           {
+            "group": "Fans",
+            "pages": [
+              "api-reference/fans/get"
+            ]
+          },
+          {
             "group": "Tasks",
             "pages": [
               "api-reference/tasks/get",
@@ -163,12 +169,6 @@
               "api-reference/songs/catalog-songs",
               "api-reference/songs/catalog-songs-add",
               "api-reference/songs/catalog-songs-delete"
-            ]
-          },
-          {
-            "group": "Fans",
-            "pages": [
-              "api-reference/fans/get"
             ]
           }
         ]

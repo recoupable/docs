@@ -760,18 +760,13 @@
         }
       }
     },
-    "/api/fans": {
+    "/api/artists/{id}/fans": {
       "get": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
         "description": "Retrieve all social profiles from fans of an artist across all platforms. This endpoint aggregates fan data from all connected social media platforms. Supports pagination for large fan lists.",
         "parameters": [
           {
-            "name": "artist_account_id",
-            "in": "query",
+            "name": "id",
+            "in": "path",
             "description": "The unique identifier of the artist account to fetch fans for",
             "required": true,
             "schema": {
@@ -814,6 +809,26 @@
           },
           "400": {
             "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistFansErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistFansErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -1514,11 +1529,11 @@
             "type": "string",
             "description": "Fan's biography or profile description"
           },
-          "followerCount": {
+          "follower_count": {
             "type": "integer",
             "description": "Number of followers the fan has"
           },
-          "followingCount": {
+          "following_count": {
             "type": "integer",
             "description": "Number of accounts the fan is following"
           },
