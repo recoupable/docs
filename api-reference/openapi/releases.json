@@ -851,18 +851,13 @@
         }
       }
     },
-    "/api/catalogs": {
+    "/api/accounts/{id}/catalogs": {
       "get": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
         "description": "Retrieve catalogs associated with a specific account. The endpoint joins account_catalogs with catalogs to return catalog metadata for the specified account.",
         "parameters": [
           {
-            "name": "account_id",
-            "in": "query",
+            "name": "id",
+            "in": "path",
             "description": "The unique identifier of the account to query",
             "required": true,
             "schema": {
@@ -883,7 +878,27 @@
             }
           },
           "400": {
-            "description": "Bad request - missing or invalid account_id",
+            "description": "Bad request - missing or invalid account id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller lacks access to the target account",
             "content": {
               "application/json": {
                 "schema": {
@@ -893,7 +908,17 @@
             }
           },
           "404": {
-            "description": "Account not found or no catalogs found",
+            "description": "Account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -903,7 +928,9 @@
             }
           }
         }
-      },
+      }
+    },
+    "/api/catalogs": {
       "post": {
         "servers": [
           {
