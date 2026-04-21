@@ -415,6 +415,78 @@
         }
       }
     },
+    "/api/subscription/status": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Check whether an account has an active pro subscription. Checks both direct account subscriptions and organization-level subscriptions in parallel. Returns a single boolean `isPro` flag.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "description": "Filter to a specific account. Only applicable when the authenticated account has access to multiple accounts via organization membership; if not provided, the API key's own account is used.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subscription status retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionStatusResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — missing or invalid `accountId`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account override not permitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/workspaces": {
       "post": {
         "description": "Create a new workspace account. Workspaces can optionally be linked to an organization.",
@@ -2932,6 +3004,19 @@
             "type": "string",
             "description": "Human-readable status message.",
             "example": "Verified"
+          }
+        }
+      },
+      "SubscriptionStatusResponse": {
+        "type": "object",
+        "required": [
+          "isPro"
+        ],
+        "properties": {
+          "isPro": {
+            "type": "boolean",
+            "description": "`true` if the account has an active pro subscription (via a direct account subscription or an organization-level subscription); `false` otherwise.",
+            "example": true
           }
         }
       }
