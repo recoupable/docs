@@ -455,7 +455,7 @@
             }
           },
           "400": {
-            "description": "Bad request — missing or invalid `accountId`",
+            "description": "Bad request — invalid `accountId`",
             "content": {
               "application/json": {
                 "schema": {
@@ -3042,9 +3042,8 @@
             "example": 750
           },
           "timestamp": {
-            "type": "string",
+            "type": ["string", "null"],
             "format": "date-time",
-            "nullable": true,
             "description": "ISO 8601 timestamp of the last credit reset.",
             "example": "2026-04-01T00:00:00.000Z"
           }
