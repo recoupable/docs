@@ -842,12 +842,7 @@
     },
     "/api/songs": {
       "get": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
-        "description": "Retrieve songs from the database with optional filtering by ISRC (International Standard Recording Code) or artist account. This endpoint joins the songs table with song_artists and accounts tables to provide comprehensive song information.",
+        "description": "Retrieve songs from the database with optional filtering by ISRC (International Standard Recording Code) or artist account. This endpoint joins the songs table with song_artists and accounts tables to provide comprehensive song information. Results are ordered by `updated_at` descending.",
         "parameters": [
           {
             "name": "isrc",
@@ -890,8 +885,18 @@
               }
             }
           },
-          "404": {
-            "description": "No songs found",
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongsErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
