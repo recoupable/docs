@@ -332,6 +332,12 @@
             ]
           },
           {
+            "group": "Stripe",
+            "pages": [
+              "api-reference/stripe/session-status"
+            ]
+          },
+          {
             "group": "Admins",
             "pages": [
               "api-reference/admins/check",
