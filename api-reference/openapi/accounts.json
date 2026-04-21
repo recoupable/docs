@@ -445,7 +445,7 @@
           {
             "name": "accountId",
             "in": "query",
-            "description": "UUID of the account to query sessions for. Admin-only override — if not provided, the API key's own account is used.",
+            "description": "Filter to a specific account. Only applicable when the authenticated account has access to multiple accounts via organization membership; if not provided, the API key's own account is used.",
             "required": false,
             "schema": {
               "type": "string",
@@ -469,7 +469,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GetStripeSessionErrorResponse"
+                  "$ref": "#/components/schemas/AccountErrorResponse"
                 }
               }
             }
@@ -479,7 +479,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GetStripeSessionErrorResponse"
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account override not permitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
                 }
               }
             }
@@ -489,7 +499,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GetStripeSessionErrorResponse"
+                  "$ref": "#/components/schemas/AccountErrorResponse"
                 }
               }
             }
@@ -3065,19 +3075,6 @@
             "example": {
               "accountId": "123e4567-e89b-12d3-a456-426614174000"
             }
-          }
-        }
-      },
-      "GetStripeSessionErrorResponse": {
-        "type": "object",
-        "required": [
-          "error"
-        ],
-        "properties": {
-          "error": {
-            "type": "string",
-            "description": "Human-readable error message.",
-            "example": "referenceId is required"
           }
         }
       }

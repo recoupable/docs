@@ -334,7 +334,7 @@
           {
             "group": "Stripe",
             "pages": [
-              "api-reference/stripe/sessions-list"
+              "api-reference/stripe/session-get"
             ]
           },
           {
