@@ -415,6 +415,67 @@
         }
       }
     },
+    "/api/subscriptions/sessions": {
+      "post": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Create a checkout session to start a subscription for the authenticated account. Returns a hosted checkout URL that the client should redirect to. The session is pre-configured with a 30-day trial period.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Session creation parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSubscriptionSessionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Checkout session created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateSubscriptionSessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/workspaces": {
       "post": {
         "description": "Create a new workspace account. Workspaces can optionally be linked to an organization.",
@@ -2932,6 +2993,59 @@
             "type": "string",
             "description": "Human-readable status message.",
             "example": "Verified"
+          }
+        }
+      },
+      "CreateSubscriptionSessionRequest": {
+        "type": "object",
+        "required": [
+          "successUrl"
+        ],
+        "properties": {
+          "successUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "The URL to redirect to after a successful payment.",
+            "example": "https://chat.recoupable.com?subscription=success"
+          },
+          "accountId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account to create the session for. Only applicable when the authenticated account has admin access to multiple accounts. If not provided, creates a session for the API key's own account.",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          }
+        }
+      },
+      "CreateSubscriptionSessionResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "url"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The checkout session ID.",
+            "example": "cs_test_a1b2c3d4e5f6g7h8i9j0"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "The hosted checkout URL. Redirect to this URL to complete the payment.",
+            "example": "https://checkout.stripe.com/pay/cs_test_a1b2c3d4e5f6g7h8i9j0"
+          }
+        }
+      },
+      "SubscriptionSessionErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message.",
+            "example": "successUrl is required"
           }
         }
       }
