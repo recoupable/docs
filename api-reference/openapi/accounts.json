@@ -415,6 +415,88 @@
         }
       }
     },
+    "/api/credits": {
+      "get": {
+        "servers": [
+          {
+            "url": "https://api.recoupable.com"
+          }
+        ],
+        "description": "Retrieve the current credit balance for an account. Automatically resets the balance to the monthly allowance if more than one month has elapsed since the last reset, or if a new subscription was activated after the last reset. Free accounts receive 333 credits per month; pro accounts receive 1,000.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "description": "Filter to a specific account. Only applicable when the authenticated account has access to multiple accounts via organization membership; if not provided, the API key's own account is used.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Credit balance retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreditsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — invalid `accountId`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account override not permitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No credits record found for the account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/workspaces": {
       "post": {
         "description": "Create a new workspace account. Workspaces can optionally be linked to an organization.",
@@ -2932,6 +3014,38 @@
             "type": "string",
             "description": "Human-readable status message.",
             "example": "Verified"
+          }
+        }
+      },
+      "CreditsResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "account_id",
+          "remaining_credits"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Internal identifier for the credits record.",
+            "example": 42
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The account this credits record belongs to.",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "remaining_credits": {
+            "type": "integer",
+            "description": "Number of credits remaining in the current monthly period. Free accounts are allocated 333 credits per month; pro accounts are allocated 1,000.",
+            "example": 750
+          },
+          "timestamp": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of the last credit reset.",
+            "example": "2026-04-01T00:00:00.000Z"
           }
         }
       }

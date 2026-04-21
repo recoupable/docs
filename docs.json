@@ -332,6 +332,12 @@
             ]
           },
           {
+            "group": "Credits",
+            "pages": [
+              "api-reference/credits/get"
+            ]
+          },
+          {
             "group": "Admins",
             "pages": [
               "api-reference/admins/check",
