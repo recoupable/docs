@@ -328,13 +328,8 @@
           {
             "group": "Subscriptions",
             "pages": [
-              "api-reference/subscriptions/get"
-            ]
-          },
-          {
-            "group": "Stripe",
-            "pages": [
-              "api-reference/stripe/session-create"
+              "api-reference/subscriptions/get",
+              "api-reference/subscriptions/sessions-create"
             ]
           },
           {
