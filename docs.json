@@ -197,7 +197,6 @@
             "group": "Posts & Comments",
             "pages": [
               "api-reference/posts/get",
-              "api-reference/post/comments",
               "api-reference/comments/get"
             ]
           },
@@ -240,7 +239,6 @@
           {
             "group": "Social",
             "pages": [
-              "api-reference/social/posts",
               "api-reference/social/scrape"
             ]
           },
@@ -259,13 +257,6 @@
             "pages": [
               "api-reference/instagram/comments",
               "api-reference/instagram/profiles"
-            ]
-          },
-          {
-            "group": "X (Twitter)",
-            "pages": [
-              "api-reference/x/search",
-              "api-reference/x/trends"
             ]
           },
           {
