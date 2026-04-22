@@ -240,7 +240,6 @@
           {
             "group": "Social",
             "pages": [
-              "api-reference/social/posts",
               "api-reference/social/scrape"
             ]
           },
