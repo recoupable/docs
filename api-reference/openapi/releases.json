@@ -593,6 +593,77 @@
       }
     },
     "/api/artists/{id}": {
+      "patch": {
+        "description": "Update an artist's settings. This updates profile fields, artist account info, and any provided socials, then returns the merged artist payload.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Artist account ID to update.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Artist fields to update",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateArtistRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Artist updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateArtistResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid artist id or invalid update payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateArtistErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication"
+          },
+          "403": {
+            "description": "Forbidden - the authenticated account cannot update this artist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateArtistErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Artist not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateArtistErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
       "delete": {
         "description": "Delete an artist accessible to the authenticated account. This removes the caller's direct artist link and, if no owner links remain, deletes the artist account itself.",
         "parameters": [
@@ -3289,6 +3360,165 @@
             "minLength": 1,
             "description": "AI model identifier to use when the task runs. If sent, must be a non-empty string.",
             "example": "claude-sonnet-4-20250514"
+          }
+        }
+      },
+      "UpdateArtistErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "missing_fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of missing or invalid field names"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "ArtistKnowledge": {
+        "type": "object",
+        "required": [
+          "name",
+          "url",
+          "type"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Display name of the knowledge file"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Resolvable URL for the knowledge file"
+          },
+          "type": {
+            "type": "string",
+            "description": "MIME type of the knowledge file"
+          }
+        }
+      },
+      "UpdateArtistProfileUrls": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string",
+          "format": "uri"
+        },
+        "description": "Social profile URLs keyed by platform slug, for example INSTAGRAM or SPOTIFY."
+      },
+      "UpdateArtistRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Artist display name"
+          },
+          "image": {
+            "type": "string",
+            "format": "uri",
+            "description": "Artist profile image URL"
+          },
+          "instruction": {
+            "type": "string",
+            "description": "Manual instruction text for the artist"
+          },
+          "label": {
+            "type": "string",
+            "description": "Record label name"
+          },
+          "knowledges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArtistKnowledge"
+            },
+            "description": "Knowledge files attached to the artist"
+          },
+          "profileUrls": {
+            "$ref": "#/components/schemas/UpdateArtistProfileUrls"
+          },
+          "pinned": {
+            "type": "boolean",
+            "description": "Pin or unpin this artist for the authenticated account"
+          }
+        }
+      },
+      "UpdatedArtist": {
+        "type": "object",
+        "required": [
+          "account_id",
+          "name",
+          "account_socials",
+          "pinned"
+        ],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist account"
+          },
+          "name": {
+            "type": "string",
+            "description": "Artist name"
+          },
+          "image": {
+            "type": "string",
+            "nullable": true,
+            "description": "Artist profile image URL"
+          },
+          "instruction": {
+            "type": "string",
+            "nullable": true,
+            "description": "Artist instruction text"
+          },
+          "knowledges": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/ArtistKnowledge"
+            },
+            "description": "Knowledge files stored on the artist profile"
+          },
+          "label": {
+            "type": "string",
+            "nullable": true,
+            "description": "Record label name"
+          },
+          "account_socials": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArtistSocial"
+            },
+            "description": "Linked artist socials"
+          },
+          "pinned": {
+            "type": "boolean",
+            "description": "Whether the artist is pinned for the authenticated account"
+          }
+        }
+      },
+      "UpdateArtistResponse": {
+        "type": "object",
+        "required": [
+          "artist"
+        ],
+        "properties": {
+          "artist": {
+            "$ref": "#/components/schemas/UpdatedArtist"
           }
         }
       }
