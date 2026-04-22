@@ -848,18 +848,13 @@
         }
       }
     },
-    "/api/social/posts": {
+    "/api/socials/{id}/posts": {
       "get": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
         "description": "Retrieve all social media posts from a specific social profile. Call the Artist Socials endpoint first to obtain social IDs.",
         "parameters": [
           {
-            "name": "social_id",
-            "in": "query",
+            "name": "id",
+            "in": "path",
             "description": "The unique identifier (UUID) of the social profile to fetch posts for",
             "required": true,
             "schema": {
@@ -912,6 +907,46 @@
           },
           "400": {
             "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SocialErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SocialErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller does not have access to this social profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SocialErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Social profile not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SocialErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
