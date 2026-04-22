@@ -17,6 +17,14 @@
     "/api/artists/{id}/posts": {
       "get": {
         "description": "Retrieve all social media posts from an artist across all platforms. This endpoint aggregates posts from all connected social media profiles for the specified artist. Supports pagination for large post collections.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
@@ -62,7 +70,7 @@
             }
           },
           "400": {
-            "description": "Bad request - missing required parameters",
+            "description": "Bad request - invalid or missing `id` path parameter format",
             "content": {
               "application/json": {
                 "schema": {
