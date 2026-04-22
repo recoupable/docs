@@ -1758,7 +1758,7 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the post"
+            "description": "Unique identifier for the post"
           },
           "post_url": {
             "type": "string",
@@ -1768,15 +1768,6 @@
             "type": "string",
             "format": "date-time",
             "description": "ISO timestamp of when the post data was last updated"
-          },
-          "platform": {
-            "type": "string",
-            "description": "Platform the post was published on (INSTAGRAM, TIKTOK, TWITTER, SPOTIFY, or UNKNOWN), derived from the owning social's profile URL"
-          },
-          "social_id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "UUID of the owning social profile (matches the `id` path parameter)"
           }
         }
       },
