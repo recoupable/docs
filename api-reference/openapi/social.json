@@ -14,18 +14,21 @@
     }
   ],
   "paths": {
-    "/api/posts": {
+    "/api/artists/{id}/posts": {
       "get": {
-        "servers": [
+        "description": "Retrieve all social media posts from an artist across all platforms. This endpoint aggregates posts from all connected social media profiles for the specified artist. Supports pagination for large post collections.",
+        "security": [
           {
-            "url": "https://api.recoupable.com"
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
           }
         ],
-        "description": "Retrieve all social media posts from an artist across all platforms. This endpoint aggregates posts from all connected social media profiles for the specified artist. Supports pagination for large post collections.",
         "parameters": [
           {
-            "name": "artist_account_id",
-            "in": "query",
+            "name": "id",
+            "in": "path",
             "description": "The unique identifier of the artist account to fetch posts for",
             "required": true,
             "schema": {
@@ -67,7 +70,47 @@
             }
           },
           "400": {
-            "description": "Bad request - missing required parameters",
+            "description": "Bad request - invalid or missing `id` path parameter format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistPostsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistPostsErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller does not have access to this artist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistPostsErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Artist not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistPostsErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
