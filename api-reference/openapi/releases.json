@@ -944,18 +944,13 @@
         }
       }
     },
-    "/api/catalogs": {
+    "/api/accounts/{id}/catalogs": {
       "get": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
         "description": "Retrieve catalogs associated with a specific account. The endpoint joins account_catalogs with catalogs to return catalog metadata for the specified account.",
         "parameters": [
           {
-            "name": "account_id",
-            "in": "query",
+            "name": "id",
+            "in": "path",
             "description": "The unique identifier of the account to query",
             "required": true,
             "schema": {
@@ -976,7 +971,27 @@
             }
           },
           "400": {
-            "description": "Bad request - missing or invalid account_id",
+            "description": "Bad request - missing or invalid account id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller lacks access to the target account",
             "content": {
               "application/json": {
                 "schema": {
@@ -986,7 +1001,7 @@
             }
           },
           "404": {
-            "description": "Account not found or no catalogs found",
+            "description": "Account not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -994,81 +1009,9 @@
                 }
               }
             }
-          }
-        }
-      },
-      "post": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
-        "description": "Create new catalogs or link existing catalogs to an account. If catalog_id is provided, links the existing catalog. If name is provided without catalog_id, creates a new catalog. If both are provided, catalog_id takes priority.",
-        "requestBody": {
-          "description": "Array of catalogs to create or link",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCatalogsRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Catalogs created or linked successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CatalogsResponse"
-                }
-              }
-            }
           },
-          "400": {
-            "description": "Bad request - invalid parameters or catalog_id not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CatalogsErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
-        "description": "Unlink catalogs from an account. If no other accounts are linked to a catalog after removal, the catalog is automatically deleted (cascading to catalog_songs). Otherwise, only the account-catalog relationship is removed.",
-        "requestBody": {
-          "description": "Array of catalog-account pairs to remove",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DeleteCatalogsRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Catalogs unlinked successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CatalogsResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - missing catalog_id or account_id",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
