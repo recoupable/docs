@@ -625,18 +625,13 @@
         }
       }
     },
-    "/api/apify/scraper": {
+    "/api/apify/runs/{runId}": {
       "get": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
         "description": "Check the status and retrieve results from Apify scraper runs. This endpoint uses the Apify API Client to fetch the current status of a scraper run and its results if available. Use the runId returned from endpoints like Instagram Comments, Instagram Profiles, Social Scrape, or Artist Socials Scrape to poll for results.",
         "parameters": [
           {
             "name": "runId",
-            "in": "query",
+            "in": "path",
             "description": "The ID of the Apify run to check status for. This is returned when starting a scrape via Instagram Comments, Instagram Profiles, Social Scrape, or Artist Socials Scrape endpoints.",
             "required": true,
             "schema": {
@@ -933,7 +928,7 @@
         "type": "object",
         "required": [
           "status",
-          "datasetId",
+          "dataset_id",
           "data"
         ],
         "description": "Response when the Apify run has completed successfully",
@@ -943,7 +938,7 @@
             "description": "Final status of the Apify run (typically 'SUCCEEDED')",
             "example": "SUCCEEDED"
           },
-          "datasetId": {
+          "dataset_id": {
             "type": "string",
             "description": "ID of the dataset containing the results",
             "example": "def456uvw"
@@ -995,7 +990,7 @@
         "type": "object",
         "required": [
           "status",
-          "datasetId"
+          "dataset_id"
         ],
         "description": "Response when the Apify run is still in progress",
         "properties": {
@@ -1004,10 +999,11 @@
             "description": "Current status of the Apify run (e.g., 'RUNNING', 'READY')",
             "example": "RUNNING"
           },
-          "datasetId": {
+          "dataset_id": {
             "type": "string",
             "description": "ID of the dataset that will contain the results when the run completes",
-            "example": "def456uvw"
+            "example": "def456uvw",
+            "nullable": true
           }
         }
       },
