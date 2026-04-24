@@ -1580,6 +1580,44 @@
         }
       }
     },
+    "/api/admins/artists/pro": {
+      "get": {
+        "description": "Retrieve the deduplicated list of artist IDs owned by pro accounts. An account is \"pro\" when its email belongs to an enterprise domain or it has an active Stripe subscription. Admin-scoped: requires an admin-flagged API key because the response identifies paying customer accounts.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pro artist IDs retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistsProResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication"
+          },
+          "403": {
+            "description": "Forbidden - caller is authenticated but not admin-scoped"
+          },
+          "500": {
+            "description": "Internal server error while fetching pro artists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistsProResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/agents/signup": {
       "post": {
         "description": "Register an agent. For new agent+ emails, returns an API key immediately. For all other cases, sends a verification code to the email — call [POST /api/agents/verify](/api-reference/agents/verify) with the code to get your API key.\n\n**Tip:** If you're unsure what email to register, generate a unique `agent+{suffix}@recoupable.com` address (e.g. `agent+1744410896-28439@recoupable.com`, combining a Unix timestamp with a random integer). This guarantees a fresh `agent+` address on every call — including multiple signups within the same second — and returns an API key instantly with no email verification required.",
@@ -1673,6 +1711,35 @@
       }
     },
     "schemas": {
+      "ArtistsProResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "artists"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "List of artist IDs owned by pro accounts"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message (only present if status is 'error')"
+          }
+        }
+      },
       "Account": {
         "type": "object",
         "properties": {
