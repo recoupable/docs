@@ -579,11 +579,6 @@
     },
     "/api/instagram/profiles": {
       "get": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
         "description": "Fetch Instagram profile information for multiple handles using Apify's Instagram Profile Scraper. The actual profile data will be available in the Apify dataset after the run completes.",
         "parameters": [
           {
