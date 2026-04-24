@@ -470,39 +470,6 @@
         }
       }
     },
-    "/api/artists/pro": {
-      "get": {
-        "description": "Retrieve the deduplicated list of artist IDs owned by pro accounts. An account is \"pro\" when its email belongs to an enterprise domain or it has an active Stripe subscription. Admin-scoped: requires an admin-flagged API key or Bearer token because the response identifies paying customer accounts.",
-        "responses": {
-          "200": {
-            "description": "Pro artist IDs retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ArtistsProResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - missing or invalid authentication"
-          },
-          "403": {
-            "description": "Forbidden - caller is authenticated but not admin-scoped"
-          },
-          "500": {
-            "description": "Internal server error while fetching pro artists",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ArtistsProResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/artists/{id}/pin": {
       "post": {
         "description": "Pin an artist. This updates the caller's pinned preference for the artist.",
@@ -1876,35 +1843,6 @@
           "message": {
             "type": "string",
             "description": "Error message (only present if status is error)"
-          }
-        }
-      },
-      "ArtistsProResponse": {
-        "type": "object",
-        "required": [
-          "status",
-          "artists"
-        ],
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "success",
-              "error"
-            ],
-            "description": "Status of the request"
-          },
-          "artists": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "description": "List of artist IDs owned by pro accounts"
-          },
-          "error": {
-            "type": "string",
-            "description": "Error message (only present if status is 'error')"
           }
         }
       },
