@@ -512,11 +512,6 @@
     },
     "/api/instagram/comments": {
       "get": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
         "description": "Fetch Instagram comments for multiple post URLs using Apify's Instagram Comment Scraper. The actual comment data will be available in the Apify dataset after the run completes.",
         "parameters": [
           {
