@@ -1643,16 +1643,7 @@
     },
     "/api/artists/pro": {
       "get": {
-        "description": "Retrieve the deduplicated list of artist IDs owned by pro accounts. An account is \"pro\" when its email belongs to an enterprise domain or it has an active Stripe subscription. Admin-scoped: requires an admin-flagged API key or Bearer token because the response identifies paying customer accounts.",
-        "parameters": [],
-        "security": [
-          {
-            "apiKeyAuth": []
-          },
-          {
-            "bearerAuth": []
-          }
-        ],
+        "description": "Retrieve the deduplicated list of artist IDs owned by pro accounts. An account is \"pro\" when its email belongs to an enterprise domain or it has an active Stripe subscription. Admin-scoped: requires an admin-flagged API key because the response identifies paying customer accounts.",
         "responses": {
           "200": {
             "description": "Pro artist IDs retrieved successfully",
