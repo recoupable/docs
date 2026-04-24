@@ -170,17 +170,9 @@
             ]
           },
           {
-            "group": "X (Twitter)",
-            "pages": [
-              "api-reference/x/search",
-              "api-reference/x/trends"
-            ]
-          },
-          {
             "group": "Social Scraping",
             "pages": [
               "api-reference/social/scrape",
-              "api-reference/social/posts",
               "api-reference/apify/scraper"
             ]
           }
@@ -207,7 +199,6 @@
             "pages": [
               "api-reference/fans/get",
               "api-reference/posts/get",
-              "api-reference/post/comments",
               "api-reference/comments/get"
             ]
           }
@@ -229,8 +220,6 @@
             "group": "Catalogs",
             "pages": [
               "api-reference/songs/catalogs",
-              "api-reference/songs/catalogs-create",
-              "api-reference/songs/catalogs-delete",
               "api-reference/songs/catalog-songs",
               "api-reference/songs/catalog-songs-add",
               "api-reference/songs/catalog-songs-delete"
@@ -364,7 +353,8 @@
           {
             "group": "Subscriptions",
             "pages": [
-              "api-reference/subscriptions/get"
+              "api-reference/subscriptions/get",
+              "api-reference/subscriptions/sessions-create"
             ]
           },
           {

@@ -14,18 +14,21 @@
     }
   ],
   "paths": {
-    "/api/posts": {
+    "/api/artists/{id}/posts": {
       "get": {
-        "servers": [
+        "description": "Retrieve all social media posts from an artist across all platforms. This endpoint aggregates posts from all connected social media profiles for the specified artist. Supports pagination for large post collections.",
+        "security": [
           {
-            "url": "https://api.recoupable.com"
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
           }
         ],
-        "description": "Retrieve all social media posts from an artist across all platforms. This endpoint aggregates posts from all connected social media profiles for the specified artist. Supports pagination for large post collections.",
         "parameters": [
           {
-            "name": "artist_account_id",
-            "in": "query",
+            "name": "id",
+            "in": "path",
             "description": "The unique identifier of the artist account to fetch posts for",
             "required": true,
             "schema": {
@@ -67,7 +70,47 @@
             }
           },
           "400": {
-            "description": "Bad request - missing required parameters",
+            "description": "Bad request - invalid or missing `id` path parameter format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistPostsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistPostsErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller does not have access to this artist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistPostsErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Artist not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistPostsErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -146,71 +189,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommentsErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/post/comments": {
-      "get": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
-        "description": "Retrieve comments for a specific social media post. This endpoint should be called after obtaining post IDs from the Social Posts endpoint. Returns detailed information about each commenter including their profile data, follower counts, and geographic region.",
-        "parameters": [
-          {
-            "name": "post_id",
-            "in": "query",
-            "description": "The unique identifier of the post to fetch comments for",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "The page number to retrieve (default: 1)",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The number of records per page (default: 20, max: 100)",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 20,
-              "maximum": 100
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Post comments retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PostCommentsResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - missing required parameters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PostCommentsErrorResponse"
                 }
               }
             }
@@ -647,18 +625,13 @@
         }
       }
     },
-    "/api/apify/scraper": {
+    "/api/apify/runs/{runId}": {
       "get": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
         "description": "Check the status and retrieve results from Apify scraper runs. This endpoint uses the Apify API Client to fetch the current status of a scraper run and its results if available. Use the runId returned from endpoints like Instagram Comments, Instagram Profiles, Social Scrape, or Artist Socials Scrape to poll for results.",
         "parameters": [
           {
             "name": "runId",
-            "in": "query",
+            "in": "path",
             "description": "The ID of the Apify run to check status for. This is returned when starting a scrape via Instagram Comments, Instagram Profiles, Social Scrape, or Artist Socials Scrape endpoints.",
             "required": true,
             "schema": {
@@ -708,126 +681,21 @@
         }
       }
     },
-    "/api/x/search": {
-      "get": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
-        "description": "Search for tweets using the Twitter Search API, powered by agent-twitter-client (no Twitter API key required). Supports various search modes including Top, Latest, Photos, Videos, and Users.",
+    "/api/socials/{id}/scrape": {
+      "post": {
+        "description": "Trigger a social profile scraping job for a given social profile. Use the [Get Artist Socials](/api-reference/artists/socials) endpoint first to retrieve the social profile id values. The response returns Apify run metadata for polling status and retrieving results via the [Apify Scraper Results API](/api-reference/apify/scraper).",
         "parameters": [
           {
-            "name": "query",
-            "in": "query",
-            "description": "The search query. Any Twitter-compatible query format can be used (e.g., '#nodejs', 'from:username', etc.)",
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the social profile to scrape. Obtain this from the [Get Artist Socials](/api-reference/artists/socials) API.",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "maxTweets",
-            "in": "query",
-            "description": "The maximum number of tweets to return",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "searchMode",
-            "in": "query",
-            "description": "The category filter to apply to the search",
-            "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "Top",
-                "Latest",
-                "Photos",
-                "Videos",
-                "Users"
-              ],
-              "default": "Latest"
+              "format": "uuid"
             }
           }
         ],
-        "responses": {
-          "200": {
-            "description": "Tweets retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TwitterSearchResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - missing required parameters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TwitterErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/x/trends": {
-      "get": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
-        "description": "Retrieve the current trending topics from Twitter using the getTrends method from agent-twitter-client (no Twitter API key required).",
-        "responses": {
-          "200": {
-            "description": "Trends retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TwitterTrendsResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TwitterErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/social/scrape": {
-      "post": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
-        "description": "Trigger a social profile scraping job for a given social_id. Use the Get Artist Socials endpoint first to retrieve the social_id values. The response returns Apify run metadata for polling status and retrieving results via the Apify Scraper Results API.",
-        "requestBody": {
-          "description": "Social profile to scrape",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SocialScrapeRequest"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Scrape job triggered successfully",
@@ -835,81 +703,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ApifyRunResult"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - missing required parameters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SocialErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/social/posts": {
-      "get": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
-        "description": "Retrieve all social media posts from a specific social profile. Call the Artist Socials endpoint first to obtain social IDs.",
-        "parameters": [
-          {
-            "name": "social_id",
-            "in": "query",
-            "description": "The unique identifier (UUID) of the social profile to fetch posts for",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "latestFirst",
-            "in": "query",
-            "description": "Sort posts by most recent first (default: true)",
-            "required": false,
-            "schema": {
-              "type": "boolean",
-              "default": true
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "The page number to retrieve (default: 1)",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The number of records per page (default: 20, max: 100)",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 20,
-              "maximum": 100
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Posts retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SocialPostsResponse"
                 }
               }
             }
@@ -1135,7 +928,7 @@
         "type": "object",
         "required": [
           "status",
-          "datasetId",
+          "dataset_id",
           "data"
         ],
         "description": "Response when the Apify run has completed successfully",
@@ -1145,7 +938,7 @@
             "description": "Final status of the Apify run (typically 'SUCCEEDED')",
             "example": "SUCCEEDED"
           },
-          "datasetId": {
+          "dataset_id": {
             "type": "string",
             "description": "ID of the dataset containing the results",
             "example": "def456uvw"
@@ -1197,7 +990,7 @@
         "type": "object",
         "required": [
           "status",
-          "datasetId"
+          "dataset_id"
         ],
         "description": "Response when the Apify run is still in progress",
         "properties": {
@@ -1206,10 +999,11 @@
             "description": "Current status of the Apify run (e.g., 'RUNNING', 'READY')",
             "example": "RUNNING"
           },
-          "datasetId": {
+          "dataset_id": {
             "type": "string",
             "description": "ID of the dataset that will contain the results when the run completes",
-            "example": "def456uvw"
+            "example": "def456uvw",
+            "nullable": true
           }
         }
       },
@@ -1636,75 +1430,6 @@
           }
         }
       },
-      "PostCommentsErrorResponse": {
-        "type": "object",
-        "required": [
-          "status",
-          "error"
-        ],
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "error"
-            ],
-            "description": "Status of the request"
-          },
-          "error": {
-            "type": "string",
-            "description": "Error message describing what went wrong"
-          }
-        }
-      },
-      "PostCommentsPagination": {
-        "type": "object",
-        "properties": {
-          "total_count": {
-            "type": "integer",
-            "description": "Total number of comments available"
-          },
-          "page": {
-            "type": "integer",
-            "description": "Current page number"
-          },
-          "limit": {
-            "type": "integer",
-            "description": "Number of comments per page"
-          },
-          "total_pages": {
-            "type": "integer",
-            "description": "Total number of pages available"
-          }
-        }
-      },
-      "PostCommentsResponse": {
-        "type": "object",
-        "required": [
-          "status",
-          "comments",
-          "pagination"
-        ],
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "success"
-            ],
-            "description": "Status of the request"
-          },
-          "comments": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PostComment"
-            },
-            "description": "List of comments for the specified post"
-          },
-          "pagination": {
-            "$ref": "#/components/schemas/PostCommentsPagination",
-            "description": "Pagination metadata for the response"
-          }
-        }
-      },
       "SocialErrorResponse": {
         "type": "object",
         "properties": {
@@ -1747,63 +1472,6 @@
             "type": "string",
             "format": "date-time",
             "description": "ISO timestamp of when the post data was last updated"
-          }
-        }
-      },
-      "SocialPostsPagination": {
-        "type": "object",
-        "properties": {
-          "total_count": {
-            "type": "integer",
-            "description": "Total number of posts available"
-          },
-          "page": {
-            "type": "integer",
-            "description": "Current page number"
-          },
-          "limit": {
-            "type": "integer",
-            "description": "Number of posts per page"
-          },
-          "total_pages": {
-            "type": "integer",
-            "description": "Total number of pages available"
-          }
-        }
-      },
-      "SocialPostsResponse": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "success",
-              "error"
-            ],
-            "description": "Status of the request"
-          },
-          "posts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SocialPost"
-            },
-            "description": "List of social media posts"
-          },
-          "pagination": {
-            "$ref": "#/components/schemas/SocialPostsPagination"
-          }
-        }
-      },
-      "SocialScrapeRequest": {
-        "type": "object",
-        "required": [
-          "social_id"
-        ],
-        "properties": {
-          "social_id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "UUID of the social profile to scrape. Obtain this from the Get Artist Socials API."
           }
         }
       },
@@ -2548,177 +2216,6 @@
           "is_local": {
             "type": "boolean",
             "description": "Whether the track is from a local file"
-          }
-        }
-      },
-      "Tweet": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Tweet ID"
-          },
-          "text": {
-            "type": "string",
-            "description": "Tweet text content"
-          },
-          "username": {
-            "type": "string",
-            "description": "Username of the tweet author"
-          },
-          "timestamp": {
-            "type": "integer",
-            "description": "Unix timestamp (ms) of when the tweet was posted"
-          },
-          "createdAt": {
-            "type": "string",
-            "description": "ISO timestamp of when the tweet was posted"
-          },
-          "isReply": {
-            "type": "boolean",
-            "description": "Whether the tweet is a reply"
-          },
-          "isRetweet": {
-            "type": "boolean",
-            "description": "Whether the tweet is a retweet"
-          },
-          "likes": {
-            "type": "integer",
-            "description": "Number of likes"
-          },
-          "retweetCount": {
-            "type": "integer",
-            "description": "Number of retweets"
-          },
-          "replies": {
-            "type": "integer",
-            "description": "Number of replies"
-          },
-          "photos": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TwitterPhoto"
-            },
-            "description": "Array of photo objects"
-          },
-          "videos": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TwitterVideo"
-            },
-            "description": "Array of video objects"
-          },
-          "urls": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Array of URLs included in the tweet"
-          },
-          "permanentUrl": {
-            "type": "string",
-            "description": "Permanent URL to the tweet"
-          },
-          "quotedStatusId": {
-            "type": "string",
-            "description": "ID of the quoted tweet (if applicable)"
-          },
-          "inReplyToStatusId": {
-            "type": "string",
-            "description": "ID of the tweet this is replying to (if applicable)"
-          },
-          "hashtags": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Array of hashtags in the tweet"
-          }
-        }
-      },
-      "TwitterErrorResponse": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "error"
-            ],
-            "description": "Status of the request"
-          },
-          "message": {
-            "type": "string",
-            "description": "Error message"
-          }
-        }
-      },
-      "TwitterPhoto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Photo ID"
-          },
-          "url": {
-            "type": "string",
-            "description": "URL of the photo"
-          }
-        }
-      },
-      "TwitterSearchResponse": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "description": "Status of the request",
-            "enum": [
-              "success",
-              "error"
-            ]
-          },
-          "tweets": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Tweet"
-            },
-            "description": "List of tweet objects"
-          }
-        }
-      },
-      "TwitterTrendsResponse": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "description": "Status of the request",
-            "enum": [
-              "success",
-              "error"
-            ]
-          },
-          "trends": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "List of current trending topics on Twitter"
-          }
-        }
-      },
-      "TwitterVideo": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Video ID"
-          },
-          "preview": {
-            "type": "string",
-            "description": "URL of the video preview image"
-          },
-          "url": {
-            "type": "string",
-            "description": "URL of the video"
           }
         }
       }
