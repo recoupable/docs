@@ -48,12 +48,12 @@ Pick the best match: prefer an exact case-insensitive name match; if multiple, p
 ```bash
 MATCH=$(echo "$SPOTIFY" | jq --arg name "$ARTIST_NAME" '
   .artists.items
-  | (map(select((.name | ascii_downcase) == ($name | ascii_downcase))) | first)
+  | (map(select((.name | ascii_downcase) == ($name | ascii_downcase))) | sort_by(-.popularity) | first)
     // (sort_by(-.popularity) | first)
 ')
 
-SPOTIFY_ARTIST_ID=$(echo "$MATCH" | jq -r '.id')
-SPOTIFY_PROFILE_URL=$(echo "$MATCH" | jq -r '.external_urls.spotify')
+SPOTIFY_ARTIST_ID=$(echo "$MATCH" | jq -r '.id // empty')
+SPOTIFY_PROFILE_URL=$(echo "$MATCH" | jq -r '.external_urls.spotify // empty')
 SPOTIFY_IMAGE_URL=$(echo "$MATCH" | jq -r '.images[0].url // empty')
 
 [ -n "$SPOTIFY_ARTIST_ID" ] || { echo "No Spotify match for $ARTIST_NAME"; exit 1; }
@@ -170,25 +170,6 @@ orgs/$RECOUP_ORG_ID/artists/$ARTIST_ID/RECOUP.md
 ```
 
 This dovetails with the [`artist-workspace`](https://github.com/recoupable/skills/tree/main/artist-workspace) skill's filesystem conventions, so future sandbox sessions can read the KB without needing a hosted URL.
-
-## Optional: persist the KB to the artist record
-
-If you have a public URL hosting the KB content (Arweave, Vercel Blob, or any bucket), PATCH the `knowledges` array so the chat surface can pick it up too:
-
-```bash
-curl -sS -X PATCH "https://recoup-api.vercel.app/api/artists/$ARTIST_ID" \
-  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "knowledges": [
-      { "name": "Artist Knowledge Base Report", "url": "https://...", "type": "text/plain" }
-    ]
-  }'
-```
-
-Skip this if you don't have a hosting target — the local `RECOUP.md` is enough for sandbox-driven flows.
-
-See [Update Artist](/api-reference/artists/update) for the `knowledges` field schema.
 
 ## Platform key reference
 
