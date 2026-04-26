@@ -61,6 +61,8 @@ SPOTIFY_IMAGE_URL=$(echo "$MATCH" | jq -r '.images[0].url // empty')
 
 Also keep `genres`, `followers.total`, and `popularity` from `$MATCH` for the KB report later.
 
+See [Spotify Search](/api-reference/spotify/search) for the full query parameters and response schema.
+
 ## Step 3: Set basic profile + Spotify URL
 
 One `PATCH` covers the image and the Spotify social URL. Use **uppercase** platform keys in `profileUrls` (the API matches platforms case-sensitively — see the reference table below).
@@ -93,6 +95,8 @@ SPOTIFY_DEEP=$(curl -sS -X POST "https://recoup-api.vercel.app/api/research/deep
         '{query: ("Spotify presence for " + $name + " — playlists, radio rotations, related artists, monthly listeners, editorial features.")}')")
 ```
 
+See [Deep Research](/api-reference/research/deep) for the request/response schema.
+
 ## Step 5: Pull the Spotify catalog
 
 ```bash
@@ -112,6 +116,8 @@ ALBUM_DETAIL=$(curl -sS -G "https://recoup-api.vercel.app/api/spotify/album" \
 
 `$SPOTIFY_ARTIST_ID` is the value you exported in step 2.
 
+See [Spotify Top Tracks](/api-reference/spotify/artist-top-tracks), [Spotify Artist Albums](/api-reference/spotify/artist-albums), and [Spotify Album](/api-reference/spotify/album) for full schemas.
+
 ## Step 6: Search the web for additional socials
 
 ```bash
@@ -123,6 +129,8 @@ SOCIALS_SEARCH=$(curl -sS -X POST "https://recoup-api.vercel.app/api/research/we
 ```
 
 Parse the results to extract any new social URLs whose host matches the platform reference table below.
+
+See [Web Search](/api-reference/research/web) for the request/response schema.
 
 ## Step 7: PATCH the artist with the discovered socials
 
@@ -141,6 +149,8 @@ curl -sS -X PATCH "https://recoup-api.vercel.app/api/artists/$ARTIST_ID" \
 ```
 
 Only include keys for platforms you actually found URLs for. The PATCH preserves existing socials for keys you omit, so this is safe to run incrementally.
+
+See [Update Artist](/api-reference/artists/update) for the full body schema.
 
 ## Step 8: Synthesize the knowledge base
 
@@ -177,6 +187,8 @@ curl -sS -X PATCH "https://recoup-api.vercel.app/api/artists/$ARTIST_ID" \
 ```
 
 Skip this if you don't have a hosting target — the local `RECOUP.md` is enough for sandbox-driven flows.
+
+See [Update Artist](/api-reference/artists/update) for the `knowledges` field schema.
 
 ## Platform key reference
 
