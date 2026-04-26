@@ -27,8 +27,8 @@
   },
   "background": {
     "color": {
-      "light": "#f7f7f7",
-      "dark": "#0a0a0a"
+      "light": "#f3f3f3",
+      "dark": "#171717"
     }
   },
   "styling": {
@@ -411,18 +411,7 @@
       }
     ],
     "global": {
-      "anchors": [
-        {
-          "anchor": "Launch App",
-          "href": "https://chat.recoupable.com",
-          "icon": "arrow-up-right"
-        },
-        {
-          "anchor": "GitHub",
-          "href": "https://github.com/recoupable",
-          "icon": "github"
-        }
-      ]
+      "anchors": []
     }
   },
   "logo": {
@@ -435,6 +424,10 @@
       {
         "label": "Blog",
         "href": "https://research.recoupable.com/"
+      },
+      {
+        "label": "GitHub",
+        "href": "https://github.com/recoupable"
       },
       {
         "label": "Support",
