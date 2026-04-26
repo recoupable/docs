@@ -1,6 +1,6 @@
 ---
 title: 'Create a New Artist'
-description: 'End-to-end workflow to create, enrich, and research a new artist account in a single sandbox session.'
+description: 'End-to-end workflow to create, research and enrich a new artist account in a single session.'
 ---
 
 This is the canonical, deterministic recipe used internally by Recoup's chat agent. Follow it step-by-step to bring a new artist account up to "researched + enriched" parity from a sandbox or any external agent.
@@ -43,29 +43,37 @@ SPOTIFY=$(curl -sS -G "https://recoup-api.vercel.app/api/spotify/search" \
   --data-urlencode "limit=10")
 ```
 
-Pick the best match: prefer an exact case-insensitive name match; if multiple, prefer the highest popularity score. Capture from the chosen result:
+Pick the best match: prefer an exact case-insensitive name match; if multiple, prefer the highest popularity score. Export the fields the rest of the chain needs:
 
-- `images[0].url` → artist image
-- `external_urls.spotify` → Spotify profile URL
-- `id` → Spotify artist ID (used in step 5)
-- `genres`, `followers.total`, `popularity` → context for the KB report later
+```bash
+MATCH=$(echo "$SPOTIFY" | jq --arg name "$ARTIST_NAME" '
+  .artists.items
+  | (map(select((.name | ascii_downcase) == ($name | ascii_downcase))) | first)
+    // (sort_by(-.popularity) | first)
+')
+
+SPOTIFY_ARTIST_ID=$(echo "$MATCH" | jq -r '.id')
+SPOTIFY_PROFILE_URL=$(echo "$MATCH" | jq -r '.external_urls.spotify')
+SPOTIFY_IMAGE_URL=$(echo "$MATCH" | jq -r '.images[0].url // empty')
+
+[ -n "$SPOTIFY_ARTIST_ID" ] || { echo "No Spotify match for $ARTIST_NAME"; exit 1; }
+```
+
+Also keep `genres`, `followers.total`, and `popularity` from `$MATCH` for the KB report later.
 
 ## Step 3: Set basic profile + Spotify URL
 
-One `PATCH` covers image, label, and the Spotify social URL. Use **uppercase** platform keys in `profileUrls` (the API matches platforms case-sensitively — see the reference table below).
+One `PATCH` covers the image and the Spotify social URL. Use **uppercase** platform keys in `profileUrls` (the API matches platforms case-sensitively — see the reference table below).
 
 ```bash
 curl -sS -X PATCH "https://recoup-api.vercel.app/api/artists/$ARTIST_ID" \
   -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{
-    "image": "https://i.scdn.co/image/...",
-    "label": "XO / Republic Records",
-    "profileUrls": { "SPOTIFY": "https://open.spotify.com/artist/..." }
-  }'
+  -d "$(jq -n --arg image "$SPOTIFY_IMAGE_URL" --arg url "$SPOTIFY_PROFILE_URL" \
+        '{image: $image, profileUrls: {SPOTIFY: $url}}')"
 ```
 
-This single endpoint replaces what the chat tool chain runs as four separate MCP calls (`update_account_info` ×2, `update_artist_socials` ×2). See [Update Artist](/api-reference/artists/update) for the full body schema.
+This single endpoint replaces what the chat tool chain runs as four separate MCP calls (`update_account_info` ×2, `update_artist_socials` ×2). Add `label` to the body once you discover one in the deep research (step 4). See [Update Artist](/api-reference/artists/update) for the full body schema.
 
 ## Step 4: Run deep research
 
@@ -96,13 +104,13 @@ ALBUMS=$(curl -sS -G "https://recoup-api.vercel.app/api/spotify/artist/albums" \
   -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
   --data-urlencode "id=$SPOTIFY_ARTIST_ID")
 
-# For each notable album, drill in:
+# For each notable album, drill in (ALBUM_ID from $ALBUMS):
 ALBUM_DETAIL=$(curl -sS -G "https://recoup-api.vercel.app/api/spotify/album" \
   -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
   --data-urlencode "id=$ALBUM_ID")
 ```
 
-`$SPOTIFY_ARTIST_ID` is the `id` from the search result you chose in step 2.
+`$SPOTIFY_ARTIST_ID` is the value you exported in step 2.
 
 ## Step 6: Search the web for additional socials
 
@@ -169,10 +177,6 @@ curl -sS -X PATCH "https://recoup-api.vercel.app/api/artists/$ARTIST_ID" \
 ```
 
 Skip this if you don't have a hosting target — the local `RECOUP.md` is enough for sandbox-driven flows.
-
-## Skipped: YouTube login
-
-The internal chat agent ends the chain with a Composio OAuth flow to enable YouTube stats. That step requires interactive auth and is deliberately out-of-scope here — Composio handles it separately via credential sharing.
 
 ## Platform key reference
 
