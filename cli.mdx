@@ -5,6 +5,12 @@ description: "Install the Recoup CLI and interact with the platform from your te
 
 The Recoup CLI (`@recoupable/cli`) wraps the Recoup API for terminal-first workflows. It's available as a global npm package and comes pre-installed in sandbox environments.
 
+<Note>
+**The CLI is in beta.** The commands listed below are what's shipped today (v0.1.13). For research workflows and most content operations, call the [REST API](/api-reference) directly — the CLI is gradually catching up.
+
+**Agents:** if a command isn't listed below, don't retry — fall back to the corresponding REST endpoint linked under each command.
+</Note>
+
 ## Install
 
 ```bash
@@ -116,114 +122,22 @@ Check background task status. See [`GET /api/tasks/runs`](/api-reference/tasks/r
 recoup tasks status --run <runId>
 ```
 
----
+### songs
 
-## research
-
-Music industry research — streaming metrics, audience demographics, playlist placements, competitive analysis, and web intelligence.
-
-Artist-scoped commands accept an **artist name** or a **Recoup artist ID** (UUID). The API resolves the artist automatically.
-
-### Search
+Run AI music analysis. See [`POST /api/songs/analyze`](/api-reference/songs/analyze) and [`GET /api/songs/analyze/presets`](/api-reference/songs/analyze-presets).
 
 ```bash
-recoup research "Drake"
-recoup research "Phoebe Bridgers" --json
+recoup songs presets
+recoup songs analyze --preset catalog_metadata --audio https://example.com/track.mp3
+recoup songs analyze --prompt "Describe the production style" --audio https://example.com/track.mp3
 ```
 
-### Lookup by URL
-
-```bash
-recoup research lookup "https://open.spotify.com/artist/3TVXtAsR1Inumwj472S9r4"
-```
-
-### Profile and career
-
-```bash
-recoup research profile "Drake"
-recoup research career "Drake"
-recoup research insights "Drake"
-```
-
-### Streaming metrics
-
-```bash
-recoup research metrics "Drake" --source spotify
-recoup research metrics "Drake" --source instagram
-recoup research metrics "Drake" --source tiktok
-```
-
-Valid `--source` values: `spotify`, `instagram`, `tiktok`, `twitter`, `facebook`, `youtube_channel`, `youtube_artist`, `soundcloud`, `deezer`, `twitch`, `line`, `melon`, `wikipedia`, `bandsintown`.
-
-### Audience and geography
-
-```bash
-recoup research audience "Drake"
-recoup research audience "Drake" --platform tiktok
-recoup research cities "Drake"
-```
-
-### Competitive landscape
-
-```bash
-recoup research similar "Drake"
-recoup research similar "Drake" --audience high --genre high --limit 20
-```
-
-### Playlists
-
-```bash
-recoup research playlists "Drake"
-recoup research playlists "Drake" --platform applemusic
-recoup research playlists "Drake" --editorial --status past --since 2025-01-01
-```
-
-### Discography
-
-```bash
-recoup research albums "Drake"
-recoup research tracks "Drake"
-recoup research track "God's Plan"
-```
-
-### Discovery
-
-```bash
-recoup research discover --country US --spotify-listeners 100000 500000
-recoup research discover --genre 86 --sort weekly_diff.sp_monthly_listeners
-```
-
-### Web research
-
-```bash
-recoup research web "Drake brand partnerships sync licensing"
-recoup research report "Tell me everything about Phoebe Bridgers"
-recoup research people "A&R reps at Atlantic Records"
-recoup research extract "https://en.wikipedia.org/wiki/Drake_(musician)"
-```
-
-### Reference data
-
-```bash
-recoup research genres
-recoup research festivals
-recoup research radio
-recoup research milestones "Drake"
-recoup research venues "Drake"
-recoup research rank "Drake"
-recoup research charts --platform spotify --country US
-```
-
-### Workflow example
-
-```bash
-recoup research metrics "Phoebe Bridgers" --source spotify --json
-recoup research audience "Phoebe Bridgers" --json
-recoup research cities "Phoebe Bridgers" --json
-recoup research similar "Phoebe Bridgers" --audience high --genre high --json
-recoup research playlists "Phoebe Bridgers" --editorial --json
-recoup research web "Phoebe Bridgers fan community brand partnerships" --json
-```
+| Flag | Required | Description |
+|------|----------|-------------|
+| `--audio <url>` | Yes | Public URL to the audio file (MP3, WAV, FLAC) |
+| `--preset <name>` | No | Curated analysis preset (omit when using `--prompt`) |
+| `--prompt <text>` | No | Custom text prompt (omit when using `--preset`) |
+| `--max-tokens <n>` | No | Max tokens to generate (default 512) |
 
 ---
 
@@ -231,34 +145,32 @@ recoup research web "Phoebe Bridgers fan community brand partnerships" --json
 
 Content creation pipeline — generate AI-powered social videos for artists.
 
-### Templates
+### List templates
 
 ```bash
 recoup content templates
 ```
 
-### Validate
+### Validate an artist
 
-Check that an artist has the required assets before creating content:
+Check that an artist has the required assets before creating content. See [`GET /api/content/validate`](/api-reference/content/validate).
 
 ```bash
 recoup content validate --artist <artistAccountId>
 ```
 
-### Estimate
+### Estimate cost
 
-Preview estimated cost and duration:
+Preview estimated cost and duration before kicking off the pipeline. See [`POST /api/content/estimate`](/api-reference/content/estimate).
 
 ```bash
 recoup content estimate --artist <artistAccountId>
 recoup content estimate --artist <artistAccountId> --template <name>
 ```
 
-### Create (legacy pipeline)
+### Create content
 
-<Note>
-`recoup content create` runs the legacy full-pipeline command (backed by the deprecated `POST /api/content/create` endpoint). New integrations should call the individual `recoup content image`, `recoup content video`, and `recoup content caption` subcommands directly instead.
-</Note>
+Run the full content-creation pipeline for an artist. See [`POST /api/content/create`](/api-reference/content/create).
 
 ```bash
 recoup content create --artist <artistAccountId>
@@ -272,3 +184,7 @@ recoup content create --artist <artistAccountId> --template <name> --lipsync --u
 | `--lipsync` | No | Enable lipsync mode |
 | `--upscale` | No | Enable upscaling |
 | `--caption-length <n>` | No | Max caption length in characters |
+
+<Tip>
+For finer-grained control (individual image, video, caption, transcription, edit, upscale, or analyze operations), call the [content REST endpoints](/api-reference/content/generate-image) directly. Those primitives aren't yet exposed as individual CLI subcommands.
+</Tip>
