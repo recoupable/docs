@@ -3381,13 +3381,13 @@
           },
           "profileUrls": {
             "type": "object",
-            "description": "Map of platform identifier to social profile URL. Each entry replaces the existing social for that platform; platforms not included are preserved. Recognized platform keys are inferred by the API (e.g. spotify, instagram, tiktok, twitter, youtube).",
+            "description": "Map of uppercase platform identifier to social profile URL. Each entry replaces the existing social for that platform; platforms not included are preserved. Recognized keys: SPOTIFY, INSTAGRAM, TIKTOK, TWITTER, YOUTUBE, APPLE, FACEBOOK, THREADS. Keys are matched case-sensitively — lowercase keys will create duplicate socials instead of replacing the existing entry.",
             "additionalProperties": {
               "type": "string"
             },
             "example": {
-              "spotify": "https://open.spotify.com/artist/1Xyo4u8uXC1ZmMpatF05PJ",
-              "instagram": "https://instagram.com/theweeknd"
+              "SPOTIFY": "https://open.spotify.com/artist/1Xyo4u8uXC1ZmMpatF05PJ",
+              "INSTAGRAM": "https://instagram.com/theweeknd"
             }
           },
           "pinned": {
@@ -3513,7 +3513,7 @@
           },
           "type": {
             "type": "string",
-            "description": "Platform identifier inferred from the profile URL (e.g. spotify, instagram, tiktok, twitter, youtube). Returns NONE if the URL did not match a known platform."
+            "description": "Uppercase platform identifier inferred from the profile URL: SPOTIFY, INSTAGRAM, TIKTOK, TWITTER, YOUTUBE, APPLE, FACEBOOK, THREADS, or NONE if the URL did not match a known platform."
           }
         }
       }

@@ -1,0 +1,193 @@
+---
+title: 'Create a New Artist'
+description: 'End-to-end workflow to create, research and enrich a new artist account in a single session.'
+---
+
+This is the canonical, deterministic recipe used internally by Recoup's chat agent. Follow it step-by-step to bring a new artist account up to "researched + enriched" parity from a sandbox or any external agent.
+
+## Prerequisites
+
+- `$RECOUP_ACCESS_TOKEN` — Bearer token for `recoup-api.vercel.app`
+- `$RECOUP_ORG_ID` — the org the artist should belong to (recommended in sandboxes)
+- An artist name to create (e.g. `ARTIST_NAME="The Weeknd"`)
+
+The flow has three phases:
+
+1. **Create + identify** — `POST /api/artists`, then find the canonical Spotify match
+2. **Enrich** — `PATCH` the artist with image/label/socials, then run deep research and web search to discover other socials and context
+3. **Synthesize + persist** — generate a knowledge-base report, save it (RECOUP.md tree or hosted URL), then optionally `PATCH` the `knowledges` array
+
+## Step 1: Create the artist
+
+```bash
+ARTIST_RESPONSE=$(curl -sS -X POST "https://recoup-api.vercel.app/api/artists" \
+  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "$(jq -n --arg name "$ARTIST_NAME" --arg org "$RECOUP_ORG_ID" \
+        '{name: $name, organization_id: $org}')")
+
+ARTIST_ID=$(echo "$ARTIST_RESPONSE" | jq -r '.artist.account_id')
+```
+
+Capture `account_id` as `$ARTIST_ID` — every subsequent step needs it. `organization_id` is optional but should be included when running inside a sandbox so the artist is scoped to the right org.
+
+See [Create Artist](/api-reference/artists/create) for the full request/response schema.
+
+## Step 2: Find the canonical Spotify match
+
+```bash
+SPOTIFY=$(curl -sS -G "https://recoup-api.vercel.app/api/spotify/search" \
+  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
+  --data-urlencode "q=$ARTIST_NAME" \
+  --data-urlencode "type=artist" \
+  --data-urlencode "limit=10")
+```
+
+Pick the best match: prefer an exact case-insensitive name match; if multiple, prefer the highest popularity score. Export the fields the rest of the chain needs:
+
+```bash
+MATCH=$(echo "$SPOTIFY" | jq --arg name "$ARTIST_NAME" '
+  .artists.items
+  | (map(select((.name | ascii_downcase) == ($name | ascii_downcase))) | sort_by(-.popularity) | first)
+    // (sort_by(-.popularity) | first)
+')
+
+SPOTIFY_ARTIST_ID=$(echo "$MATCH" | jq -r '.id // empty')
+SPOTIFY_PROFILE_URL=$(echo "$MATCH" | jq -r '.external_urls.spotify // empty')
+SPOTIFY_IMAGE_URL=$(echo "$MATCH" | jq -r '.images[0].url // empty')
+
+[ -n "$SPOTIFY_ARTIST_ID" ] || { echo "No Spotify match for $ARTIST_NAME"; exit 1; }
+```
+
+Also keep `genres`, `followers.total`, and `popularity` from `$MATCH` for the KB report later.
+
+See [Spotify Search](/api-reference/spotify/search) for the full query parameters and response schema.
+
+## Step 3: Set basic profile + Spotify URL
+
+One `PATCH` covers the image and the Spotify social URL. Use **uppercase** platform keys in `profileUrls` (the API matches platforms case-sensitively — see the reference table below).
+
+```bash
+curl -sS -X PATCH "https://recoup-api.vercel.app/api/artists/$ARTIST_ID" \
+  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "$(jq -n --arg image "$SPOTIFY_IMAGE_URL" --arg url "$SPOTIFY_PROFILE_URL" \
+        '{image: $image, profileUrls: {SPOTIFY: $url}}')"
+```
+
+This single endpoint replaces what the chat tool chain runs as four separate MCP calls (`update_account_info` ×2, `update_artist_socials` ×2). Add `label` to the body once you discover one in the deep research (step 4). See [Update Artist](/api-reference/artists/update) for the full body schema.
+
+## Step 4: Run deep research
+
+Two passes — the artist generally, and the Spotify presence specifically. Capture both reports for the KB synthesis later.
+
+```bash
+ARTIST_DEEP=$(curl -sS -X POST "https://recoup-api.vercel.app/api/research/deep" \
+  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "$(jq -n --arg name "$ARTIST_NAME" \
+        '{query: ("Comprehensive research on " + $name + " — biography, discography, recent activity, notable achievements, collaborations.")}')")
+
+SPOTIFY_DEEP=$(curl -sS -X POST "https://recoup-api.vercel.app/api/research/deep" \
+  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "$(jq -n --arg name "$ARTIST_NAME" \
+        '{query: ("Spotify presence for " + $name + " — playlists, radio rotations, related artists, monthly listeners, editorial features.")}')")
+```
+
+See [Deep Research](/api-reference/research/deep) for the request/response schema.
+
+## Step 5: Pull the Spotify catalog
+
+```bash
+TOP_TRACKS=$(curl -sS -G "https://recoup-api.vercel.app/api/spotify/artist/topTracks" \
+  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
+  --data-urlencode "id=$SPOTIFY_ARTIST_ID")
+
+ALBUMS=$(curl -sS -G "https://recoup-api.vercel.app/api/spotify/artist/albums" \
+  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
+  --data-urlencode "id=$SPOTIFY_ARTIST_ID")
+
+# For each notable album, drill in (ALBUM_ID from $ALBUMS):
+ALBUM_DETAIL=$(curl -sS -G "https://recoup-api.vercel.app/api/spotify/album" \
+  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
+  --data-urlencode "id=$ALBUM_ID")
+```
+
+`$SPOTIFY_ARTIST_ID` is the value you exported in step 2.
+
+See [Spotify Top Tracks](/api-reference/spotify/artist-top-tracks), [Spotify Artist Albums](/api-reference/spotify/artist-albums), and [Spotify Album](/api-reference/spotify/album) for full schemas.
+
+## Step 6: Search the web for additional socials
+
+```bash
+SOCIALS_SEARCH=$(curl -sS -X POST "https://recoup-api.vercel.app/api/research/web" \
+  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "$(jq -n --arg name "$ARTIST_NAME" \
+        '{query: ($name + " official instagram tiktok twitter youtube")}')")
+```
+
+Parse the results to extract any new social URLs whose host matches the platform reference table below.
+
+See [Web Search](/api-reference/research/web) for the request/response schema.
+
+## Step 7: PATCH the artist with the discovered socials
+
+```bash
+curl -sS -X PATCH "https://recoup-api.vercel.app/api/artists/$ARTIST_ID" \
+  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "profileUrls": {
+      "INSTAGRAM": "https://instagram.com/...",
+      "TIKTOK": "https://tiktok.com/@...",
+      "TWITTER": "https://x.com/...",
+      "YOUTUBE": "https://youtube.com/@..."
+    }
+  }'
+```
+
+Only include keys for platforms you actually found URLs for. The PATCH preserves existing socials for keys you omit, so this is safe to run incrementally.
+
+See [Update Artist](/api-reference/artists/update) for the full body schema.
+
+## Step 8: Synthesize the knowledge base
+
+Combine the deep research, Spotify catalog, and web context into a comprehensive markdown report. Recommended sections:
+
+- Artist biography and origin
+- Discography highlights (top tracks + key albums)
+- Spotify presence (genres, listener count, notable playlists)
+- Social media footprint
+- Recent activity / press
+- Notable collaborations and achievements
+
+Save the report inside the sandbox at:
+
+```
+orgs/$RECOUP_ORG_ID/artists/$ARTIST_ID/RECOUP.md
+```
+
+This dovetails with the [`artist-workspace`](https://github.com/recoupable/skills/tree/main/artist-workspace) skill's filesystem conventions, so future sandbox sessions can read the KB without needing a hosted URL.
+
+## Platform key reference
+
+`profileUrls` keys are **uppercase** platform identifiers, inferred from the URL host. Recognized platforms:
+
+| URL contains | `profileUrls` key |
+| --- | --- |
+| `spotify.com` | `SPOTIFY` |
+| `instagram.com` | `INSTAGRAM` |
+| `tiktok.com` | `TIKTOK` |
+| `x.com`, `twitter.com` | `TWITTER` |
+| `youtube.` | `YOUTUBE` |
+| `apple.com` | `APPLE` |
+| `facebook.com` | `FACEBOOK` |
+| `threads.net`, `threads.com` | `THREADS` |
+
+URLs that don't match any of these are silently skipped — they won't be saved.
+
+## What this workflow doesn't enforce
+
+The chat agent runs this chain via a deterministic orchestrator that forces each step to execute in order. From a sandbox you control the sequence yourself — if you skip a step or reorder, the artist record will be partially populated. Run all steps in order, and don't continue past a 4xx/5xx error without recovery.

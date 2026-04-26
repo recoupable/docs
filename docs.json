@@ -36,6 +36,12 @@
         "tab": "Artists",
         "groups": [
           {
+            "group": "Workflows",
+            "pages": [
+              "workflows/create-artist"
+            ]
+          },
+          {
             "group": "Artists",
             "pages": [
               "api-reference/artists/list",
