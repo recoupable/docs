@@ -16,7 +16,7 @@ The chain is 8 sequential API calls. Long deterministic chains executed from pro
 The flow has three phases, run from a single checklist file:
 
 1. **Create + identify** — `POST /api/artists`, then find the canonical Spotify match
-2. **Enrich** — `PATCH` the artist with image/label/socials, then run deep research and web search to discover other socials and context
+2. **Enrich** — `PATCH` the artist with image/label/socials, then run structured research (Chartmetric profile/career/playlists) plus a web search for narrative context and additional socials
 3. **Synthesize + persist** — generate a knowledge-base report, save it (RECOUP.md tree or hosted URL), then optionally `PATCH` the `knowledges` array
 
 ## Step 0: Scaffold the workspace BEFORE any API call
@@ -36,6 +36,7 @@ artistId:
 spotifyArtistId:
 spotifyProfileUrl:
 imageUrl:
+cmArtistId:
 ---
 
 # $ARTIST_NAME
@@ -45,7 +46,7 @@ imageUrl:
 - [ ] 1. Create the artist (\`POST /api/artists\`) — capture \`account_id\` → \`artistId\`
 - [ ] 2. Find canonical Spotify match (\`GET /api/spotify/search\`) — capture \`id\`, \`external_urls.spotify\`, \`images[0].url\`
 - [ ] 3. PATCH artist with image + Spotify profile URL
-- [ ] 4. Deep research (artist biography + Spotify presence)
+- [ ] 4. Structured research — \`/research/lookup\` (capture \`cmArtistId\`) → \`/research/profile\` + \`/research/career\` + \`/research/playlists\` + \`/research/web\`. Save responses under \`## Research\` in this file.
 - [ ] 5. Pull Spotify catalog → write \`releases/{album-slug}/RELEASE.md\` per album + \`releases/top-tracks.md\`
 - [ ] 6. Web search for additional socials (instagram / tiktok / twitter / youtube)
 - [ ] 7. PATCH artist with discovered socials
@@ -132,31 +133,81 @@ curl -sS -X PATCH "https://recoup-api.vercel.app/api/artists/$ARTIST_ID" \
         '{image: $image, profileUrls: {SPOTIFY: $url}}')"
 ```
 
-This single endpoint replaces what the chat tool chain runs as four separate MCP calls (`update_account_info` ×2, `update_artist_socials` ×2). Add `label` to the body once you discover one in the deep research (step 4). See [Update Artist](/api-reference/artists/update) for the full body schema.
+This single endpoint replaces what the chat tool chain runs as four separate MCP calls (`update_account_info` ×2, `update_artist_socials` ×2). Add `label` to the body once you discover one in the structured research (step 4 — comes back from `/api/research/profile`). See [Update Artist](/api-reference/artists/update) for the full body schema.
 
 **After this step:** tick `- [ ] 3.` → `- [x] 3.`.
 
-## Step 4: Run deep research
+## Step 4: Run structured research
 
-Two passes — the artist generally, and the Spotify presence specifically. Capture both reports for the KB synthesis later.
+Don't use `POST /api/research/deep` here — it tends to hang in sandboxes and returns paraphrased prose. Instead, fan out across four bounded structured endpoints (one prerequisite lookup + three structured pulls + one web search). The outputs are typed JSON the agent can use directly without paraphrasing.
+
+### 4a: Look up the Chartmetric `artist_id`
+
+Most of the structured research endpoints take a Chartmetric `artist_id`, not the Spotify ID. Resolve it once and reuse it for the rest of step 4.
 
 ```bash
-ARTIST_DEEP=$(curl -sS -X POST "https://recoup-api.vercel.app/api/research/deep" \
+LOOKUP=$(curl -sS -G "https://recoup-api.vercel.app/api/research/lookup" \
   -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d "$(jq -n --arg name "$ARTIST_NAME" \
-        '{query: ("Comprehensive research on " + $name + " — biography, discography, recent activity, notable achievements, collaborations.")}')")
+  --data-urlencode "spotifyId=$SPOTIFY_ARTIST_ID")
 
-SPOTIFY_DEEP=$(curl -sS -X POST "https://recoup-api.vercel.app/api/research/deep" \
-  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d "$(jq -n --arg name "$ARTIST_NAME" \
-        '{query: ("Spotify presence for " + $name + " — playlists, radio rotations, related artists, monthly listeners, editorial features.")}')")
+CM_ARTIST_ID=$(echo "$LOOKUP" | jq -r '.artist.id // empty')
+
+[ -n "$CM_ARTIST_ID" ] || { echo "No Chartmetric match for Spotify ID $SPOTIFY_ARTIST_ID — skipping structured research"; }
 ```
 
-See [Deep Research](/api-reference/research/deep) for the request/response schema.
+If the lookup fails (rare — most Spotify-discoverable artists have a Chartmetric profile), skip 4b–4d and just run 4e (web search). See [Artist Lookup](/api-reference/research/lookup) for the request/response schema.
 
-**After this step:** save the two reports into the `## Notes` section of `RECOUP.md` (or a `## Research` subsection) so they survive into step 8. Tick `- [ ] 4.` → `- [x] 4.`.
+### 4b: Pull the artist profile
+
+Returns bio, genres, social URLs, label, career stage, and basic metrics — most of what deep research used to paraphrase.
+
+```bash
+PROFILE=$(curl -sS -G "https://recoup-api.vercel.app/api/research/profile" \
+  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
+  --data-urlencode "id=$CM_ARTIST_ID")
+```
+
+See [Artist Profile](/api-reference/research/profile) for the response schema.
+
+### 4c: Pull the career timeline
+
+Career milestones, trajectory, and career-stage classification — covers the "notable achievements" portion of what deep research returned.
+
+```bash
+CAREER=$(curl -sS -G "https://recoup-api.vercel.app/api/research/career" \
+  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
+  --data-urlencode "id=$CM_ARTIST_ID")
+```
+
+See [Career Timeline](/api-reference/research/career) for the response schema.
+
+### 4d: Pull editorial + algorithmic playlist placements
+
+Replaces the "playlists / radio rotations / editorial features" portion of the deep-research Spotify-presence query.
+
+```bash
+PLAYLISTS=$(curl -sS -G "https://recoup-api.vercel.app/api/research/playlists" \
+  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
+  --data-urlencode "id=$CM_ARTIST_ID")
+```
+
+See [Artist Playlists](/api-reference/research/playlists) for the response schema.
+
+### 4e: Web search for narrative / press / collaborations
+
+Structured endpoints don't cover press coverage, cultural narrative, or recent feature/collab announcements. Fill that gap with a single web search.
+
+```bash
+RESEARCH_WEB=$(curl -sS -X POST "https://recoup-api.vercel.app/api/research/web" \
+  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "$(jq -n --arg name "$ARTIST_NAME" \
+        '{query: ($name + " biography press recent collaborations")}')")
+```
+
+See [Web Search](/api-reference/research/web) for the request/response schema.
+
+**After this step:** persist `cmArtistId: $CM_ARTIST_ID` into the frontmatter, save the four response payloads (profile, career, playlists, web) into a new `## Research` section of `RECOUP.md` — one subsection per endpoint, each with the raw JSON or a tight markdown summary so step 8 can compose from it. Tick `- [ ] 4.` → `- [x] 4.`.
 
 ## Step 5: Pull the Spotify catalog
 
@@ -221,7 +272,7 @@ See [Update Artist](/api-reference/artists/update) for the full body schema.
 
 ## Step 8: Synthesize the knowledge base
 
-Combine the deep research, Spotify catalog, and web context into a comprehensive markdown report. Recommended sections:
+Combine the structured research outputs (`## Research` section — profile, career, playlists, web), the Spotify catalog (`releases/`), and the discovered socials into a comprehensive markdown report. Recommended sections:
 
 - Artist biography and origin
 - Discography highlights (top tracks + key albums)
