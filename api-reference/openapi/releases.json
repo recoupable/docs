@@ -594,7 +594,7 @@
     },
     "/api/artists/{id}": {
       "patch": {
-        "description": "Update mutable fields on an artist accessible to the authenticated account. All body fields are optional, but at least one must be provided. Use this endpoint to set basic profile (name, image, label), AI instructions, knowledge base entries, social profile URLs (mapped by platform), and pinned state for the calling account.",
+        "description": "Update an artist. All body fields are optional, but at least one must be provided. Use this endpoint to set basic profile (name, image, label), AI instructions, knowledge base entries, social profile URLs (mapped by platform), and pinned state for the calling account.",
         "parameters": [
           {
             "name": "id",
