@@ -25,7 +25,7 @@ Pick a slug, make the directory, and write the initial `RECOUP.md` template — 
 
 ```bash
 ARTIST_SLUG=$(echo "$ARTIST_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]\+/-/g; s/^-//; s/-$//')
-ARTIST_DIR="orgs/$RECOUP_ORG_ID/artists/$ARTIST_SLUG"
+ARTIST_DIR="artists/$ARTIST_SLUG"
 mkdir -p "$ARTIST_DIR"
 
 cat > "$ARTIST_DIR/RECOUP.md" <<EOF
@@ -55,7 +55,7 @@ imageUrl:
 EOF
 ```
 
-If `$RECOUP_ORG_ID` is unset, fall back to `artists/$ARTIST_SLUG/` (single-org layout). Don't proceed to step 1 until the file exists on disk.
+The sandbox is already scoped to a single Recoupable organization (its repo *is* the org), so artists live at the top level — there is no `orgs/` directory. Don't proceed to step 1 until the file exists on disk.
 
 **After every step that follows, do two writes back to `RECOUP.md`:** tick the checkbox for the step you just ran (`- [ ]` → `- [x]`) and persist any captured value into the frontmatter. Later steps read those values from the frontmatter — never re-derive what's already saved.
 
@@ -233,10 +233,10 @@ Combine the deep research, Spotify catalog, and web context into a comprehensive
 Append the report to the same `RECOUP.md` you scaffolded in Step 0 — add it as a `## Knowledge base` section below the checklist. The path is:
 
 ```
-orgs/$RECOUP_ORG_ID/artists/$ARTIST_SLUG/RECOUP.md
+artists/$ARTIST_SLUG/RECOUP.md
 ```
 
-(or `artists/$ARTIST_SLUG/RECOUP.md` for single-org sandboxes). This dovetails with the [`artist-workspace`](https://github.com/recoupable/skills/tree/main/skills/artist-workspace) skill's filesystem conventions, so future sandbox sessions can read both the checklist and the KB without needing a hosted URL.
+This dovetails with the [`artist-workspace`](https://github.com/recoupable/skills/tree/main/skills/artist-workspace) skill's filesystem conventions, so future sandbox sessions can read both the checklist and the KB without needing a hosted URL.
 
 **After this step:** tick `- [ ] 8.` → `- [x] 8.`. With every box ticked, the artist is fully set up.
 
