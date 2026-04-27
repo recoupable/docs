@@ -1,0 +1,28 @@
+---
+title: "Content Creation"
+description: "Compose the content endpoints (image, video, caption, transcribe, edit, upscale, analyze) into short-form videos, Reels, TikToks, and lipsync clips."
+---
+
+Turns the seven content primitives into finished assets. Picks the right combination of generate, transcribe, edit, upscale, and analyze for the specific output the user asked for — and iterates on quality (regenerate, re-prompt, re-mux) when the first pass isn't right.
+
+## When to use it
+
+User asks to create content, make a video, generate an image, produce a TikTok or Reel, create a promotional clip, add captions, or create visual content for an artist. Also use when iterating on existing content — regenerating images, trying different audio, adjusting text, upscaling for higher quality.
+
+## What it produces
+
+A finished asset (image, video, captioned clip, lipsync, upscaled version) saved into the artist workspace, with the underlying generation parameters logged for reproducibility.
+
+## Endpoints it uses
+
+- [`POST /api/content/image`](/api-reference/content/generate-image)
+- [`POST /api/content/video`](/api-reference/content/generate-video)
+- [`POST /api/content/caption`](/api-reference/content/generate-caption)
+- [`POST /api/content/transcribe`](/api-reference/content/transcribe-audio)
+- [`PATCH /api/content`](/api-reference/content/edit)
+- [`POST /api/content/upscale`](/api-reference/content/upscale)
+- [`POST /api/content/analyze`](/api-reference/content/analyze-video)
+
+## Source
+
+[`recoupable/skills/skills/content-creation`](https://github.com/recoupable/skills/tree/main/skills/content-creation)
