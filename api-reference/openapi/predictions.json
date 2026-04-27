@@ -1,0 +1,412 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup API - Predictions",
+    "description": "API documentation for the Recoup platform - an AI agent platform for the music industry",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://recoup-api.vercel.app"
+    }
+  ],
+  "paths": {
+    "/api/predictions": {
+      "post": {
+        "description": "Run a neural engagement prediction on a video, audio, or text file. Accepts a publicly accessible file URL and a modality. Returns an engagement score (0-100), a per-timestep engagement timeline, peak moments, weak spots, and regional brain activation data. The prediction result is persisted and can be retrieved later via GET. Use this endpoint to compare content iterations — upload v1, get a score, edit based on weak spots, upload v2, and compare.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePredictionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Prediction created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePredictionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid file_url or modality",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredictionErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredictionErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "description": "List past engagement predictions for the authenticated account. Returns prediction summaries sorted by creation date (newest first). Use limit and offset for pagination.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of predictions to return.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of predictions to skip for pagination.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "description": "Filter to a specific account. Only applicable when the authenticated account has access to multiple accounts via organization membership.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Predictions retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListPredictionsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredictionErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "options": {
+        "description": "CORS preflight handler",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/predictions/{id}": {
+      "get": {
+        "description": "Get a specific engagement prediction by ID. Returns the full prediction including engagement timeline, peak moments, weak spots, and regional activation data.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The prediction UUID.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Prediction retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePredictionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredictionErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Prediction not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredictionErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "options": {
+        "description": "CORS preflight handler",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "TimePoint": {
+        "type": "object",
+        "required": ["time_seconds", "score"],
+        "properties": {
+          "time_seconds": {
+            "type": "number",
+            "description": "Timestamp in seconds from the start of the content."
+          },
+          "score": {
+            "type": "number",
+            "description": "Engagement score at this point (0-100)."
+          }
+        }
+      },
+      "RegionalActivation": {
+        "type": "object",
+        "description": "Mean predicted activation per brain region. Values are normalized floats (0-1).",
+        "properties": {
+          "visual_cortex": {
+            "type": "number",
+            "description": "Visual processing activation (V1/V2/V3)."
+          },
+          "auditory_cortex": {
+            "type": "number",
+            "description": "Auditory processing activation (A1/A2)."
+          },
+          "language_areas": {
+            "type": "number",
+            "description": "Language processing activation (Broca/Wernicke)."
+          },
+          "prefrontal_cortex": {
+            "type": "number",
+            "description": "Executive function and attention activation."
+          },
+          "temporal_cortex": {
+            "type": "number",
+            "description": "Memory and emotional processing activation."
+          },
+          "motor_cortex": {
+            "type": "number",
+            "description": "Motor planning activation (rhythm, movement urge)."
+          }
+        }
+      },
+      "CreatePredictionRequest": {
+        "type": "object",
+        "required": ["file_url", "modality"],
+        "properties": {
+          "file_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Publicly accessible URL to the content file (video, audio, or text). Must be reachable from the inference server — use S3, Supabase Storage, or similar. Some free file hosts block datacenter IPs.",
+            "example": "https://storage.example.com/video.mp4"
+          },
+          "modality": {
+            "type": "string",
+            "enum": ["video", "audio", "text"],
+            "description": "The type of content being analyzed.",
+            "example": "video"
+          }
+        }
+      },
+      "CreatePredictionResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "id",
+          "file_url",
+          "modality",
+          "engagement_score",
+          "engagement_timeline",
+          "peak_moments",
+          "weak_spots",
+          "regional_activation",
+          "total_duration_seconds",
+          "elapsed_seconds",
+          "created_at"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for this prediction."
+          },
+          "file_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "The content URL that was analyzed."
+          },
+          "modality": {
+            "type": "string",
+            "enum": ["video", "audio", "text"],
+            "description": "The content type that was analyzed."
+          },
+          "engagement_score": {
+            "type": "number",
+            "description": "Overall engagement score (0-100). Higher means more predicted neural engagement.",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "engagement_timeline": {
+            "type": "array",
+            "description": "Per-timestep engagement scores (~1.5s intervals). Use to visualize engagement over the content's duration.",
+            "items": {
+              "$ref": "#/components/schemas/TimePoint"
+            }
+          },
+          "peak_moments": {
+            "type": "array",
+            "description": "Timestamps where engagement is highest. These are the content's strongest moments.",
+            "items": {
+              "$ref": "#/components/schemas/TimePoint"
+            }
+          },
+          "weak_spots": {
+            "type": "array",
+            "description": "Timestamps where engagement drops. Edit these sections to improve overall score.",
+            "items": {
+              "$ref": "#/components/schemas/TimePoint"
+            }
+          },
+          "regional_activation": {
+            "$ref": "#/components/schemas/RegionalActivation"
+          },
+          "total_duration_seconds": {
+            "type": "number",
+            "description": "Total duration of the analyzed content in seconds."
+          },
+          "elapsed_seconds": {
+            "type": "number",
+            "description": "Wall-clock inference time in seconds."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When this prediction was created."
+          }
+        }
+      },
+      "PredictionSummary": {
+        "type": "object",
+        "required": ["id", "file_url", "modality", "engagement_score", "created_at"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "file_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "modality": {
+            "type": "string",
+            "enum": ["video", "audio", "text"]
+          },
+          "engagement_score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ListPredictionsResponse": {
+        "type": "object",
+        "required": ["status", "predictions"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "predictions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PredictionSummary"
+            }
+          }
+        }
+      },
+      "PredictionErrorResponse": {
+        "type": "object",
+        "required": ["status", "error"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "error"
+          },
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message."
+          },
+          "missing_fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Fields that failed validation (only present on 400 responses)."
+          }
+        }
+      }
+    }
+  }
+}
