@@ -43,16 +43,16 @@ The content API provides seven independent endpoints. Each does one thing well. 
 
 | Endpoint | Path | What it does |
 |-----------|----------|-------------|
-| Generate Image | [POST /api/content/image](/api-reference/content/generate-image) | Create an image from a text prompt with optional reference image |
-| Generate Video | [POST /api/content/video](/api-reference/content/generate-video) | Create a video — 6 modes: prompt, animate, reference, extend, first-last, lipsync |
-| Generate Caption | [POST /api/content/caption](/api-reference/content/generate-caption) | Generate on-screen text for social media videos |
-| Transcribe Audio | [POST /api/content/transcribe](/api-reference/content/transcribe-audio) | Transcribe audio to timestamped lyrics/text |
-| Edit Content | [PATCH /api/content](/api-reference/content/edit) | Trim, crop, resize, overlay text, or add audio |
+| Generate Image | [POST /api/content/generate-image](/api-reference/content/generate-image) | Create an image from a text prompt with optional reference image |
+| Generate Video | [POST /api/content/generate-video](/api-reference/content/generate-video) | Create a video — 6 modes: prompt, animate, reference, extend, first-last, lipsync |
+| Generate Caption | [POST /api/content/generate-caption](/api-reference/content/generate-caption) | Generate on-screen text for social media videos |
+| Transcribe Audio | [POST /api/content/transcribe-audio](/api-reference/content/transcribe-audio) | Transcribe audio to timestamped lyrics/text |
+| Edit Content | [PATCH /api/content/edit](/api-reference/content/edit) | Trim, crop, resize, overlay text, or add audio |
 | Upscale | [POST /api/content/upscale](/api-reference/content/upscale) | Upscale image or video resolution (up to 4x) |
-| Analyze Video | [POST /api/content/analyze](/api-reference/content/analyze-video) | AI video analysis — describe scenes, check quality |
+| Analyze Video | [POST /api/content/analyze-video](/api-reference/content/analyze-video) | AI video analysis — describe scenes, check quality |
 
 <Note>
-[`POST /api/content/create`](/api-reference/content/create) is the legacy full-pipeline endpoint. It still works, but new integrations should call the individual endpoints above directly — the pipeline is being phased out.
+[`POST /api/content/create`](/api-reference/content/create) (legacy) runs the full pipeline in a single call. It still works, but new integrations should call the individual endpoints above directly — the pipeline is being phased out.
 </Note>
 
 ## Video modes
