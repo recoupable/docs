@@ -238,16 +238,26 @@
         "tab": "Content",
         "groups": [
           {
-            "group": "Content Endpoints",
+            "group": "Generate",
             "pages": [
               "api-reference/content/generate-image",
               "api-reference/content/generate-video",
               "api-reference/content/generate-caption",
-              "api-reference/content/transcribe-audio",
+              "api-reference/image/generation"
+            ]
+          },
+          {
+            "group": "Edit",
+            "pages": [
               "api-reference/content/edit",
-              "api-reference/content/upscale",
+              "api-reference/content/upscale"
+            ]
+          },
+          {
+            "group": "Analyze",
+            "pages": [
               "api-reference/content/analyze-video",
-              "api-reference/image/generation",
+              "api-reference/content/transcribe-audio",
               "api-reference/transcribe/audio"
             ]
           },
