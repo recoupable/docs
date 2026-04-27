@@ -242,8 +242,7 @@
             "pages": [
               "api-reference/content/generate-image",
               "api-reference/content/generate-video",
-              "api-reference/content/generate-caption",
-              "api-reference/image/generation"
+              "api-reference/content/generate-caption"
             ]
           },
           {
@@ -257,8 +256,7 @@
             "group": "Analyze",
             "pages": [
               "api-reference/content/analyze-video",
-              "api-reference/content/transcribe-audio",
-              "api-reference/transcribe/audio"
+              "api-reference/content/transcribe-audio"
             ]
           },
           {
@@ -271,9 +269,11 @@
             ]
           },
           {
-            "group": "Pipeline (Legacy)",
+            "group": "Legacy",
             "pages": [
-              "api-reference/content/create"
+              "api-reference/content/create",
+              "api-reference/image/generation",
+              "api-reference/transcribe/audio"
             ]
           },
           {

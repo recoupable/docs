@@ -2,3 +2,7 @@
 title: 'Create Content'
 openapi: "/api-reference/openapi/content.json POST /api/content/create"
 ---
+
+<Note>
+**Legacy.** Runs the full content-creation pipeline (image → video → caption → edit → upscale) in a single call. Still in use — the [Content Agent](/content-agent) Slack bot is built on it — but new integrations should compose the individual primitives ([Generate Image](/api-reference/content/generate-image), [Generate Video](/api-reference/content/generate-video), [Generate Caption](/api-reference/content/generate-caption), and so on) for finer-grained control.
+</Note>

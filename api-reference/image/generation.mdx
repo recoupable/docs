@@ -2,3 +2,7 @@
 title: 'Generate Image'
 openapi: "/api-reference/openapi/content.json GET /api/image/generate"
 ---
+
+<Note>
+**Legacy.** Predates the sandbox model. Generates images via the x402 payment protocol and stores results on Arweave. Still in use (including by the [MCP server](/mcp)) but new integrations should prefer [POST /api/content/image](/api-reference/content/generate-image) — the lighter primitive that returns the generated image without auto-storage side effects.
+</Note>
