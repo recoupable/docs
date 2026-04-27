@@ -1,8 +1,4 @@
 ---
-title: 'Transcribe Audio'
+title: 'Transcribe Audio (Legacy)'
 openapi: "/api-reference/openapi/content.json POST /api/transcribe"
 ---
-
-<Note>
-**Legacy.** Predates the sandbox model. Transcribes the audio and writes both the audio file and the transcript to backend storage as artifacts on the account/artist. Still in use, but new integrations should prefer [POST /api/content/transcribe-audio](/api-reference/content/transcribe-audio) — the stateless primitive that returns the transcript with word-level timestamps and no side effects.
-</Note>
