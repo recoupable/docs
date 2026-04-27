@@ -132,12 +132,14 @@ recoup songs analyze --preset catalog_metadata --audio https://example.com/track
 recoup songs analyze --prompt "Describe the production style" --audio https://example.com/track.mp3
 ```
 
+One of `--preset` or `--prompt` is required. The other flags are optional.
+
 | Flag | Required | Description |
 |------|----------|-------------|
-| `--audio <url>` | Yes | Public URL to the audio file (MP3, WAV, FLAC) |
-| `--preset <name>` | No | Curated analysis preset (omit when using `--prompt`) |
-| `--prompt <text>` | No | Custom text prompt (omit when using `--preset`) |
-| `--max-tokens <n>` | No | Max tokens to generate (default 512) |
+| `--preset <name>` | Conditional | Curated analysis preset. Required when `--prompt` is omitted. |
+| `--prompt <text>` | Conditional | Custom text prompt. Required when `--preset` is omitted. |
+| `--audio <url>` | No | Public URL to the audio file (MP3, WAV, FLAC). Some presets analyze the audio file; others (like `catalog_metadata`) work from metadata alone. |
+| `--max-tokens <n>` | No | Max tokens to generate (default 512). |
 
 ---
 
