@@ -287,7 +287,9 @@
             "pages": [
               "api-reference/connectors/list",
               "api-reference/connectors/authorize",
-              "api-reference/connectors/disconnect"
+              "api-reference/connectors/disconnect",
+              "api-reference/connectors/list-actions",
+              "api-reference/connectors/execute-action"
             ]
           },
           {
