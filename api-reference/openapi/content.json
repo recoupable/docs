@@ -360,7 +360,7 @@
     },
     "/api/sandboxes/files": {
       "post": {
-        "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Accepts an array of file URLs and commits each file to the specified directory path within the repository. Supports submodule resolution — if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Accepts an array of file URLs and commits each file to the specified directory path within the repository. Supports submodule resolution \u2014 if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
         "requestBody": {
           "description": "JSON body containing file URLs and target path",
           "required": true,
@@ -433,7 +433,7 @@
             "url": "https://recoup-api.vercel.app"
           }
         ],
-        "description": "Generate high-quality images using AI models. Images are automatically stored on Arweave and include In Process moment metadata for provenance and ownership tracking.",
+        "description": "**Legacy.** Predates the current `/api/content/*` primitives. Generates images via the x402 payment protocol and stores results on Arweave with In Process moment metadata for provenance tracking. Still in use (including by the MCP server). New integrations should prefer the lighter [`POST /api/content/image`](/api-reference/content/generate-image), which returns the generated image directly without auto-storage side effects.",
         "parameters": [
           {
             "name": "prompt",
@@ -481,7 +481,7 @@
     },
     "/api/transcribe": {
       "post": {
-        "description": "Transcribe audio files using OpenAI Whisper. The API saves both the original audio file and the generated markdown transcript to the customer's files in Supabase Storage.",
+        "description": "**Legacy.** Predates the current `/api/content/*` primitives. Transcribes audio using OpenAI Whisper and writes both the audio file and the transcript to backend storage as files on the account/artist. New integrations should prefer the stateless [`POST /api/content/transcribe`](/api-reference/content/transcribe-audio), which returns the transcript with word-level timestamps and no side effects.",
         "requestBody": {
           "description": "Audio transcription request",
           "required": true,
@@ -549,7 +549,7 @@
     },
     "/api/content": {
       "patch": {
-        "description": "Apply ffmpeg edits to a video — trim, crop, resize, or overlay text. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array.",
+        "description": "Apply ffmpeg edits to a video \u2014 trim, crop, resize, or overlay text. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array.",
         "security": [
           {
             "apiKeyAuth": []
@@ -581,7 +581,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -591,7 +591,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -615,7 +615,8 @@
     },
     "/api/content/create": {
       "post": {
-        "description": "Trigger the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden via `songs` URLs or `images`, then triggers a background task that generates a short-form video. Returns `runIds` — an array of run IDs that can each be polled via [GET /api/tasks/runs](/api-reference/tasks/runs).",
+        "deprecated": true,
+        "description": "**Legacy pipeline.** Runs the full content-creation pipeline (image, video, caption, edit, upscale) in a single call. Powers the Content Agent Slack bot. New integrations should compose the individual primitives ([`POST /api/content/image`](/api-reference/content/generate-image), [`POST /api/content/video`](/api-reference/content/generate-video), [`POST /api/content/caption`](/api-reference/content/generate-caption), and so on) for finer-grained control.\n\nTriggers the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden via `songs` URLs or `images`, then triggers a background task that generates a short-form video. Returns `{run_id}` for polling progress via [`GET /api/tasks/runs`](/api-reference/tasks/runs).",
         "security": [
           {
             "apiKeyAuth": []
@@ -637,7 +638,7 @@
         },
         "responses": {
           "202": {
-            "description": "Pipeline triggered successfully. Returns `runIds` — an array of run IDs. Poll each via [GET /api/tasks/runs](/api-reference/tasks/runs) to check progress.",
+            "description": "Pipeline triggered successfully. Returns `runIds` \u2014 an array of run IDs. Poll each via [GET /api/tasks/runs](/api-reference/tasks/runs) to check progress.",
             "content": {
               "application/json": {
                 "schema": {
@@ -647,7 +648,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — missing artist identifier, artist is missing required files, or template not found",
+            "description": "Validation failed \u2014 missing artist identifier, artist is missing required files, or template not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -657,7 +658,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -667,7 +668,7 @@
             }
           },
           "404": {
-            "description": "Artist not found — the provided artist_account_id does not match any artist",
+            "description": "Artist not found \u2014 the provided artist_account_id does not match any artist",
             "content": {
               "application/json": {
                 "schema": {
@@ -681,7 +682,7 @@
     },
     "/api/content/templates": {
       "get": {
-        "description": "List all available content creation templates. Templates are optional — every content primitive works without one. When you do use a template, it provides a complete creative recipe: image prompts, video motion config, caption style rules, and edit operations. Returns template ID and description only — enough to pick the right one.",
+        "description": "List all available content creation templates. Templates are optional \u2014 every content primitive works without one. When you do use a template, it provides a complete creative recipe: image prompts, video motion config, caption style rules, and edit operations. Returns template ID and description only \u2014 enough to pick the right one.",
         "security": [
           {
             "apiKeyAuth": []
@@ -702,7 +703,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -749,7 +750,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -817,7 +818,7 @@
             }
           },
           "400": {
-            "description": "Bad request — artist_account_id is required",
+            "description": "Bad request \u2014 artist_account_id is required",
             "content": {
               "application/json": {
                 "schema": {
@@ -827,7 +828,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -837,7 +838,7 @@
             }
           },
           "404": {
-            "description": "Artist not found — the provided artist_account_id does not match any artist",
+            "description": "Artist not found \u2014 the provided artist_account_id does not match any artist",
             "content": {
               "application/json": {
                 "schema": {
@@ -851,7 +852,7 @@
     },
     "/api/content/estimate": {
       "get": {
-        "description": "Estimate the cost of running the content creation pipeline. Calculates per-step and per-video costs based on current pricing. Supports comparing multiple workflow profiles (e.g., premium vs. budget) and projecting batch costs. This endpoint is informational only — it does not trigger any pipeline execution or spend credits.",
+        "description": "Estimate the cost of running the content creation pipeline. Calculates per-step and per-video costs based on current pricing. Supports comparing multiple workflow profiles (e.g., premium vs. budget) and projecting batch costs. This endpoint is informational only \u2014 it does not trigger any pipeline execution or spend credits.",
         "security": [
           {
             "apiKeyAuth": []
@@ -907,7 +908,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -943,7 +944,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Slack Events API envelope — the shape depends on the event type"
+                "description": "Slack Events API envelope \u2014 the shape depends on the event type"
               }
             }
           }
@@ -972,7 +973,7 @@
     },
     "/api/content-agent/callback": {
       "post": {
-        "description": "Internal callback endpoint for the `poll-content-run` Trigger.dev task. Receives content generation results and posts them back to the originating Slack thread. Authenticated via the `x-callback-secret` header.\n\nThis endpoint is not intended for external use — it is called automatically by the polling task when content runs complete, fail, or time out.",
+        "description": "Internal callback endpoint for the `poll-content-run` Trigger.dev task. Receives content generation results and posts them back to the originating Slack thread. Authenticated via the `x-callback-secret` header.\n\nThis endpoint is not intended for external use \u2014 it is called automatically by the polling task when content runs complete, fail, or time out.",
         "requestBody": {
           "description": "Content generation results from the polling task",
           "required": true,
@@ -1109,7 +1110,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -1119,7 +1120,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -1143,7 +1144,7 @@
     },
     "/api/content/analyze": {
       "post": {
-        "description": "Analyze a video and answer questions about it. Pass a video URL and a text prompt — for example, \"Describe what happens\" or \"Rate the visual quality 1-10.\" Returns the generated text.",
+        "description": "Analyze a video and answer questions about it. Pass a video URL and a text prompt \u2014 for example, \"Describe what happens\" or \"Rate the visual quality 1-10.\" Returns the generated text.",
         "security": [
           {
             "apiKeyAuth": []
@@ -1175,7 +1176,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -1185,7 +1186,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -1241,7 +1242,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -1251,7 +1252,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -1307,7 +1308,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -1317,7 +1318,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -1341,7 +1342,7 @@
     },
     "/api/content/video": {
       "post": {
-        "description": "Generate a video. Set `mode` to control what kind of video you get:\n\n- `prompt` — create a video from a text description\n- `animate` — animate a still image\n- `reference` — use an image as a style/subject reference (not the first frame)\n- `extend` — continue an existing video\n- `first-last` — generate a video that transitions between two images\n- `lipsync` — sync face movement to an audio clip\n\nIf `mode` is omitted, it's inferred from the inputs you provide.",
+        "description": "Generate a video. Set `mode` to control what kind of video you get:\n\n- `prompt` \u2014 create a video from a text description\n- `animate` \u2014 animate a still image\n- `reference` \u2014 use an image as a style/subject reference (not the first frame)\n- `extend` \u2014 continue an existing video\n- `first-last` \u2014 generate a video that transitions between two images\n- `lipsync` \u2014 sync face movement to an audio clip\n\nIf `mode` is omitted, it's inferred from the inputs you provide.",
         "security": [
           {
             "apiKeyAuth": []
@@ -1373,7 +1374,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -1383,7 +1384,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -1439,7 +1440,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -1449,7 +1450,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -1514,7 +1515,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -1524,7 +1525,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -1581,7 +1582,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -1591,7 +1592,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -1656,7 +1657,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -1666,7 +1667,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -1690,7 +1691,7 @@
     },
     "/api/music/plan": {
       "post": {
-        "description": "Create a composition plan from a text prompt. A composition plan is a structured representation of a song — sections, styles, lyrics, and durations — that you can review and tweak before passing to the compose endpoint. This endpoint is free and does not consume credits.",
+        "description": "Create a composition plan from a text prompt. A composition plan is a structured representation of a song \u2014 sections, styles, lyrics, and durations \u2014 that you can review and tweak before passing to the compose endpoint. This endpoint is free and does not consume credits.",
         "security": [
           {
             "apiKeyAuth": []
@@ -1722,7 +1723,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -1732,7 +1733,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -1756,7 +1757,7 @@
     },
     "/api/music/video-to-music": {
       "post": {
-        "description": "Generate background music from video files. Upload 1–10 video files via multipart/form-data (max 200 MB total). The AI analyzes the video content and generates music that matches the mood, pacing, and style. Optionally provide a text description and style tags to guide the output.",
+        "description": "Generate background music from video files. Upload 1\u201310 video files via multipart/form-data (max 200 MB total). The AI analyzes the video content and generates music that matches the mood, pacing, and style. Optionally provide a text description and style tags to guide the output.",
         "security": [
           {
             "apiKeyAuth": []
@@ -1834,7 +1835,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -1844,7 +1845,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -1929,7 +1930,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -1939,7 +1940,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -2371,13 +2372,34 @@
           },
           "aspect_ratio": {
             "type": "string",
-            "enum": ["auto", "21:9", "16:9", "3:2", "4:3", "5:4", "1:1", "4:5", "3:4", "2:3", "9:16", "4:1", "1:4", "8:1", "1:8"],
+            "enum": [
+              "auto",
+              "21:9",
+              "16:9",
+              "3:2",
+              "4:3",
+              "5:4",
+              "1:1",
+              "4:5",
+              "3:4",
+              "2:3",
+              "9:16",
+              "4:1",
+              "1:4",
+              "8:1",
+              "1:8"
+            ],
             "default": "auto",
             "description": "Aspect ratio of the generated image"
           },
           "resolution": {
             "type": "string",
-            "enum": ["0.5K", "1K", "2K", "4K"],
+            "enum": [
+              "0.5K",
+              "1K",
+              "2K",
+              "4K"
+            ],
             "default": "1K",
             "description": "Output resolution"
           },
@@ -2460,7 +2482,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Optional list of song slugs or public URLs to use for the audio track. Song slugs match filenames without extension from the artist's `songs/` directory (e.g. `\"hiccups\"` for `hiccups.mp3`). Public URLs (e.g. `\"https://example.com/my-song.mp3\"`) are downloaded, transcribed, and clipped directly — bypassing the Git repo. When omitted, all songs in the artist's repo are eligible.",
+            "description": "Optional list of song slugs or public URLs to use for the audio track. Song slugs match filenames without extension from the artist's `songs/` directory (e.g. `\"hiccups\"` for `hiccups.mp3`). Public URLs (e.g. `\"https://example.com/my-song.mp3\"`) are downloaded, transcribed, and clipped directly \u2014 bypassing the Git repo. When omitted, all songs in the artist's repo are eligible.",
             "example": [
               "hiccups",
               "https://example.com/unreleased-track.mp3"
@@ -2489,7 +2511,7 @@
           "status",
           "artist_account_id"
         ],
-        "description": "Confirmation that the content creation pipeline has been triggered. Always returns `runIds` as an array — even for a single run, it contains one element.",
+        "description": "Confirmation that the content creation pipeline has been triggered. Always returns `runIds` as an array \u2014 even for a single run, it contains one element.",
         "properties": {
           "runIds": {
             "type": "array",
@@ -2678,7 +2700,7 @@
           "image_url": {
             "type": "string",
             "format": "uri",
-            "description": "Required. Image URL used as the input frame. The underlying model (fal-ai/veo3.1/fast/image-to-video) requires an image — text-only prompt mode is not supported. Generate an image first via POST /api/content/image if needed."
+            "description": "Required. Image URL used as the input frame. The underlying model (fal-ai/veo3.1/fast/image-to-video) requires an image \u2014 text-only prompt mode is not supported. Generate an image first via POST /api/content/image if needed."
           },
           "end_image_url": {
             "type": "string",
@@ -2949,7 +2971,7 @@
           "id",
           "description"
         ],
-        "description": "A content creation template — a complete creative recipe defining visual style, composition, caption rules, and edit operations. Templates are optional; all primitives work without one.",
+        "description": "A content creation template \u2014 a complete creative recipe defining visual style, composition, caption rules, and edit operations. Templates are optional; all primitives work without one.",
         "properties": {
           "id": {
             "type": "string",
@@ -3556,7 +3578,7 @@
         "properties": {
           "prompt": {
             "type": "string",
-            "description": "Text prompt describing the desired song — mood, genre, instruments, lyrics, structure."
+            "description": "Text prompt describing the desired song \u2014 mood, genre, instruments, lyrics, structure."
           },
           "composition_plan": {
             "type": "object",
@@ -3590,7 +3612,7 @@
         "properties": {
           "prompt": {
             "type": "string",
-            "description": "Text prompt describing the desired song — mood, genre, instruments, lyrics, structure."
+            "description": "Text prompt describing the desired song \u2014 mood, genre, instruments, lyrics, structure."
           },
           "composition_plan": {
             "type": "object",
@@ -3681,7 +3703,7 @@
         "properties": {
           "prompt": {
             "type": "string",
-            "description": "Text prompt describing the desired song — mood, genre, instruments, lyrics, structure."
+            "description": "Text prompt describing the desired song \u2014 mood, genre, instruments, lyrics, structure."
           },
           "composition_plan": {
             "type": "object",
