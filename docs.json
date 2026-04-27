@@ -182,10 +182,17 @@
         "tab": "Artists",
         "groups": [
           {
+            "group": "Workflows",
+            "pages": [
+              "workflows/create-artist"
+            ]
+          },
+          {
             "group": "Artist Management",
             "pages": [
               "api-reference/artists/list",
               "api-reference/artists/create",
+              "api-reference/artists/update",
               "api-reference/artists/pin",
               "api-reference/artists/unpin",
               "api-reference/artists/delete",
@@ -341,7 +348,9 @@
             "pages": [
               "api-reference/connectors/list",
               "api-reference/connectors/authorize",
-              "api-reference/connectors/disconnect"
+              "api-reference/connectors/disconnect",
+              "api-reference/connectors/list-actions",
+              "api-reference/connectors/execute-action"
             ]
           },
           {
@@ -353,7 +362,6 @@
           {
             "group": "Subscriptions",
             "pages": [
-              "api-reference/subscriptions/get",
               "api-reference/subscriptions/sessions-create"
             ]
           },
@@ -368,7 +376,8 @@
               "api-reference/admins/agent-signups",
               "api-reference/admins/coding-agent-slack-tags",
               "api-reference/admins/coding-pr",
-              "api-reference/admins/content-slack-tags"
+              "api-reference/admins/content-slack-tags",
+              "api-reference/admins/artists-pro"
             ]
           }
         ]
@@ -463,7 +472,7 @@
   "metatags": {
     "og:image": "/images/icon-with-background.png",
     "og:site_name": "Recoup API",
-    "og:description": "Music intelligence API — 40+ tools for artist research, content creation, and music business automation. Built for developers and AI agents.",
+    "og:description": "Music intelligence API \u2014 40+ tools for artist research, content creation, and music business automation. Built for developers and AI agents.",
     "twitter:card": "summary_large_image"
   }
 }
