@@ -1,13 +1,43 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
+  "theme": "sequoia",
   "name": "Recoup",
   "colors": {
-    "primary": "#345A5D",
-    "light": "#4A7A7D",
-    "dark": "#1E3A3D"
+    "primary": "#0a0a0a",
+    "light": "#ededed",
+    "dark": "#0a0a0a"
   },
   "favicon": "/favicon.ico",
+  "appearance": {
+    "default": "system"
+  },
+  "fonts": {
+    "heading": {
+      "family": "Geist Pixel Square",
+      "weight": 400,
+      "source": "/fonts/GeistPixel/GeistPixel-Square.woff2",
+      "format": "woff2"
+    },
+    "body": {
+      "family": "Geist",
+      "weight": 400,
+      "source": "/fonts/Geist/Geist-Variable.woff2",
+      "format": "woff2"
+    }
+  },
+  "background": {
+    "color": {
+      "light": "#f3f3f3",
+      "dark": "#171717"
+    }
+  },
+  "styling": {
+    "eyebrows": "breadcrumbs",
+    "codeblocks": "dark"
+  },
+  "icons": {
+    "library": "lucide"
+  },
   "navigation": {
     "tabs": [
       {
@@ -367,8 +397,9 @@
     }
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.png"
+    "light": "/logo/wordmark-lightmode.svg",
+    "dark": "/logo/wordmark-darkmode.svg",
+    "href": "https://recoupable.com"
   },
   "navbar": {
     "links": [
