@@ -1,19 +1,25 @@
 ---
 title: "CLI"
-description: "Install and use the Recoup CLI to interact with the platform from your terminal."
+description: "Install the Recoup CLI and interact with the platform from your terminal."
 ---
 
-The Recoup CLI (`@recoupable/cli`) is a command-line wrapper around the Recoup API. It's available as a global npm package and is pre-installed in sandbox environments.
+The Recoup CLI (`@recoupable/cli`) wraps the Recoup API for terminal-first workflows. It's available as a global npm package and comes pre-installed in sandbox environments.
 
-## Installation
+<Note>
+**The CLI is in beta.** The commands listed below are what's shipped today (v0.1.13). For research workflows and most content operations, call the [REST API](/api-reference) directly — the CLI is gradually catching up.
+
+**Agents:** if a command isn't listed below, don't retry — fall back to the corresponding REST endpoint linked under each command.
+</Note>
+
+## Install
 
 ```bash
 npm install -g @recoupable/cli
 ```
 
-## Authentication
+## Authenticate
 
-Set your API key as an environment variable. You can get a key from the [API Keys page](https://chat.recoupable.com/keys).
+Set your API key as an environment variable:
 
 ```bash
 export RECOUP_API_KEY=your-api-key
@@ -25,6 +31,10 @@ Verify it works:
 recoup whoami
 ```
 
+<Tip>
+Get an API key from the [API Keys page](https://chat.recoupable.com/keys) or use the [agent signup](/agents) for instant key generation.
+</Tip>
+
 ## Configuration
 
 | Variable | Required | Default | Description |
@@ -34,7 +44,11 @@ recoup whoami
 
 All commands support `--json` for machine-readable output and `--help` for usage info.
 
-## whoami
+---
+
+## Commands
+
+### whoami
 
 Show the authenticated account. See [`GET /api/accounts/id`](/api-reference/accounts/id).
 
@@ -43,50 +57,44 @@ recoup whoami
 recoup whoami --json
 ```
 
-## orgs
+### orgs
 
-Manage organizations. See [`GET /api/organizations`](/api-reference/organizations/list).
+List organizations. See [`GET /api/organizations`](/api-reference/organizations/list).
 
 ```bash
 recoup orgs list
 recoup orgs list --account <accountId>
-recoup orgs list --json
 ```
 
-## artists
+### artists
 
-Manage artists. See [`GET /api/artists`](/api-reference/artists/list).
+List artists. See [`GET /api/artists`](/api-reference/artists/list).
 
 ```bash
 recoup artists list
 recoup artists list --org <orgId>
 recoup artists list --account <accountId>
-recoup artists list --json
 ```
 
-## notifications
+### notifications
 
-Send a notification email to the authenticated account's email address. The recipient is automatically resolved from your API key — no need to specify a `to` address.
+Send a notification email to the authenticated account. See [`POST /api/notifications`](/api-reference/notifications/create).
 
 ```bash
 recoup notifications --subject "Pulse Report" --text "Here's your weekly summary."
-recoup notifications --subject "Update" --cc manager@example.com --text "New release scheduled."
-recoup notifications --subject "Weekly Pulse" --html "<h1>Pulse Report</h1><p>BVB release planning is <strong>active</strong>.</p>"
-recoup notifications --subject "Pulse Report" --account <accountId> --text "Here's your weekly summary."
+recoup notifications --subject "Update" --html "<h1>Report</h1><p>Details here.</p>"
 ```
 
 | Flag | Required | Description |
 |------|----------|-------------|
 | `--subject <text>` | Yes | Email subject line |
-| `--text <body>` | No | Plain text or Markdown body (rendered as HTML) |
+| `--text <body>` | No | Plain text or Markdown body |
 | `--html <body>` | No | Raw HTML body (takes precedence over `--text`) |
 | `--cc <email>` | No | CC recipient (repeatable) |
 | `--room-id <id>` | No | Room ID for a chat link in the email footer |
 | `--account <accountId>` | No | Send to a specific account (org keys only) |
 
-This command wraps [`POST /api/notifications`](/api-reference/notifications/create).
-
-## chats
+### chats
 
 Manage chats. See [`GET /api/chats`](/api-reference/chat/chats) and [`POST /api/chats`](/api-reference/chat/create).
 
@@ -94,10 +102,9 @@ Manage chats. See [`GET /api/chats`](/api-reference/chat/chats) and [`POST /api/
 recoup chats list
 recoup chats create --name "My Topic"
 recoup chats create --name "My Topic" --artist <artistId>
-recoup chats list --json
 ```
 
-## sandboxes
+### sandboxes
 
 Manage sandboxes. See [`GET /api/sandboxes`](/api-reference/sandboxes/list) and [`POST /api/sandboxes`](/api-reference/sandboxes/create).
 
@@ -105,399 +112,69 @@ Manage sandboxes. See [`GET /api/sandboxes`](/api-reference/sandboxes/list) and 
 recoup sandboxes list
 recoup sandboxes create
 recoup sandboxes create --command "ls -la"
-recoup sandboxes list --json
 ```
 
-## tasks
+### tasks
 
-Check the status of background task runs. See [`GET /api/tasks/runs`](/api-reference/tasks/runs).
+Check background task status. See [`GET /api/tasks/runs`](/api-reference/tasks/runs).
 
 ```bash
 recoup tasks status --run <runId>
-recoup tasks status --run <runId> --json
+```
+
+### songs
+
+Run AI music analysis. See [`POST /api/songs/analyze`](/api-reference/songs/analyze) and [`GET /api/songs/analyze/presets`](/api-reference/songs/analyze-presets).
+
+```bash
+recoup songs presets
+recoup songs analyze --preset catalog_metadata --audio https://example.com/track.mp3
+recoup songs analyze --prompt "Describe the production style" --audio https://example.com/track.mp3
 ```
 
 | Flag | Required | Description |
 |------|----------|-------------|
-| `--run <id>` | Yes | Trigger.dev run ID |
-
-## research
-
-Music industry research — streaming metrics, audience demographics, playlist placements, competitive analysis, and web intelligence. All data is accessed through your `RECOUP_API_KEY`.
-
-Artist-scoped commands (like `metrics`, `audience`, `similar`) accept an **artist name** or a **Recoup artist ID** (UUID). The API resolves the artist automatically. If the name is ambiguous (multiple matches), the API returns the top results for disambiguation.
-
-### Search for an artist
-
-```bash
-recoup research "Drake"
-recoup research "Phoebe Bridgers" --json
-```
-
-See [`GET /api/research`](/api-reference/research/search).
-
-### Lookup by platform URL
-
-Find an artist from a Spotify URL, Apple Music link, or any platform ID.
-
-```bash
-recoup research lookup "https://open.spotify.com/artist/3TVXtAsR1Inumwj472S9r4"
-recoup research lookup "3TVXtAsR1Inumwj472S9r4"
-```
-
-See [`GET /api/research/lookup`](/api-reference/research/lookup).
-
-### Artist profile and career
-
-```bash
-recoup research profile "Drake"
-recoup research career "Drake"
-recoup research insights "Drake"
-```
-
-| Subcommand | Description | API endpoint |
-|------------|-------------|-------------|
-| `profile` | Full artist profile — bio, genres, social URLs, label | [`GET /api/research/profile`](/api-reference/research/profile) |
-| `career` | Career timeline and key milestones | [`GET /api/research/career`](/api-reference/research/career) |
-| `insights` | AI-generated observations and trends | [`GET /api/research/insights`](/api-reference/research/insights) |
-
-### Streaming and social metrics
-
-Get platform-specific metrics over time. Supports 14 platforms.
-
-```bash
-recoup research metrics "Drake" --source spotify
-recoup research metrics "Drake" --source instagram
-recoup research metrics "Drake" --source tiktok
-recoup research metrics "Drake" --source youtube_channel
-```
-
-Valid `--source` values: `spotify`, `instagram`, `tiktok`, `twitter`, `facebook`, `youtube_channel`, `youtube_artist`, `soundcloud`, `deezer`, `twitch`, `line`, `melon`, `wikipedia`, `bandsintown`.
-
-See [`GET /api/research/metrics`](/api-reference/research/metrics).
-
-### Audience and geography
-
-```bash
-recoup research audience "Drake"
-recoup research audience "Drake" --platform tiktok
-recoup research audience "Drake" --platform youtube
-recoup research cities "Drake"
-```
-
-| Subcommand | Description | API endpoint |
-|------------|-------------|-------------|
-| `audience` | Age, gender, country breakdown. `--platform`: `instagram` (default), `tiktok`, `youtube` | [`GET /api/research/audience`](/api-reference/research/audience) |
-| `cities` | Top cities by listener concentration | [`GET /api/research/cities`](/api-reference/research/cities) |
-
-### Social URLs
-
-Get all social and streaming links for an artist.
-
-```bash
-recoup research urls "Drake"
-```
-
-See [`GET /api/research/urls`](/api-reference/research/urls).
-
-### Instagram posts
-
-Get an artist's top Instagram posts and reels by engagement.
-
-```bash
-recoup research instagram-posts "Drake"
-```
-
-See [`GET /api/research/instagram-posts`](/api-reference/research/instagram-posts).
-
-### Competitive landscape
-
-```bash
-recoup research similar "Drake"
-recoup research similar "Drake" --audience high --genre high --limit 20
-```
-
-Configuration options: `--audience`, `--genre`, `--mood`, `--musicality` (values: `high`, `medium`, `low`).
-
-See [`GET /api/research/similar`](/api-reference/research/similar).
-
-### Playlists
-
-```bash
-recoup research playlists "Drake"
-recoup research playlists "Drake" --platform applemusic
-recoup research playlists "Drake" --editorial
-recoup research playlists "Drake" --status past --since 2025-01-01
-recoup research playlists "Drake" --sort followers --limit 50
-```
-
-| Flag | Description |
-|------|-------------|
-| `--platform <p>` | `spotify` (default), `applemusic`, `deezer`, `amazon`, `youtube` |
-| `--editorial` | Only editorial playlists |
-| `--status <s>` | `current` (default) or `past` |
-| `--since <date>` | Filter by date (YYYY-MM-DD) |
-| `--sort <field>` | Sort results (e.g., `followers`) |
-| `--limit <n>` | Max results |
-
-See [`GET /api/research/playlists`](/api-reference/research/playlists).
-
-### Discography
-
-```bash
-recoup research albums "Drake"
-recoup research tracks "Drake"
-```
-
-See [`GET /api/research/albums`](/api-reference/research/albums) and [`GET /api/research/tracks`](/api-reference/research/tracks).
-
-### Track details
-
-Get metadata for a specific track — look up by name or Spotify URL.
-
-```bash
-recoup research track "God's Plan"
-recoup research track "https://open.spotify.com/track/2grjqo0Frpf2..."
-```
-
-See [`GET /api/research/track`](/api-reference/research/track).
-
-### Playlist and curator details
-
-Get metadata for a specific playlist or its curator.
-
-```bash
-recoup research playlist spotify 37i9dQZF1DXcBWIGoYBM5M
-recoup research curator spotify 1
-```
-
-See [`GET /api/research/playlist`](/api-reference/research/playlist) and [`GET /api/research/curator`](/api-reference/research/curator).
-
-### Discover artists
-
-Find artists by criteria — country, genre, listener ranges, growth rate.
-
-```bash
-recoup research discover --country US --spotify-listeners 100000 500000
-recoup research discover --genre 86 --sort weekly_diff.sp_monthly_listeners
-```
-
-| Flag | Description |
-|------|-------------|
-| `--country <code>` | ISO country code (US, BR, GB, etc.) |
-| `--genre <id>` | Genre ID (use `recoup research genres` to list) |
-| `--spotify-listeners <min> <max>` | Monthly listener range |
-| `--sort <field>` | Sort field (e.g., `weekly_diff.sp_monthly_listeners`) |
-| `--limit <n>` | Max results |
-
-See [`GET /api/research/discover`](/api-reference/research/discover).
-
-### Milestones
-
-Get an artist's activity feed — playlist adds, chart entries, and notable events.
-
-```bash
-recoup research milestones "Drake"
-recoup research milestones "Drake" --json
-```
-
-See [`GET /api/research/milestones`](/api-reference/research/milestones).
-
-### Venues
-
-Get venues an artist has performed at, including capacity and location.
-
-```bash
-recoup research venues "Drake"
-recoup research venues "Drake" --json
-```
-
-See [`GET /api/research/venues`](/api-reference/research/venues).
-
-### Rank
-
-Get an artist's global Chartmetric ranking.
-
-```bash
-recoup research rank "Drake"
-recoup research rank "Drake" --json
-```
-
-See [`GET /api/research/rank`](/api-reference/research/rank).
-
-### Charts
-
-Get global chart positions for a platform. NOT artist-scoped — returns the full chart.
-
-```bash
-recoup research charts --platform spotify
-recoup research charts --platform spotify --country US
-recoup research charts --platform applemusic --country GB --interval weekly --json
-```
-
-| Flag | Required | Description |
-|------|----------|-------------|
-| `--platform <name>` | Yes | Chart platform (spotify, applemusic, tiktok, youtube, itunes, shazam) |
-| `--country <code>` | No | ISO country code (US, GB, DE, etc.) |
-| `--interval <interval>` | No | Time interval (e.g. daily, weekly) |
-| `--type <type>` | No | Chart type (varies by platform) |
-| `--latest` | No | Return only the most recent chart |
-
-See [`GET /api/research/charts`](/api-reference/research/charts).
-
-### Radio stations
-
-List radio stations tracked by Chartmetric.
-
-```bash
-recoup research radio
-recoup research radio --json
-```
-
-See [`GET /api/research/radio`](/api-reference/research/radio).
-
-### Reference data
-
-```bash
-recoup research genres
-recoup research festivals
-```
-
-See [`GET /api/research/genres`](/api-reference/research/genres) and [`GET /api/research/festivals`](/api-reference/research/festivals).
-
-### Web research
-
-Search the web for narrative context, press coverage, and cultural information that structured data doesn't cover.
-
-```bash
-recoup research web "Drake brand partnerships sync licensing"
-recoup research web "Phoebe Bridgers fan community psychographics"
-```
-
-See [`POST /api/research/web`](/api-reference/research/web).
-
-### Deep research report
-
-Comprehensive multi-source research that synthesizes information from across the web into a cited report.
-
-```bash
-recoup research report "Drake"
-recoup research report "Tell me everything about Phoebe Bridgers — bio, streaming metrics, fan base, competitive landscape, and revenue opportunities"
-```
-
-See [`POST /api/research/deep`](/api-reference/research/deep).
-
-### People search
-
-Search for people in the music industry — artists, managers, A&R reps, producers. Returns profiles with LinkedIn data.
-
-```bash
-recoup research people "A&R reps at Atlantic Records"
-recoup research people "music managers in Los Angeles R&B"
-```
-
-See [`POST /api/research/people`](/api-reference/research/people).
-
-### Extract URL
-
-Extract clean markdown content from any public URL. Handles JavaScript-heavy pages and PDFs.
-
-```bash
-recoup research extract "https://en.wikipedia.org/wiki/Drake_(musician)" --objective "biography and discography"
-recoup research extract "https://open.spotify.com/artist/..." --full-content
-```
-
-Accepts up to 10 URLs per call.
-
-See [`POST /api/research/extract`](/api-reference/research/extract).
-
-### Enrich
-
-Get structured data about any entity from web research. Provide a description and a JSON schema — get typed data back with citations.
-
-```bash
-recoup research enrich "Drake rapper" --schema '{"properties": {"real_name": {"type": "string"}, "label": {"type": "string"}, "hometown": {"type": "string"}}}'
-```
-
-Processors: `base` (fast, default), `core` (balanced), `ultra` (comprehensive).
-
-See [`POST /api/research/enrich`](/api-reference/research/enrich).
-
-### Using Recoup artist IDs
-
-Artist IDs are supported on artist-scoped commands (see the note above). Example:
-
-```bash
-recoup research metrics de05ba8c-7e29-4f1a-93a7-3635653599f6 --source spotify
-```
-
-### Workflow example: full artist research
-
-```bash
-# Pull structured data (all by name, run in parallel)
-recoup research metrics "Phoebe Bridgers" --source spotify --json
-recoup research audience "Phoebe Bridgers" --json
-recoup research cities "Phoebe Bridgers" --json
-recoup research similar "Phoebe Bridgers" --audience high --genre high --json
-recoup research playlists "Phoebe Bridgers" --editorial --json
-
-# Add web context
-recoup research web "Phoebe Bridgers biography career milestones" --json
-recoup research web "Phoebe Bridgers fan community brand partnerships" --json
-```
+| `--audio <url>` | Yes | Public URL to the audio file (MP3, WAV, FLAC) |
+| `--preset <name>` | No | Curated analysis preset (omit when using `--prompt`) |
+| `--prompt <text>` | No | Custom text prompt (omit when using `--preset`) |
+| `--max-tokens <n>` | No | Max tokens to generate (default 512) |
 
 ---
 
 ## content
 
-Content-creation pipeline commands. Generate AI-powered social videos for artists.
+Content creation pipeline — generate AI-powered social videos for artists.
 
 ### List templates
 
-List available content templates. See [`GET /api/content/templates`](/api-reference/content/templates).
-
 ```bash
 recoup content templates
-recoup content templates --json
 ```
 
-### Validate artist
+### Validate an artist
 
-Check that an artist has the required assets (face-guide, songs, context files) before creating content. See [`POST /api/content/validate`](/api-reference/content/validate).
+Check that an artist has the required assets before creating content. See [`GET /api/content/validate`](/api-reference/content/validate).
 
 ```bash
 recoup content validate --artist <artistAccountId>
-recoup content validate --artist <artistAccountId> --json
 ```
-
-| Flag | Required | Description |
-|------|----------|-------------|
-| `--artist <id>` | Yes | Artist account ID |
 
 ### Estimate cost
 
-Preview the estimated cost and duration for a content run without starting it. See [`POST /api/content/estimate`](/api-reference/content/estimate).
+Preview estimated cost and duration before kicking off the pipeline. See [`POST /api/content/estimate`](/api-reference/content/estimate).
 
 ```bash
 recoup content estimate --artist <artistAccountId>
-recoup content estimate --artist <artistAccountId> --template <name> --json
+recoup content estimate --artist <artistAccountId> --template <name>
 ```
-
-| Flag | Required | Description |
-|------|----------|-------------|
-| `--artist <id>` | Yes | Artist account ID |
-| `--template <name>` | No | Template name (default: random) |
-| `--lipsync` | No | Enable lipsync mode |
-| `--upscale` | No | Enable upscaling |
 
 ### Create content
 
-Trigger the full content-creation pipeline. Returns a run ID you can check with [`recoup tasks status`](/cli#tasks). See [`POST /api/content`](/api-reference/content/create).
+Run the full content-creation pipeline for an artist. See [`POST /api/content/create`](/api-reference/content/create).
 
 ```bash
 recoup content create --artist <artistAccountId>
 recoup content create --artist <artistAccountId> --template <name> --lipsync --upscale
-recoup content create --artist <artistAccountId> --json
 ```
 
 | Flag | Required | Description |
@@ -507,3 +184,7 @@ recoup content create --artist <artistAccountId> --json
 | `--lipsync` | No | Enable lipsync mode |
 | `--upscale` | No | Enable upscaling |
 | `--caption-length <n>` | No | Max caption length in characters |
+
+<Tip>
+For finer-grained control (individual image, video, caption, transcription, edit, upscale, or analyze operations), call the [content REST endpoints](/api-reference/content/generate-image) directly. Those primitives aren't yet exposed as individual CLI subcommands.
+</Tip>
