@@ -1,49 +1,23 @@
 ---
-title: "MCP"
-description: "Connect AI agents to the Recoup platform using the Model Context Protocol (MCP) server."
+title: "MCP Server"
+description: "Connect any AI agent to Recoup via the Model Context Protocol — Claude, ChatGPT, Cursor, and 40+ Recoup tools natively."
 ---
 
-The Recoup API exposes an [MCP](https://modelcontextprotocol.io/) server that AI agents can connect to for tool use. The server is available at:
+Recoup exposes an [MCP](https://modelcontextprotocol.io/) server so any AI agent can use Recoup tools natively. Claude, ChatGPT, Cursor, Windsurf, and any MCP-compatible agent can research artists across Spotify and the open web, generate images and videos, manage catalogs, schedule tasks, and more — without writing API calls.
 
 ```
 https://recoup-api.vercel.app/mcp
 ```
 
-## Authentication
+## Setup
 
-All MCP tools require an API key. Pass it as a Bearer token in the `Authorization` header when connecting to the MCP server.
-
-You can get a key from the [API Keys page](https://chat.recoupable.com/keys).
-
-## Tools
-
-### prompt_sandbox
-
-Send a prompt to OpenClaw running in a persistent per-account sandbox. The sandbox is reused across calls — if one is already running it picks up where you left off, otherwise a new one is created from the account's latest snapshot.
-
-Returns raw `stdout` and `stderr` from the command. The sandbox stays alive after each prompt for follow-up interactions.
-
-**Input schema:**
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `prompt` | `string` | Yes | The prompt to send to OpenClaw in the sandbox. |
-
-**Response fields:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `sandboxId` | `string` | The Vercel Sandbox ID. |
-| `stdout` | `string` | Standard output from the command. |
-| `stderr` | `string` | Standard error from the command. |
-| `exitCode` | `number` | Process exit code (`0` = success). |
-| `created` | `boolean` | `true` if a new sandbox was created, `false` if an existing one was reused. |
-
-**Example usage (TypeScript with MCP SDK):**
+Pass your API key as a Bearer token when connecting:
 
 ```typescript
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+
+const RECOUP_API_KEY = process.env.RECOUP_API_KEY;
 
 const transport = new StreamableHTTPClientTransport(
   new URL("https://recoup-api.vercel.app/mcp"),
@@ -52,27 +26,136 @@ const transport = new StreamableHTTPClientTransport(
 
 const client = new Client({ name: "my-agent", version: "1.0.0" });
 await client.connect(transport);
+```
 
+Get a key from the [API Keys page](https://chat.recoupable.com/keys) or use the [agent signup](/agents) for instant generation.
+
+<Tip>
+Privy JWTs are also accepted as Bearer tokens for browser-based agents that already authenticate users via Privy.
+</Tip>
+
+---
+
+## Tool catalog
+
+The server exposes 40+ tools organized by domain. Every tool returns structured JSON suitable for chaining into multi-step agent workflows.
+
+### Artists
+
+| Tool | What it does |
+|------|-------------|
+| `create_new_artist` | Create a new artist account in the system. |
+| `get_artist_socials` | Retrieve all socials (handle, avatar, profile URL, bio, follower count, following count) associated with an artist. |
+| `update_artist_socials` | Update the social profiles linked to an artist. |
+| `update_account_info` | Update an artist's `account_info` record. |
+
+### Catalog
+
+| Tool | What it does |
+|------|-------------|
+| `select_catalogs` | Get catalogs for an account. |
+| `select_catalog_songs` | Find songs in the catalog for playlists or music recommendation tasks. |
+| `insert_catalog_songs` | Add songs to a catalog by ISRC in batch. |
+
+### Chats
+
+| Tool | What it does |
+|------|-------------|
+| `get_chats` | Get chat conversations for accounts. |
+| `compact_chats` | Compact one or more chat conversations into concise summaries. |
+
+### Content — images, video, audio
+
+| Tool | What it does |
+|------|-------------|
+| `generate_image` | Generate an image from a text prompt. |
+| `edit_image` | Edit existing images. |
+| `search_google_images` | Search for existing images on Google Images. |
+| `generate_sora_2_video` | Generate a video from a text prompt using OpenAI's Sora 2. |
+| `retrieve_sora_2_video` | Retrieve the status and details of a video generation job. |
+| `retrieve_sora_2_video_content` | Download the rendered video content for a completed job. |
+| `transcribe_audio` | Transcribe audio (music, podcast, voice memo) using OpenAI Whisper. |
+| `analyze_music` | Analyze music or answer music questions using Recoup's Audio Language Model. |
+
+### Research
+
+| Tool | What it does |
+|------|-------------|
+| `search_web` | Default web search tool — use first for any general information lookup. |
+| `web_deep_research` | Multi-source deep web research with comprehensive analysis. |
+| `artist_deep_research` | Comprehensive cross-platform research on a specific artist with a generated report. |
+| `spotify_deep_research` | Deep research on an artist using a Spotify ID. |
+
+### Spotify
+
+| Tool | What it does |
+|------|-------------|
+| `get_spotify_search` | Search Spotify for artists, albums, tracks, or playlists by name. |
+| `get_spotify_album` | Retrieve Spotify catalog information for a single album. |
+| `get_spotify_artist_albums` | Retrieve Spotify catalog information about an artist's albums. |
+| `get_spotify_artist_top_tracks` | Retrieve an artist's top tracks by country. |
+
+### YouTube
+
+| Tool | What it does |
+|------|-------------|
+| `youtube_login` | Check YouTube authentication status for an account. |
+| `get_youtube_channels` | Get YouTube channel information for an account. |
+| `get_youtube_channel_video_list` | Get a list of videos for a specific YouTube channel. |
+| `get_youtube_revenue` | Get estimated revenue for a date range for a YouTube account. |
+| `set_youtube_thumbnail` | Set a custom thumbnail for a YouTube video. |
+
+### Tasks
+
+Background work scheduled and managed through the Recoup task system.
+
+| Tool | What it does |
+|------|-------------|
+| `get_tasks` | List existing tasks. |
+| `create_task` | Create a new task. |
+| `update_task` | Update an existing task. |
+| `delete_task` | Delete a task. |
+| `get_task_run_status` | Get the status of a task run by its run ID. |
+
+### Pulses
+
+| Tool | What it does |
+|------|-------------|
+| `get_pulses` | Get pulse statuses for accounts. |
+| `update_pulse` | Update the pulse status for an account. |
+
+### Sandbox
+
+| Tool | What it does |
+|------|-------------|
+| `prompt_sandbox` | Create a per-account sandbox and run an OpenClaw prompt inside it. Returns the sandbox ID and a run ID for tracking progress. |
+
+### Utilities
+
+| Tool | What it does |
+|------|-------------|
+| `get_local_time` | Get the current local time/date. |
+| `send_email` | Send an email via Resend. |
+| `contact_team` | Send a message to the Recoup team. |
+| `generate_txt_file` | Create a downloadable text file from provided contents. |
+| `create_knowledge_base` | Save a plain-text knowledge base entry to permanent Arweave storage. |
+
+---
+
+## Calling a tool
+
+Once connected, call any tool by name. Example — kick off an OpenClaw prompt in a sandbox:
+
+```typescript
 const result = await client.callTool({
   name: "prompt_sandbox",
   arguments: { prompt: "list all files in the orgs directory" },
 });
-
 console.log(result.content);
 ```
 
-### run_sandbox_command
+Each tool's input schema is published over the MCP protocol, so your agent gets typed parameter help automatically.
 
-Create a sandbox and run a shell command or OpenClaw prompt in it. Unlike `prompt_sandbox`, this creates a **new sandbox each call** and runs the command asynchronously via a background task. Returns a sandbox ID and run ID to track progress.
-
-See [`POST /api/sandboxes`](/api-reference/sandboxes/create) for the equivalent REST endpoint.
-
-**Input schema:**
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `command` | `string` | No | Shell command to run. Cannot be used with `prompt`. |
-| `args` | `string[]` | No | Arguments for the command. |
-| `cwd` | `string` | No | Working directory for the command. |
-| `prompt` | `string` | No | OpenClaw prompt. Cannot be used with `command`. |
-| `account_id` | `string` | No | Target a specific account (org API keys only). |
+<Note>
+**Org-scoped keys** can target any account in their organization by passing `account_id` on tools that accept it. Personal API keys can only operate on their own data.
+</Note>
