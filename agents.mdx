@@ -1,96 +1,147 @@
 ---
-title: 'Agents'
-description: 'Programmatic agent onboarding — sign up and obtain API keys in one call, no dashboard, no human in the loop.'
+title: "Agent Onboarding"
+description: "The operating manual for AI agents using the Recoup API."
 ---
 
-## Quickest start
+This page is for AI agents. Follow these steps in order.
 
-Get a working API key in a single unauthenticated request:
+## 1. Authenticate
+
+If your human has an API key, pass it via `x-api-key`. If not, generate one:
+
+<Steps>
+  <Step title="Call signup with their email">
+    ```bash
+    curl -X POST "https://recoup-api.vercel.app/api/agents/signup" \
+      -H "Content-Type: application/json" \
+      -d '{"email": "user@example.com"}'
+    ```
+  </Step>
+  <Step title="Ask the human for the code">
+    A 6-digit code was sent to their inbox. Ask them: *"Check your email for a verification code and share it with me."*
+  </Step>
+  <Step title="Call verify with the code">
+    ```bash
+    curl -X POST "https://recoup-api.vercel.app/api/agents/verify" \
+      -H "Content-Type: application/json" \
+      -d '{"email": "user@example.com", "code": "123456"}'
+    ```
+    Store the returned `api_key`. Pass it as `x-api-key` on every request.
+  </Step>
+</Steps>
+
+**After authenticating, immediately check the roster.** Don't wait for the human to tell you what to do.
+
+<Warning>
+`agent+` emails create a **separate account** — `agent+user@example.com` is NOT linked to `user@example.com`. To work on behalf of an existing human, use their real email.
+</Warning>
+
+---
+
+## 2. Understand the roster
+
+After getting a key, your next call should always be to check what the human has:
 
 ```bash
-curl -X POST "https://recoup-api.vercel.app/api/agents/signup" \
+# List all artists available to this account
+curl "https://recoup-api.vercel.app/api/artists" \
+  -H "x-api-key: $API_KEY"
+
+# List organizations (labels/teams) the account belongs to
+curl "https://recoup-api.vercel.app/api/organizations" \
+  -H "x-api-key: $API_KEY"
+```
+
+**If the human has artists**, you can scope work to a specific artist by passing `artist_account_id` on supported endpoints. Research, content, tasks, and fan data all become artist-specific.
+
+**If the human has organizations**, pass `organization_id` to scope to a specific label's roster.
+
+**If neither is specified**, you operate at the account level and can see everything available to the human.
+
+---
+
+## 3. Know the filesystem
+
+Each account has a persistent filesystem backed by a GitHub repo. This is where artist context lives — the files agents use to do informed work.
+
+### Artist directory structure
+
+```
+orgs/{org-name}/artists/{artist-slug}/
+├── RECOUP.md                              # Identity file (artistName, artistSlug, artistId)
+├── context/
+│   ├── artist.md                          # Brand voice, bio, constraints
+│   ├── audience.md                        # Audience insights, resonance
+│   ├── era.json                           # Current era metadata
+│   └── images/
+│       └── face-guide.png                 # Face reference for visual content
+├── songs/{song-slug}/
+│   └── {song-slug}.mp3                    # Audio files
+├── releases/{release-slug}/
+│   └── RELEASE.md                         # Release plan and metadata
+└── config/
+    └── content-creation/
+        └── config.json                    # Pipeline overrides
+```
+
+The `RECOUP.md` file ties the folder to the platform — it contains YAML frontmatter with `artistName`, `artistSlug`, and `artistId`.
+
+### Accessing sandbox files
+
+```bash
+# List the full file tree
+curl "https://recoup-api.vercel.app/api/sandboxes" \
+  -H "x-api-key: $API_KEY"
+
+# Read a specific file
+curl "https://recoup-api.vercel.app/api/sandboxes/file?path=orgs/my-label/artists/drake/context/artist.md" \
+  -H "x-api-key: $API_KEY"
+
+# Upload files to the repo
+# path is top-level (target directory); each file needs url + name
+curl -X POST "https://recoup-api.vercel.app/api/sandboxes/files" \
+  -H "x-api-key: $API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"email": "agent+'$(date +%s)-$RANDOM'@recoupable.com"}'
+  -d '{"path": "orgs/my-label/artists/drake/context", "files": [{"url": "https://...", "name": "audience.md"}]}'
 ```
 
-Response:
+---
 
-```json
-{
-  "account_id": "123e4567-e89b-12d3-a456-426614174000",
-  "api_key": "recoup_sk_abc123...",
-  "message": "If this is a new agent+ email, your API key is included. Otherwise, check your email for a verification code."
-}
+## 4. Decide what to do
+
+<Steps>
+  <Step title="Does the human have a roster?">
+    Call `GET /api/artists`. If they have artists, list them and ask which one to work with. If not, you can research any artist with `GET /api/research?q=...` or create one with `POST /api/artists`.
+  </Step>
+  <Step title="What kind of work?">
+    **Research** — use the 30+ research endpoints. Pass `artist_account_id` to scope to a rostered artist, or search by name for any artist globally.
+
+    **Content** — generate images, videos, and captions with the content endpoints. Artist context from the filesystem makes output more on-brand.
+
+    **Manage** — plan and track releases by creating and updating `RELEASE.md` files in the artist's `releases/` directory. Add songs to catalogs, update artist context, and organize the roster.
+  </Step>
+  <Step title="Should you save the work?">
+    Save research, generated content, or notes to the artist's directory in the filesystem so future calls have more context. Use `POST /api/sandboxes/files` to upload files to the repo.
+  </Step>
+  <Step title="Should this be recurring?">
+    If the human asks for something more than once, or if the work is time-sensitive and repeating, turn it into a task with `POST /api/tasks`.
+
+    Good candidates for tasks:
+    - Daily or weekly reports (streaming stats, fan growth, playlist adds)
+    - Monitoring competitors or trending artists
+    - Generating recurring content (weekly social posts, monthly recaps)
+    - Checking release milestones as a date approaches
+
+    If the human only needs it once, just do it. Don't create a task for everything.
+  </Step>
+</Steps>
+
+---
+
+## Base URL
+
+```
+https://recoup-api.vercel.app/api
 ```
 
-That's it. Store `api_key`, pass it in the `x-api-key` header on every subsequent request, and you're done.
-
-<Tip>
-**One-liner — sign up and export the key in one shot.** Drop this into your shell and you'll have `$RECOUP_API_KEY` ready to use on the next line:
-
-```bash
-export RECOUP_API_KEY=$(curl -s -X POST "https://recoup-api.vercel.app/api/agents/signup" \
-  -H "Content-Type: application/json" \
-  -d '{"email": "agent+'$(date +%s)-$RANDOM'@recoupable.com"}' | jq -r .api_key)
-```
-
-Verify it worked:
-
-```bash
-curl -H "x-api-key: $RECOUP_API_KEY" https://recoup-api.vercel.app/api/accounts/id
-```
-</Tip>
-
-<Tip>
-The `agent+{unique-suffix}@recoupable.com` shape is the recommended path for agents — it always returns an API key instantly, with no email verification required. Combining `$(date +%s)` with `$RANDOM` guarantees a fresh, collision-free address on every call (including multiple signups within the same second) and is portable across macOS and Linux shells.
-</Tip>
-
-## How it works
-
-Two unauthenticated endpoints power agent onboarding:
-
-- **[`POST /api/agents/signup`](/api-reference/agents/signup)** — Register with an email address. Emails with the `agent+` prefix that have never been seen before receive an API key immediately. Any other email (or a previously-used `agent+` address) receives a 6-digit verification code via email.
-- **[`POST /api/agents/verify`](/api-reference/agents/verify)** — Submit the verification code to receive an API key.
-
-Multiple API keys per account are supported — each signup or verification generates a new key without revoking existing ones.
-
-## Standard signup (email verification)
-
-If you're building a human-facing integration and want the user to verify their real email, use any non-`agent+` address:
-
-Step 1 — request a verification code:
-
-```bash
-curl -X POST "https://recoup-api.vercel.app/api/agents/signup" \
-  -H "Content-Type: application/json" \
-  -d '{"email": "you@example.com"}'
-```
-
-Step 2 — submit the 6-digit code from the verification email:
-
-```bash
-curl -X POST "https://recoup-api.vercel.app/api/agents/verify" \
-  -H "Content-Type: application/json" \
-  -d '{"email": "you@example.com", "code": "123456"}'
-```
-
-Response:
-
-```json
-{
-  "account_id": "123e4567-e89b-12d3-a456-426614174000",
-  "api_key": "recoup_sk_abc123...",
-  "message": "Verified"
-}
-```
-
-## Using your API key
-
-Pass the returned `api_key` in the `x-api-key` header on every authenticated request:
-
-```bash
-curl -X GET "https://recoup-api.vercel.app/api/tasks" \
-  -H "x-api-key: YOUR_API_KEY"
-```
-
-See [Authentication](/authentication) for the full authentication model, including organization access and Bearer token support, and [Quickstart](/quickstart) for your first end-to-end request.
+All endpoints require `x-api-key` header unless noted. See [Authentication](/authentication) for the full auth model, and the [endpoint map](/#for-ai-agents) for every available endpoint.
