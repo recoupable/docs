@@ -26,7 +26,7 @@ If your human has an API key, pass it via `x-api-key`. If not, generate one:
       -H "Content-Type: application/json" \
       -d '{"email": "user@example.com", "code": "123456"}'
     ```
-    Store the returned `api_key`. Pass it as `x-api-key` on every request.
+    Store the returned `api_key` (e.g. `export RECOUP_API_KEY=<value>`) and pass it as `x-api-key` on every request.
   </Step>
 </Steps>
 
@@ -45,11 +45,11 @@ After getting a key, your next call should always be to check what the human has
 ```bash
 # List all artists available to this account
 curl "https://recoup-api.vercel.app/api/artists" \
-  -H "x-api-key: $API_KEY"
+  -H "x-api-key: $RECOUP_API_KEY"
 
 # List organizations (labels/teams) the account belongs to
 curl "https://recoup-api.vercel.app/api/organizations" \
-  -H "x-api-key: $API_KEY"
+  -H "x-api-key: $RECOUP_API_KEY"
 ```
 
 **If the human has artists**, you can scope work to a specific artist by passing `artist_account_id` on supported endpoints. Research, content, tasks, and fan data all become artist-specific.
@@ -91,16 +91,16 @@ The `RECOUP.md` file ties the folder to the platform — it contains YAML frontm
 ```bash
 # List the full file tree
 curl "https://recoup-api.vercel.app/api/sandboxes" \
-  -H "x-api-key: $API_KEY"
+  -H "x-api-key: $RECOUP_API_KEY"
 
 # Read a specific file
 curl "https://recoup-api.vercel.app/api/sandboxes/file?path=orgs/my-label/artists/drake/context/artist.md" \
-  -H "x-api-key: $API_KEY"
+  -H "x-api-key: $RECOUP_API_KEY"
 
 # Upload files to the repo
 # path is top-level (target directory); each file needs url + name
 curl -X POST "https://recoup-api.vercel.app/api/sandboxes/files" \
-  -H "x-api-key: $API_KEY" \
+  -H "x-api-key: $RECOUP_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"path": "orgs/my-label/artists/drake/context", "files": [{"url": "https://...", "name": "audience.md"}]}'
 ```
