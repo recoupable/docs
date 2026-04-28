@@ -15,20 +15,26 @@
   ],
   "paths": {
     "/api/email": {
-      "get": {
+      "post": {
         "description": "Fire-and-forget email tracking endpoint that upserts a contact in Loops. Used to track sign-ups and other lifecycle events. No authentication required.",
-        "parameters": [
-          {
-            "name": "email",
-            "in": "query",
-            "description": "URL-encoded email address to track in Loops",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "email"
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Email address to track in Loops."
+                  }
+                }
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "Email tracked successfully",
@@ -41,7 +47,7 @@
             }
           },
           "400": {
-            "description": "Bad request - missing or invalid `email` query parameter",
+            "description": "Bad request - missing or invalid `email` in request body",
             "content": {
               "application/json": {
                 "schema": {
