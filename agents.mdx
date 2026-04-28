@@ -5,9 +5,22 @@ description: "The operating manual for AI agents using the Recoup API."
 
 This page is for AI agents. Follow these steps in order.
 
+## 0. Choose your path
+
+Pick the scenario that matches what your human is doing **before** you authenticate. The choice determines whether you can persist artist data across sessions.
+
+| Scenario | Auth path | Then |
+|----------|-----------|------|
+| User wants research or content output and doesn't need persistent state | Throwaway [`agent+...@recoupable.com`](#step-1-fast-throwaway) signup | Use research and content endpoints. **Don't create artists** — they'll orphan when the API key is lost. |
+| User has a Recoup account and wants you to act on their existing roster | Sign in with their real email | List [`/api/artists`](/api-reference/artists/list); work with the roster they already have |
+| User has a Recoup account and wants to add a new artist to their roster | Sign in with their real email | Run the [Create a New Artist](/workflows/create-artist) workflow |
+| User has no Recoup account yet but wants persistent state | Sign in with their real email | After auth, run [Create a New Artist](/workflows/create-artist) to start their roster |
+
+**The key distinction:** `agent+` emails create isolated, unrecoverable accounts. Use them ONLY for one-shot work (research, content generation) where losing the API key has no cost. For anything that creates persistent records — artists, releases, scheduled tasks — use the user's real email.
+
 ## 1. Authenticate
 
-If your human has an API key, pass it via `x-api-key`. If not, generate one:
+If your human has an API key, pass it via `x-api-key`. If not, generate one based on the path you chose above:
 
 <Steps>
   <Step title="Call signup with their email">
