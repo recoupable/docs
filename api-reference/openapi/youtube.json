@@ -68,8 +68,7 @@
             "description": "Whether the channel data was fetched successfully"
           },
           "channels": {
-            "type": "array",
-            "nullable": true,
+            "type": ["array", "null"],
             "items": {
               "$ref": "#/components/schemas/YouTubeChannelData"
             },
@@ -128,8 +127,7 @@
                 "type": "object",
                 "properties": {
                   "url": {
-                    "type": "string",
-                    "nullable": true,
+                    "type": ["string", "null"],
                     "description": "URL of the default-resolution thumbnail"
                   }
                 }
@@ -138,8 +136,7 @@
                 "type": "object",
                 "properties": {
                   "url": {
-                    "type": "string",
-                    "nullable": true,
+                    "type": ["string", "null"],
                     "description": "URL of the medium-resolution thumbnail"
                   }
                 }
@@ -148,8 +145,7 @@
                 "type": "object",
                 "properties": {
                   "url": {
-                    "type": "string",
-                    "nullable": true,
+                    "type": ["string", "null"],
                     "description": "URL of the high-resolution thumbnail"
                   }
                 }
@@ -183,13 +179,11 @@
             }
           },
           "customUrl": {
-            "type": "string",
-            "nullable": true,
+            "type": ["string", "null"],
             "description": "Channel custom URL handle, if set"
           },
           "country": {
-            "type": "string",
-            "nullable": true,
+            "type": ["string", "null"],
             "description": "Two-letter country code declared by the channel, if set"
           },
           "publishedAt": {
@@ -206,13 +200,11 @@
             "description": "Channel branding settings (only present when branding fields are requested)",
             "properties": {
               "keywords": {
-                "type": "string",
-                "nullable": true,
+                "type": ["string", "null"],
                 "description": "Channel keywords configured in YouTube Studio"
               },
               "defaultLanguage": {
-                "type": "string",
-                "nullable": true,
+                "type": ["string", "null"],
                 "description": "Default language code for the channel"
               }
             }

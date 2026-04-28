@@ -41,7 +41,17 @@
             }
           },
           "400": {
-            "description": "Bad request - tracking failed (invalid email or upstream error)",
+            "description": "Bad request - missing or invalid `email` query parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailTrackErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error - upstream Loops failure or unexpected server error",
             "content": {
               "application/json": {
                 "schema": {
