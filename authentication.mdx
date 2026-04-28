@@ -18,25 +18,10 @@ The [agent signup and verify](/agents) endpoints (`POST /api/agents/signup` and 
 
 ## Create a key
 
-### Sign up via API
+Two ways to get a key:
 
-```bash
-# Step 1 — request a code
-curl -X POST "https://recoup-api.vercel.app/api/agents/signup" \
-  -H "Content-Type: application/json" \
-  -d '{"email": "you@example.com"}'
-
-# Step 2 — submit the code from your inbox
-curl -X POST "https://recoup-api.vercel.app/api/agents/verify" \
-  -H "Content-Type: application/json" \
-  -d '{"email": "you@example.com", "code": "123456"}'
-```
-
-When an agent runs the same flow on behalf of a human, the agent passes the code the human reads back from their inbox.
-
-### From the dashboard
-
-Go to [chat.recoupable.com/keys](https://chat.recoupable.com/keys), sign in, and create a key.
+- **Via API** — see [Quickstart](/quickstart#1-get-your-api-key) for the two-call signup + verify flow. When an agent runs this on behalf of a human, the agent passes the code the human reads back from their inbox.
+- **Via dashboard** — go to [chat.recoupable.com/keys](https://chat.recoupable.com/keys), sign in, and create one.
 
 <Warning>
 Keys are shown once. They are stored as HMAC-SHA256 hashes and cannot be retrieved after creation.

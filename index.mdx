@@ -18,51 +18,12 @@ Running a record label takes a full team. Research, content, marketing, distribu
 | **Account** | A user or agent that authenticates with an API key. When no artist is specified, you see everything available to the account. |
 | **Organization** | A label or team that groups multiple accounts. Pass `organization_id` to scope to a specific roster. |
 | **Artist** | A managed artist with profile, social handles, and linked catalog. Pass `artist_account_id` to scope to a specific artist. |
-| **Filesystem** | A persistent Git repo where artist context lives — brand voice, audience insights, songs, release plans, and generated content. |
 
-## How it works
+## Get started
 
-The shape of an agent loop on Recoup.
-
-<Steps>
-  <Step title="Authenticate">
-    Use the human's API key — that's how the agent inherits their roster, label, and history. If they don't have one, `POST /agents/signup` with their email, then pass the verification code from their inbox to `/agents/verify`.
-  </Step>
-  <Step title="Find scope">
-    `GET /accounts` and `/organizations` tell you what the human gave the agent access to. Pass `artist_account_id` or `organization_id` on subsequent calls to scope the work.
-  </Step>
-  <Step title="Read context">
-    `/research/*` for outside-world data on any artist. `/artists/*` and `/songs/*` for what's already inside the label. The Filesystem holds the agent's persistent notes — brand voice, audience insights, prior decisions.
-  </Step>
-  <Step title="Decide, then act">
-    Your LLM reasons over the context. Recoup doesn't decide; it gives you the inputs and accepts the outputs. Call `/content/*` to make assets, `/tasks/*` to schedule recurring work, `/notifications/*` to message the human.
-  </Step>
-  <Step title="Persist">
-    Write the new state back to the Filesystem. The next agent run picks up exactly where this one stopped.
-  </Step>
-</Steps>
-
----
-
-## Get an API key
-
-Two calls. No dashboard.
-
-```bash
-# 1. Trigger a verification code to the human's inbox
-curl -s -X POST "https://recoup-api.vercel.app/api/agents/signup" \
-  -H "Content-Type: application/json" \
-  -d '{"email": "human@example.com"}'
-
-# 2. Ask the human for the code, then exchange it for a key
-export RECOUP_API_KEY=$(curl -s -X POST "https://recoup-api.vercel.app/api/agents/verify" \
-  -H "Content-Type: application/json" \
-  -d '{"email": "human@example.com", "code": "123456"}' | jq -r .api_key)
-```
-
-<Tip>
-The key is tied to the human's account, so the agent inherits everything they've already set up — artists, organizations, prior work. See the [Agents guide](/agents) for the full flow.
-</Tip>
+- **[Quickstart](/quickstart)** — Get an API key and make your first call. ~5 minutes.
+- **[Agent onboarding](/agents)** — The operating manual for AI agents using Recoup in production. Covers the throwaway-vs-account decision, the roster, and the persistent filesystem.
+- **[Authentication](/authentication)** — Reference for API keys, Bearer tokens, and access scoping.
 
 ---
 
