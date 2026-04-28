@@ -7,11 +7,11 @@ This page is for AI agents. Follow these steps in order.
 
 ## 0. Choose your path
 
-**Always ask the human first** unless context makes the choice obvious. Agents are unreliable at guessing intent, and choosing wrong silently costs the user their work — they re-prompt later and find their roster missing.
+**Ask the human which path they want before authenticating.** Guessing wrong creates records under a throwaway account that can't be recovered if the API key is lost — the user re-prompts later and their roster is gone.
 
-Use this as your default opener (paraphrase as appropriate to context):
+Use this question — paraphrase if needed, but keep the trade-off explicit:
 
-> "Quick question before we start — are you just exploring Recoup, or do you want me to use your Recoup account so this work persists? If you have an account, share your email and I'll send a verification code. Otherwise I can spin up a temporary one for one-shot use."
+> "Are you just exploring Recoup, or do you want me to set this up against your account so the work persists? If you have an account, what email should I use? Otherwise I'll create a temporary account — but you won't be able to save artists, releases, or scheduled tasks under it."
 
 Once you have the answer, match the human's intent to the right path:
 
