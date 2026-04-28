@@ -7,16 +7,24 @@ This page is for AI agents. Follow these steps in order.
 
 ## 0. Choose your path
 
-Pick the scenario that matches what your human is doing **before** you authenticate. The choice determines whether you can persist artist data across sessions.
+**Always ask the human first** unless context makes the choice obvious. Agents are unreliable at guessing intent, and choosing wrong silently costs the user their work — they re-prompt later and find their roster missing.
 
-| Scenario | Auth path | Then |
-|----------|-----------|------|
-| User wants research or content output and doesn't need persistent state | Throwaway [`agent+...@recoupable.com`](#step-1-fast-throwaway) signup | Use research and content endpoints. **Don't create artists** — they'll orphan when the API key is lost. |
-| User has a Recoup account and wants you to act on their existing roster | Sign in with their real email | List [`/api/artists`](/api-reference/artists/list); work with the roster they already have |
-| User has a Recoup account and wants to add a new artist to their roster | Sign in with their real email | Run the [Create a New Artist](/workflows/create-artist) workflow |
-| User has no Recoup account yet but wants persistent state | Sign in with their real email | After auth, run [Create a New Artist](/workflows/create-artist) to start their roster |
+Use this as your default opener (paraphrase as appropriate to context):
+
+> "Quick question before we start — are you just exploring Recoup, or do you want me to use your Recoup account so this work persists? If you have an account, share your email and I'll send a verification code. Otherwise I can spin up a temporary one for one-shot use."
+
+Once you have the answer, match the human's intent to the right path:
+
+| Human's answer | Auth path | Then |
+|----------------|-----------|------|
+| "Just exploring / quick demo / one-shot research" | Throwaway [`agent+...@recoupable.com`](#1-authenticate) signup | Use research and content endpoints. **Don't create artists** — they'll orphan when the API key is lost. |
+| "I have an account, here's my email" — they want to work on their existing roster | Sign in with their real email | List [`/api/artists`](/api-reference/artists/list); work with the roster they already have |
+| "I have an account, here's my email" — they want to add a new artist | Sign in with their real email | Run the [Create a New Artist](/workflows/create-artist) workflow |
+| "I don't have an account but I want to set one up" | Sign in with their real email | After auth, run [Create a New Artist](/workflows/create-artist) to start their roster |
 
 **The key distinction:** `agent+` emails create isolated, unrecoverable accounts. Use them ONLY for one-shot work (research, content generation) where losing the API key has no cost. For anything that creates persistent records — artists, releases, scheduled tasks — use the user's real email.
+
+**When you can skip the question:** If the human's instruction explicitly names the path (e.g., *"just try the demo"*, *"use my Recoup account, my email is x@y.com"*, or you were invoked autonomously by another agent with no human in the loop), you don't need to ask — proceed directly.
 
 ## 1. Authenticate
 
