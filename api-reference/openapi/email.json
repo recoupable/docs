@@ -1,0 +1,96 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup API - Email",
+    "description": "API documentation for the Recoup platform - an AI agent platform for the music industry",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://recoup-api.vercel.app"
+    }
+  ],
+  "paths": {
+    "/api/email": {
+      "get": {
+        "description": "Fire-and-forget email tracking endpoint that upserts a contact in Loops. Used to track sign-ups and other lifecycle events. No authentication required.",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "URL-encoded email address to track in Loops",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "email"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email tracked successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailTrackResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - tracking failed (invalid email or upstream error)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailTrackErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EmailTrackResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "message",
+          "id"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the Loops contact upsert succeeded"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable status message from Loops",
+            "example": "Email tracked successfully"
+          },
+          "id": {
+            "type": "string",
+            "description": "The Loops contact ID for the tracked email"
+          }
+        }
+      },
+      "EmailTrackErrorResponse": {
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      }
+    }
+  }
+}

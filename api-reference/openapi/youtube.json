@@ -1,0 +1,224 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup API - YouTube",
+    "description": "API documentation for the Recoup platform - an AI agent platform for the music industry",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://recoup-api.vercel.app"
+    }
+  ],
+  "paths": {
+    "/api/youtube/channel-info": {
+      "get": {
+        "description": "Fetches the YouTube channel summary for an artist using their stored OAuth tokens. Returns the channel's snippet, statistics, and branding fields. The response always uses HTTP 200 (errors are surfaced via the `tokenStatus` field) except for missing-parameter requests, which return 400.",
+        "parameters": [
+          {
+            "name": "artist_account_id",
+            "in": "query",
+            "description": "The unique identifier of the artist account whose YouTube channel info should be fetched",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Channel info request processed. Inspect `tokenStatus` to distinguish success from token/API failures.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/YouTubeChannelInfoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing `artist_account_id` query parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/YouTubeChannelInfoResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "YouTubeChannelInfoResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "tokenStatus"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the channel data was fetched successfully"
+          },
+          "channels": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/YouTubeChannelData"
+            },
+            "description": "Array of channels owned by the authenticated artist, or null when the request failed"
+          },
+          "tokenStatus": {
+            "type": "string",
+            "enum": [
+              "valid",
+              "invalid",
+              "missing_param",
+              "api_error",
+              "error"
+            ],
+            "description": "Status of the OAuth token check and downstream call. `valid` indicates a successful response; other values indicate why channel data is null."
+          },
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message (only present when `success` is false)"
+          },
+          "details": {
+            "type": "string",
+            "description": "Additional error context (only present for unexpected server errors)"
+          }
+        }
+      },
+      "YouTubeChannelData": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "description",
+          "thumbnails",
+          "statistics",
+          "publishedAt"
+        ],
+        "description": "Summary of a YouTube channel as returned by the YouTube Data API, mapped to the shape used by Recoup clients.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "YouTube channel ID"
+          },
+          "title": {
+            "type": "string",
+            "description": "Channel display title"
+          },
+          "description": {
+            "type": "string",
+            "description": "Channel description text"
+          },
+          "thumbnails": {
+            "type": "object",
+            "description": "Thumbnail URLs at default, medium, and high resolutions",
+            "properties": {
+              "default": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "URL of the default-resolution thumbnail"
+                  }
+                }
+              },
+              "medium": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "URL of the medium-resolution thumbnail"
+                  }
+                }
+              },
+              "high": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "URL of the high-resolution thumbnail"
+                  }
+                }
+              }
+            }
+          },
+          "statistics": {
+            "type": "object",
+            "required": [
+              "subscriberCount",
+              "videoCount",
+              "viewCount"
+            ],
+            "properties": {
+              "subscriberCount": {
+                "type": "string",
+                "description": "Number of subscribers (string-encoded integer; '0' if hidden)"
+              },
+              "videoCount": {
+                "type": "string",
+                "description": "Total number of public videos uploaded (string-encoded integer)"
+              },
+              "viewCount": {
+                "type": "string",
+                "description": "Total channel view count (string-encoded integer)"
+              },
+              "hiddenSubscriberCount": {
+                "type": "boolean",
+                "description": "True when the channel hides its subscriber count"
+              }
+            }
+          },
+          "customUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "Channel custom URL handle, if set"
+          },
+          "country": {
+            "type": "string",
+            "nullable": true,
+            "description": "Two-letter country code declared by the channel, if set"
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the channel was created"
+          },
+          "uploadsPlaylistId": {
+            "type": "string",
+            "description": "Playlist ID containing all of the channel's uploaded videos"
+          },
+          "branding": {
+            "type": "object",
+            "description": "Channel branding settings (only present when branding fields are requested)",
+            "properties": {
+              "keywords": {
+                "type": "string",
+                "nullable": true,
+                "description": "Channel keywords configured in YouTube Studio"
+              },
+              "defaultLanguage": {
+                "type": "string",
+                "nullable": true,
+                "description": "Default language code for the channel"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -262,6 +262,12 @@
             "pages": [
               "api-reference/apify/scraper"
             ]
+          },
+          {
+            "group": "YouTube",
+            "pages": [
+              "api-reference/youtube/channel-info"
+            ]
           }
         ]
       },
@@ -341,6 +347,18 @@
             "group": "Notifications",
             "pages": [
               "api-reference/notifications/create"
+            ]
+          },
+          {
+            "group": "Email",
+            "pages": [
+              "api-reference/email/track"
+            ]
+          },
+          {
+            "group": "AI",
+            "pages": [
+              "api-reference/ai/models"
             ]
           }
         ]
