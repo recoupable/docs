@@ -253,21 +253,34 @@
         }
       },
       "delete": {
-        "description": "Delete an existing scheduled task by its ID. Returns the status of the delete operation.",
+        "summary": "Delete scheduled task",
+        "description": "Delete an existing scheduled task by `id`. Returns only the delete operation status.",
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
         "requestBody": {
-          "description": "Task to delete",
+          "description": "JSON object containing the task `id` to delete.",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/DeleteTaskRequest"
+              },
+              "examples": {
+                "deleteTask": {
+                  "summary": "Delete one task",
+                  "value": {
+                    "id": "aade2bce-55c7-468e-a606-c4e76fb2ea2a"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Task deleted successfully",
+            "description": "Task deleted successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -277,11 +290,60 @@
             }
           },
           "400": {
-            "description": "Bad request",
+            "description": "Bad request — missing `id` or invalid request body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteTaskValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account_id is outside caller authorization scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No task exists with the given `id`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteTaskFailureResponse"
+                },
+                "examples": {
+                  "notFound": {
+                    "summary": "Unknown task id",
+                    "value": {
+                      "status": "error",
+                      "error": "Task not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error while deleting the task or deleting its Trigger.dev schedule.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteTaskFailureResponse"
                 }
               }
             }
@@ -2550,14 +2612,64 @@
           "status": {
             "type": "string",
             "enum": [
-              "success",
-              "error"
+              "success"
             ],
             "description": "Status of the delete operation"
+          }
+        }
+      },
+      "DeleteTaskFailureResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Always `error` for this response shape"
           },
           "error": {
             "type": "string",
-            "description": "Error message (only present if status is error)"
+            "description": "Human-readable error message (for example `Task not found` on 404)"
+          }
+        }
+      },
+      "DeleteTaskValidationErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "missing_fields",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Always `error` when validation fails"
+          },
+          "missing_fields": {
+            "type": "array",
+            "description": "JSON path segments to the first field that failed validation (from Zod), e.g. `[\"id\"]`",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Validation message for the first failing field"
           }
         }
       },
