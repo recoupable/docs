@@ -291,7 +291,12 @@
     },
     "/api/tasks/runs": {
       "get": {
-        "description": "Returns an array of task runs. When runId is provided, the array contains that single run. When omitted, returns recent runs for the authenticated account. Use account_id to query runs for a specific account within your organizations.",
+        "summary": "Get task runs",
+        "description": "Returns task runs for the authenticated account. When `runId` is provided, the response contains that single run (`runs` length 1) or 404 if not found. When `runId` is omitted, returns recent runs filtered by account context (default authenticated account, or `account_id` override when authorized).",
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
         "parameters": [
           {
             "name": "runId",
@@ -327,7 +332,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Task runs retrieved successfully",
+            "description": "Task runs retrieved successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -337,11 +342,21 @@
             }
           },
           "400": {
-            "description": "Bad request - invalid parameters",
+            "description": "Bad request - invalid query parameters (for example non-numeric `limit`, out-of-range `limit`, or invalid empty values).",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/TaskRunsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskRunsErrorResponse"
                 }
               }
             }
@@ -351,7 +366,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/TaskRunsErrorResponse"
                 }
               }
             }
@@ -361,7 +376,26 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/TaskRunsErrorResponse"
+                },
+                "examples": {
+                  "notFound": {
+                    "summary": "Unknown run id",
+                    "value": {
+                      "status": "error",
+                      "error": "Task run not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error while fetching runs from Trigger.dev.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskRunsErrorResponse"
                 }
               }
             }
@@ -2936,6 +2970,26 @@
               "$ref": "#/components/schemas/TaskRunResponse"
             },
             "description": "List of recent task runs for the authenticated account. Each item is a raw Trigger.dev SDK run object (same shape as TaskRunResponse, but without `output` and `error` fields)."
+          }
+        }
+      },
+      "TaskRunsErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Always `error` for this response shape"
+          },
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message"
           }
         }
       },
