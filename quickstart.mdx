@@ -1,175 +1,132 @@
 ---
 title: "Quickstart"
-description: "Get a Recoup API key in one call and make your first request — no browser, no dashboard."
+description: "API key in 2 calls. First request in minutes. No signup form, no dashboard."
 ---
 
-## Quickest start
+A 5-minute hello-world. Get an API key, hit the research endpoint, optionally connect an MCP-compatible agent.
 
-Sign up your agent and get an API key in a single API call — no dashboard, no browser, no human in the loop. This one-liner signs up a fresh `agent+` address and exports the returned key to `$RECOUP_API_KEY`:
+<Note>
+**Building an AI agent that acts on a user's behalf?** See [Agent onboarding](/agents) instead — it covers the throwaway-vs-account decision, the user's roster, and the persistent filesystem. This page assumes you're trying the API yourself.
+</Note>
+
+## 1. Get your API key
 
 ```bash
-export RECOUP_API_KEY=$(curl -s -X POST "https://recoup-api.vercel.app/api/agents/signup" \
+# 1. Trigger a verification code to your inbox
+curl -s -X POST "https://recoup-api.vercel.app/api/agents/signup" \
   -H "Content-Type: application/json" \
-  -d '{"email": "agent+'$(date +%s)-$RANDOM'@recoupable.com"}' | jq -r .api_key)
-```
+  -d '{"email": "you@example.com"}'
 
-Verify it worked:
-
-```bash
-curl -H "x-api-key: $RECOUP_API_KEY" https://recoup-api.vercel.app/api/accounts/id
+# 2. Check your email, then exchange the code for a key
+export RECOUP_API_KEY=$(curl -s -X POST "https://recoup-api.vercel.app/api/agents/verify" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "you@example.com", "code": "123456"}' | jq -r .api_key)
 ```
 
 <Tip>
-The `agent+{timestamp}@recoupable.com` shape is the fastest path for agents — it guarantees a fresh `agent+` address and returns an API key instantly without email verification.
+Prefer the dashboard? Create keys at [chat.recoupable.com/keys](https://chat.recoupable.com/keys). See the [Agents guide](/agents) for the full flow including how an agent passes the code on behalf of a human.
 </Tip>
 
-For the full signup + email-verification flow, see the [Agents guide](/agents).
+---
 
-## Base URL
+## 2. Search for an artist
 
-All API requests should be made to:
-
-```bash
-https://recoup-api.vercel.app/api
-```
-
-## Your First Request
-
-Once you have an API key, include it in the `x-api-key` header on every request. Here's a simple call that retrieves your scheduled tasks:
+The research API has 30+ endpoints. Start with search — it works for any artist on earth:
 
 <CodeGroup>
 
 ```bash cURL
-curl -X GET "https://recoup-api.vercel.app/api/tasks" \
-  -H "Content-Type: application/json" \
-  -H "x-api-key: YOUR_API_KEY"
+curl "https://recoup-api.vercel.app/api/research?q=Drake" \
+  -H "x-api-key: $RECOUP_API_KEY"
 ```
 
 ```python Python
+import os
 import requests
 
-headers = {
-    "Content-Type": "application/json",
-    "x-api-key": "YOUR_API_KEY"
-}
-
 response = requests.get(
-    "https://recoup-api.vercel.app/api/tasks",
-    headers=headers
+    "https://recoup-api.vercel.app/api/research",
+    params={"q": "Drake"},
+    headers={"x-api-key": os.environ["RECOUP_API_KEY"]},
 )
 print(response.json())
 ```
 
 ```javascript JavaScript
-const response = await fetch("https://recoup-api.vercel.app/api/tasks", {
-  headers: {
-    "Content-Type": "application/json",
-    "x-api-key": "YOUR_API_KEY",
-  },
-});
-const data = await response.json();
-console.log(data);
-```
-
-```typescript TypeScript
-interface Task {
-  id: string;
-  title: string;
-  prompt: string;
-  schedule: string;
-  account_id: string;
-  artist_account_id: string;
-  enabled: boolean;
-}
-
-interface TasksResponse {
-  status: "success" | "error";
-  tasks: Task[];
-}
-
-const response = await fetch("https://recoup-api.vercel.app/api/tasks", {
-  headers: {
-    "Content-Type": "application/json",
-    "x-api-key": "YOUR_API_KEY",
-  },
-});
-const data: TasksResponse = await response.json();
-console.log(data.tasks);
+const response = await fetch(
+  "https://recoup-api.vercel.app/api/research?q=Drake",
+  { headers: { "x-api-key": process.env.RECOUP_API_KEY } },
+);
+console.log(await response.json());
 ```
 
 </CodeGroup>
 
-**Example Response:**
+---
 
-```json
-{
-  "status": "success",
-  "tasks": [
-    {
-      "id": "550e8400-e29b-41d4-a716-446655440000",
-      "title": "Daily Fan Report",
-      "prompt": "Generate a summary of new fans from the past 24 hours",
-      "schedule": "0 9 * * *",
-      "account_id": "123e4567-e89b-12d3-a456-426614174000",
-      "artist_account_id": "987fcdeb-51a2-3b4c-d5e6-789012345678",
-      "enabled": true
-    }
-  ]
-}
+## 3. Go deeper
+
+Once you have an artist, pull data across 14 platforms:
+
+```bash
+# Streaming metrics (Spotify, Instagram, TikTok, YouTube, and 10 more)
+curl "https://recoup-api.vercel.app/api/research/metrics?artist=Drake&source=spotify" \
+  -H "x-api-key: $RECOUP_API_KEY"
+
+# Audience demographics (age, gender, geography)
+curl "https://recoup-api.vercel.app/api/research/audience?artist=Drake" \
+  -H "x-api-key: $RECOUP_API_KEY"
+
+# Editorial playlist placements
+curl "https://recoup-api.vercel.app/api/research/playlists?artist=Drake&editorial=true" \
+  -H "x-api-key: $RECOUP_API_KEY"
 ```
 
-<Info>
-For full documentation on the Tasks API including filtering options, see the [Tasks API Reference](/api-reference/tasks/get).
-</Info>
+See the [Research tab](/api-reference/research/search) for all 30+ research endpoints.
 
-## Prefer the dashboard?
+---
 
-If you're a human building an integration, you can also create API keys from the web console instead of the signup endpoint:
+## 4. Connect your AI agent
 
-1. Navigate to the [Recoup API Keys Management Page](https://chat.recoupable.com/keys)
-2. Sign in with your account
-3. Enter a descriptive name (e.g. "Production Server")
-4. Click **Create API Key**
+If you're using Claude, ChatGPT, Cursor, or any MCP-compatible tool, connect directly:
 
-<Warning>
-Copy and securely store your API key immediately — it will only be shown once.
-</Warning>
+```
+https://recoup-api.vercel.app/mcp
+```
 
-## Next Steps
+Pass your API key as a Bearer token. Your agent gets access to all 40+ endpoints. See the [MCP guide](/mcp) for setup.
 
-With your API key ready, you can now:
+---
+
+## Next steps
 
 <CardGroup cols={2}>
   <Card
-    title="Artist Data"
-    icon="user"
-    href="/api-reference/artist/profile"
+    title="Research endpoints"
+    icon="search"
+    href="/api-reference/research/search"
   >
-    Fetch artist profiles and social accounts.
+    30+ endpoints — metrics across 14 platforms, audience data, playlists, career history, web intelligence.
   </Card>
   <Card
-    title="Fan Analytics"
-    icon="users"
-    href="/api-reference/fans/get"
+    title="Content endpoints"
+    icon="sparkles"
+    href="/api-reference/content/generate-image"
   >
-    Access fan data across all connected social platforms.
+    7 endpoints for images, videos, captions, transcription, editing, upscaling, and analysis.
   </Card>
   <Card
-    title="Chat API"
-    icon="comments"
-    href="/api-reference/chat/chats"
+    title="CLI"
+    icon="terminal"
+    href="/cli"
   >
-    Build AI-powered conversations with artist context.
+    Full command reference — research, content, chats, sandboxes, tasks.
   </Card>
   <Card
-    title="Task Management"
-    icon="list-check"
-    href="/api-reference/tasks/get"
+    title="Authentication"
+    icon="key"
+    href="/authentication"
   >
-    Schedule and automate recurring tasks.
+    API keys, Bearer tokens, org-level access, and security.
   </Card>
 </CardGroup>
-
-## Support
-
-If you need help or have questions about the API, please contact our support team at [agent@recoupable.com](mailto:agent@recoupable.com).
