@@ -1,0 +1,123 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup API - Upload",
+    "description": "API documentation for the Recoup platform - an AI agent platform for the music industry",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://recoup-api.vercel.app"
+    }
+  ],
+  "paths": {
+    "/api/upload": {
+      "post": {
+        "description": "Uploads a file to the Arweave permanent storage network and returns a fetchable HTTPS gateway URL. Accepts a single file via multipart/form-data under the field name `file`. No authentication required.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["file"],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "The file bytes to upload."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "File uploaded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Upload failed (no file provided or Arweave error)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UploadResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "fileName",
+          "fileType",
+          "fileSize",
+          "url"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Always `true` on a 200 response.",
+            "example": true
+          },
+          "fileName": {
+            "type": "string",
+            "description": "The original file name from the upload.",
+            "example": "cover.png"
+          },
+          "fileType": {
+            "type": "string",
+            "description": "The MIME type of the uploaded file. Falls back to `application/octet-stream` if the client did not provide one.",
+            "example": "image/png"
+          },
+          "fileSize": {
+            "type": "integer",
+            "description": "The size of the uploaded file in bytes.",
+            "example": 24576
+          },
+          "url": {
+            "type": "string",
+            "description": "Fetchable HTTPS Arweave gateway URL.",
+            "example": "https://arweave.net/abc123"
+          }
+        }
+      },
+      "UploadErrorResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "error"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Always `false` on an error response.",
+            "example": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong.",
+            "example": "No file provided"
+          }
+        }
+      }
+    }
+  }
+}
