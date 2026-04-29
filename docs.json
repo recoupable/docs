@@ -350,12 +350,6 @@
             ]
           },
           {
-            "group": "Email",
-            "pages": [
-              "api-reference/email/track"
-            ]
-          },
-          {
             "group": "AI",
             "pages": [
               "api-reference/ai/models"
