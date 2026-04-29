@@ -16,7 +16,7 @@
   "paths": {
     "/api/youtube/channel-info": {
       "get": {
-        "description": "Fetches the YouTube channel summary for an artist using their stored OAuth tokens. Returns the channel's snippet, statistics, and branding fields. The response uses HTTP 200 with `channels: null` to signal that re-authentication is required (token missing/expired/refresh failed). HTTP 400 is returned only when `artist_account_id` is missing.",
+        "description": "Fetches the YouTube channel summary for an artist using their stored OAuth tokens. Returns the channel's snippet, statistics, and branding fields. HTTP 401 indicates the stored YouTube tokens could not be validated/refreshed and the user must re-authenticate. HTTP 502 indicates an upstream YouTube API failure. HTTP 400 is returned when `artist_account_id` is missing.",
         "parameters": [
           {
             "name": "artist_account_id",
@@ -31,7 +31,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Channel info request processed. `channels` is the array of channels on success, or `null` when re-auth is required.",
+            "description": "Channel info fetched successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -42,6 +42,26 @@
           },
           "400": {
             "description": "Bad request - missing `artist_account_id` query parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/YouTubeChannelInfoErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "YouTube authentication required - the stored tokens are missing, expired, or could not be refreshed. The client should prompt the user to re-authenticate with YouTube.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/YouTubeChannelInfoErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Upstream YouTube API failure (rate limit, 5xx from Google, or transient network error).",
             "content": {
               "application/json": {
                 "schema": {
@@ -69,11 +89,11 @@
             "description": "Always `\"success\"` for HTTP 200 responses"
           },
           "channels": {
-            "type": ["array", "null"],
+            "type": "array",
             "items": {
               "$ref": "#/components/schemas/YouTubeChannelData"
             },
-            "description": "Array of channels owned by the authenticated artist, or `null` when re-authentication is required"
+            "description": "Array of channels owned by the authenticated artist"
           }
         }
       },
