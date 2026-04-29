@@ -16,7 +16,7 @@
   "paths": {
     "/api/youtube/channel-info": {
       "get": {
-        "description": "Fetches the YouTube channel summary for an artist using their stored OAuth tokens. Returns the channel's snippet, statistics, and branding fields. The response always uses HTTP 200 (errors are surfaced via `success: false`) except for missing-parameter requests, which return 400.",
+        "description": "Fetches the YouTube channel summary for an artist using their stored OAuth tokens. Returns the channel's snippet, statistics, and branding fields. The response uses HTTP 200 with `channels: null` to signal that re-authentication is required (token missing/expired/refresh failed). HTTP 400 is returned only when `artist_account_id` is missing.",
         "parameters": [
           {
             "name": "artist_account_id",
@@ -31,7 +31,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Channel info request processed. Inspect `success` to distinguish a successful response from token/API failures.",
+            "description": "Channel info request processed. `channels` is the array of channels on success, or `null` when re-auth is required.",
             "content": {
               "application/json": {
                 "schema": {
@@ -45,7 +45,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/YouTubeChannelInfoResponse"
+                  "$ref": "#/components/schemas/YouTubeChannelInfoErrorResponse"
                 }
               }
             }
@@ -59,19 +59,35 @@
       "YouTubeChannelInfoResponse": {
         "type": "object",
         "required": [
-          "success"
+          "status",
+          "channels"
         ],
         "properties": {
-          "success": {
-            "type": "boolean",
-            "description": "Whether the channel data was fetched successfully"
+          "status": {
+            "type": "string",
+            "enum": ["success"],
+            "description": "Always `\"success\"` for HTTP 200 responses"
           },
           "channels": {
             "type": ["array", "null"],
             "items": {
               "$ref": "#/components/schemas/YouTubeChannelData"
             },
-            "description": "Array of channels owned by the authenticated artist, or null when the request failed"
+            "description": "Array of channels owned by the authenticated artist, or `null` when re-authentication is required"
+          }
+        }
+      },
+      "YouTubeChannelInfoErrorResponse": {
+        "type": "object",
+        "required": ["status", "message"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["error"]
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
           }
         }
       },
