@@ -262,12 +262,6 @@
             "pages": [
               "api-reference/apify/scraper"
             ]
-          },
-          {
-            "group": "YouTube",
-            "pages": [
-              "api-reference/youtube/channel-info"
-            ]
           }
         ]
       },
