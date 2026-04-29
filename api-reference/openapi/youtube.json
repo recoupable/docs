@@ -16,7 +16,15 @@
   "paths": {
     "/api/youtube/channel-info": {
       "get": {
-        "description": "Fetches the YouTube channel summary for an artist using their stored OAuth tokens. Returns the channel's snippet, statistics, and branding fields. HTTP 401 indicates the stored YouTube tokens could not be validated/refreshed and the user must re-authenticate. HTTP 502 indicates an upstream YouTube API failure. HTTP 400 is returned when `artist_account_id` is missing.",
+        "description": "Fetches the YouTube channel summary for an artist using their stored OAuth tokens. Returns the channel's snippet, statistics, and branding fields. Requires authentication and access to the requested artist account. HTTP 401 indicates missing/invalid Recoup auth or that the stored YouTube tokens could not be validated/refreshed (the user must re-authenticate). HTTP 403 indicates the authenticated caller has no access to the requested artist. HTTP 502 indicates an upstream YouTube API failure. HTTP 400 is returned when `artist_account_id` is missing.",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKeyAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "artist_account_id",
@@ -51,7 +59,17 @@
             }
           },
           "401": {
-            "description": "YouTube authentication required - the stored tokens are missing, expired, or could not be refreshed. The client should prompt the user to re-authenticate with YouTube.",
+            "description": "Unauthorized - Recoup auth is missing/invalid, or the stored YouTube tokens are missing, expired, or could not be refreshed. The client should authenticate (or prompt the user to re-authenticate with YouTube).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/YouTubeChannelInfoErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - the authenticated caller does not have access to the requested artist account.",
             "content": {
               "application/json": {
                 "schema": {
@@ -75,6 +93,18 @@
     }
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Your Recoup API key. [Learn more](/quickstart#api-keys)."
+      }
+    },
     "schemas": {
       "YouTubeChannelInfoResponse": {
         "type": "object",
