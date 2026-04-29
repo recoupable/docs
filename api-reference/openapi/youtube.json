@@ -16,7 +16,7 @@
   "paths": {
     "/api/youtube/channel-info": {
       "get": {
-        "description": "Fetches the YouTube channel summary for an artist using their stored OAuth tokens. Returns the channel's snippet, statistics, and branding fields. The response always uses HTTP 200 (errors are surfaced via the `tokenStatus` field) except for missing-parameter requests, which return 400.",
+        "description": "Fetches the YouTube channel summary for an artist using their stored OAuth tokens. Returns the channel's snippet, statistics, and branding fields. The response always uses HTTP 200 (errors are surfaced via `success: false`) except for missing-parameter requests, which return 400.",
         "parameters": [
           {
             "name": "artist_account_id",
@@ -31,7 +31,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Channel info request processed. Inspect `tokenStatus` to distinguish success from token/API failures.",
+            "description": "Channel info request processed. Inspect `success` to distinguish a successful response from token/API failures.",
             "content": {
               "application/json": {
                 "schema": {
@@ -59,8 +59,7 @@
       "YouTubeChannelInfoResponse": {
         "type": "object",
         "required": [
-          "success",
-          "tokenStatus"
+          "success"
         ],
         "properties": {
           "success": {
@@ -73,25 +72,6 @@
               "$ref": "#/components/schemas/YouTubeChannelData"
             },
             "description": "Array of channels owned by the authenticated artist, or null when the request failed"
-          },
-          "tokenStatus": {
-            "type": "string",
-            "enum": [
-              "valid",
-              "invalid",
-              "missing_param",
-              "api_error",
-              "error"
-            ],
-            "description": "Status of the OAuth token check and downstream call. `valid` indicates a successful response; other values indicate why channel data is null."
-          },
-          "error": {
-            "type": "string",
-            "description": "Human-readable error message (only present when `success` is false)"
-          },
-          "details": {
-            "type": "string",
-            "description": "Additional error context (only present for unexpected server errors)"
           }
         }
       },
