@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "https://recoup-api.vercel.app"
+      "url": "https://api.recoupable.com"
     }
   ],
   "paths": {
@@ -124,11 +124,6 @@
     },
     "/api/comments": {
       "get": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
         "description": "Retrieve comments associated with an artist or a specific post, with support for pagination. This endpoint returns raw comment data including the comment text, associated post, and commenter's social profile reference.",
         "parameters": [
           {
@@ -198,11 +193,6 @@
     },
     "/api/spotify/search": {
       "get": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
         "description": "Search for artists, albums, tracks, and playlists using the Spotify API. This endpoint is a proxy to the official Spotify Search API.",
         "parameters": [
           {
@@ -282,11 +272,6 @@
     },
     "/api/spotify/artist/": {
       "get": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
         "description": "Get Spotify catalog information for a single artist identified by their unique Spotify ID.",
         "parameters": [
           {
@@ -325,11 +310,6 @@
     },
     "/api/spotify/artist/albums": {
       "get": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
         "description": "Get Spotify catalog information about an artist's albums.",
         "parameters": [
           {
@@ -408,11 +388,6 @@
     },
     "/api/spotify/artist/topTracks": {
       "get": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
         "description": "Get an artist's top tracks by country.",
         "parameters": [
           {
@@ -460,11 +435,6 @@
     },
     "/api/spotify/album": {
       "get": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
         "description": "Get Spotify catalog information for a single album.",
         "parameters": [
           {

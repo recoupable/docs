@@ -6,7 +6,7 @@ description: "Connect AI agents to the Recoup platform using the Model Context P
 The Recoup API exposes an [MCP](https://modelcontextprotocol.io/) server that AI agents can connect to for tool use. The server is available at:
 
 ```
-https://recoup-api.vercel.app/mcp
+https://api.recoupable.com/mcp
 ```
 
 ## Authentication
@@ -46,7 +46,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 
 const transport = new StreamableHTTPClientTransport(
-  new URL("https://recoup-api.vercel.app/mcp"),
+  new URL("https://api.recoupable.com/mcp"),
   { requestInit: { headers: { Authorization: `Bearer ${RECOUP_API_KEY}` } } },
 );
 
