@@ -342,6 +342,12 @@
             "pages": [
               "api-reference/notifications/create"
             ]
+          },
+          {
+            "group": "AI",
+            "pages": [
+              "api-reference/ai/models"
+            ]
           }
         ]
       }
