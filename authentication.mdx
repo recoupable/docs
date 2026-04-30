@@ -39,7 +39,7 @@ Copy your API key immediately — it is only shown once. Keys are stored as a se
 Pass your key in the `x-api-key` header:
 
 ```bash
-curl -X GET "https://recoup-api.vercel.app/api/tasks" \
+curl -X GET "https://api.recoupable.com/api/tasks" \
   -H "x-api-key: YOUR_API_KEY"
 ```
 
@@ -61,7 +61,7 @@ Org membership is determined by the account's [organizations](/api-reference/org
 If you're building a frontend application that authenticates users via [Privy](https://privy.io), you can pass the user's Privy JWT as a Bearer token instead of an API key.
 
 ```bash
-curl -X GET "https://recoup-api.vercel.app/api/tasks" \
+curl -X GET "https://api.recoupable.com/api/tasks" \
   -H "Authorization: Bearer YOUR_PRIVY_JWT"
 ```
 

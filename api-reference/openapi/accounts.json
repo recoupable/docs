@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "https://recoup-api.vercel.app"
+      "url": "https://api.recoupable.com"
     }
   ],
   "paths": {
@@ -356,11 +356,6 @@
     },
     "/api/subscriptions/sessions": {
       "post": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
         "description": "Create a checkout session to start a subscription for the authenticated account. Returns a hosted checkout URL that the client should redirect to. The session is pre-configured with a 30-day trial period.",
         "security": [
           {
