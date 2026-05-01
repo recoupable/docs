@@ -1,0 +1,166 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup API - Billing",
+    "description": "API documentation for the Recoup platform - an AI agent platform for the music industry",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://recoup-api.vercel.app"
+    }
+  ],
+  "paths": {
+    "/api/credits/get": {
+      "get": {
+        "description": "Returns the credit balance for the given account, automatically resetting the balance when the account is on a refill cycle (monthly cadence or just-activated subscription). Honors both account-level and organization-level Stripe subscriptions when deciding whether the refill should use the pro tier. No authentication required.",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "description": "The Recoup account ID whose credits should be returned.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Credits retrieved (and refilled if eligible).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreditsGetResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation or upstream error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillingErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/subscription/status": {
+      "get": {
+        "description": "Returns whether the given account is on a pro subscription. An account is considered pro if it has an active Stripe subscription itself, or if any of its organizations does. No authentication required.",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "description": "The Recoup account ID whose pro status should be returned.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pro status retrieved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionStatusResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation or upstream error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillingErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreditsGetResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CreditsUsage"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The account's credits usage row, or null when the account has no credits row yet."
+          }
+        }
+      },
+      "CreditsUsage": {
+        "type": "object",
+        "required": [
+          "account_id",
+          "remaining_credits"
+        ],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "description": "The Recoup account ID."
+          },
+          "remaining_credits": {
+            "type": "number",
+            "description": "Remaining credits for the account."
+          },
+          "timestamp": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "ISO timestamp of the last credits refill."
+          }
+        }
+      },
+      "SubscriptionStatusResponse": {
+        "type": "object",
+        "required": [
+          "isPro"
+        ],
+        "properties": {
+          "isPro": {
+            "type": "boolean",
+            "description": "True when the account or any of its organizations has an active Stripe subscription."
+          }
+        }
+      },
+      "BillingErrorResponse": {
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message."
+          }
+        }
+      }
+    }
+  }
+}
