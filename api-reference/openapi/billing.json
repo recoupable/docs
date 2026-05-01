@@ -59,7 +59,7 @@
         }
       }
     },
-    "/api/subscriptions/status": {
+    "/api/subscription": {
       "get": {
         "description": "Returns whether the authenticated account is on a pro subscription. An account is considered pro if it has an active Stripe subscription itself, or if any of its organizations does.",
         "security": [
