@@ -354,7 +354,7 @@
         }
       }
     },
-    "/api/subscriptions/sessions": {
+    "/api/stripe/checkout-sessions": {
       "post": {
         "description": "Create a checkout session to start a subscription for the authenticated account. Returns a hosted checkout URL that the client should redirect to. The session is pre-configured with a 30-day trial period.",
         "security": [
@@ -410,7 +410,7 @@
         }
       }
     },
-    "/api/subscriptions/portal-sessions": {
+    "/api/stripe/portal-sessions": {
       "post": {
         "description": "Create a Stripe billing portal session for the authenticated account's existing Stripe customer. Returns a hosted portal URL that the client should redirect to so the customer can manage their subscription, payment methods, and invoices.",
         "security": [

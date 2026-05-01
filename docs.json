@@ -317,10 +317,10 @@
             ]
           },
           {
-            "group": "Subscriptions",
+            "group": "Stripe",
             "pages": [
-              "api-reference/subscriptions/sessions-create",
-              "api-reference/subscriptions/portal-sessions-create"
+              "api-reference/stripe/checkout-sessions-create",
+              "api-reference/stripe/portal-sessions-create"
             ]
           },
           {
