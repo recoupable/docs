@@ -14,18 +14,15 @@
     }
   ],
   "paths": {
-    "/api/credits/get": {
+    "/api/credits": {
       "get": {
-        "description": "Returns the credit balance for the given account, automatically resetting the balance when the account is on a refill cycle (monthly cadence or just-activated subscription). Honors both account-level and organization-level Stripe subscriptions when deciding whether the refill should use the pro tier. No authentication required.",
-        "parameters": [
+        "description": "Returns the credit balance for the authenticated account, automatically resetting the balance when the account is on a refill cycle (monthly cadence or just-activated subscription). Honors both account-level and organization-level Stripe subscriptions when deciding whether the refill should use the pro tier.",
+        "security": [
           {
-            "name": "accountId",
-            "in": "query",
-            "required": true,
-            "description": "The Recoup account ID whose credits should be returned.",
-            "schema": {
-              "type": "string"
-            }
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -39,8 +36,18 @@
               }
             }
           },
-          "400": {
-            "description": "Validation or upstream error.",
+          "401": {
+            "description": "Authentication required or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillingErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
             "content": {
               "application/json": {
                 "schema": {
@@ -52,18 +59,15 @@
         }
       }
     },
-    "/api/subscription/status": {
+    "/api/subscriptions/status": {
       "get": {
-        "description": "Returns whether the given account is on a pro subscription. An account is considered pro if it has an active Stripe subscription itself, or if any of its organizations does. No authentication required.",
-        "parameters": [
+        "description": "Returns whether the authenticated account is on a pro subscription. An account is considered pro if it has an active Stripe subscription itself, or if any of its organizations does.",
+        "security": [
           {
-            "name": "accountId",
-            "in": "query",
-            "required": true,
-            "description": "The Recoup account ID whose pro status should be returned.",
-            "schema": {
-              "type": "string"
-            }
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -77,8 +81,18 @@
               }
             }
           },
-          "400": {
-            "description": "Validation or upstream error.",
+          "401": {
+            "description": "Authentication required or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillingErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
             "content": {
               "application/json": {
                 "schema": {
@@ -92,6 +106,18 @@
     }
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Your Recoup API key. [Learn more](/quickstart#api-keys)."
+      }
+    },
     "schemas": {
       "CreditsGetResponse": {
         "type": "object",
@@ -108,7 +134,7 @@
                 "type": "null"
               }
             ],
-            "description": "The account's credits usage row, or null when the account has no credits row yet."
+            "description": "The authenticated account's credits usage row, or null when the account has no credits row yet."
           }
         }
       },
