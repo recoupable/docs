@@ -2798,6 +2798,7 @@
       },
       "CreateSubscriptionSessionRequest": {
         "type": "object",
+        "additionalProperties": false,
         "required": [
           "successUrl"
         ],
@@ -2807,12 +2808,6 @@
             "format": "uri",
             "description": "The URL to redirect to after a successful payment.",
             "example": "https://chat.recoupable.com?subscription=success"
-          },
-          "accountId": {
-            "type": "string",
-            "format": "uuid",
-            "description": "UUID of the account to create the session for. Only applicable when the authenticated account has admin access to multiple accounts. If not provided, creates a session for the API key's own account.",
-            "example": "123e4567-e89b-12d3-a456-426614174000"
           }
         }
       },

@@ -1,4 +1,9 @@
 ---
 title: 'Create Subscription Session'
+description: 'Create a Stripe Checkout session for the authenticated account subscription. The account is taken from the API key or Bearer token; body is only successUrl.'
 openapi: '/api-reference/openapi/accounts.json POST /api/subscriptions/sessions'
 ---
+
+<Note>
+This is the canonical endpoint for subscription checkout on the Recoup API (`POST /api/subscriptions/sessions`). It replaces the former chat-only route `POST /api/stripe/session/create` — call the API base URL from [Quickstart](/quickstart#base-url), not the chat app host.
+</Note>
