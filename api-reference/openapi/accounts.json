@@ -412,7 +412,7 @@
     },
     "/api/subscriptions/status": {
       "get": {
-        "description": "Whether the account for `accountId` has an active paid subscription, including when covered by an organization subscription.\n\nSupersedes chat `GET /api/subscription/status`. Use the Recoup API base URL from [Quickstart](/quickstart#base-url).",
+        "description": "Whether the account for `accountId` has an active paid subscription, including when covered by an organization subscription.",
         "parameters": [
           {
             "name": "accountId",
