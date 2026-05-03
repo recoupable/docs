@@ -412,7 +412,7 @@
     },
     "/api/subscriptions/status": {
       "get": {
-        "description": "Whether the account for `accountId` has an active paid subscription, including when covered by an organization subscription.",
+        "description": "Whether the account for `accountId` has an active paid subscription, including when covered by an organization subscription.\n\nSupersedes chat `GET /api/subscription/status`. Use the Recoup API base URL from [Quickstart](/quickstart#base-url).",
         "parameters": [
           {
             "name": "accountId",
@@ -449,7 +449,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
+                  "$ref": "#/components/schemas/SubscriptionStatusErrorResponse"
                 }
               }
             }
@@ -459,7 +459,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
+                  "$ref": "#/components/schemas/SubscriptionStatusErrorResponse"
+                },
+                "example": {
+                  "error": "Unauthorized"
                 }
               }
             }
@@ -2902,6 +2905,19 @@
           "isPro": {
             "type": "boolean",
             "description": "True when the account has an active paid subscription (direct or via organization)."
+          }
+        }
+      },
+      "SubscriptionStatusErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message.",
+            "example": "accountId is required"
           }
         }
       },
