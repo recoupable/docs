@@ -266,7 +266,7 @@
             ]
           },
           {
-            "group": "Agent Sessions",
+            "group": "Sessions",
             "pages": [
               "api-reference/sessions/get"
             ]
