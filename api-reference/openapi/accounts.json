@@ -2923,18 +2923,13 @@
         "required": [
           "returnUrl"
         ],
+        "description": "Request body for creating a billing portal session. The account is determined from authentication (API key or session), not from this payload.",
         "properties": {
           "returnUrl": {
             "type": "string",
             "format": "uri",
             "description": "The URL to redirect to when the customer leaves the portal.",
             "example": "https://chat.recoupable.com/settings/billing"
-          },
-          "accountId": {
-            "type": "string",
-            "format": "uuid",
-            "description": "UUID of the account to open the portal for. Only applicable when the authenticated account has admin access to multiple accounts. If not provided, opens the portal for the API key's own account.",
-            "example": "123e4567-e89b-12d3-a456-426614174000"
           }
         }
       },
