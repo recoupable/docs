@@ -1,0 +1,276 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup API - Agent Sessions",
+    "description": "Agent sessions — sandboxed runs of an LLM-driven agent with tool use, lifecycle hooks, and persistence. Each session pairs one Vercel Sandbox with one or more chat threads.",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.recoupable.com"
+    }
+  ],
+  "security": [
+    {
+      "ApiKeyAuth": []
+    },
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/sessions/{sessionId}": {
+      "get": {
+        "summary": "Get session by id",
+        "description": "Returns a single agent session by its id. The authenticated account must own the session — requests for sessions owned by other accounts return 403.",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the session to fetch.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Session retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetSessionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key / Bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - the authenticated account does not own this session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - no session exists with the given id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "GetSessionResponse": {
+        "type": "object",
+        "required": [
+          "session"
+        ],
+        "properties": {
+          "session": {
+            "$ref": "#/components/schemas/Session"
+          }
+        }
+      },
+      "Session": {
+        "type": "object",
+        "required": [
+          "id",
+          "userId",
+          "title",
+          "status",
+          "isNewBranch",
+          "globalSkillRefs",
+          "lifecycleVersion",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Session id (nanoid)."
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Owning account id. Named `userId` here for compatibility with existing clients; on the server side this is the account_id foreign key into the accounts table."
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "running",
+              "completed",
+              "failed",
+              "archived"
+            ]
+          },
+          "repoOwner": {
+            "type": "string",
+            "nullable": true,
+            "description": "GitHub repo owner if the session is bound to a repository."
+          },
+          "repoName": {
+            "type": "string",
+            "nullable": true
+          },
+          "branch": {
+            "type": "string",
+            "nullable": true
+          },
+          "cloneUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "Clone URL the sandbox should fetch from."
+          },
+          "isNewBranch": {
+            "type": "boolean",
+            "description": "True when this session created and pushed a new branch (not committing back to the original)."
+          },
+          "globalSkillRefs": {
+            "type": "array",
+            "description": "Skills attached to the agent at provision time.",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "sandboxState": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": true,
+            "description": "Sandbox runtime state (Vercel Sandbox)."
+          },
+          "lifecycleState": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "provisioning",
+              "active",
+              "hibernating",
+              "hibernated",
+              "restoring",
+              "archived",
+              "failed"
+            ],
+            "description": "Lifecycle orchestration state for the sandbox."
+          },
+          "lifecycleVersion": {
+            "type": "integer",
+            "description": "Optimistic concurrency token for lifecycle transitions."
+          },
+          "lastActivityAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "sandboxExpiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "hibernateAfter": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "lifecycleRunId": {
+            "type": "string",
+            "nullable": true
+          },
+          "lifecycleError": {
+            "type": "string",
+            "nullable": true
+          },
+          "linesAdded": {
+            "type": "integer",
+            "nullable": true
+          },
+          "linesRemoved": {
+            "type": "integer",
+            "nullable": true
+          },
+          "snapshotUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "snapshotCreatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "snapshotSizeBytes": {
+            "type": "integer",
+            "nullable": true
+          },
+          "cachedDiff": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": true
+          },
+          "cachedDiffUpdatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message."
+          }
+        }
+      }
+    }
+  }
+}

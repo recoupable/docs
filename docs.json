@@ -235,6 +235,12 @@
               "api-reference/sandboxes/file",
               "api-reference/sandboxes/upload"
             ]
+          },
+          {
+            "group": "Agent Sessions",
+            "pages": [
+              "api-reference/sessions/get"
+            ]
           }
         ]
       },
