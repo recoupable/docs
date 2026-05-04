@@ -22,13 +22,6 @@
               "mcp",
               "authentication"
             ]
-          },
-          {
-            "group": "Agents",
-            "pages": [
-              "agents",
-              "content-agent"
-            ]
           }
         ]
       },
@@ -59,16 +52,6 @@
             "group": "Fans",
             "pages": [
               "api-reference/fans/get"
-            ]
-          },
-          {
-            "group": "Tasks",
-            "pages": [
-              "api-reference/tasks/get",
-              "api-reference/tasks/create",
-              "api-reference/tasks/update",
-              "api-reference/tasks/delete",
-              "api-reference/tasks/runs"
             ]
           }
         ]
@@ -206,13 +189,6 @@
             ]
           },
           {
-            "group": "Content Agent",
-            "pages": [
-              "api-reference/content-agent/webhook",
-              "api-reference/content-agent/callback"
-            ]
-          },
-          {
             "group": "Image",
             "pages": [
               "api-reference/image/generation"
@@ -222,24 +198,6 @@
             "group": "Transcribe",
             "pages": [
               "api-reference/transcribe/audio"
-            ]
-          },
-          {
-            "group": "Sandboxes",
-            "pages": [
-              "api-reference/sandboxes/list",
-              "api-reference/sandboxes/create",
-              "api-reference/sandboxes/snapshot",
-              "api-reference/sandboxes/delete",
-              "api-reference/sandboxes/setup",
-              "api-reference/sandboxes/file",
-              "api-reference/sandboxes/upload"
-            ]
-          },
-          {
-            "group": "Agent Sessions",
-            "pages": [
-              "api-reference/sessions/get"
             ]
           }
         ]
@@ -272,7 +230,7 @@
         ]
       },
       {
-        "tab": "Accounts",
+        "tab": "Agents & Sandboxes",
         "groups": [
           {
             "group": "Agent Onboarding",
@@ -281,6 +239,53 @@
               "api-reference/agents/verify"
             ]
           },
+          {
+            "group": "Agents",
+            "pages": [
+              "agents",
+              "content-agent"
+            ]
+          },
+          {
+            "group": "Tasks",
+            "pages": [
+              "api-reference/tasks/get",
+              "api-reference/tasks/create",
+              "api-reference/tasks/update",
+              "api-reference/tasks/delete",
+              "api-reference/tasks/runs"
+            ]
+          },
+          {
+            "group": "Content Agent",
+            "pages": [
+              "api-reference/content-agent/webhook",
+              "api-reference/content-agent/callback"
+            ]
+          },
+          {
+            "group": "Sandboxes",
+            "pages": [
+              "api-reference/sandboxes/list",
+              "api-reference/sandboxes/create",
+              "api-reference/sandboxes/snapshot",
+              "api-reference/sandboxes/delete",
+              "api-reference/sandboxes/setup",
+              "api-reference/sandboxes/file",
+              "api-reference/sandboxes/upload"
+            ]
+          },
+          {
+            "group": "Agent Sessions",
+            "pages": [
+              "api-reference/sessions/get"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Accounts",
+        "groups": [
           {
             "group": "Connectors",
             "pages": [
