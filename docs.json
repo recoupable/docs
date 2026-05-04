@@ -268,7 +268,8 @@
           {
             "group": "Sessions",
             "pages": [
-              "api-reference/sessions/create"
+              "api-reference/sessions/create",
+              "api-reference/sessions/get"
             ]
           }
         ]
