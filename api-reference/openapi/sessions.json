@@ -128,14 +128,6 @@
               "vercel"
             ],
             "description": "Which sandbox provider to use. Currently only `vercel` is accepted."
-          },
-          "autoCommitPush": {
-            "type": "boolean",
-            "description": "Per-session override for automatic commit + push. When omitted, the account's default preference applies."
-          },
-          "autoCreatePr": {
-            "type": "boolean",
-            "description": "Per-session override for opening a PR after auto-commit. Only meaningful when `autoCommitPush` is true. When omitted, the account's default preference applies."
           }
         }
       },
@@ -259,16 +251,6 @@
             "type": "boolean",
             "description": "True when this session created and pushed a new branch (not committing back to the original)."
           },
-          "autoCommitPushOverride": {
-            "type": "boolean",
-            "nullable": true,
-            "description": "Per-session override for auto commit + push behavior. `null` means use the account's default preference."
-          },
-          "autoCreatePrOverride": {
-            "type": "boolean",
-            "nullable": true,
-            "description": "Per-session override for creating a PR after auto-commit. `null` means use the account's default preference."
-          },
           "globalSkillRefs": {
             "type": "array",
             "description": "Skills attached to the agent at provision time.",
@@ -333,21 +315,6 @@
             "type": "integer",
             "nullable": true,
             "description": "Lines removed across the session's diff. Defaults to 0; null when stats have not been computed."
-          },
-          "prNumber": {
-            "type": "integer",
-            "nullable": true,
-            "description": "GitHub pull request number, set after the session has opened a PR."
-          },
-          "prStatus": {
-            "type": "string",
-            "nullable": true,
-            "enum": [
-              "open",
-              "merged",
-              "closed"
-            ],
-            "description": "Lifecycle of the linked pull request."
           },
           "snapshotUrl": {
             "type": "string",
