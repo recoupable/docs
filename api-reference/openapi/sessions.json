@@ -25,7 +25,7 @@
     "/api/sessions/{sessionId}": {
       "get": {
         "summary": "Get session by id",
-        "description": "Returns a single agent session by its id. The authenticated account must own the session — requests for sessions owned by other accounts return 403.",
+        "description": "Returns a single agent session by its id.",
         "parameters": [
           {
             "name": "sessionId",
