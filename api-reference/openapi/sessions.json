@@ -79,65 +79,6 @@
           }
         }
       }
-    },
-    "/api/sessions/{sessionId}": {
-      "get": {
-        "summary": "Get session by id",
-        "description": "Returns a single agent session by its id.",
-        "parameters": [
-          {
-            "name": "sessionId",
-            "in": "path",
-            "required": true,
-            "description": "The id of the session to fetch.",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Session retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetSessionResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - invalid or missing API key / Bearer token",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - the authenticated account does not own this session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found - no session exists with the given id",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
@@ -153,17 +94,6 @@
       }
     },
     "schemas": {
-      "GetSessionResponse": {
-        "type": "object",
-        "required": [
-          "session"
-        ],
-        "properties": {
-          "session": {
-            "$ref": "#/components/schemas/Session"
-          }
-        }
-      },
       "CreateSessionRequest": {
         "type": "object",
         "description": "All fields are optional. An empty body is valid and creates a session with default settings.",
