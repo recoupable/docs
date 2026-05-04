@@ -262,9 +262,17 @@
       "Error": {
         "type": "object",
         "required": [
+          "status",
           "error"
         ],
         "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Always `\"error\"` for error responses."
+          },
           "error": {
             "type": "string",
             "description": "Human-readable error message."
