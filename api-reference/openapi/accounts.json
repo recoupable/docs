@@ -448,7 +448,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
+                  "$ref": "#/components/schemas/SubscriptionPortalErrorResponse"
                 }
               }
             }
@@ -458,7 +458,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
+                  "$ref": "#/components/schemas/SubscriptionPortalErrorResponse"
                 }
               }
             }
@@ -2902,6 +2902,19 @@
             "type": "string",
             "description": "Human-readable error message.",
             "example": "successUrl is required"
+          }
+        }
+      },
+      "SubscriptionPortalErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message.",
+            "example": "returnUrl is required"
           }
         }
       },
