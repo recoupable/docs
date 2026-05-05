@@ -1,0 +1,27 @@
+---
+title: "release-management"
+description: "Plan a release end to end — RELEASE.md documents, DSP pitches, press one-sheets, production specs, tour coordination."
+---
+
+A release campaign — album, EP, single, project — managed via a single `RELEASE.md` document inside the artist workspace. The skill creates, updates, and pulls data from these documents, and generates the deliverables a real release needs (DSP pitches, press one-sheets, production specs, tour coordination notes).
+
+## When to use it
+
+User mentions an artist's album, EP, single, or project, or asks about release planning, DSP pitches, metadata, marketing, press materials, physical production, or tour coordination. The skill first infers which artist and release the user means, then finds or creates the corresponding `RELEASE.md`.
+
+## What it produces
+
+A `RELEASE.md` at `orgs/{org}/artists/{artist-slug}/releases/{release-slug}/` that holds the canonical release plan, plus any of the standard deliverables — DSP one-pager, press release, production spec, tour brief — generated from it.
+
+## Endpoints it uses
+
+- [`POST /api/songs`](/api-reference/songs/create)
+- [`GET /api/songs`](/api-reference/songs/songs)
+- [`GET /api/research/playlists`](/api-reference/research/playlists)
+- [`GET /api/research/curator`](/api-reference/research/curator)
+- [`GET /api/research/festivals`](/api-reference/research/festivals)
+- [`GET /api/research/venues`](/api-reference/research/venues)
+
+## Source
+
+[`recoupable/skills/skills/release-management`](https://github.com/recoupable/skills/tree/main/skills/release-management)
