@@ -3,6 +3,10 @@ title: 'Create a New Artist'
 description: 'End-to-end workflow to create, research and enrich a new artist account in a single session.'
 ---
 
+<Warning>
+**Don't run this workflow under a throwaway `agent+` account.** Artist data created against a `agent+...@recoupable.com` email is permanently isolated to that account and can't be recovered if the API key is lost. Only run this workflow after the user has authenticated with their real email — see [Choose your path](/agents#0-choose-your-path) for guidance on which auth scenario fits.
+</Warning>
+
 This is the canonical recipe used internally by Recoup's chat agent. Follow it step-by-step to bring a new artist account up to "researched + enriched" parity from a sandbox or any external agent.
 
 The chain is 8 sequential API calls. Long deterministic chains executed from prose memory tend to drop steps — the agent reads the doc once, runs a couple of calls, and forgets the rest. To prevent that from a sandbox, **drive the work from a checklist file**: scaffold the artist's `RECOUP.md` with one checkbox per step before any API call, then tick each box and persist captured values back to the frontmatter as you go. The file becomes the workflow state, and a fresh turn can resume by reading it.
