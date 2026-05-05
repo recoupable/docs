@@ -102,6 +102,31 @@
             "type": "object",
             "additionalProperties": true,
             "description": "Model specification metadata (provider, version, capabilities). Shape mirrors the gateway response."
+          },
+          "context_window": {
+            "type": "integer",
+            "description": "Maximum number of tokens the model can process in a single request (input + output combined). Clients use this to gate model selection against per-request token budgets.",
+            "example": 200000
+          },
+          "cost": {
+            "type": "object",
+            "description": "Per-million-token pricing in USD. Derived from `pricing` (which is per-token) for client-side display.",
+            "required": [
+              "input",
+              "output"
+            ],
+            "properties": {
+              "input": {
+                "type": "number",
+                "description": "USD cost per million input tokens.",
+                "example": 3.0
+              },
+              "output": {
+                "type": "number",
+                "description": "USD cost per million output tokens.",
+                "example": 15.0
+              }
+            }
           }
         }
       },
