@@ -1,0 +1,444 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup API - Sessions",
+    "description": "Sessions — sandboxed runs of an LLM-driven agent with tool use, lifecycle hooks, and persistence. Each session pairs one Vercel Sandbox with one or more chat threads.",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.recoupable.com"
+    }
+  ],
+  "security": [
+    {
+      "ApiKeyAuth": []
+    },
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/sessions": {
+      "post": {
+        "summary": "Create session",
+        "description": "Creates a new agent session and an initial empty chat in a single transaction. The session is created in the `provisioning` lifecycle state — a separate orchestration step claims it and starts the sandbox.",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSessionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Session and initial chat created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateSessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body — either malformed JSON or a field failed validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key / Bearer token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error — the session could not be persisted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sessions/{sessionId}": {
+      "get": {
+        "summary": "Get session by id",
+        "description": "Returns a single agent session by its id.",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the session to fetch.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Session retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetSessionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing API key / Bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - the authenticated account does not own this session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - no session exists with the given id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "CreateSessionRequest": {
+        "type": "object",
+        "description": "All fields are optional. An empty body is valid and creates a session with default settings.",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Display title for the session. When omitted, the server generates one."
+          },
+          "repoOwner": {
+            "type": "string",
+            "description": "GitHub repository owner (user or org). Validated against GitHub's owner-name rules."
+          },
+          "repoName": {
+            "type": "string",
+            "description": "GitHub repository name. Validated against GitHub's repo-name rules."
+          },
+          "branch": {
+            "type": "string",
+            "description": "Branch the session should check out. Ignored when `isNewBranch` is true — the server generates a new branch name in that case."
+          },
+          "cloneUrl": {
+            "type": "string",
+            "description": "Clone URL the sandbox should fetch from."
+          },
+          "isNewBranch": {
+            "type": "boolean",
+            "description": "When true, the server generates a fresh branch name (e.g. `xx/abcdef12`) instead of using `branch`."
+          },
+          "sandboxType": {
+            "type": "string",
+            "enum": [
+              "vercel"
+            ],
+            "description": "Which sandbox provider to use. Currently only `vercel` is accepted."
+          }
+        }
+      },
+      "GetSessionResponse": {
+        "type": "object",
+        "required": [
+          "session"
+        ],
+        "properties": {
+          "session": {
+            "$ref": "#/components/schemas/Session"
+          }
+        }
+      },
+      "CreateSessionResponse": {
+        "type": "object",
+        "required": [
+          "session",
+          "chat"
+        ],
+        "properties": {
+          "session": {
+            "$ref": "#/components/schemas/Session"
+          },
+          "chat": {
+            "$ref": "#/components/schemas/Chat"
+          }
+        }
+      },
+      "Chat": {
+        "type": "object",
+        "required": [
+          "id",
+          "sessionId",
+          "title",
+          "modelId",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Chat id (nanoid)."
+          },
+          "sessionId": {
+            "type": "string",
+            "description": "Owning session id."
+          },
+          "title": {
+            "type": "string",
+            "description": "Display title for the chat. The initial chat created with a session is titled `New chat`."
+          },
+          "modelId": {
+            "type": "string",
+            "description": "AI Gateway model identifier the chat is configured to use (e.g. `openai/gpt-5.4`)."
+          },
+          "activeStreamId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Id of an in-flight assistant stream, if one is active."
+          },
+          "lastAssistantMessageAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Timestamp of the most recent assistant message in this chat."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Session": {
+        "type": "object",
+        "required": [
+          "id",
+          "userId",
+          "title",
+          "status",
+          "isNewBranch",
+          "globalSkillRefs",
+          "lifecycleVersion",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Session id (nanoid)."
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Owning account id. Named `userId` here for compatibility with existing clients; on the server side this is the account_id foreign key into the accounts table."
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "running",
+              "completed",
+              "failed",
+              "archived"
+            ]
+          },
+          "repoOwner": {
+            "type": "string",
+            "nullable": true,
+            "description": "GitHub repo owner if the session is bound to a repository."
+          },
+          "repoName": {
+            "type": "string",
+            "nullable": true
+          },
+          "branch": {
+            "type": "string",
+            "nullable": true
+          },
+          "cloneUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "Clone URL the sandbox should fetch from."
+          },
+          "isNewBranch": {
+            "type": "boolean",
+            "description": "True when this session created and pushed a new branch (not committing back to the original)."
+          },
+          "globalSkillRefs": {
+            "type": "array",
+            "description": "Skills attached to the agent at provision time.",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "sandboxState": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": true,
+            "description": "Sandbox runtime state (Vercel Sandbox)."
+          },
+          "lifecycleState": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "provisioning",
+              "active",
+              "hibernating",
+              "hibernated",
+              "restoring",
+              "archived",
+              "failed"
+            ],
+            "description": "Lifecycle orchestration state for the sandbox."
+          },
+          "lifecycleVersion": {
+            "type": "integer",
+            "description": "Optimistic concurrency token for lifecycle transitions."
+          },
+          "lastActivityAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "sandboxExpiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "hibernateAfter": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "lifecycleRunId": {
+            "type": "string",
+            "nullable": true
+          },
+          "lifecycleError": {
+            "type": "string",
+            "nullable": true
+          },
+          "linesAdded": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Lines added across the session's diff. Defaults to 0; null when stats have not been computed."
+          },
+          "linesRemoved": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Lines removed across the session's diff. Defaults to 0; null when stats have not been computed."
+          },
+          "snapshotUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "snapshotCreatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "snapshotSizeBytes": {
+            "type": "integer",
+            "nullable": true
+          },
+          "cachedDiff": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": true
+          },
+          "cachedDiffUpdatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Always `\"error\"` for error responses."
+          },
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message."
+          }
+        }
+      }
+    }
+  }
+}
