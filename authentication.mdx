@@ -16,6 +16,18 @@ The [agent signup and verify](/agents) endpoints (`POST /api/agents/signup` and 
 
 ---
 
+## Concepts
+
+The API operates on three entity types. Authentication and access control resolve against these.
+
+| Concept | What it is |
+|---------|-----------|
+| **Account** | A user or agent that authenticates with an API key. When no artist is specified, you see everything available to the account. |
+| **Organization** | A label, distributor, catalog company, management firm, or team that groups multiple accounts. Pass `organization_id` to scope to a specific roster. |
+| **Artist** | A managed artist with profile, social handles, and linked catalog. Pass `artist_account_id` to scope to a specific artist. |
+
+---
+
 ## Create a key
 
 Two ways to get a key:
