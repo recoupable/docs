@@ -83,6 +83,12 @@
               "api-reference/chat/generate",
               "api-reference/chat/compact"
             ]
+          },
+          {
+            "group": "Models",
+            "pages": [
+              "api-reference/ai/models"
+            ]
           }
         ]
       },
@@ -354,6 +360,13 @@
               "api-reference/sandboxes/setup",
               "api-reference/sandboxes/file",
               "api-reference/sandboxes/upload"
+            ]
+          },
+          {
+            "group": "Sessions",
+            "pages": [
+              "api-reference/sessions/create",
+              "api-reference/sessions/get"
             ]
           },
           {
