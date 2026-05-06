@@ -20,7 +20,8 @@
               "quickstart",
               "cli",
               "mcp",
-              "authentication"
+              "authentication",
+              "credits"
             ]
           }
         ]
