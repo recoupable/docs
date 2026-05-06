@@ -1,11 +1,11 @@
 ---
 title: "Credits"
-description: "How Recoup credits work — what's billed, how to check your balance, and how to top up."
+description: "How Recoup credits work — what's billed, how to check your balance, and how to upgrade."
 ---
 
-Some Recoup endpoints are billed in **credits** — primarily endpoints that hit external data providers, run AI inference, or generate content. The rest of the API (artist management, sandboxes, sessions, tasks, accounts, social integrations, etc.) is free at the API layer.
+Some Recoup endpoints are billed in **credits** — primarily endpoints that hit external data providers, run AI inference, or generate content. The rest of the API is free at the API layer.
 
-Treat `/api/credits/get` as the source of truth for both your **current balance** and the **cost of any specific call** — call it before and after a billed request to see the deduction. Hard-coded cost numbers in client code or docs drift; the live balance doesn't.
+Treat [`GET /api/credits/get`](#check-your-balance) as the source of truth for both your **current balance** and the **cost of any specific call** — call it before and after a billed request to see the deduction. Hard-coded cost numbers drift; the live balance doesn't.
 
 ---
 
@@ -38,29 +38,39 @@ Response shape:
 }
 ```
 
-Call this before any sequence that might exhaust the balance, and bail out cleanly if you're under what the next call needs. To get the exact cost of a specific endpoint, call `/api/credits/get` once before and once after — the difference is the deduction.
-
 ---
 
-## Top up
+## Subscription
 
-Top-ups today happen through the chat app's billing surface, not via API:
+Recoup has two tiers. Both refill on a monthly cycle.
+
+| Tier | How you get it | Monthly credits |
+|------|---------------|----------------|
+| **Free** | Default for every new account | Monthly allowance refills automatically |
+| **Pro** | Stripe subscription via the chat dashboard | Substantially higher monthly allowance |
+
+### Upgrade to Pro
 
 1. Sign in at [chat.recoupable.com](https://chat.recoupable.com)
-2. Open Billing → Subscribe
-3. The Stripe checkout creates a subscription tied to the same account your API key authenticates against
+2. Open Billing → **Subscribe**
+3. Stripe checkout creates a subscription tied to the account your API key authenticates against. New subscriptions include a **30-day trial**
 
-Subscription status is reflected via `GET /api/subscription/status` — if `isPro` is `true`, the account is on the paid tier with higher monthly limits.
+### Check your tier
+
+```bash
+curl -sS https://api.recoupable.com/api/subscription/status \
+  -H "x-api-key: $RECOUP_API_KEY"
+```
+
+If `isPro` is `true`, the account is on the paid tier with the higher monthly allowance.
+
+### One-time top-ups
+
+**Coming soon.** Today the only way to add credits beyond the monthly refill is to subscribe (or wait for the next cycle). Per-request top-ups are on the roadmap.
 
 ---
 
 ## Common questions
 
-**How do I know what a specific call costs?**
-Call `/api/credits/get` immediately before and immediately after the request. The delta is the actual cost charged for your account at that moment.
-
 **Are scheduled tasks billed?**
 The scheduling endpoints (`/api/tasks/*`) themselves are free. Whatever the scheduled task ends up calling (e.g. a research endpoint inside the task body) is billed when it runs.
-
-**Why might one logical action deduct twice?**
-A few helper endpoints internally call the same upstream lookup more than once (for example, resolving a track by ISRC then again by Spotify ID when the first attempt yields nothing). Each successful internal lookup deducts independently.
