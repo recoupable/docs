@@ -415,28 +415,33 @@
             ]
           },
           {
-            "group": "Foundational",
+            "group": "Foundations",
             "pages": [
+              "skills/recoup-api",
               "skills/getting-started",
               "skills/setup-sandbox",
               "skills/artist-workspace"
             ]
           },
           {
-            "group": "Research & analytics",
+            "group": "Research",
             "pages": [
-              "skills/music-industry-research",
-              "skills/chart-metric",
-              "skills/streaming-growth"
+              "skills/music-industry-research"
             ]
           },
           {
-            "group": "Creative work",
+            "group": "Songwriting",
             "pages": [
-              "skills/song-writing",
-              "skills/trend-to-song",
+              "skills/song-writing"
+            ]
+          },
+          {
+            "group": "Marketing & growth",
+            "pages": [
               "skills/content-creation",
-              "skills/release-management"
+              "skills/release-management",
+              "skills/streaming-growth",
+              "skills/trend-to-song"
             ]
           }
         ]
