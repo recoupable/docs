@@ -28,17 +28,17 @@ The first command registers the [registry repo](https://github.com/recoupable/pl
 
 ### Claude Cowork
 
-Cowork installs plugins from a GitHub URL. Tell the user to:
+Cowork installs plugins from a marketplace repo. Tell the user to:
 
 1. Open Claude Desktop and switch to the **Cowork** tab
 2. Click **Customize** in the left sidebar → **Plugins**
-3. Click **Add**
-4. Paste the plugin's GitHub URL: `https://github.com/recoupable/music-catalog-diligence`
-5. Confirm the install
+3. Click the **+** button → **Create plugin** → **Add marketplace**
+4. Paste the marketplace URL: `https://github.com/recoupable/plugins`
+5. Click **Sync**
 
-Cowork pulls the plugin folder, parses `.claude-plugin/plugin.json`, and registers the bundled skills, commands, and agents. The plugin updates automatically when we push to that repo.
+Cowork pulls the marketplace's `.claude-plugin/marketplace.json`, fetches each listed plugin from its source repo, and installs them as Personal plugins. After install, `music-catalog-diligence` appears in the Personal Plugins list and its slash commands (`/catalog-diligence`, `/catalog-kickoff`, etc.) are available in any Cowork task.
 
-Cowork plugins require a paid Claude plan (Pro, Max, Team, or Enterprise). Plugins run locally on the user's machine.
+Cowork plugins require a paid Claude plan (Pro, Max, Team, or Enterprise). Plugins run locally on the user's machine. Updates pull automatically when we push to the marketplace repo.
 
 ### Codex
 
