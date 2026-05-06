@@ -15,13 +15,37 @@ The sidebar lists every skill, grouped by purpose. Each docs page summarizes whe
 
 ## Install
 
-### Claude Code
+The fastest way is the [`skills`](https://github.com/vercel-labs/add-skill) CLI — it works with Claude Code, Codex, OpenCode, Cursor, and 50+ other agents.
+
+### Install everything
+
+```bash
+npx skills add recoupable/skills
+```
+
+### Install one skill
+
+```bash
+npx skills add recoupable/skills --skill recoup-api
+```
+
+### Preview before installing
+
+```bash
+npx skills add recoupable/skills --list
+```
+
+Add `-a claude-code` to target a specific agent, `--global` to install across every project, or `-y` to skip the confirmation prompt (CI-friendly). Each skill page in this section has its own one-line install command. Full CLI reference: [vercel-labs/add-skill](https://github.com/vercel-labs/add-skill).
+
+### Other paths
+
+#### Claude Code marketplace
 
 ```bash
 /plugin marketplace add recoupable/skills
 ```
 
-### Any other agent
+#### Manual
 
 ```bash
 git clone https://github.com/recoupable/skills.git
