@@ -1,110 +1,35 @@
 ---
 title: "Credits"
-description: "How Recoup credits work — what each API call costs, how to check your balance, and how to top up."
+description: "How Recoup credits work — what's billed, how to check your balance, and how to top up."
 ---
 
-Most Recoup endpoints that hit Chartmetric, generate AI content, or run a model are billed in **credits**. This page is the canonical cost reference. Read it once, cache it, and you'll know which calls are cheap to make freely versus which to cache aggressively.
+Some Recoup endpoints are billed in **credits** — primarily endpoints that hit external data providers, run AI inference, or generate content. The rest of the API (artist management, sandboxes, sessions, tasks, accounts, social integrations, etc.) is free at the API layer.
 
-The cost numbers below come from the API source code as of the latest deploy. Verify your live balance with [`GET /api/credits/get`](#check-your-balance) before relying on a planned spend.
-
----
-
-## What costs credits
-
-| Family | Cost | Why |
-|--------|-----|-----|
-| Research (`/api/research/*`) | **5 credits per successful call** (with exceptions below) | Each call hits Chartmetric or the web research provider |
-| Content generation (`/api/image/generate`) | **15 credits per image** | x402-priced at $0.15 (1 credit = $0.01) |
-| AI Chat (streaming) (`POST /api/chat`) | **Variable, minimum 1 credit** | Computed from token usage (`max(1, round(usage_usd × 100))`) |
-| Everything else | **Free at the API layer** as of this writing | Includes `/api/artists/*`, `/api/songs/*`, `/api/accounts/*`, `/api/connectors/*`, `/api/sandboxes/*`, `/api/sessions/*`, `/api/tasks/*`, `/api/spotify/*`, `/api/social/*`, `/api/agents/*`, etc. |
-
-If an endpoint isn't listed in the cost table further down, treat it as free at the API layer. (Subscription gating may still apply.)
+Treat `/api/credits/get` as the source of truth for both your **current balance** and the **cost of any specific call** — call it before and after a billed request to see the deduction. Hard-coded cost numbers in client code or docs drift; the live balance doesn't.
 
 ---
 
-## Per-endpoint cost table
+## What's billed
 
-### Research endpoints (most are 5 credits)
+| Family | Billed? | Notes |
+|--------|---------|-------|
+| **Research** (`/api/research/*`) | Yes | Each successful call deducts credits. Costs vary by endpoint and parameters (e.g. `enrich` charges by processor tier; `extract` charges by URL count). |
+| **Content generation** (`/api/image/generate`) | Yes | Image generation is priced per call. |
+| **AI Chat — streaming** (`POST /api/chat`) | Yes | Variable cost based on model token usage, with a per-request minimum. |
+| **Everything else** | Free at the API layer | Artist CRUD, sandboxes, sessions, scheduled tasks, social integrations, account/org management, agent signup, Spotify proxies, etc. Subscription gating may still apply. |
 
-Every `GET /api/research/*` endpoint costs **5 credits** on a successful response. No deduction occurs on 4xx errors.
-
-| Endpoint | Method | Credits |
-|----------|--------|---------|
-| `/api/research` | GET | 5 |
-| `/api/research/albums` | GET | 5 |
-| `/api/research/audience` | GET | 5 |
-| `/api/research/career` | GET | 5 |
-| `/api/research/charts` | GET | 5 |
-| `/api/research/cities` | GET | 5 |
-| `/api/research/curator` | GET | 5 |
-| `/api/research/discover` | GET | 5 |
-| `/api/research/festivals` | GET | 5 |
-| `/api/research/genres` | GET | 5 |
-| `/api/research/insights` | GET | 5 |
-| `/api/research/instagram-posts` | GET | 5 |
-| `/api/research/lookup` | GET | 5 |
-| `/api/research/metrics` | GET | 5 |
-| `/api/research/milestones` | GET | 5 |
-| `/api/research/playlist` | GET | 5 |
-| `/api/research/playlists` | GET | 5 |
-| `/api/research/profile` | GET | 5 |
-| `/api/research/radio` | GET | 5 |
-| `/api/research/rank` | GET | 5 |
-| `/api/research/similar` | GET | 5 |
-| `/api/research/track` | GET | 5 |
-| `/api/research/track/playlists` | GET | 5 |
-| `/api/research/tracks` | GET | 5 |
-| `/api/research/urls` | GET | 5 |
-| `/api/research/venues` | GET | 5 |
-
-### Research POST endpoints (variable)
-
-These cost more than the GET endpoints because they bundle multiple upstream lookups:
-
-| Endpoint | Method | Credits |
-|----------|--------|---------|
-| `/api/research/web` | POST | 5 |
-| `/api/research/people` | POST | 5 |
-| `/api/research/extract` | POST | **5 × number of URLs in the request** |
-| `/api/research/enrich` | POST | **5 (base) / 10 (core) / 25 (ultra)** depending on the `processor` parameter |
-| `/api/research/deep` | POST | **25** (heavy multi-step pipeline) |
-
-### Content generation
-
-| Endpoint | Method | Credits |
-|----------|--------|---------|
-| `/api/image/generate` | GET | **15** ($0.15 priced via x402, 1 credit = $0.01) |
-
-### Chat (AI inference)
-
-| Endpoint | Method | Credits |
-|----------|--------|---------|
-| `POST /api/chat` (streaming) | POST | **Variable.** Computed from model token usage as `max(1, round(usage_usd × 100))`. A request that costs $0.05 in model usage = 5 credits. A request under $0.01 still rounds up to **1 credit minimum**. |
-
----
-
-## Caching guidance
-
-Some calls are cheap to make repeatedly; others are not. A reasonable rule:
-
-- **5 credits ≈ $0.05.** Make freely for low-volume agent runs. Cache responses for ~1 hour if you're hitting the same artist many times.
-- **15+ credits ≈ $0.15+.** Cache aggressively. For image generation, save the URL and reuse it instead of regenerating.
-- **Variable (chat).** Watch the per-request cost — long context windows and heavy reasoning models add up fast. Use the cheapest model that handles your task.
-
-`/api/research/extract` scales with the URL count in your request — passing 20 URLs in one call costs **100 credits**. Batch only when the upstream cost is justified.
+Failed calls (4xx / 5xx) do **not** deduct credits. Deduction happens only after the upstream call succeeds.
 
 ---
 
 ## Check your balance
-
-`GET /api/credits/get` returns the calling account's current credit balance. Authenticate with the same `x-api-key` or `Authorization: Bearer` header you use everywhere else.
 
 ```bash
 curl -sS https://api.recoupable.com/api/credits/get \
   -H "x-api-key: $RECOUP_API_KEY"
 ```
 
-Response shape (illustrative):
+Response shape:
 
 ```json
 {
@@ -113,44 +38,29 @@ Response shape (illustrative):
 }
 ```
 
-Call this before any sequence that might exhaust the balance, and bail out cleanly if you're under the cost of the next call.
+Call this before any sequence that might exhaust the balance, and bail out cleanly if you're under what the next call needs. To get the exact cost of a specific endpoint, call `/api/credits/get` once before and once after — the difference is the deduction.
 
 ---
 
-## How balance changes
-
-| Event | Effect |
-|-------|--------|
-| Successful billed call | `remaining_credits -= cost` (per the table above) |
-| Failed call (4xx/5xx) | No deduction. Credits are charged only on a successful upstream response. |
-| New account signup | Account is initialized with starting credits. The exact starting amount can shift between tiers and over time — always read the actual value from `GET /api/credits/get` rather than assuming. |
-| Pro subscription | Monthly refill. Subscribe via the [Recoup chat dashboard](https://chat.recoupable.com/billing). |
-| Top-up (one-time) | Currently routed through the chat app's billing surface; there's no API-only top-up path yet. |
-
----
-
-## Buying more credits
+## Top up
 
 Top-ups today happen through the chat app's billing surface, not via API:
 
 1. Sign in at [chat.recoupable.com](https://chat.recoupable.com)
-2. Open Billing → Subscribe (or Add credits, if available)
+2. Open Billing → Subscribe
 3. The Stripe checkout creates a subscription tied to the same account your API key authenticates against
 
-Subscription status is reflected via `GET /api/subscription/status` — if `isPro` is `true`, the account refills automatically on the monthly cadence.
+Subscription status is reflected via `GET /api/subscription/status` — if `isPro` is `true`, the account is on the paid tier with higher monthly limits.
 
 ---
 
 ## Common questions
 
-**Do failed calls cost credits?**
-No. The deduction happens only after the upstream call succeeds. A 4xx for a missing artist or invalid parameter doesn't cost anything.
+**How do I know what a specific call costs?**
+Call `/api/credits/get` immediately before and immediately after the request. The delta is the actual cost charged for your account at that moment.
 
-**Are content endpoints (`/api/content/*`) billed?**
-At the API layer today, only `/api/image/generate` is billed. The newer `/api/content/*` family (image, video, caption, transcribe, edit, upscale, analyze) is not currently deducted via the credits system in the API source. This may change — check `/api/credits/get` before and after a call to confirm what was deducted.
+**Are scheduled tasks billed?**
+The scheduling endpoints (`/api/tasks/*`) themselves are free. Whatever the scheduled task ends up calling (e.g. a research endpoint inside the task body) is billed when it runs.
 
-**Are tasks and scheduled jobs billed?**
-The scheduling endpoints (`/api/tasks/*`) are free. Whatever the scheduled task ends up calling (e.g. a research endpoint inside the task body) is billed at that endpoint's normal rate when it runs.
-
-**Why might one call deduct twice?**
-A few helper endpoints internally call the same research routine more than once (e.g. resolving a track by ISRC then again by Spotify ID). Each successful internal lookup deducts independently. If you see two 5-credit deductions for one call, this is why.
+**Why might one logical action deduct twice?**
+A few helper endpoints internally call the same upstream lookup more than once (for example, resolving a track by ISRC then again by Spotify ID when the first attempt yields nothing). Each successful internal lookup deducts independently.
