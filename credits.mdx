@@ -5,8 +5,6 @@ description: "How Recoup credits work — what's billed, how to check your balan
 
 Some Recoup endpoints are billed in **credits** — primarily endpoints that hit external data providers, run AI inference, or generate content. The rest of the API is free at the API layer.
 
-Treat [`GET /api/credits/get`](#check-your-balance) as the source of truth for both your **current balance** and the **cost of any specific call** — call it before and after a billed request to see the deduction. Hard-coded cost numbers drift; the live balance doesn't.
-
 ---
 
 ## What's billed
@@ -67,10 +65,3 @@ If `isPro` is `true`, the account is on the paid tier with the higher monthly al
 ### One-time top-ups
 
 **Coming soon.** Today the only way to add credits beyond the monthly refill is to subscribe (or wait for the next cycle). Per-request top-ups are on the roadmap.
-
----
-
-## Common questions
-
-**Are scheduled tasks billed?**
-The scheduling endpoints (`/api/tasks/*`) themselves are free. Whatever the scheduled task ends up calling (e.g. a research endpoint inside the task body) is billed when it runs.
