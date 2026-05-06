@@ -482,12 +482,12 @@
     },
     "/api/apify/runs/{runId}": {
       "get": {
-        "description": "Check the status and retrieve results from Apify scraper runs. This endpoint uses the Apify API Client to fetch the current status of a scraper run and its results if available. Use the runId returned from endpoints like Instagram Comments, Instagram Profiles, Social Scrape, or Artist Socials Scrape to poll for results.",
+        "description": "Check the status and retrieve results from Apify scraper runs. This endpoint uses the Apify API Client to fetch the current status of a scraper run and its results if available. Use the runId returned from POST /api/social/scrape or POST /api/artist/socials-scrape to poll for results.",
         "parameters": [
           {
             "name": "runId",
             "in": "path",
-            "description": "The ID of the Apify run to check status for. This is returned when starting a scrape via Instagram Comments, Instagram Profiles, Social Scrape, or Artist Socials Scrape endpoints.",
+            "description": "The ID of the Apify run to check status for. This is returned when starting a scrape via POST /api/social/scrape or POST /api/artist/socials-scrape.",
             "required": true,
             "schema": {
               "type": "string"
@@ -949,7 +949,7 @@
               "type": "object",
               "additionalProperties": true
             },
-            "description": "Array of dataset items returned by the scraper. The structure of each item varies depending on the scraper type (Instagram Profile, Instagram Comments, etc.)",
+            "description": "Array of dataset items returned by the scraper. The structure of each item varies depending on the upstream Apify scraper that was invoked (Instagram profile scraper, Instagram comments scraper, TikTok scraper, etc.) — not the Recoup endpoint that triggered it.",
             "example": [
               {
                 "id": "123456789",
