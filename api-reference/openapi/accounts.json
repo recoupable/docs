@@ -410,6 +410,76 @@
         }
       }
     },
+    "/api/accounts/{id}/subscription": {
+      "get": {
+        "description": "Retrieve the subscription for an account, directly or via an organization.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the account. Must be the authenticated account or another accessible via organization membership.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subscription retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionErrorResponse"
+                },
+                "example": {
+                  "error": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account not accessible to the authenticated account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/workspaces": {
       "post": {
         "description": "Create a new workspace account. Workspaces can optionally be linked to an organization.",
@@ -2833,6 +2903,62 @@
             "format": "uri",
             "description": "The hosted checkout URL. Redirect to this URL to complete the payment.",
             "example": "https://checkout.stripe.com/pay/cs_test_a1b2c3d4e5f6g7h8i9j0"
+          }
+        }
+      },
+      "SubscriptionResponse": {
+        "type": "object",
+        "required": [
+          "isPro",
+          "status",
+          "plan",
+          "source"
+        ],
+        "properties": {
+          "isPro": {
+            "type": "boolean",
+            "description": "True when the account has an active paid subscription, directly or via an organization."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "trialing",
+              "canceled",
+              "past_due",
+              "none"
+            ],
+            "description": "Lifecycle state of the subscription. `none` when no subscription exists.",
+            "example": "active"
+          },
+          "plan": {
+            "type": "string",
+            "nullable": true,
+            "description": "Plan identifier (e.g. `pro`). Null when no subscription exists.",
+            "example": "pro"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "account",
+              "organization"
+            ],
+            "nullable": true,
+            "description": "Origin of the subscription. `account` for direct, `organization` when covered by an organization. Null when no subscription exists.",
+            "example": "account"
+          }
+        }
+      },
+      "SubscriptionErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message.",
+            "example": "Account not found"
           }
         }
       },
