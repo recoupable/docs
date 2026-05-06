@@ -412,7 +412,7 @@
     },
     "/api/subscriptions/status": {
       "get": {
-        "description": "Whether the account for `accountId` has an active paid subscription, including when covered by an organization subscription.",
+        "description": "Check the subscription status of an account, directly or via an organization.",
         "parameters": [
           {
             "name": "accountId",
