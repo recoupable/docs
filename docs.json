@@ -226,7 +226,8 @@
             "group": "Agent Onboarding",
             "pages": [
               "api-reference/agents/signup",
-              "api-reference/agents/verify"
+              "api-reference/agents/verify",
+              "api-reference/agents/get"
             ]
           },
           {

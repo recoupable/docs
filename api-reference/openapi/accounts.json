@@ -1613,6 +1613,79 @@
         }
       }
     },
+    "/api/agents": {
+      "get": {
+        "description": "Returns agent linkage for one or more artist social IDs. Pass each ID as a repeated `socialId` query parameter (UUID of a row in `socials`). Each element includes a platform `type` (or `wrapped` when one agent spans multiple socials), the agent `agentId`, and `updated_at`. Authentication via x-api-key or Authorization Bearer token.",
+        "parameters": [
+          {
+            "name": "socialId",
+            "in": "query",
+            "description": "Artist social ID (UUID). Repeat this query parameter to request multiple IDs.",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "minItems": 1
+            },
+            "style": "form",
+            "explode": true
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Agents retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAgentsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentsGetErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to load agents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentsGetErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/agents/signup": {
       "post": {
         "description": "Register an agent. For new agent+ emails, returns an API key immediately. For all other cases, sends a verification code to the email — call [POST /api/agents/verify](/api-reference/agents/verify) with the code to get your API key.\n\n**Tip:** If you're unsure what email to register, generate a unique `agent+{suffix}@recoupable.com` address (e.g. `agent+1744410896-28439@recoupable.com`, combining a Unix timestamp with a random integer). This guarantees a fresh `agent+` address on every call — including multiple signups within the same second — and returns an API key instantly with no email verification required.",
@@ -2793,6 +2866,48 @@
             "type": "string",
             "description": "Human-readable status message.",
             "example": "Verified"
+          }
+        }
+      },
+      "GetAgentsItem": {
+        "type": "object",
+        "required": [
+          "type",
+          "agentId",
+          "updated_at"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Platform label derived from the social profile URL, or `wrapped` when one agent is linked to multiple socials.",
+            "example": "spotify"
+          },
+          "agentId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Agent row ID."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "GetAgentsResponse": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GetAgentsItem"
+        }
+      },
+      "AgentsGetErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message"
           }
         }
       },
