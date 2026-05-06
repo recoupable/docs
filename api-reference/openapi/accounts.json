@@ -410,14 +410,14 @@
         }
       }
     },
-    "/api/subscriptions/status": {
+    "/api/accounts/{id}/subscription": {
       "get": {
-        "description": "Check the subscription status of an account, directly or via an organization.",
+        "description": "Retrieve the subscription for an account, directly or via an organization.",
         "parameters": [
           {
-            "name": "accountId",
-            "in": "query",
-            "description": "UUID of the account to check. May be the authenticated account or another account accessible via organization membership.",
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the account.",
             "required": true,
             "schema": {
               "type": "string",
@@ -435,21 +435,11 @@
         ],
         "responses": {
           "200": {
-            "description": "Subscription status retrieved successfully",
+            "description": "Subscription retrieved successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SubscriptionStatusResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - missing or invalid accountId",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SubscriptionStatusErrorResponse"
+                  "$ref": "#/components/schemas/SubscriptionResponse"
                 }
               }
             }
@@ -459,10 +449,30 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SubscriptionStatusErrorResponse"
+                  "$ref": "#/components/schemas/SubscriptionErrorResponse"
                 },
                 "example": {
                   "error": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account not accessible to the authenticated account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionErrorResponse"
                 }
               }
             }
@@ -2896,19 +2906,50 @@
           }
         }
       },
-      "SubscriptionStatusResponse": {
+      "SubscriptionResponse": {
         "type": "object",
         "required": [
-          "isPro"
+          "isPro",
+          "status",
+          "plan",
+          "source"
         ],
         "properties": {
           "isPro": {
             "type": "boolean",
-            "description": "True when the account has an active paid subscription (direct or via organization)."
+            "description": "True when the account has an active paid subscription, directly or via an organization."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "trialing",
+              "canceled",
+              "past_due",
+              "none"
+            ],
+            "description": "Lifecycle state of the subscription. `none` when no subscription exists.",
+            "example": "active"
+          },
+          "plan": {
+            "type": "string",
+            "nullable": true,
+            "description": "Plan identifier (e.g. `pro`). Null when no subscription exists.",
+            "example": "pro"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "account",
+              "organization"
+            ],
+            "nullable": true,
+            "description": "Origin of the subscription. `account` for direct, `organization` when covered by an organization. Null when no subscription exists.",
+            "example": "account"
           }
         }
       },
-      "SubscriptionStatusErrorResponse": {
+      "SubscriptionErrorResponse": {
         "type": "object",
         "required": [
           "error"
@@ -2917,7 +2958,7 @@
           "error": {
             "type": "string",
             "description": "Human-readable error message.",
-            "example": "accountId is required"
+            "example": "Account not found"
           }
         }
       },
