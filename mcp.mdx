@@ -157,5 +157,5 @@ console.log(result.content);
 Each tool's input schema is published over the MCP protocol, so your agent gets typed parameter help automatically.
 
 <Note>
-**Org-scoped keys** can target any account in their organization by passing `account_id` on tools that accept it. Personal API keys can only operate on their own data.
+If your account belongs to an organization, your key can target any account in that org by passing `account_id` on tools that accept it. Otherwise, your key only operates on your own data. There's no separate "org-scoped" key type — access is determined by the account's organization membership. See [Authentication](/authentication#access-control) for the full access rules.
 </Note>

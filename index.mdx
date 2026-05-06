@@ -13,7 +13,7 @@ Whether you're an indie artist, a label, a distributor, a catalog company, or a 
 
 ## Get started
 
-- **[Quickstart](/quickstart)** — Get an API key and make your first call. ~5 minutes.
+- **[Quickstart](/quickstart)** — Get an API key and make your first call. Under a minute.
 - **[Agent onboarding](/agents)** — The operating manual for AI agents using Recoup in production. Covers the throwaway-vs-account decision, the roster, and the persistent filesystem.
 - **[Authentication](/authentication)** — Reference for API keys, Bearer tokens, and access scoping.
 
@@ -27,7 +27,7 @@ Whether you're an indie artist, a label, a distributor, a catalog company, or a 
     icon="code"
     href="/quickstart"
   >
-    Standard HTTP endpoints. Pass your API key in `x-api-key` and call any of the 40+ endpoints.
+    Standard HTTP endpoints. Pass your API key in `x-api-key` and call any of the 130+ endpoints.
   </Card>
   <Card
     title="MCP Server"
@@ -49,7 +49,7 @@ Whether you're an indie artist, a label, a distributor, a catalog company, or a 
 
 ## What's in the API
 
-Organized by what agents actually do when running a label.
+Organized by what agents actually do when running a music business.
 
 <CardGroup cols={2}>
   <Card
@@ -71,21 +71,21 @@ Organized by what agents actually do when running a label.
     icon="users"
     href="/api-reference/artists/list"
   >
-    Add artists, link social accounts, pin priority work, browse fans, posts, and comments. The people side of your label.
+    Add artists, link social accounts, pin priority work, browse fans and posts. The people side of your roster.
   </Card>
   <Card
     title="Catalog"
     icon="disc-3"
     href="/api-reference/songs/songs"
   >
-    Songs, catalogs, and AI-driven audio analysis. Organize releases into collections. The music side of your label.
+    Songs, catalogs, and AI-driven audio analysis. Organize releases into collections. The music side of your roster.
   </Card>
   <Card
     title="Content"
     icon="sparkles"
     href="/api-reference/content/generate-image"
   >
-    7 endpoints — generate images, videos, captions; transcribe audio; edit, upscale, analyze video. Compose them yourself, end to end.
+    11 endpoints — 7 creative primitives (generate images, videos, captions; transcribe audio; edit, upscale, analyze video) plus full-pipeline create, cost estimation, validation, and template browsing.
   </Card>
   <Card
     title="Automation"
@@ -157,10 +157,12 @@ If you are an LLM or AI agent, fetch the canonical OpenAPI specifications — th
 | Domain | OpenAPI spec |
 |--------|--------------|
 | Research (streaming metrics, audience, playlists, charts, web intelligence) | [`openapi/research.json`](/api-reference/openapi/research.json) |
-| Content (images, videos, captions, transcription, editing, upscaling, analysis) | [`openapi/content.json`](/api-reference/openapi/content.json) |
+| Content (images, videos, captions, transcription, editing, upscaling, analysis, templates) | [`openapi/content.json`](/api-reference/openapi/content.json) |
 | Releases (artists, songs, catalogs) | [`openapi/releases.json`](/api-reference/openapi/releases.json) |
 | Accounts (agents, accounts, organizations, sandboxes, subscriptions, admins) | [`openapi/accounts.json`](/api-reference/openapi/accounts.json) |
 | Social (Spotify, Instagram, X, social scraping, connectors) | [`openapi/social.json`](/api-reference/openapi/social.json) |
+| AI (language model catalog) | [`openapi/ai.json`](/api-reference/openapi/ai.json) |
+| Sessions (agent sessions for sandbox runs) | [`openapi/sessions.json`](/api-reference/openapi/sessions.json) |
 
 Authentication: `x-api-key` header (or `Authorization: Bearer <token>` for Privy). To get a key, `POST /api/agents/signup` with the human's email, then `POST /api/agents/verify` with the code from their inbox. Full flow at [/agents](/agents).
 
