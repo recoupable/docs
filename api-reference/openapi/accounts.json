@@ -417,7 +417,7 @@
           {
             "name": "accountId",
             "in": "query",
-            "description": "UUID of the account to check.",
+            "description": "UUID of the account to check. May be the authenticated account or another account accessible via organization membership.",
             "required": true,
             "schema": {
               "type": "string",
