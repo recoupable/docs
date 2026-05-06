@@ -44,7 +44,7 @@ Keys are shown once. They are stored as HMAC-SHA256 hashes and cannot be retriev
 ## Use a key
 
 ```bash
-curl "https://recoup-api.vercel.app/api/research?q=Drake" \
+curl "https://api.recoupable.com/api/research?q=Drake" \
   -H "x-api-key: YOUR_API_KEY"
 ```
 
@@ -64,7 +64,7 @@ If your account belongs to an organization, your key can access data for any acc
 For frontend apps with [Privy](https://privy.io) authentication:
 
 ```bash
-curl "https://recoup-api.vercel.app/api/tasks" \
+curl "https://api.recoupable.com/api/tasks" \
   -H "Authorization: Bearer YOUR_PRIVY_JWT"
 ```
 

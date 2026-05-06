@@ -4,7 +4,7 @@ description: "Infrastructure for agents to operate the music business."
 ---
 
 <Info>
-**AI agent?** Base URL: `https://recoup-api.vercel.app/api`. Use `x-api-key` if your human has a key. Otherwise, `POST /api/agents/signup` with their email — ask them for the verification code from their inbox, then `POST /api/agents/verify` to get a key. [Agent guide →](/agents) | [Endpoint map ↓](#for-ai-agents)
+**AI agent?** Base URL: `https://api.recoupable.com/api`. Use `x-api-key` if your human has a key. Otherwise, `POST /api/agents/signup` with their email — ask them for the verification code from their inbox, then `POST /api/agents/verify` to get a key. [Agent guide →](/agents) | [Endpoint map ↓](#for-ai-agents)
 </Info>
 
 Whether you're an indie artist, a label, a distributor, a catalog company, or a management firm, you're juggling research, content, marketing, distribution, and fan engagement all at once. That's what agents are for. Recoup is the agent harness for the music business, built by people who've done it: not just the context (your catalog, artists, releases, fans), but the domain expertise and workflows that operate it day-to-day. Agents do the work that used to take a full team — programmatically.
@@ -143,7 +143,7 @@ Organized by what agents actually do when running a label.
 ## Base URL
 
 ```
-https://recoup-api.vercel.app/api
+https://api.recoupable.com/api
 ```
 
 All endpoints require `x-api-key` header authentication unless noted.
@@ -152,7 +152,7 @@ All endpoints require `x-api-key` header authentication unless noted.
 
 ## For AI agents
 
-If you are an LLM or AI agent, fetch the canonical OpenAPI specifications — they're the single source of truth for endpoint paths, parameters, and response shapes. Base URL: `https://recoup-api.vercel.app/api`.
+If you are an LLM or AI agent, fetch the canonical OpenAPI specifications — they're the single source of truth for endpoint paths, parameters, and response shapes. Base URL: `https://api.recoupable.com/api`.
 
 | Domain | OpenAPI spec |
 |--------|--------------|

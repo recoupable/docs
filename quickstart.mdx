@@ -13,12 +13,12 @@ A 5-minute hello-world. Get an API key, hit the research endpoint, optionally co
 
 ```bash
 # 1. Trigger a verification code to your inbox
-curl -s -X POST "https://recoup-api.vercel.app/api/agents/signup" \
+curl -s -X POST "https://api.recoupable.com/api/agents/signup" \
   -H "Content-Type: application/json" \
   -d '{"email": "you@example.com"}'
 
 # 2. Check your email, then exchange the code for a key
-export RECOUP_API_KEY=$(curl -s -X POST "https://recoup-api.vercel.app/api/agents/verify" \
+export RECOUP_API_KEY=$(curl -s -X POST "https://api.recoupable.com/api/agents/verify" \
   -H "Content-Type: application/json" \
   -d '{"email": "you@example.com", "code": "123456"}' | jq -r .api_key)
 ```
@@ -36,7 +36,7 @@ The research API has 30+ endpoints. Start with search — it works for any artis
 <CodeGroup>
 
 ```bash cURL
-curl "https://recoup-api.vercel.app/api/research?q=Drake" \
+curl "https://api.recoupable.com/api/research?q=Drake" \
   -H "x-api-key: $RECOUP_API_KEY"
 ```
 
@@ -45,7 +45,7 @@ import os
 import requests
 
 response = requests.get(
-    "https://recoup-api.vercel.app/api/research",
+    "https://api.recoupable.com/api/research",
     params={"q": "Drake"},
     headers={"x-api-key": os.environ["RECOUP_API_KEY"]},
 )
@@ -54,7 +54,7 @@ print(response.json())
 
 ```javascript JavaScript
 const response = await fetch(
-  "https://recoup-api.vercel.app/api/research?q=Drake",
+  "https://api.recoupable.com/api/research?q=Drake",
   { headers: { "x-api-key": process.env.RECOUP_API_KEY } },
 );
 console.log(await response.json());
@@ -70,15 +70,15 @@ Once you have an artist, pull data across 14 platforms:
 
 ```bash
 # Streaming metrics (Spotify, Instagram, TikTok, YouTube, and 10 more)
-curl "https://recoup-api.vercel.app/api/research/metrics?artist=Drake&source=spotify" \
+curl "https://api.recoupable.com/api/research/metrics?artist=Drake&source=spotify" \
   -H "x-api-key: $RECOUP_API_KEY"
 
 # Audience demographics (age, gender, geography)
-curl "https://recoup-api.vercel.app/api/research/audience?artist=Drake" \
+curl "https://api.recoupable.com/api/research/audience?artist=Drake" \
   -H "x-api-key: $RECOUP_API_KEY"
 
 # Editorial playlist placements
-curl "https://recoup-api.vercel.app/api/research/playlists?artist=Drake&editorial=true" \
+curl "https://api.recoupable.com/api/research/playlists?artist=Drake&editorial=true" \
   -H "x-api-key: $RECOUP_API_KEY"
 ```
 
@@ -91,7 +91,7 @@ See the [Research tab](/api-reference/research/search) for all 30+ research endp
 If you're using Claude, ChatGPT, Cursor, or any MCP-compatible tool, connect directly:
 
 ```
-https://recoup-api.vercel.app/mcp
+https://api.recoupable.com/mcp
 ```
 
 Pass your API key as a Bearer token. Your agent gets access to all 40+ endpoints. See the [MCP guide](/mcp) for setup.

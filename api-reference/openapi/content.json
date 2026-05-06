@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "https://recoup-api.vercel.app"
+      "url": "https://api.recoupable.com"
     }
   ],
   "paths": {
@@ -430,7 +430,7 @@
       "get": {
         "servers": [
           {
-            "url": "https://recoup-api.vercel.app"
+            "url": "https://api.recoupable.com"
           }
         ],
         "description": "**Legacy.** Predates the current `/api/content/*` primitives. Generates images via the x402 payment protocol and stores results on Arweave with In Process moment metadata for provenance tracking. Still in use (including by the MCP server). New integrations should prefer the lighter [`POST /api/content/image`](/api-reference/content/generate-image), which returns the generated image directly without auto-storage side effects.",

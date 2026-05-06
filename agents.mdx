@@ -37,7 +37,7 @@ If your human has an API key, pass it via `x-api-key`. If not, generate one base
 <Steps>
   <Step title="Call signup with their email">
     ```bash
-    curl -X POST "https://recoup-api.vercel.app/api/agents/signup" \
+    curl -X POST "https://api.recoupable.com/api/agents/signup" \
       -H "Content-Type: application/json" \
       -d '{"email": "user@example.com"}'
     ```
@@ -47,7 +47,7 @@ If your human has an API key, pass it via `x-api-key`. If not, generate one base
   </Step>
   <Step title="Call verify with the code">
     ```bash
-    curl -X POST "https://recoup-api.vercel.app/api/agents/verify" \
+    curl -X POST "https://api.recoupable.com/api/agents/verify" \
       -H "Content-Type: application/json" \
       -d '{"email": "user@example.com", "code": "123456"}'
     ```
@@ -69,11 +69,11 @@ After getting a key, your next call should always be to check what the human has
 
 ```bash
 # List all artists available to this account
-curl "https://recoup-api.vercel.app/api/artists" \
+curl "https://api.recoupable.com/api/artists" \
   -H "x-api-key: $RECOUP_API_KEY"
 
 # List organizations (labels/teams) the account belongs to
-curl "https://recoup-api.vercel.app/api/organizations" \
+curl "https://api.recoupable.com/api/organizations" \
   -H "x-api-key: $RECOUP_API_KEY"
 ```
 
@@ -115,16 +115,16 @@ The `RECOUP.md` file ties the folder to the platform — it contains YAML frontm
 
 ```bash
 # List the full file tree
-curl "https://recoup-api.vercel.app/api/sandboxes" \
+curl "https://api.recoupable.com/api/sandboxes" \
   -H "x-api-key: $RECOUP_API_KEY"
 
 # Read a specific file
-curl "https://recoup-api.vercel.app/api/sandboxes/file?path=orgs/my-label/artists/drake/context/artist.md" \
+curl "https://api.recoupable.com/api/sandboxes/file?path=orgs/my-label/artists/drake/context/artist.md" \
   -H "x-api-key: $RECOUP_API_KEY"
 
 # Upload files to the repo
 # path is top-level (target directory); each file needs url + name
-curl -X POST "https://recoup-api.vercel.app/api/sandboxes/files" \
+curl -X POST "https://api.recoupable.com/api/sandboxes/files" \
   -H "x-api-key: $RECOUP_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"path": "orgs/my-label/artists/drake/context", "files": [{"url": "https://...", "name": "audience.md"}]}'
@@ -166,7 +166,7 @@ curl -X POST "https://recoup-api.vercel.app/api/sandboxes/files" \
 ## Base URL
 
 ```
-https://recoup-api.vercel.app/api
+https://api.recoupable.com/api
 ```
 
 All endpoints require `x-api-key` header unless noted. See [Authentication](/authentication) for the full auth model, and the [endpoint map](/#for-ai-agents) for every available endpoint.
