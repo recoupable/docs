@@ -1,0 +1,63 @@
+---
+title: "Plugins"
+description: "Bundled toolkits for music industry workflows — installable into Claude Code, Cursor, and Codex from a single marketplace."
+---
+
+A plugin is a packaged toolkit. It bundles multiple [skills](/skills), commands, and agents around one specific workflow, so a team can install the whole bundle into the agent they already use instead of wiring pieces together themselves.
+
+Where the [Skills](/skills) tab is *individual playbooks* the agent loads when relevant, the Plugins tab is *complete bundles* — installed once, ready to drive a full workflow end-to-end.
+
+The marketplace lives at [recoupable/plugins](https://github.com/recoupable/plugins). Each plugin is its own Git submodule so it can be developed, versioned, and distributed independently.
+
+## Install
+
+### Claude Code
+
+```bash
+/plugin marketplace add recoupable/plugins
+/plugin install music-catalog-diligence@recoupable-plugins
+```
+
+### Codex
+
+Codex reads the marketplace from `.agents/plugins/marketplace.json` in the registry repo. Add the registry to your Codex config and the bundled `skills/` directory of each plugin becomes available.
+
+### Cursor
+
+Cursor reads the marketplace from `.cursor-plugin/marketplace.json`. Add `recoupable/plugins` to your Cursor MCP config to surface the plugins.
+
+## Available plugins
+
+| Plugin | What it does |
+|--------|-------------|
+| [music-catalog-diligence](/plugins/music-catalog-diligence) | Review royalties, rights, valuation, and deal materials for music catalog transactions — buyer, seller, lender, or post-close. |
+
+## How a plugin is structured
+
+Every plugin lives in its own repo, then gets registered as a submodule in [recoupable/plugins](https://github.com/recoupable/plugins). Manifests for each agent runtime sit at the plugin root:
+
+```text
+my-plugin/
+├── .claude-plugin/plugin.json   ← Claude Code manifest
+├── .codex-plugin/plugin.json    ← Codex manifest (+ skills bundling)
+├── .cursor-plugin/plugin.json   ← Cursor manifest
+├── skills/                      ← bundled SKILL.md playbooks
+├── commands/                    ← slash-command definitions
+├── agents/                      ← optional sub-agent personas
+├── references/                  ← long-form domain material
+├── scripts/                     ← executable helpers
+└── README.md
+```
+
+Claude Code and Cursor load the full plugin surface (skills, commands, agents). Codex loads the bundled `skills/` through `.codex-plugin/plugin.json`; Claude-specific commands and agents remain available through Claude Code, and will surface in Codex when its packaging path supports them.
+
+## Building a plugin
+
+Plugins are early. If you want to ship one — for distribution analytics, A&R workflows, sync licensing, royalty auditing, or anything else — open a PR against [recoupable/plugins](https://github.com/recoupable/plugins) with your submodule and a marketplace entry.
+
+The bar:
+
+- A clear workflow the plugin owns end-to-end (not just a single playbook — that's a [skill](/skills))
+- Skills, commands, and agents that compose into the workflow
+- Tests or fixtures that prove the workflow runs against representative data
+- A `README.md` that says who it's for in one paragraph

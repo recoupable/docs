@@ -435,6 +435,23 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "Plugins",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "plugins"
+            ]
+          },
+          {
+            "group": "Available plugins",
+            "pages": [
+              "plugins/music-catalog-diligence"
+            ]
+          }
+        ]
       }
     ],
     "global": {
