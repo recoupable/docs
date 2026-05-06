@@ -206,8 +206,7 @@
             "group": "Fans & Posts",
             "pages": [
               "api-reference/fans/get",
-              "api-reference/posts/get",
-              "api-reference/comments/get"
+              "api-reference/posts/get"
             ]
           }
         ]

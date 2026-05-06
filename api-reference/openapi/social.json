@@ -122,75 +122,6 @@
         }
       }
     },
-    "/api/comments": {
-      "get": {
-        "description": "Retrieve comments associated with an artist or a specific post, with support for pagination. This endpoint returns raw comment data including the comment text, associated post, and commenter's social profile reference.",
-        "parameters": [
-          {
-            "name": "artist_account_id",
-            "in": "query",
-            "description": "The unique identifier of the artist account to fetch comments for",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "post_id",
-            "in": "query",
-            "description": "Filter comments by specific post",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "Page number for pagination (default: 1)",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "Number of comments per page (default: 10)",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 10
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Comments retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommentsResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - missing required parameters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommentsErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/spotify/search": {
       "get": {
         "description": "Search for artists, albums, tracks, and playlists using the Spotify API. This endpoint is a proxy to the official Spotify Search API.",
@@ -748,7 +679,7 @@
     },
     "/api/connectors/actions": {
       "get": {
-        "description": "List the executable actions available across the authenticated account's connectors. Each action is a single tool that can be invoked via POST /api/connectors/actions — for example, the `googlesheets` connector exposes actions like `GOOGLESHEETS_WRITE_SPREADSHEET`. Actions whose parent connector is not yet connected are returned with `isConnected: false` and cannot be executed until the connector is authorized via POST /api/connectors.",
+        "description": "List the executable actions available across the authenticated account's connectors. Each action is a single tool that can be invoked via POST /api/connectors/actions \u2014 for example, the `googlesheets` connector exposes actions like `GOOGLESHEETS_WRITE_SPREADSHEET`. Actions whose parent connector is not yet connected are returned with `isConnected: false` and cannot be executed until the connector is authorized via POST /api/connectors.",
         "parameters": [
           {
             "name": "account_id",
@@ -773,7 +704,7 @@
             }
           },
           "400": {
-            "description": "Bad request — invalid account_id format",
+            "description": "Bad request \u2014 invalid account_id format",
             "content": {
               "application/json": {
                 "schema": {
@@ -783,7 +714,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -793,7 +724,7 @@
             }
           },
           "403": {
-            "description": "Forbidden — no access to the specified account",
+            "description": "Forbidden \u2014 no access to the specified account",
             "content": {
               "application/json": {
                 "schema": {
@@ -805,7 +736,7 @@
         }
       },
       "post": {
-        "description": "Execute a connector action with the given parameters. The `actionSlug` must come from a prior call to GET /api/connectors/actions, and `parameters` must match the `parameters` JSON Schema returned for that action. The action's parent connector must be currently connected (`isConnected: true` in the catalog) — otherwise this endpoint returns 409. The `result` field passes through whatever the underlying connector returns; its shape is action-specific.",
+        "description": "Execute a connector action with the given parameters. The `actionSlug` must come from a prior call to GET /api/connectors/actions, and `parameters` must match the `parameters` JSON Schema returned for that action. The action's parent connector must be currently connected (`isConnected: true` in the catalog) \u2014 otherwise this endpoint returns 409. The `result` field passes through whatever the underlying connector returns; its shape is action-specific.",
         "requestBody": {
           "description": "Action to execute and the parameters for it",
           "required": true,
@@ -829,7 +760,7 @@
             }
           },
           "400": {
-            "description": "Bad request — missing or invalid parameters (e.g. `parameters` does not match the action's schema)",
+            "description": "Bad request \u2014 missing or invalid parameters (e.g. `parameters` does not match the action's schema)",
             "content": {
               "application/json": {
                 "schema": {
@@ -839,7 +770,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -849,7 +780,7 @@
             }
           },
           "403": {
-            "description": "Forbidden — no access to the specified account",
+            "description": "Forbidden \u2014 no access to the specified account",
             "content": {
               "application/json": {
                 "schema": {
@@ -949,7 +880,7 @@
               "type": "object",
               "additionalProperties": true
             },
-            "description": "Array of dataset items returned by the scraper. The structure of each item varies depending on the upstream Apify scraper that was invoked (Instagram profile scraper, Instagram comments scraper, TikTok scraper, etc.) — not the Recoup endpoint that triggered it.",
+            "description": "Array of dataset items returned by the scraper. The structure of each item varies depending on the upstream Apify scraper that was invoked (Instagram profile scraper, Instagram comments scraper, TikTok scraper, etc.) \u2014 not the Recoup endpoint that triggered it.",
             "example": [
               {
                 "id": "123456789",
@@ -2216,7 +2147,7 @@
         "properties": {
           "slug": {
             "type": "string",
-            "description": "Unique identifier for the action — pass this as `actionSlug` when calling POST /api/connectors/actions. Action slugs are always UPPERCASE_SNAKE_CASE (e.g. `GITHUB_CREATE_ISSUE`, `GMAIL_FETCH_EMAILS`, `GOOGLESHEETS_WRITE_SPREADSHEET`)."
+            "description": "Unique identifier for the action \u2014 pass this as `actionSlug` when calling POST /api/connectors/actions. Action slugs are always UPPERCASE_SNAKE_CASE (e.g. `GITHUB_CREATE_ISSUE`, `GMAIL_FETCH_EMAILS`, `GOOGLESHEETS_WRITE_SPREADSHEET`)."
           },
           "name": {
             "type": "string",
@@ -2256,7 +2187,7 @@
             "items": {
               "$ref": "#/components/schemas/ConnectorAction"
             },
-            "description": "Available actions across all connectors the authenticated account has access to. Both connected and unconnected actions are returned — check `isConnected` per action before attempting execution."
+            "description": "Available actions across all connectors the authenticated account has access to. Both connected and unconnected actions are returned \u2014 check `isConnected` per action before attempting execution."
           }
         }
       },
@@ -2273,7 +2204,7 @@
           },
           "parameters": {
             "type": "object",
-            "description": "Action-specific parameters matching the `parameters` JSON Schema returned by GET /api/connectors/actions for this `actionSlug`. The connector validates these against the cached schema before executing — invalid shapes return 400. Required.",
+            "description": "Action-specific parameters matching the `parameters` JSON Schema returned by GET /api/connectors/actions for this `actionSlug`. The connector validates these against the cached schema before executing \u2014 invalid shapes return 400. Required.",
             "additionalProperties": true
           },
           "account_id": {
@@ -2296,7 +2227,7 @@
           "result": {
             "type": "object",
             "additionalProperties": true,
-            "description": "Pass-through of the underlying connector's response payload. Shape is action-specific — consult the action's parameters schema and the third-party service's own documentation for what to expect. The server-side wrapper does not transform this field."
+            "description": "Pass-through of the underlying connector's response payload. Shape is action-specific \u2014 consult the action's parameters schema and the third-party service's own documentation for what to expect. The server-side wrapper does not transform this field."
           },
           "executedAt": {
             "type": "string",
