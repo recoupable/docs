@@ -410,6 +410,132 @@
         }
       }
     },
+    "/api/accounts/{id}/subscription": {
+      "get": {
+        "description": "Retrieve the subscription for an account, directly or via an organization.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the account. Must be the authenticated account or another accessible via organization membership.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subscription retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionErrorResponse"
+                },
+                "example": {
+                  "error": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account not accessible to the authenticated account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/subscriptions/portal": {
+      "post": {
+        "description": "Create a subscription management session for the authenticated account. Returns a hosted URL where the customer can update payment method, view invoices, or cancel. The client should redirect the user to that URL.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Portal session parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSubscriptionPortalRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Portal session created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateSubscriptionPortalResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionPortalErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionPortalErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/workspaces": {
       "post": {
         "description": "Create a new workspace account. Workspaces can optionally be linked to an organization.",
@@ -2836,6 +2962,62 @@
           }
         }
       },
+      "SubscriptionResponse": {
+        "type": "object",
+        "required": [
+          "isPro",
+          "status",
+          "plan",
+          "source"
+        ],
+        "properties": {
+          "isPro": {
+            "type": "boolean",
+            "description": "True when the account has an active paid subscription, directly or via an organization."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "trialing",
+              "canceled",
+              "past_due",
+              "none"
+            ],
+            "description": "Lifecycle state of the subscription. `none` when no subscription exists.",
+            "example": "active"
+          },
+          "plan": {
+            "type": "string",
+            "nullable": true,
+            "description": "Plan identifier (e.g. `pro`). Null when no subscription exists.",
+            "example": "pro"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "account",
+              "organization"
+            ],
+            "nullable": true,
+            "description": "Origin of the subscription. `account` for direct, `organization` when covered by an organization. Null when no subscription exists.",
+            "example": "account"
+          }
+        }
+      },
+      "SubscriptionErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message.",
+            "example": "Account not found"
+          }
+        }
+      },
       "SubscriptionSessionErrorResponse": {
         "type": "object",
         "required": [
@@ -2846,6 +3028,54 @@
             "type": "string",
             "description": "Human-readable error message.",
             "example": "successUrl is required"
+          }
+        }
+      },
+      "SubscriptionPortalErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message.",
+            "example": "returnUrl is required"
+          }
+        }
+      },
+      "CreateSubscriptionPortalRequest": {
+        "type": "object",
+        "required": [
+          "returnUrl"
+        ],
+        "description": "Request body for creating a billing portal session. The account is determined from authentication (API key or session), not from this payload.",
+        "properties": {
+          "returnUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "The URL to redirect to when the customer leaves the portal.",
+            "example": "https://chat.recoupable.com/settings/billing"
+          }
+        }
+      },
+      "CreateSubscriptionPortalResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "url"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The portal session ID.",
+            "example": "portal_sess_a1b2c3d4"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "The hosted portal URL. Redirect to this URL so the customer can manage their subscription.",
+            "example": "https://billing.example.com/manage/portal_sess_a1b2c3d4"
           }
         }
       }

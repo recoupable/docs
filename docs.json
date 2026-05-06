@@ -379,7 +379,9 @@
           {
             "group": "Subscriptions",
             "pages": [
-              "api-reference/subscriptions/sessions-create"
+              "api-reference/subscriptions/sessions-create",
+              "api-reference/subscriptions/portal-create",
+              "api-reference/accounts/subscription-get"
             ]
           },
           {
