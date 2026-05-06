@@ -291,8 +291,7 @@
               "api-reference/accounts/id",
               "api-reference/accounts/create",
               "api-reference/accounts/update",
-              "api-reference/accounts/add-artist",
-              "api-reference/accounts/subscription-get"
+              "api-reference/accounts/add-artist"
             ]
           },
           {
@@ -312,7 +311,8 @@
           {
             "group": "Subscriptions",
             "pages": [
-              "api-reference/subscriptions/sessions-create"
+              "api-reference/subscriptions/sessions-create",
+              "api-reference/accounts/subscription-get"
             ]
           },
           {
