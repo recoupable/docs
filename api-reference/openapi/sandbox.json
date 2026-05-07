@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Recoup API - Session Sandboxes",
-    "description": "Per-session sandbox lifecycle for agent runs. These endpoints provision, restore, and report status on the Vercel Sandbox bound to a single agent session. Distinct from the legacy `/api/sandboxes` (plural) account-scoped endpoints — these are session-scoped and used by the open-agents-style chat UI to drive the \"loading sandbox…\" state on session entry.",
+    "description": "Per-session sandbox lifecycle for agent runs. These endpoints provision, restore, and report status on the Sandbox bound to a single agent session. Distinct from the legacy `/api/sandboxes` (plural) account-scoped endpoints — these are session-scoped and used by the open-agents-style chat UI to drive the \"loading sandbox…\" state on session entry.",
     "license": {
       "name": "MIT"
     },
@@ -25,7 +25,7 @@
     "/api/sandbox": {
       "post": {
         "summary": "Create or restore session sandbox",
-        "description": "Provisions a Vercel Sandbox for the given session. If a per-org base snapshot exists, the sandbox boots from it (skipping the full repo clone, ~75s saved). Otherwise the sandbox boots from the default base snapshot and a background workflow builds an org-specific snapshot for next time. When the session has prior runtime state (a paused or running sandbox under the same `sandboxName`), the call resumes it instead of creating a new one. On success, the session row is updated with the new `sandboxState` and lifecycle is bumped to `active`; the lifecycle workflow is kicked to manage hibernation and expiry from there.",
+        "description": "Provisions a Sandbox for the given session. If a per-org base snapshot exists, the sandbox boots from it (skipping the full repo clone, ~75s saved). Otherwise the sandbox boots from the default base snapshot and a background workflow builds an org-specific snapshot for next time. When the session has prior runtime state (a paused or running sandbox under the same `sandboxName`), the call resumes it instead of creating a new one. On success, the session row is updated with the new `sandboxState` and lifecycle is bumped to `active`; the lifecycle workflow is kicked to manage hibernation and expiry from there.",
         "requestBody": {
           "required": true,
           "content": {
@@ -88,7 +88,7 @@
             }
           },
           "502": {
-            "description": "Upstream error — the Vercel Sandbox provider failed to provision a sandbox.",
+            "description": "Upstream error — the sandbox provider failed to provision a sandbox.",
             "content": {
               "application/json": {
                 "schema": {
