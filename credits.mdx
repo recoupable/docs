@@ -56,11 +56,11 @@ Recoup has two tiers. Both refill on a monthly cycle.
 ### Check your tier
 
 ```bash
-curl -sS https://api.recoupable.com/api/subscription/status \
+curl -sS https://api.recoupable.com/api/accounts/$ACCOUNT_ID/subscription \
   -H "x-api-key: $RECOUP_API_KEY"
 ```
 
-If `isPro` is `true`, the account is on the paid tier with the higher monthly allowance.
+Get `$ACCOUNT_ID` from [`GET /api/accounts/id`](/api-reference/accounts/id) if you don't already have it. Response includes `isPro` (boolean), `status`, `plan`, and `source` (whether the subscription comes from the account itself or an organization the account belongs to). Full schema at [Get Subscription](/api-reference/accounts/subscription-get).
 
 ### One-time top-ups
 
