@@ -269,11 +269,9 @@ ffmpeg -y \
 
 ## Step 6: Publish (optional)
 
-Once the MP4 is rendered, push it to the artist's socials with the [Connectors API](/api-reference/connectors/list). Heads-up gotchas worth knowing before you ship:
+Once the MP4 is rendered, push it to the artist's socials with the [Connectors API](/api-reference/connectors/list). One heads-up worth knowing:
 
 - **TikTok URL ownership.** `TIKTOK_PUBLISH_VIDEO` (pull-from-URL mode) requires the source domain be verified in the TikTok dev portal. `fal.media` URLs will fail with `url_ownership_unverified` — use `TIKTOK_UPLOAD_VIDEO` instead, which accepts the same URL and uploads server-side.
-- **Unaudited app.** If the connected TikTok dev app is in sandbox mode, publishing returns `unaudited_client_can_only_post_to_private_accounts` regardless of `privacy_level`. The connected handle must be added as a Test User in the TikTok dev portal.
-- **Drafts path.** `publish=false` puts the video in TikTok drafts for the user to finalize in-app — but requires the `video.upload` OAuth scope, which isn't granted by default. Re-auth with that scope, or use `publish=true`.
 
 ---
 
