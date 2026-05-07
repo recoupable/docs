@@ -196,16 +196,6 @@
           "sessionId": {
             "type": "string",
             "description": "Owning session id. Required for the chat UX flow — the sandbox is named deterministically from the session id, enabling resume across reconnects. When omitted, a one-shot ephemeral sandbox is created (legacy)."
-          },
-          "branch": {
-            "type": "string",
-            "description": "Branch the sandbox should check out. Ignored when `isNewBranch` is true. Defaults to `main`.",
-            "default": "main"
-          },
-          "isNewBranch": {
-            "type": "boolean",
-            "description": "When true, the sandbox creates a fresh branch with the supplied `branch` name instead of checking out an existing one.",
-            "default": false
           }
         }
       },
