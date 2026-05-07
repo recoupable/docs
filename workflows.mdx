@@ -1,17 +1,15 @@
 ---
 title: "Workflows"
-description: "End-to-end recipes that chain Recoup API calls into a finished result — agent-ready, framework-agnostic, copy-paste runnable."
+description: "End-to-end guides that chain Recoup API calls into a finished result — agent-ready, framework-agnostic, copy-paste runnable."
 ---
 
-*An agent asked to "make a vertical music video for this artist and song" finds the `generate-music-video` workflow, walks the six API calls in order, and ships a 9:16 clip ready to post.*
+A workflow is a public, step-by-step guide that takes an outcome — a new artist record, a music video, a release-day push — and shows the exact API calls, in order, to get there. Each page is written so an LLM can fetch it as raw markdown (`/workflows/some-workflow.md`) and follow it without parsing HTML.
 
-A Workflow is a public, step-by-step recipe that takes an outcome — a new artist record, a music video, a release-day push — and shows the exact API calls, in order, to get there. Each page is written so an LLM can fetch it as raw markdown (`/workflows/some-recipe.md`) and follow it without parsing HTML.
-
-Workflows are different from [Skills](/skills): a skill is a Markdown playbook an agent installs locally via `npx skills` and loads from disk. A workflow is the docs-site version of the same idea — readable by any agent, anywhere, with no install step. The same recipe can ship as both; pick the surface that fits how the user's agent works.
+Workflows are different from [Skills](/skills): a skill is a markdown file an agent installs locally via `npx skills` and loads from disk. A workflow is the docs-site version — readable by any agent, anywhere, with no install step. The same content can ship as both; pick the surface that fits how your agent works.
 
 ## Hand it to your LLM
 
-Every workflow page is served as raw markdown at its path plus `.md`. Drop the URL into your agent and let it follow the recipe:
+Every workflow page is served as raw markdown at its path plus `.md`. Drop the URL into your agent and let it follow the steps:
 
 ```text
 Follow this guide step by step. Use the prerequisites at the top to gather inputs, then walk every step in order:
@@ -30,11 +28,11 @@ The agent fetches, reads the checklist, and runs the API calls itself.
 
 ## Writing a workflow
 
-If you've shipped something end-to-end on Recoup and the recipe would help others — release-day, fan engagement, distribution flow, royalty audit — open a PR against [recoupable/docs](https://github.com/recoupable/docs) under `workflows/`.
+If you've shipped something end-to-end on Recoup that would help others — release-day, fan engagement, distribution flow, royalty audit — open a PR against [recoupable/docs](https://github.com/recoupable/docs) under `workflows/`.
 
 The bar:
 
 - A concrete outcome the workflow owns end-to-end, not a single API call
-- A copy-pasteable prompt at the top so an LLM can run the recipe in one shot
+- A copy-pasteable prompt at the top so an LLM can run it in one shot
 - Step-by-step API calls in execution order, with the request body and the field of the response the next step depends on
 - A note on what the workflow doesn't enforce (auth, retries, rate limits) so readers know what they own

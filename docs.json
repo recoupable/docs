@@ -407,14 +407,9 @@
         "tab": "Workflows",
         "groups": [
           {
-            "group": "Overview",
+            "group": "Workflows",
             "pages": [
-              "workflows"
-            ]
-          },
-          {
-            "group": "Recipes",
-            "pages": [
+              "workflows",
               "workflows/create-artist",
               "workflows/generate-music-video"
             ]
@@ -422,23 +417,12 @@
         ]
       },
       {
-        "tab": "Skills",
+        "tab": "Skills & Plugins",
         "groups": [
           {
-            "group": "Skills",
+            "group": "Skills & Plugins",
             "pages": [
               "skills"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Plugins",
-        "groups": [
-          {
-            "group": "Plugins",
-            "pages": [
-              "plugins"
             ]
           }
         ]
@@ -448,6 +432,16 @@
       "anchors": []
     }
   },
+  "redirects": [
+    {
+      "source": "/plugins",
+      "destination": "/skills"
+    },
+    {
+      "source": "/plugins/music-catalog-diligence",
+      "destination": "/skills"
+    }
+  ],
   "logo": {
     "light": "/logo/wordmark-lightmode.svg",
     "dark": "/logo/wordmark-darkmode.svg",
