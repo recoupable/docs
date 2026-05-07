@@ -9,7 +9,10 @@ The chain is 6 sequential API calls plus one local compose step. Long determinis
 
 ## Prerequisites
 
-- `$RECOUP_ACCESS_TOKEN` — Bearer token for `api.recoupable.com`
+- An auth credential for `api.recoupable.com`. Two options — pick one and use it for every call below:
+  - **API key** (`recoup_sk_…`, recommended for sandbox / agent use): pass as `-H "x-api-key: $RECOUP_API_KEY"`. Get one with no signup via `POST /api/agents/signup` (see [Authentication](/authentication)).
+  - **Privy access token** (for end-user flows in chat/UI): pass as `-H "Authorization: Bearer $RECOUP_ACCESS_TOKEN"`.
+  - The examples below use `x-api-key`. Substitute `Authorization: Bearer …` if you're using a Privy token.
 - `$ARTIST_NAME` — display name (e.g. `"The Weeknd"`)
 - `$SONG_TITLE` — the song the video is for
 - `$SONG_LYRICS_CLIP` — short lyric/topic snippet to root the visuals and caption (1–2 sentences)
@@ -28,7 +31,7 @@ The flow has three phases, run from a single checklist file:
 Pick a slug, make the directory, and write the initial `VIDEO.md` template — frontmatter holds the values the chain captures (filled as you go); body holds the unchecked steps:
 
 ```bash
-VIDEO_SLUG=$(echo "$SONG_TITLE" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]\+/-/g; s/^-//; s/-$//')
+VIDEO_SLUG=$(echo "$SONG_TITLE" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-//; s/-$//')
 VIDEO_DIR="videos/$VIDEO_SLUG"
 mkdir -p "$VIDEO_DIR"
 
@@ -82,20 +85,20 @@ Templates encode the visual style, motion direction, and whether the pipeline ex
 
 ```bash
 TEMPLATES=$(curl -sS "https://api.recoupable.com/api/content/templates" \
-  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN")
+  -H "x-api-key: $RECOUP_API_KEY")
 
-# Inspect the list to choose a template id (e.g. artist-release-editorial,
-# album-record-store, artist-caption-stage):
+# Inspect the list to choose a template id (e.g. album-record-store,
+# artist-caption-stage, artist-caption-bedroom, artist-caption-outside):
 echo "$TEMPLATES" | jq -r '.templates[] | "\(.id) — \(.description)"'
 
-TEMPLATE="artist-release-editorial"   # pick whichever fits
+TEMPLATE="album-record-store"   # pick whichever fits
 ```
 
 Optional: pull the full detail for the chosen template (style guide, reference images, motion prompt) so the prompts you build in steps 2 and 4 stay on-brand:
 
 ```bash
 TEMPLATE_DETAIL=$(curl -sS "https://api.recoupable.com/api/content/templates/$TEMPLATE" \
-  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN")
+  -H "x-api-key: $RECOUP_API_KEY")
 ```
 
 See [List Templates](/api-reference/content/templates) and [Template Detail](/api-reference/content/template-detail) for the full request/response schemas.
@@ -111,7 +114,7 @@ IMAGE_PROMPT="Editorial portrait of $ARTIST_NAME, mood: \"$SONG_LYRICS_CLIP\", \
 cinematic lighting, 35mm, magazine cover composition"
 
 IMAGE_RESPONSE=$(curl -sS -X POST "https://api.recoupable.com/api/content/image" \
-  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
+  -H "x-api-key: $RECOUP_API_KEY" \
   -H "Content-Type: application/json" \
   -d "$(jq -n \
         --arg prompt "$IMAGE_PROMPT" \
@@ -133,7 +136,7 @@ Bump resolution before motion generation. Skip this step if the source image is 
 
 ```bash
 UPSCALE_RESPONSE=$(curl -sS -X POST "https://api.recoupable.com/api/content/upscale" \
-  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
+  -H "x-api-key: $RECOUP_API_KEY" \
   -H "Content-Type: application/json" \
   -d "$(jq -n --arg url "$IMAGE_URL" '{url: $url, type: "image"}')")
 
@@ -157,7 +160,7 @@ MOTION_PROMPT="Slow dolly-in, gentle wind, subtle head turn — match the mood: 
 AUDIO_URL=""   # e.g. a presigned URL to a short song excerpt
 
 VIDEO_RESPONSE=$(curl -sS -X POST "https://api.recoupable.com/api/content/video" \
-  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
+  -H "x-api-key: $RECOUP_API_KEY" \
   -H "Content-Type: application/json" \
   -d "$(jq -n \
         --arg image "$IMAGE_URL" \
@@ -180,7 +183,7 @@ Same upscale endpoint as step 3, with `type: "video"`. Skip if you don't need th
 
 ```bash
 UPSCALE_RESPONSE=$(curl -sS -X POST "https://api.recoupable.com/api/content/upscale" \
-  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
+  -H "x-api-key: $RECOUP_API_KEY" \
   -H "Content-Type: application/json" \
   -d "$(jq -n --arg url "$VIDEO_URL" '{url: $url, type: "video"}')")
 
@@ -199,7 +202,7 @@ Compose a topic string from the song title, lyric snippet, and any artist contex
 CAPTION_TOPIC="Song: \"$SONG_TITLE\". Lyrics: \"$SONG_LYRICS_CLIP\". Artist: $ARTIST_NAME."
 
 CAPTION_RESPONSE=$(curl -sS -X POST "https://api.recoupable.com/api/content/caption" \
-  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
+  -H "x-api-key: $RECOUP_API_KEY" \
   -H "Content-Type: application/json" \
   -d "$(jq -n \
         --arg topic "$CAPTION_TOPIC" \
@@ -207,9 +210,15 @@ CAPTION_RESPONSE=$(curl -sS -X POST "https://api.recoupable.com/api/content/capt
         '{topic: $topic, template: $template, length: "short"}')")
 
 CAPTION_TEXT=$(echo "$CAPTION_RESPONSE" | jq -r '.content')
+
+# Optional: capture the styling hints the template wants — feed these straight
+# into the ffmpeg drawtext filter in step 7 so the overlay matches the template.
+CAPTION_COLOR=$(echo "$CAPTION_RESPONSE" | jq -r '.color // "white"')
+CAPTION_STROKE=$(echo "$CAPTION_RESPONSE" | jq -r '.borderColor // "black"')
+CAPTION_MAX_FONT=$(echo "$CAPTION_RESPONSE" | jq -r '.maxFontSize // 42')
 ```
 
-`length` accepts `"short"` (default), `"medium"`, or `"long"`. `"none"` skips caption generation entirely if your template doesn't render text overlays.
+The response is `{ content, font, color, borderColor, maxFontSize }`. `content` is the text itself; the other four are styling hints derived from the template — using them keeps the burned-in caption visually consistent with the template's brand. `length` accepts `"short"` (default), `"medium"`, or `"long"`. `"none"` skips caption generation entirely if your template doesn't render text overlays.
 
 See [Generate Caption](/api-reference/content/generate-caption) for the full request/response schema.
 
