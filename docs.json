@@ -277,6 +277,13 @@
               "api-reference/sessions/create",
               "api-reference/sessions/get"
             ]
+          },
+          {
+            "group": "Session Sandboxes",
+            "pages": [
+              "api-reference/sandbox/create",
+              "api-reference/sandbox/status"
+            ]
           }
         ]
       },
