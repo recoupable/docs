@@ -7,10 +7,7 @@
     "light": "#ededed",
     "dark": "#0a0a0a"
   },
-  "favicon": {
-    "light": "/logo/icon-lightmode.svg",
-    "dark": "/logo/icon-darkmode.svg"
-  },
+  "favicon": "/logo/icon-lightmode.svg",
   "appearance": {
     "default": "system"
   },
