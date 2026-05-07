@@ -1,9 +1,9 @@
 ---
 title: "Authentication"
-description: "API keys and Bearer tokens — how to authenticate every request to the Recoup API."
+description: "API keys and Bearer tokens. How to authenticate every request to the Recoup API."
 ---
 
-**Use API keys** for server-to-server, CLI, and agent integrations. **Use Bearer tokens** for frontend apps authenticated via Privy, or to pass an API key to the [MCP server](/mcp). Include exactly one — providing both returns `401`.
+**Use API keys** for server-to-server, CLI, and agent integrations. **Use Bearer tokens** for frontend apps authenticated via Privy, or to pass an API key to the [MCP server](/mcp). Include exactly one. Providing both returns `401`.
 
 | Method | Header | Best for |
 |--------|--------|----------|
@@ -11,7 +11,7 @@ description: "API keys and Bearer tokens — how to authenticate every request t
 | Bearer Token | `Authorization: Bearer <jwt-or-api-key>` | Frontend apps via Privy; MCP clients passing an API key |
 
 <Note>
-The [agent signup and verify](/agents) endpoints (`POST /api/agents/signup` and `POST /api/agents/verify`) are both unauthenticated — they let agents get their first key without any credentials.
+The [agent signup and verify](/agents) endpoints (`POST /api/agents/signup` and `POST /api/agents/verify`) are both unauthenticated. They let agents get their first key without any credentials.
 </Note>
 
 ---
@@ -32,8 +32,8 @@ The API operates on three entity types. Authentication and access control resolv
 
 Two ways to get a key:
 
-- **Via API** — see [Quickstart](/quickstart#1-get-your-api-key) for the two-call signup + verify flow. When an agent runs this on behalf of a human, the agent passes the code the human reads back from their inbox.
-- **Via dashboard** — go to [chat.recoupable.com/keys](https://chat.recoupable.com/keys), sign in, and create one.
+- **Via API.** See [Quickstart](/quickstart#1-get-your-api-key) for the two-call signup + verify flow. When an agent runs this on behalf of a human, the agent passes the code the human reads back from their inbox.
+- **Via dashboard.** Go to [chat.recoupable.com/keys](https://chat.recoupable.com/keys), sign in, and create one.
 
 <Warning>
 Keys are shown once. They are stored as HMAC-SHA256 hashes and cannot be retrieved after creation.
@@ -54,8 +54,8 @@ curl "https://api.recoupable.com/api/research?q=Drake" \
 
 If your account belongs to an organization, your key can access data for any account in that org by passing `account_id`:
 
-- **No org** — key accesses its own data only
-- **Org member** — key can pass `account_id` to access any member's data
+- **No org.** Key accesses its own data only.
+- **Org member.** Key can pass `account_id` to access any member's data.
 
 ---
 
@@ -101,6 +101,6 @@ Request includes artist_account_id?
 
 ## Security
 
-- Keys stored as HMAC-SHA256 hashes — never plaintext
+- Keys stored as HMAC-SHA256 hashes, never plaintext
 - Rotate compromised keys at [chat.recoupable.com/keys](https://chat.recoupable.com/keys)
 - Never commit keys to version control

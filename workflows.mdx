@@ -1,11 +1,11 @@
 ---
 title: "Workflows"
-description: "End-to-end guides that chain Recoup API calls into a finished result — agent-ready, framework-agnostic, copy-paste runnable."
+description: "End-to-end guides that chain Recoup API calls into a finished result. Agent-ready, framework-agnostic, copy-paste runnable."
 ---
 
-A workflow is a public, step-by-step guide that takes an outcome — a new artist record, a music video, a release-day push — and shows the exact API calls, in order, to get there. Each page is written so an LLM can fetch it as raw markdown (`/workflows/some-workflow.md`) and follow it without parsing HTML.
+A workflow is a public, step-by-step guide that takes an outcome (a new artist record, a music video, a release-day push) and shows the exact API calls, in order, to get there. Each page is written so an LLM can fetch it as raw markdown (`/workflows/some-workflow.md`) and follow it without parsing HTML.
 
-Workflows are different from [Skills](/skills): a skill is a self-contained folder (a `SKILL.md` plus any references, scripts, or assets) installed locally via `npx skills` and loaded from disk. A workflow is the docs-site version — readable by any agent, anywhere, with no install step. The same content can ship as both; pick the surface that fits how your agent works.
+Workflows are different from [Skills](/skills). A skill is a self-contained folder (a `SKILL.md` plus any references, scripts, or assets) installed locally via `npx skills` and loaded from disk. A workflow is the docs-site version: readable by any agent, anywhere, with no install step. The same content can ship as both; pick the surface that fits how your agent works.
 
 ## Hand it to your LLM
 
@@ -24,11 +24,11 @@ The agent fetches, reads the checklist, and runs the API calls itself.
 | Workflow | What it produces |
 |----------|------------------|
 | [Create an artist](/workflows/create-artist) | A canonical artist record in your account, enriched from social handles, ready to drive research and content. |
-| [Generate a music video](/workflows/generate-music-video) | A 9:16 social-ready music video — image, motion, captions — composed from a single artist + song. |
+| [Generate a music video](/workflows/generate-music-video) | A 9:16 social-ready music video (image, motion, captions) composed from a single artist + song. |
 
 ## Writing a workflow
 
-If you've shipped something end-to-end on Recoup that would help others — release-day, fan engagement, distribution flow, royalty audit — open a PR against [recoupable/docs](https://github.com/recoupable/docs) under `workflows/`.
+If you've shipped something end-to-end on Recoup that would help others (release-day, fan engagement, distribution flow, royalty audit), open a PR against [recoupable/docs](https://github.com/recoupable/docs) under `workflows/`.
 
 The bar:
 

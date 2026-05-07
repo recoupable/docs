@@ -1,35 +1,35 @@
 ---
 title: 'Generate a Music Video'
-description: 'End-to-end workflow to produce a vertical, social-ready music video — image, motion, caption — from an artist and a song.'
+description: 'End-to-end workflow to produce a vertical, social-ready music video (image, motion, caption) from an artist and a song.'
 ---
 
 This is the canonical workflow used internally by Recoup's `create-content` background task. Follow it step-by-step to produce a 9:16 music-video clip from an existing artist + song, ready to post.
 
 ## Hand it to your LLM
 
-The fastest way to use this guide is to point an LLM at it directly — every page on this site is also served as raw markdown at the same path with a `.md` suffix, so models can fetch and follow it without parsing HTML:
+The fastest way to use this guide is to point an LLM at it directly. Every page on this site is also served as raw markdown at the same path with a `.md` suffix, so models can fetch and follow it without parsing HTML:
 
 ```
 Generate a music video for The Weeknd – "Blinding Lights" using
 https://developers.recoupable.com/workflows/generate-music-video.md
 ```
 
-Swap in your own artist and song. The LLM will scaffold the `VIDEO.md` checklist, run the API calls, and compose the final video. The rest of this page is the workflow the LLM will follow — and the same workflow you can run by hand if you'd rather drive it yourself.
+Swap in your own artist and song. The LLM will scaffold the `VIDEO.md` checklist, run the API calls, and compose the final video. The rest of this page is the workflow the LLM will follow, and the same workflow you can run by hand if you'd rather drive it yourself.
 
 ## Prerequisites
 
-- An auth credential for `api.recoupable.com`. Two options — pick one and use it for every call below:
+- An auth credential for `api.recoupable.com`. Two options. Pick one and use it for every call below:
   - **API key** (`recoup_sk_…`, recommended for sandbox / agent use): pass as `-H "x-api-key: $RECOUP_API_KEY"`. Get one with no signup via `POST /api/agents/signup` (see [Authentication](/authentication)).
   - **Privy access token** (for end-user flows in chat/UI): pass as `-H "Authorization: Bearer $RECOUP_ACCESS_TOKEN"`.
   - The examples below use `x-api-key`. Substitute `Authorization: Bearer …` if you're using a Privy token.
 - `$ARTIST_NAME`, `$SONG_TITLE`, `$SONG_LYRICS_CLIP` (a 1–2 sentence mood snippet)
-- `$REFERENCE_IMAGE_URL` *(optional)* — an artist photo or album cover to seed the image; if your template's purpose is "show this exact image" (e.g. `album-record-store`), set this and skip image generation in step 2
+- `$REFERENCE_IMAGE_URL` *(optional)*: an artist photo or album cover to seed the image. If your template's purpose is "show this exact image" (e.g. `album-record-store`), set this and skip image generation in step 2.
 - A local `song.mp3` for step 5
 - `ffmpeg` installed locally for step 5
 
 ## Step 0: Scaffold the workspace BEFORE any API call
 
-The `VIDEO.md` checklist *is* the workflow state — tick boxes and persist values back to the frontmatter as you go. To resume later, find the first unchecked box.
+The `VIDEO.md` checklist *is* the workflow state. Tick boxes and persist values back to the frontmatter as you go. To resume later, find the first unchecked box.
 
 ```bash
 VIDEO_SLUG=$(echo "$SONG_TITLE" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-//; s/-$//')
@@ -47,17 +47,17 @@ captionText:
 finalVideoPath:
 ---
 
-# $SONG_TITLE — $ARTIST_NAME
+# $SONG_TITLE: $ARTIST_NAME
 
 ## Pipeline checklist
 
-- [ ] 1. Pick template (\`GET /api/content/templates\` + detail) — capture \`template\`
-- [ ] 2. Generate the base image (\`POST /api/content/image\`) — capture \`imageUrl\`
-  - [ ] 2a. (Optional) Upscale image (\`POST /api/content/upscale\` with \`type: "image"\`)
-- [ ] 3. Generate the video (\`POST /api/content/video\`) — capture \`videoUrl\`
-  - [ ] 3a. (Optional) Upscale video (\`POST /api/content/upscale\` with \`type: "video"\`)
-- [ ] 4. Generate the caption (\`POST /api/content/caption\`) — capture \`captionText\`
-- [ ] 5. Compose 9:16 final with audio + caption (local \`ffmpeg\`) — capture \`finalVideoPath\`
+- [ ] 1. Pick template (\`GET /api/content/templates\` + detail). Capture \`template\`.
+- [ ] 2. Generate the base image (\`POST /api/content/image\`). Capture \`imageUrl\`.
+  - [ ] 2a. (Optional) Upscale image (\`POST /api/content/upscale\` with \`type: "image"\`).
+- [ ] 3. Generate the video (\`POST /api/content/video\`). Capture \`videoUrl\`.
+  - [ ] 3a. (Optional) Upscale video (\`POST /api/content/upscale\` with \`type: "video"\`).
+- [ ] 4. Generate the caption (\`POST /api/content/caption\`). Capture \`captionText\`.
+- [ ] 5. Compose 9:16 final with audio + caption (local \`ffmpeg\`). Capture \`finalVideoPath\`.
 
 ## Notes
 EOF
@@ -65,12 +65,12 @@ EOF
 
 ## Step 1: Pick a template (required: list **and** detail)
 
-Templates carry the prompt, reference images, and styling that drive the rest of the chain — you can't write a good Step 2 prompt without them. List, pick, then fetch detail:
+Templates carry the prompt, reference images, and styling that drive the rest of the chain. You can't write a good Step 2 prompt without them. List, pick, then fetch detail:
 
 ```bash
 curl -sS "https://api.recoupable.com/api/content/templates" \
   -H "x-api-key: $RECOUP_API_KEY" \
-  | jq -r '.templates[] | "\(.id) — \(.description)"'
+  | jq -r '.templates[] | "\(.id): \(.description)"'
 
 TEMPLATE="album-record-store"   # or artist-caption-{bedroom,outside,stage}
 
@@ -84,7 +84,7 @@ See [List Templates](/api-reference/content/templates) and [Template Detail](/ap
 
 ## Step 2: Generate the base image
 
-Use the template's own prompt and reference images — don't write your own from scratch. The template encodes the visual style; freeform prompts almost always drift off-brand.
+Use the template's own prompt and reference images. Don't write your own from scratch. The template encodes the visual style; freeform prompts almost always drift off-brand.
 
 ```bash
 PROMPT=$(echo "$TEMPLATE_DETAIL" | jq -r '.image.prompt')
@@ -117,14 +117,14 @@ IMAGE_URL=$(curl -sS -X POST "https://api.recoupable.com/api/content/upscale" \
   -d "$(jq -n --arg url "$IMAGE_URL" '{url: $url, type: "image"}')" \
   | jq -r '.url')
 
-# Video (after step 3) — same call, type: "video", reassign $VIDEO_URL
+# Video (after step 3): same call, type: "video", reassign $VIDEO_URL
 ```
 
 See [Upscale](/api-reference/content/upscale).
 
 ## Step 3: Generate the video
 
-Pass the image and a short motion prompt. For lipsync, also pass a presigned `audio_url` to a song clip — the model will animate the artist's mouth.
+Pass the image and a short motion prompt. For lipsync, also pass a presigned `audio_url` to a song clip and the model will animate the artist's mouth.
 
 ```bash
 MOTION=$(echo "$TEMPLATE_DETAIL" | jq -r '.video.movements[0] // "Slow camera drift, subtle subject motion"')
@@ -155,7 +155,7 @@ CAPTION_RESPONSE=$(curl -sS -X POST "https://api.recoupable.com/api/content/capt
 CAPTION_TEXT=$(echo "$CAPTION_RESPONSE" | jq -r '.content')
 ```
 
-The response is `{ content, font, color, borderColor, maxFontSize }`. `content` is the text; the other fields are template-driven styling hints — pull them through if you want the burned-in caption to match the template's brand. `length` accepts `"short"` (default), `"medium"`, `"long"`, or `"none"` to skip.
+The response is `{ content, font, color, borderColor, maxFontSize }`. `content` is the text; the other fields are template-driven styling hints. Pull them through if you want the burned-in caption to match the template's brand. `length` accepts `"short"` (default), `"medium"`, `"long"`, or `"none"` to skip.
 
 See [Generate Caption](/api-reference/content/generate-caption).
 
@@ -170,10 +170,10 @@ curl -sS -o "$VIDEO_DIR/clip.mp4" "$VIDEO_URL"
 SONG_PATH="$VIDEO_DIR/song.mp3"           # provide your song file
 FINAL_PATH="$VIDEO_DIR/final.mp4"
 
-# Write caption to a file — drawtext reads it via textfile=, sidesteps shell-escaping (apostrophes, etc.)
+# Write caption to a file. drawtext reads it via textfile=, sidestepping shell-escaping (apostrophes, etc.)
 echo -n "$CAPTION_TEXT" > "$VIDEO_DIR/caption.txt"
 
-# Single-line filter graph — newlines inside -filter_complex are literal characters and break the [v] label
+# Single-line filter graph: newlines inside -filter_complex are literal characters and break the [v] label
 ffmpeg -y \
   -stream_loop -1 -i "$VIDEO_DIR/clip.mp4" \
   -i "$SONG_PATH" \
@@ -187,4 +187,4 @@ ffmpeg -y \
 
 ---
 
-The checklist is the source of truth — if a box isn't ticked, treat the step as not run.
+The checklist is the source of truth. If a box isn't ticked, treat the step as not run.

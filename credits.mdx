@@ -1,9 +1,9 @@
 ---
 title: "Credits"
-description: "How Recoup credits work — what's billed, how to check your balance, and how to upgrade."
+description: "How Recoup credits work: what's billed, how to check your balance, and how to upgrade."
 ---
 
-Some Recoup endpoints are billed in **credits** — primarily endpoints that hit external data providers, run AI inference, or generate content. The rest of the API is free at the API layer.
+Some Recoup endpoints are billed in **credits**. Primarily endpoints that hit external data providers, run AI inference, or generate content. The rest of the API is free at the API layer.
 
 ---
 
@@ -13,7 +13,7 @@ Some Recoup endpoints are billed in **credits** — primarily endpoints that hit
 |--------|---------|-------|
 | **Research** (`/api/research/*`) | Yes | Each successful call deducts credits. Costs vary by endpoint and parameters (e.g. `enrich` charges by processor tier; `extract` charges by URL count). |
 | **Content generation** (`/api/image/generate`) | Yes | Image generation is priced per call. |
-| **AI Chat — streaming** (`POST /api/chat`) | Yes | Variable cost based on model token usage, with a per-request minimum. |
+| **AI Chat streaming** (`POST /api/chat`) | Yes | Variable cost based on model token usage, with a per-request minimum. |
 | **Everything else** | Free at the API layer | Artist CRUD, sandboxes, sessions, scheduled tasks, social integrations, account/org management, agent signup, Spotify proxies, etc. Subscription gating may still apply. |
 
 Failed calls (4xx / 5xx) do **not** deduct credits. Deduction happens only after the upstream call succeeds.

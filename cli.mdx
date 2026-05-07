@@ -6,9 +6,9 @@ description: "Install the Recoup CLI and interact with the platform from your te
 The Recoup CLI (`@recoupable/cli`) wraps the Recoup API for terminal-first workflows. It's available as a global npm package and comes pre-installed in sandbox environments.
 
 <Note>
-**The CLI is in beta.** The commands listed below are what's shipped today (v0.1.13). For research workflows and most content operations, call the [REST API](/api-reference) directly — the CLI is gradually catching up.
+**The CLI is in beta.** The commands listed below are what's shipped today (v0.1.13). For research workflows and most content operations, call the [REST API](/api-reference) directly. The CLI is gradually catching up.
 
-**Agents:** if a command isn't listed below, don't retry — fall back to the corresponding REST endpoint linked under each command.
+**Agents:** if a command isn't listed below, don't retry. Fall back to the corresponding REST endpoint linked under each command.
 </Note>
 
 ## Install
@@ -39,7 +39,7 @@ Get an API key from the [API Keys page](https://chat.recoupable.com/keys) or use
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `RECOUP_API_KEY` | Yes | — | Your Recoup API key |
+| `RECOUP_API_KEY` | Yes | (none) | Your Recoup API key |
 | `RECOUP_API_URL` | No | `https://api.recoupable.com` | API base URL override |
 
 All commands support `--json` for machine-readable output and `--help` for usage info.
@@ -145,7 +145,7 @@ One of `--preset` or `--prompt` is required. The other flags are optional.
 
 ## content
 
-Content creation pipeline — generate AI-powered social videos for artists.
+Content creation pipeline. Generate AI-powered social videos for artists.
 
 ### List templates
 

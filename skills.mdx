@@ -1,12 +1,12 @@
 ---
 title: "Skills & Plugins"
-description: "Two ways agents extend themselves on Recoup — reusable workflow units, or bundled toolkits."
+description: "Two ways agents extend themselves on Recoup: reusable workflow units, or bundled toolkits."
 ---
 
 Recoup gives agents two extension points:
 
-- A **skill** is a self-contained folder — a `SKILL.md` plus any references, scripts, or assets it needs — that teaches an agent how to do one task. Installed individually, loaded by the agent when the task fits.
-- A **plugin** is a bundle — multiple skills wired together with slash commands and sub-agents around one workflow, installed once into the agent runtime.
+- A **skill** is a self-contained folder containing a `SKILL.md` plus any references, scripts, or assets it needs. It teaches an agent how to do one task. Installed individually, loaded by the agent when the task fits.
+- A **plugin** is a bundle. Multiple skills wired together with slash commands and sub-agents around one workflow, installed once into the agent runtime.
 
 The API tells an agent **how** to take action. Skills and plugins tell it **when** and **why**.
 
@@ -14,7 +14,7 @@ The API tells an agent **how** to take action. Skills and plugins tell it **when
 
 ## Skills
 
-Each skill below links to its source `SKILL.md` in [`recoupable/skills`](https://github.com/recoupable/skills) — that's what the agent loads at runtime, and it's where the full instructions live.
+Each skill below links to its source `SKILL.md` in [`recoupable/skills`](https://github.com/recoupable/skills). That's what the agent loads at runtime, and where the full instructions live.
 
 ### Setup
 
@@ -22,28 +22,28 @@ Run these first when an agent connects to Recoup. They handle authentication, sa
 
 | Skill | What it does | Install |
 |---|---|---|
-| [Set up Recoup](/skills/getting-started) | Set up Recoup from scratch — get an API key, verify it, and make the first call via REST or MCP. | `npx skills add recoupable/skills --skill getting-started` |
-| [Use the Recoup API](/skills/recoup-api) | The agent's universal client for the Recoup API inside a sandbox — auth, scoping, and connector actions for Google Docs, Drive, Sheets, Gmail, TikTok. | `npx skills add recoupable/skills --skill recoup-api` |
+| [Set up Recoup](/skills/getting-started) | Set up Recoup from scratch. Get an API key, verify it, and make the first call via REST or MCP. | `npx skills add recoupable/skills --skill getting-started` |
+| [Use the Recoup API](/skills/recoup-api) | The agent's universal client for the Recoup API inside a sandbox. Handles auth, scoping, and connector actions for Google Docs, Drive, Sheets, Gmail, TikTok. | `npx skills add recoupable/skills --skill recoup-api` |
 | [Bootstrap a sandbox](/skills/setup-sandbox) | Scaffold the workspace for an account's orgs and artists when a sandbox has no existing file system. | `npx skills add recoupable/skills --skill setup-sandbox` |
-| [Work with an artist](/skills/artist-workspace) | Manage an artist's directory — identity, brand, voice, audience, songs, face guides. | `npx skills add recoupable/skills --skill artist-workspace` |
+| [Work with an artist](/skills/artist-workspace) | Manage an artist's directory: identity, brand, voice, audience, songs, face guides. | `npx skills add recoupable/skills --skill artist-workspace` |
 | [Create an artist](/skills/create-artist) | End-to-end 8-step process for creating, identifying, and enriching a new artist account from a single name. | `npx skills add recoupable/skills --skill create-artist` |
 
 ### Doing the work
 
-Run during the agent's actual day — research, content, songwriting, releases, growth.
+Run during the agent's actual day: research, content, songwriting, releases, growth.
 
 | Skill | What it does | Install |
 |---|---|---|
 | [Research the music industry](/skills/music-industry-research) | Use the `/api/research/*` endpoints for analytics, audience demographics, playlists, charts, and people search. | `npx skills add recoupable/skills --skill music-industry-research` |
 | [Create content](/skills/content-creation) | Compose the content endpoints (image, video, caption, transcribe, edit, upscale, analyze) into short-form videos, Reels, TikToks, and lipsync clips. | `npx skills add recoupable/skills --skill content-creation` |
-| [Write a song](/skills/song-writing) | Write and evaluate songs using the 7 C's framework — hook, clarity, character, and the rest. | `npx skills add recoupable/skills --skill song-writing` |
-| [Turn a trend into a song](/skills/trend-to-song) | Reverse the traditional workflow — start from a cultural moment and build a song + distribution plan around it. | `npx skills add recoupable/skills --skill trend-to-song` |
-| [Plan a release](/skills/release-management) | Plan a release end-to-end — `RELEASE.md` documents, DSP pitches, press one-sheets, production specs, tour coordination. | `npx skills add recoupable/skills --skill release-management` |
+| [Write a song](/skills/song-writing) | Write and evaluate songs using the 7 C's framework: hook, clarity, character, and the rest. | `npx skills add recoupable/skills --skill song-writing` |
+| [Turn a trend into a song](/skills/trend-to-song) | Reverse the traditional workflow. Start from a cultural moment and build a song + distribution plan around it. | `npx skills add recoupable/skills --skill trend-to-song` |
+| [Plan a release](/skills/release-management) | Plan a release end-to-end: `RELEASE.md` documents, DSP pitches, press one-sheets, production specs, tour coordination. | `npx skills add recoupable/skills --skill release-management` |
 | [Grow streaming](/skills/streaming-growth) | Grow a new artist past the streaming milestones that unlock Spotify Showcase, Marquee, and algorithmic boosting. | `npx skills add recoupable/skills --skill streaming-growth` |
 
 ### Install
 
-The fastest way is the [`skills`](https://github.com/vercel-labs/add-skill) CLI — it works with Claude Code, Codex, OpenCode, Cursor, and 50+ other agents.
+The fastest way is the [`skills`](https://github.com/vercel-labs/add-skill) CLI. It works with Claude Code, Codex, OpenCode, Cursor, and 50+ other agents.
 
 ```bash
 # Everything
@@ -70,15 +70,15 @@ git clone https://github.com/recoupable/skills.git
 
 ### How a skill is structured
 
-Every skill is a directory with a `SKILL.md` at the root. The `description` field in the YAML frontmatter is what the agent reads to decide when to invoke it — write it as a trigger, not a summary.
+Every skill is a directory with a `SKILL.md` at the root. The `description` field in the YAML frontmatter is what the agent reads to decide when to invoke it. Write it as a trigger, not a summary.
 
 ```text
 skills/
 └── my-skill/
     ├── SKILL.md       ← required (frontmatter + instructions)
-    ├── references/    ← optional — docs the agent loads on demand
-    ├── scripts/       ← optional — executable helpers
-    └── assets/        ← optional — templates, fonts, icons
+    ├── references/    ← optional (docs the agent loads on demand)
+    ├── scripts/       ← optional (executable helpers)
+    └── assets/        ← optional (templates, fonts, icons)
 ```
 
 Minimum viable `SKILL.md`:
@@ -86,7 +86,7 @@ Minimum viable `SKILL.md`:
 ```markdown
 ---
 name: my-skill
-description: One-line trigger that tells the agent when to use this. Include the kinds of phrases users say — "playlist push," "release plan," "growth strategy."
+description: One-line trigger that tells the agent when to use this. Include the kinds of phrases users say, like "playlist push," "release plan," or "growth strategy."
 ---
 
 # My Skill
@@ -98,7 +98,7 @@ Step-by-step instructions the agent follows.
 
 ## Plugins
 
-A plugin is a packaged toolkit — multiple skills, slash commands, and sub-agents bundled around one workflow, so a team can install the whole thing into the agent they already use instead of wiring pieces together themselves.
+A plugin is a packaged toolkit. Multiple skills, slash commands, and sub-agents bundled around one workflow, so a team can install the whole thing into the agent they already use instead of wiring pieces together themselves.
 
 The marketplace lives at [recoupable/plugins](https://github.com/recoupable/plugins). Each plugin is its own Git repo so it can be developed, versioned, and distributed independently.
 
@@ -106,7 +106,7 @@ The marketplace lives at [recoupable/plugins](https://github.com/recoupable/plug
 
 | Plugin | What it does |
 |---|---|
-| [Catalog due diligence](/plugins/music-catalog-diligence) | Review royalties, rights, valuation, and deal materials for music catalog transactions — buyer, seller, lender, or post-close. Bundles 10 skills, 9 slash commands, and 5 sub-agent personas. |
+| [Catalog due diligence](/plugins/music-catalog-diligence) | Review royalties, rights, valuation, and deal materials for music catalog transactions across buyer, seller, lender, or post-close use cases. Bundles 10 skills, 9 slash commands, and 5 sub-agent personas. |
 
 ### Install
 
@@ -149,7 +149,7 @@ codex /plugins
 
 Search for `music-catalog-diligence`, select it, and click **Install**. After install, invoke the plugin by describing the task (e.g. "kick off catalog diligence on this data room") or by typing `@music-catalog-diligence`.
 
-The marketplace add command is fully scriptable. The install step currently goes through the interactive `/plugins` UI — there's no headless one-shot install yet.
+The marketplace add command is fully scriptable. The install step currently goes through the interactive `/plugins` UI; there's no headless one-shot install yet.
 
 #### Cursor
 
@@ -160,7 +160,7 @@ mkdir -p ~/.cursor/plugins/local
 git clone https://github.com/recoupable/music-catalog-diligence.git ~/.cursor/plugins/local/music-catalog-diligence
 ```
 
-Then have the user reload the Cursor window (`Cmd+Shift+P` → **Reload Window**) so the plugin gets picked up. Important: Cursor doesn't follow symlinks in `~/.cursor/plugins/local/` — the directory must be a real copy.
+Then have the user reload the Cursor window (`Cmd+Shift+P` → **Reload Window**) so the plugin gets picked up. Important: Cursor doesn't follow symlinks in `~/.cursor/plugins/local/`. The directory must be a real copy.
 
 To pull updates later, run `git -C ~/.cursor/plugins/local/music-catalog-diligence pull` and reload the window again.
 
@@ -181,19 +181,19 @@ my-plugin/
 └── README.md
 ```
 
-Claude Code and Cursor load the full plugin surface (skills, commands, agents). Codex loads the bundled `skills/` through `.codex-plugin/plugin.json`; Claude-specific commands and agents remain available through Claude Code, and will surface in Codex when its packaging path supports them.
+Claude Code and Cursor load the full plugin surface (skills, commands, agents). Codex loads the bundled `skills/` through `.codex-plugin/plugin.json`. Claude-specific commands and agents remain available through Claude Code, and will surface in Codex when its packaging path supports them.
 
 ---
 
 ## Contribute
 
-**Skills** — add a directory under `skills/` in [recoupable/skills](https://github.com/recoupable/skills), follow the structure above, and open a PR. See [contributing.md](https://github.com/recoupable/skills/blob/main/contributing.md) for the full guidelines.
+**Skills.** Add a directory under `skills/` in [recoupable/skills](https://github.com/recoupable/skills), follow the structure above, and open a PR. See [contributing.md](https://github.com/recoupable/skills/blob/main/contributing.md) for the full guidelines.
 
 The bar: a skill should be specific enough that an agent would correctly invoke it without your help, and complete enough that it can finish the task without asking the user follow-ups it could have answered itself.
 
-**Plugins** — open a PR against [recoupable/plugins](https://github.com/recoupable/plugins) with your repo and a marketplace entry. The bar:
+**Plugins.** Open a PR against [recoupable/plugins](https://github.com/recoupable/plugins) with your repo and a marketplace entry. The bar:
 
-- A clear workflow the plugin owns end-to-end (not just one skill — that belongs in [recoupable/skills](https://github.com/recoupable/skills))
+- A clear workflow the plugin owns end-to-end (not just one skill, which belongs in [recoupable/skills](https://github.com/recoupable/skills))
 - Skills, commands, and agents that compose into the workflow
 - Tests or fixtures that prove the workflow runs against representative data
 - A `README.md` that says who it's for in one paragraph

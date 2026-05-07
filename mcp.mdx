@@ -1,9 +1,9 @@
 ---
 title: "MCP Server"
-description: "Connect any AI agent to Recoup via the Model Context Protocol — Claude, ChatGPT, Cursor, and the full Recoup tool catalog natively."
+description: "Connect any AI agent to Recoup via the Model Context Protocol. Claude, ChatGPT, Cursor, and the full Recoup tool catalog natively."
 ---
 
-Recoup exposes an [MCP](https://modelcontextprotocol.io/) server so any AI agent can use Recoup tools natively. Claude, ChatGPT, Cursor, Windsurf, and any MCP-compatible agent can research artists across Spotify and the open web, generate images and videos, manage catalogs, schedule tasks, and more — without writing API calls.
+Recoup exposes an [MCP](https://modelcontextprotocol.io/) server so any AI agent can use Recoup tools natively. Claude, ChatGPT, Cursor, Windsurf, and any MCP-compatible agent can research artists across Spotify and the open web, generate images and videos, manage catalogs, schedule tasks, and more, without writing API calls.
 
 ```
 https://api.recoupable.com/mcp
@@ -64,7 +64,7 @@ Tools are organized by domain. Every tool returns structured JSON suitable for c
 | `get_chats` | Get chat conversations for accounts. |
 | `compact_chats` | Compact one or more chat conversations into concise summaries. |
 
-### Content — images, video, audio
+### Content (images, video, audio)
 
 | Tool | What it does |
 |------|-------------|
@@ -81,7 +81,7 @@ Tools are organized by domain. Every tool returns structured JSON suitable for c
 
 | Tool | What it does |
 |------|-------------|
-| `search_web` | Default web search tool — use first for any general information lookup. |
+| `search_web` | Default web search tool. Use first for any general information lookup. |
 | `web_deep_research` | Multi-source deep web research with comprehensive analysis. |
 | `artist_deep_research` | Comprehensive cross-platform research on a specific artist with a generated report. |
 | `spotify_deep_research` | Deep research on an artist using a Spotify ID. |
@@ -144,7 +144,7 @@ Background work scheduled and managed through the Recoup task system.
 
 ## Calling a tool
 
-Once connected, call any tool by name. Example — kick off an OpenClaw prompt in a sandbox:
+Once connected, call any tool by name. Example: kick off an OpenClaw prompt in a sandbox.
 
 ```typescript
 const result = await client.callTool({
@@ -157,5 +157,5 @@ console.log(result.content);
 Each tool's input schema is published over the MCP protocol, so your agent gets typed parameter help automatically.
 
 <Note>
-If your account belongs to an organization, your key can target any account in that org by passing `account_id` on tools that accept it. Otherwise, your key only operates on your own data. There's no separate "org-scoped" key type — access is determined by the account's organization membership. See [Authentication](/authentication#access-control) for the full access rules.
+If your account belongs to an organization, your key can target any account in that org by passing `account_id` on tools that accept it. Otherwise, your key only operates on your own data. There's no separate "org-scoped" key type. Access is determined by the account's organization membership. See [Authentication](/authentication#access-control) for the full access rules.
 </Note>

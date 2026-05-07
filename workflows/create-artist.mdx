@@ -5,23 +5,23 @@ description: 'End-to-end workflow to create, research and enrich a new artist ac
 
 This is the canonical workflow used internally by Recoup's chat agent. Follow it step-by-step to bring a new artist account up to "researched + enriched" parity from a sandbox or any external agent.
 
-The chain is 8 sequential API calls. Long deterministic chains executed from prose memory tend to drop steps — the agent reads the doc once, runs a couple of calls, and forgets the rest. To prevent that from a sandbox, **drive the work from a checklist file**: scaffold the artist's `RECOUP.md` with one checkbox per step before any API call, then tick each box and persist captured values back to the frontmatter as you go. The file becomes the workflow state, and a fresh turn can resume by reading it.
+The chain is 8 sequential API calls. Long deterministic chains executed from prose memory tend to drop steps. The agent reads the doc once, runs a couple of calls, and forgets the rest. To prevent that from a sandbox, **drive the work from a checklist file**: scaffold the artist's `RECOUP.md` with one checkbox per step before any API call, then tick each box and persist captured values back to the frontmatter as you go. The file becomes the workflow state, and a fresh turn can resume by reading it.
 
 ## Prerequisites
 
-- `$RECOUP_ACCESS_TOKEN` — Bearer token for `api.recoupable.com`
-- `$RECOUP_ORG_ID` — the org the artist should belong to (recommended in sandboxes)
+- `$RECOUP_ACCESS_TOKEN`: Bearer token for `api.recoupable.com`
+- `$RECOUP_ORG_ID`: the org the artist should belong to (recommended in sandboxes)
 - An artist name to create (e.g. `ARTIST_NAME="The Weeknd"`)
 
 The flow has three phases, run from a single checklist file:
 
-1. **Create + identify** — `POST /api/artists`, then find the canonical Spotify match
-2. **Enrich** — `PATCH` the artist with image/label/socials, then run structured research (Chartmetric profile/career/playlists) plus a web search for narrative context and additional socials
-3. **Synthesize + persist** — generate a knowledge-base report, save it (RECOUP.md tree or hosted URL), then optionally `PATCH` the `knowledges` array
+1. **Create + identify.** `POST /api/artists`, then find the canonical Spotify match.
+2. **Enrich.** `PATCH` the artist with image/label/socials, then run structured research (Chartmetric profile/career/playlists) plus a web search for narrative context and additional socials.
+3. **Synthesize + persist.** Generate a knowledge-base report, save it (RECOUP.md tree or hosted URL), then optionally `PATCH` the `knowledges` array.
 
 ## Step 0: Scaffold the workspace BEFORE any API call
 
-Pick a slug, make the directory, and write the initial `RECOUP.md` template — frontmatter holds the values the chain captures (filled as you go); body holds the unchecked steps:
+Pick a slug, make the directory, and write the initial `RECOUP.md` template. Frontmatter holds the values the chain captures (filled as you go); body holds the unchecked steps:
 
 ```bash
 ARTIST_SLUG=$(echo "$ARTIST_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]\+/-/g; s/^-//; s/-$//')
@@ -43,22 +43,22 @@ cmArtistId:
 
 ## Setup checklist
 
-- [ ] 1. Create the artist (\`POST /api/artists\`) — capture \`account_id\` → \`artistId\`
-- [ ] 2. Find canonical Spotify match (\`GET /api/spotify/search\`) — capture \`id\`, \`external_urls.spotify\`, \`images[0].url\`
-- [ ] 3. PATCH artist with image + Spotify profile URL
-- [ ] 4. Structured research — \`/research/lookup\` (capture \`cmArtistId\`) → \`/research/profile\` + \`/research/career\` + \`/research/playlists\` + \`/research/web\`. Save responses under \`## Research\` in this file.
-- [ ] 5. Pull Spotify catalog → write \`releases/{album-slug}/RELEASE.md\` per album + \`releases/top-tracks.md\`
-- [ ] 6. Web search for additional socials (instagram / tiktok / twitter / youtube)
-- [ ] 7. PATCH artist with discovered socials
-- [ ] 8. Synthesize knowledge base — append it as \`## Knowledge base\` in this file
+- [ ] 1. Create the artist (\`POST /api/artists\`). Capture \`account_id\` → \`artistId\`.
+- [ ] 2. Find canonical Spotify match (\`GET /api/spotify/search\`). Capture \`id\`, \`external_urls.spotify\`, \`images[0].url\`.
+- [ ] 3. PATCH artist with image + Spotify profile URL.
+- [ ] 4. Structured research: \`/research/lookup\` (capture \`cmArtistId\`) → \`/research/profile\` + \`/research/career\` + \`/research/playlists\` + \`/research/web\`. Save responses under \`## Research\` in this file.
+- [ ] 5. Pull Spotify catalog. Write \`releases/{album-slug}/RELEASE.md\` per album + \`releases/top-tracks.md\`.
+- [ ] 6. Web search for additional socials (instagram / tiktok / twitter / youtube).
+- [ ] 7. PATCH artist with discovered socials.
+- [ ] 8. Synthesize knowledge base. Append it as \`## Knowledge base\` in this file.
 
 ## Notes
 EOF
 ```
 
-The sandbox is already scoped to a single Recoupable organization (its repo *is* the org), so artists live at the top level — there is no `orgs/` directory. Don't proceed to step 1 until the file exists on disk.
+The sandbox is already scoped to a single Recoupable organization (its repo *is* the org), so artists live at the top level. There is no `orgs/` directory. Don't proceed to step 1 until the file exists on disk.
 
-**After every step that follows, do two writes back to `RECOUP.md`:** tick the checkbox for the step you just ran (`- [ ]` → `- [x]`) and persist any captured value into the frontmatter. Later steps read those values from the frontmatter — never re-derive what's already saved.
+**After every step that follows, do two writes back to `RECOUP.md`:** tick the checkbox for the step you just ran (`- [ ]` → `- [x]`) and persist any captured value into the frontmatter. Later steps read those values from the frontmatter. Never re-derive what's already saved.
 
 ## Resuming a partial setup
 
@@ -69,7 +69,7 @@ If `$ARTIST_DIR/RECOUP.md` already exists, do not re-scaffold and do not re-run 
 grep -n '^- \[ \]' "$ARTIST_DIR/RECOUP.md" | head -1
 ```
 
-If every item is checked, the artist is fully set up — confirm with the user before doing anything else.
+If every item is checked, the artist is fully set up. Confirm with the user before doing anything else.
 
 ## Step 1: Create the artist
 
@@ -83,7 +83,7 @@ ARTIST_RESPONSE=$(curl -sS -X POST "https://api.recoupable.com/api/artists" \
 ARTIST_ID=$(echo "$ARTIST_RESPONSE" | jq -r '.artist.account_id')
 ```
 
-Capture `account_id` as `$ARTIST_ID` — every subsequent step needs it. `organization_id` is optional but should be included when running inside a sandbox so the artist is scoped to the right org.
+Capture `account_id` as `$ARTIST_ID`. Every subsequent step needs it. `organization_id` is optional but should be included when running inside a sandbox so the artist is scoped to the right org.
 
 See [Create Artist](/api-reference/artists/create) for the full request/response schema.
 
@@ -123,7 +123,7 @@ See [Spotify Search](/api-reference/spotify/search) for the full query parameter
 
 ## Step 3: Set basic profile + Spotify URL
 
-One `PATCH` covers the image and the Spotify social URL. Use **uppercase** platform keys in `profileUrls` (the API matches platforms case-sensitively — see the reference table below).
+One `PATCH` covers the image and the Spotify social URL. Use **uppercase** platform keys in `profileUrls` (the API matches platforms case-sensitively; see the reference table below).
 
 ```bash
 curl -sS -X PATCH "https://api.recoupable.com/api/artists/$ARTIST_ID" \
@@ -133,13 +133,13 @@ curl -sS -X PATCH "https://api.recoupable.com/api/artists/$ARTIST_ID" \
         '{image: $image, profileUrls: {SPOTIFY: $url}}')"
 ```
 
-This single endpoint replaces what the chat tool chain runs as four separate MCP calls (`update_account_info` ×2, `update_artist_socials` ×2). Add `label` to the body once you discover one in the structured research (step 4 — comes back from `/api/research/profile`). See [Update Artist](/api-reference/artists/update) for the full body schema.
+This single endpoint replaces what the chat tool chain runs as four separate MCP calls (`update_account_info` ×2, `update_artist_socials` ×2). Add `label` to the body once you discover one in the structured research (step 4 returns it from `/api/research/profile`). See [Update Artist](/api-reference/artists/update) for the full body schema.
 
 **After this step:** tick `- [ ] 3.` → `- [x] 3.`.
 
 ## Step 4: Run structured research
 
-Don't use `POST /api/research/deep` here — it tends to hang in sandboxes and returns paraphrased prose. Instead, fan out across four bounded structured endpoints (one prerequisite lookup + three structured pulls + one web search). The outputs are typed JSON the agent can use directly without paraphrasing.
+Don't use `POST /api/research/deep` here. It tends to hang in sandboxes and returns paraphrased prose. Instead, fan out across four bounded structured endpoints (one prerequisite lookup + three structured pulls + one web search). The outputs are typed JSON the agent can use directly without paraphrasing.
 
 ### 4a: Look up the Chartmetric `artist_id`
 
@@ -152,14 +152,14 @@ LOOKUP=$(curl -sS -G "https://api.recoupable.com/api/research/lookup" \
 
 CM_ARTIST_ID=$(echo "$LOOKUP" | jq -r '.artist.id // empty')
 
-[ -n "$CM_ARTIST_ID" ] || { echo "No Chartmetric match for Spotify ID $SPOTIFY_ARTIST_ID — skipping structured research"; }
+[ -n "$CM_ARTIST_ID" ] || { echo "No Chartmetric match for Spotify ID $SPOTIFY_ARTIST_ID; skipping structured research"; }
 ```
 
-If the lookup fails (rare — most Spotify-discoverable artists have a Chartmetric profile), skip 4b–4d and just run 4e (web search). See [Artist Lookup](/api-reference/research/lookup) for the request/response schema.
+If the lookup fails (rare; most Spotify-discoverable artists have a Chartmetric profile), skip 4b through 4d and just run 4e (web search). See [Artist Lookup](/api-reference/research/lookup) for the request/response schema.
 
 ### 4b: Pull the artist profile
 
-Returns bio, genres, social URLs, label, career stage, and basic metrics — most of what deep research used to paraphrase.
+Returns bio, genres, social URLs, label, career stage, and basic metrics. Most of what deep research used to paraphrase.
 
 ```bash
 PROFILE=$(curl -sS -G "https://api.recoupable.com/api/research/profile" \
@@ -171,7 +171,7 @@ See [Artist Profile](/api-reference/research/profile) for the response schema.
 
 ### 4c: Pull the career timeline
 
-Career milestones, trajectory, and career-stage classification — covers the "notable achievements" portion of what deep research returned.
+Career milestones, trajectory, and career-stage classification. Covers the "notable achievements" portion of what deep research returned.
 
 ```bash
 CAREER=$(curl -sS -G "https://api.recoupable.com/api/research/career" \
@@ -207,7 +207,7 @@ RESEARCH_WEB=$(curl -sS -X POST "https://api.recoupable.com/api/research/web" \
 
 See [Web Search](/api-reference/research/web) for the request/response schema.
 
-**After this step:** persist `cmArtistId: $CM_ARTIST_ID` into the frontmatter, save the four response payloads (profile, career, playlists, web) into a new `## Research` section of `RECOUP.md` — one subsection per endpoint, each with the raw JSON or a tight markdown summary so step 8 can compose from it. Tick `- [ ] 4.` → `- [x] 4.`.
+**After this step:** persist `cmArtistId: $CM_ARTIST_ID` into the frontmatter, save the four response payloads (profile, career, playlists, web) into a new `## Research` section of `RECOUP.md`. Use one subsection per endpoint, each with the raw JSON or a tight markdown summary so step 8 can compose from it. Tick `- [ ] 4.` → `- [x] 4.`.
 
 ## Step 5: Pull the Spotify catalog
 
@@ -230,7 +230,7 @@ ALBUM_DETAIL=$(curl -sS -G "https://api.recoupable.com/api/spotify/album" \
 
 See [Spotify Top Tracks](/api-reference/spotify/artist-top-tracks), [Spotify Artist Albums](/api-reference/spotify/artist-albums), and [Spotify Album](/api-reference/spotify/album) for full schemas.
 
-**After this step:** populate the artist's `releases/` folder — write one `releases/{release-slug}/RELEASE.md` per album (album slugs are bare, `-ep` / `-single` / `-compilation` suffixes for other types) using the per-album `GET /api/spotify/album?id=$ALBUM_ID` response, and write the top tracks snapshot to `releases/top-tracks.md`. `RELEASE.md` is the 18-section master release-management document (project snapshot, identifiers, narrative, audience, DSP strategy, marketing, social, PR, visuals, physical/merch/touring, team, budget, KPI tracking, links hub, plus Outstanding Deliverables and a Document History log) — Step 5 fills the Spotify-derivable fields and leaves the rest as `⚠️ TBD`. The full template + the field-by-field Spotify mapping live in the [`artist-workspace`](https://github.com/recoupable/skills/tree/main/skills/artist-workspace) skill at `references/release-template.md`. Tick `- [ ] 5.` → `- [x] 5.`.
+**After this step:** populate the artist's `releases/` folder. Write one `releases/{release-slug}/RELEASE.md` per album (album slugs are bare, with `-ep` / `-single` / `-compilation` suffixes for other types) using the per-album `GET /api/spotify/album?id=$ALBUM_ID` response, and write the top tracks snapshot to `releases/top-tracks.md`. `RELEASE.md` is the 18-section master release-management document (project snapshot, identifiers, narrative, audience, DSP strategy, marketing, social, PR, visuals, physical/merch/touring, team, budget, KPI tracking, links hub, plus Outstanding Deliverables and a Document History log). Step 5 fills the Spotify-derivable fields and leaves the rest as `⚠️ TBD`. The full template plus the field-by-field Spotify mapping live in the [`artist-workspace`](https://github.com/recoupable/skills/tree/main/skills/artist-workspace) skill at `references/release-template.md`. Tick `- [ ] 5.` → `- [x] 5.`.
 
 ## Step 6: Search the web for additional socials
 
@@ -272,7 +272,7 @@ See [Update Artist](/api-reference/artists/update) for the full body schema.
 
 ## Step 8: Synthesize the knowledge base
 
-Combine the structured research outputs (`## Research` section — profile, career, playlists, web), the Spotify catalog (`releases/`), and the discovered socials into a comprehensive markdown report. Recommended sections:
+Combine the structured research outputs (the `## Research` section with profile, career, playlists, web), the Spotify catalog (`releases/`), and the discovered socials into a comprehensive markdown report. Recommended sections:
 
 - Artist biography and origin
 - Discography highlights (top tracks + key albums)
@@ -281,7 +281,7 @@ Combine the structured research outputs (`## Research` section — profile, care
 - Recent activity / press
 - Notable collaborations and achievements
 
-Append the report to the same `RECOUP.md` you scaffolded in Step 0 — add it as a `## Knowledge base` section below the checklist. The path is:
+Append the report to the same `RECOUP.md` you scaffolded in Step 0. Add it as a `## Knowledge base` section below the checklist. The path is:
 
 ```
 artists/$ARTIST_SLUG/RECOUP.md
@@ -306,11 +306,11 @@ This dovetails with the [`artist-workspace`](https://github.com/recoupable/skill
 | `facebook.com` | `FACEBOOK` |
 | `threads.net`, `threads.com` | `THREADS` |
 
-URLs that don't match any of these are silently skipped — they won't be saved.
+URLs that don't match any of these are silently skipped. They won't be saved.
 
 ## What this workflow doesn't enforce
 
-There's no server-side orchestrator forcing each step to run in order — the chain is honor-system. The `RECOUP.md` checklist is what gives you determinism in practice: as long as you tick boxes and persist values after each step, a fresh turn (or a different agent) can pick up exactly where the last one stopped. If you skip a checkbox or skip the persist, the next turn won't know that step ran and may either redo it or, worse, treat downstream calls as ready when they aren't.
+There's no server-side orchestrator forcing each step to run in order. The chain is honor-system. The `RECOUP.md` checklist is what gives you determinism in practice: as long as you tick boxes and persist values after each step, a fresh turn (or a different agent) can pick up exactly where the last one stopped. If you skip a checkbox or skip the persist, the next turn won't know that step ran and may either redo it or, worse, treat downstream calls as ready when they aren't.
 
 A few constraints to honor:
 

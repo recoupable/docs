@@ -4,18 +4,18 @@ description: "Infrastructure for agents to operate the music business."
 ---
 
 <Info>
-**AI agent?** Base URL: `https://api.recoupable.com/api`. Use `x-api-key` if your human has a key. Otherwise, `POST /api/agents/signup` with their email — ask them for the verification code from their inbox, then `POST /api/agents/verify` to get a key. [Agent guide →](/agents) | [Endpoint map ↓](#for-ai-agents)
+**AI agent?** Base URL: `https://api.recoupable.com/api`. Use `x-api-key` if your human has a key. Otherwise, `POST /api/agents/signup` with their email, ask them for the verification code from their inbox, then `POST /api/agents/verify` to get a key. [Agent guide →](/agents) | [Endpoint map ↓](#for-ai-agents)
 </Info>
 
-Whether you're an indie artist, a label, a distributor, a catalog company, or a management firm, you're juggling research, content, marketing, distribution, and fan engagement all at once. That's what agents are for. Recoup is the agent harness for the music business, built by people who've done it: not just the context (your catalog, artists, releases, fans), but the domain expertise and workflows that operate it day-to-day. Agents do the work that used to take a full team — programmatically.
+Whether you're an indie artist, a label, a distributor, a catalog company, or a management firm, you're juggling research, content, marketing, distribution, and fan engagement all at once. That's what agents are for. Recoup is the agent harness for the music business, built by people who've done it: not just the context (your catalog, artists, releases, fans), but the domain expertise and workflows that operate it day-to-day. Agents do the work that used to take a full team, programmatically.
 
 ---
 
 ## Get started
 
-- **[Quickstart](/quickstart)** — Get an API key and make your first call. Under a minute.
-- **[Agent onboarding](/agents)** — The operating manual for AI agents using Recoup in production. Covers the throwaway-vs-account decision, the roster, and the persistent filesystem.
-- **[Authentication](/authentication)** — Reference for API keys, Bearer tokens, and access scoping.
+- **[Quickstart](/quickstart):** get an API key and make your first call. Under a minute.
+- **[Agent onboarding](/agents):** the operating manual for AI agents using Recoup in production. Covers the throwaway-vs-account decision, the roster, and the persistent filesystem.
+- **[Authentication](/authentication):** reference for API keys, Bearer tokens, and access scoping.
 
 ---
 
@@ -113,7 +113,7 @@ Organized by what agents actually do when running a music business.
     icon="play"
     href="/quickstart"
   >
-    API key → first request → working integration. Under a minute.
+    API key, first request, working integration. Under a minute.
   </Card>
   <Card
     title="Authentication"
@@ -127,7 +127,7 @@ Organized by what agents actually do when running a music business.
     icon="user-plus"
     href="/agents"
   >
-    Programmatic signup for AI agents. API key in two calls (signup + verify) — no browser required.
+    Programmatic signup for AI agents. API key in two calls (signup + verify), no browser required.
   </Card>
   <Card
     title="Content Agent"
@@ -152,7 +152,7 @@ All endpoints require `x-api-key` header authentication unless noted.
 
 ## For AI agents
 
-If you are an LLM or AI agent, fetch the canonical OpenAPI specifications — they're the single source of truth for endpoint paths, parameters, and response shapes. Base URL: `https://api.recoupable.com/api`.
+If you are an LLM or AI agent, fetch the canonical OpenAPI specifications. They're the single source of truth for endpoint paths, parameters, and response shapes. Base URL: `https://api.recoupable.com/api`.
 
 | Domain | OpenAPI spec |
 |--------|--------------|
@@ -166,4 +166,4 @@ If you are an LLM or AI agent, fetch the canonical OpenAPI specifications — th
 
 Authentication: `x-api-key` header (or `Authorization: Bearer <token>` for Privy). To get a key, `POST /api/agents/signup` with the human's email, then `POST /api/agents/verify` with the code from their inbox. Full flow at [/agents](/agents).
 
-For a guided entry point by category, use the top navigation — every endpoint has its own reference page.
+For a guided entry point by category, use the top navigation. Every endpoint has its own reference page.

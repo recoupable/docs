@@ -1,6 +1,6 @@
 ---
 title: "Content Agent"
-description: "AI content creation agent accessible via Slack — generates social-ready artist videos on @mention."
+description: "AI content creation agent accessible via Slack. Generates social-ready artist videos on @mention."
 ---
 
 The Recoup Content Agent is a Slack bot that generates social-ready artist videos on @mention. It connects to the content creation pipeline and delivers results directly in your Slack thread.
@@ -14,7 +14,7 @@ The Recoup Content Agent is a Slack bot that generates social-ready artist video
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `artist_account_id` | Yes | UUID of the artist account |
-| `template` | No | Content template name — see [GET /api/content/templates](/api-reference/content/templates) |
+| `template` | No | Content template name. See [GET /api/content/templates](/api-reference/content/templates). |
 | `batch=N` | No | Number of videos to generate (1–30, default 1) |
 | `lipsync` | No | Enable lipsync mode (audio baked into video) |
 
@@ -44,15 +44,15 @@ The content API provides seven independent endpoints. Each does one thing well. 
 | Endpoint | Path | What it does |
 |-----------|----------|-------------|
 | Generate Image | [POST /api/content/image](/api-reference/content/generate-image) | Create an image from a text prompt with optional reference image |
-| Generate Video | [POST /api/content/video](/api-reference/content/generate-video) | Create a video — 6 modes: prompt, animate, reference, extend, first-last, lipsync |
+| Generate Video | [POST /api/content/video](/api-reference/content/generate-video) | Create a video. Six modes: prompt, animate, reference, extend, first-last, lipsync. |
 | Generate Caption | [POST /api/content/caption](/api-reference/content/generate-caption) | Generate on-screen text for social media videos |
 | Transcribe Audio | [POST /api/content/transcribe](/api-reference/content/transcribe-audio) | Transcribe audio to timestamped lyrics/text |
 | Edit Content | [PATCH /api/content](/api-reference/content/edit) | Trim, crop, resize, overlay text, or add audio |
 | Upscale | [POST /api/content/upscale](/api-reference/content/upscale) | Upscale image or video resolution (up to 4x) |
-| Analyze Video | [POST /api/content/analyze](/api-reference/content/analyze-video) | AI video analysis — describe scenes, check quality |
+| Analyze Video | [POST /api/content/analyze](/api-reference/content/analyze-video) | AI video analysis. Describe scenes, check quality. |
 
 <Note>
-[`POST /api/content/create`](/api-reference/content/create) (legacy) runs the full pipeline in a single call. It still works, but new integrations should call the individual endpoints above directly — the pipeline is being phased out.
+[`POST /api/content/create`](/api-reference/content/create) (legacy) runs the full pipeline in a single call. It still works, but new integrations should call the individual endpoints above directly. The pipeline is being phased out.
 </Note>
 
 ## Video modes
