@@ -1342,7 +1342,7 @@
     },
     "/api/content/video": {
       "post": {
-        "description": "Generate a video. **An `image_url` is always required** \u2014 the underlying model (fal-ai/veo3.1/fast/image-to-video) does not support text-only generation. Generate an image first via [POST /api/content/image](/api-reference/content/generate-image) if you need to start from a prompt.\n\nSet `mode` to control what the model does with the inputs:\n\n- `prompt` \u2014 use the image as the first frame and generate motion from the prompt\n- `animate` \u2014 animate a still image (motion derived from the prompt)\n- `reference` \u2014 use the image as a style/subject reference, not the first frame\n- `extend` \u2014 continue an existing video (also requires `video_url`)\n- `first-last` \u2014 generate a video that transitions between two images (also requires `end_image_url`)\n- `lipsync` \u2014 sync face movement to an audio clip (also requires `audio_url`)\n\nIf `mode` is omitted, it's inferred from the inputs you provide.",
+        "description": "Generate a video. Set `mode` to control what kind of video you get:\n\n- `prompt` \u2014 create a video from a text description\n- `animate` \u2014 animate a still image\n- `reference` \u2014 use an image as a style/subject reference (not the first frame)\n- `extend` \u2014 continue an existing video\n- `first-last` \u2014 generate a video that transitions between two images\n- `lipsync` \u2014 sync face movement to an audio clip\n\nIf `mode` is omitted, it's inferred from the inputs you provide.",
         "security": [
           {
             "apiKeyAuth": []
@@ -2673,9 +2673,6 @@
       },
       "ContentCreateVideoRequest": {
         "type": "object",
-        "required": [
-          "image_url"
-        ],
         "properties": {
           "template": {
             "type": "string",
@@ -2700,7 +2697,7 @@
           "image_url": {
             "type": "string",
             "format": "uri",
-            "description": "Required. Image URL used as the input frame. The underlying model (fal-ai/veo3.1/fast/image-to-video) requires an image \u2014 text-only prompt mode is not supported. Generate an image first via POST /api/content/image if needed."
+            "description": "Optional. URL of an image used as the input frame, style reference, or starting frame depending on the chosen `mode`. Omit for `prompt` mode (text-only generation)."
           },
           "end_image_url": {
             "type": "string",
