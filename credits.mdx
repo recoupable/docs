@@ -55,12 +55,7 @@ Recoup has two tiers. Both refill on a monthly cycle.
 
 ### Check your tier
 
-```bash
-curl -sS https://api.recoupable.com/api/subscription/status \
-  -H "x-api-key: $RECOUP_API_KEY"
-```
-
-If `isPro` is `true`, the account is on the paid tier with the higher monthly allowance.
+Tier is visible in the [Recoup chat dashboard](https://chat.recoupable.com) under Billing. A programmatic status endpoint is on the roadmap; in the meantime, monitor your monthly allowance via [`GET /api/credits/get`](#check-your-balance) — Pro accounts refill to a substantially higher amount than free accounts.
 
 ### One-time top-ups
 

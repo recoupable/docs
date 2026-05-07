@@ -32,7 +32,7 @@ Once you have the answer, match the human's intent to the right path:
 
 ## 1. Authenticate
 
-If your human has an API key, pass it via `x-api-key`. If not, generate one based on the path you chose above:
+If your human has an API key, pass it via `x-api-key`. If not, generate one based on the path you chose above. **Note**: the throwaway `agent+...@recoupable.com` path returns the API key immediately on signup with no verification step — skip steps 2 and 3 below.
 
 <Steps>
   <Step title="Call signup with their email">
@@ -41,6 +41,7 @@ If your human has an API key, pass it via `x-api-key`. If not, generate one base
       -H "Content-Type: application/json" \
       -d '{"email": "user@example.com"}'
     ```
+    For an `agent+...@recoupable.com` email, the response includes `api_key` directly — store it (e.g. `export RECOUP_API_KEY=your-api-key`) and you're done. For any other email, the response says a verification code was sent; continue with steps 2 and 3.
   </Step>
   <Step title="Ask the human for the code">
     A 6-digit code was sent to their inbox. Ask them: *"Check your email for a verification code and share it with me."*

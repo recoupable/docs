@@ -3,12 +3,12 @@ title: "Authentication"
 description: "API keys and Bearer tokens — how to authenticate every request to the Recoup API."
 ---
 
-**Use API keys** for server-to-server, CLI, and agent integrations. **Use Bearer tokens** for frontend apps authenticated via Privy. Include exactly one — providing both returns `401`.
+**Use API keys** for server-to-server, CLI, and agent integrations. **Use Bearer tokens** for frontend apps authenticated via Privy, or to pass an API key to the [MCP server](/mcp). Include exactly one — providing both returns `401`.
 
 | Method | Header | Best for |
 |--------|--------|----------|
 | API Key | `x-api-key` | Servers, scripts, CLI, AI agents |
-| Bearer Token | `Authorization: Bearer <jwt>` | Frontend apps via Privy |
+| Bearer Token | `Authorization: Bearer <jwt-or-api-key>` | Frontend apps via Privy; MCP clients passing an API key |
 
 <Note>
 The [agent signup and verify](/agents) endpoints (`POST /api/agents/signup` and `POST /api/agents/verify`) are both unauthenticated — they let agents get their first key without any credentials.

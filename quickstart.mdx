@@ -20,7 +20,7 @@ curl -s -X POST "https://api.recoupable.com/api/agents/signup" \
 # 2. Check your email, then exchange the code for a key
 export RECOUP_API_KEY=$(curl -s -X POST "https://api.recoupable.com/api/agents/verify" \
   -H "Content-Type: application/json" \
-  -d '{"email": "you@example.com", "code": "123456"}' | jq -r .api_key)
+  -d '{"email": "you@example.com", "code": "123456"}' | jq -er '.api_key')
 ```
 
 <Tip>

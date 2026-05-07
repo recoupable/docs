@@ -616,7 +616,7 @@
     "/api/content/create": {
       "post": {
         "deprecated": true,
-        "description": "**Legacy pipeline.** Runs the full content-creation pipeline (image, video, caption, edit, upscale) in a single call. Powers the Content Agent Slack bot. New integrations should compose the individual primitives ([`POST /api/content/image`](/api-reference/content/generate-image), [`POST /api/content/video`](/api-reference/content/generate-video), [`POST /api/content/caption`](/api-reference/content/generate-caption), and so on) for finer-grained control.\n\nTriggers the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden via `songs` URLs or `images`, then triggers a background task that generates a short-form video. Returns `{run_id}` for polling progress via [`GET /api/tasks/runs`](/api-reference/tasks/runs).",
+        "description": "**Legacy pipeline.** Runs the full content-creation pipeline (image, video, caption, edit, upscale) in a single call. Powers the Content Agent Slack bot. New integrations should compose the individual primitives ([`POST /api/content/image`](/api-reference/content/generate-image), [`POST /api/content/video`](/api-reference/content/generate-video), [`POST /api/content/caption`](/api-reference/content/generate-caption), and so on) for finer-grained control.\n\nTriggers the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden via `songs` URLs or `images`, then triggers a background task that generates a short-form video. Returns `runIds` (an array of run IDs — one per generated piece) for polling progress via [`GET /api/tasks/runs`](/api-reference/tasks/runs).",
         "security": [
           {
             "apiKeyAuth": []
@@ -1342,7 +1342,7 @@
     },
     "/api/content/video": {
       "post": {
-        "description": "Generate a video. Set `mode` to control what kind of video you get:\n\n- `prompt` \u2014 create a video from a text description\n- `animate` \u2014 animate a still image\n- `reference` \u2014 use an image as a style/subject reference (not the first frame)\n- `extend` \u2014 continue an existing video\n- `first-last` \u2014 generate a video that transitions between two images\n- `lipsync` \u2014 sync face movement to an audio clip\n\nIf `mode` is omitted, it's inferred from the inputs you provide.",
+        "description": "Generate a video. **An `image_url` is always required** \u2014 the underlying model (fal-ai/veo3.1/fast/image-to-video) does not support text-only generation. Generate an image first via [POST /api/content/image](/api-reference/content/generate-image) if you need to start from a prompt.\n\nSet `mode` to control what the model does with the inputs:\n\n- `prompt` \u2014 use the image as the first frame and generate motion from the prompt\n- `animate` \u2014 animate a still image (motion derived from the prompt)\n- `reference` \u2014 use the image as a style/subject reference, not the first frame\n- `extend` \u2014 continue an existing video (also requires `video_url`)\n- `first-last` \u2014 generate a video that transitions between two images (also requires `end_image_url`)\n- `lipsync` \u2014 sync face movement to an audio clip (also requires `audio_url`)\n\nIf `mode` is omitted, it's inferred from the inputs you provide.",
         "security": [
           {
             "apiKeyAuth": []
