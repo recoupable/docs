@@ -189,12 +189,6 @@
         "tab": "Artists",
         "groups": [
           {
-            "group": "Workflows",
-            "pages": [
-              "workflows/create-artist"
-            ]
-          },
-          {
             "group": "Artist Management",
             "pages": [
               "api-reference/artists/list",
@@ -243,12 +237,6 @@
       {
         "tab": "Content",
         "groups": [
-          {
-            "group": "Workflows",
-            "pages": [
-              "workflows/generate-music-video"
-            ]
-          },
           {
             "group": "Generate",
             "pages": [
@@ -411,6 +399,24 @@
               "api-reference/admins/coding-pr",
               "api-reference/admins/content-slack-tags",
               "api-reference/admins/artists-pro"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Workflows",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "workflows"
+            ]
+          },
+          {
+            "group": "Recipes",
+            "pages": [
+              "workflows/create-artist",
+              "workflows/generate-music-video"
             ]
           }
         ]
