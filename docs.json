@@ -282,7 +282,8 @@
             "group": "Session Sandboxes",
             "pages": [
               "api-reference/sandbox/create",
-              "api-reference/sandbox/status"
+              "api-reference/sandbox/status",
+              "api-reference/sandbox/reconnect"
             ]
           }
         ]
