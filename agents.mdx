@@ -23,8 +23,8 @@ Once you have the answer, match the human's intent to the right path:
 |----------------|-----------|------|
 | "Just exploring / quick demo / one-shot research" | Throwaway [`agent+...@recoupable.com`](#1-authenticate) signup | Use research and content endpoints. **Don't create artists** — they'll orphan when the API key is lost. |
 | "I have an account, here's my email" — they want to work on their existing roster | Sign in with their real email | List [`/api/artists`](/api-reference/artists/list); work with the roster they already have |
-| "I have an account, here's my email" — they want to add a new artist | Sign in with their real email | Run the [`create-artist`](/skills/create-artist) skill |
-| "I don't have an account but I want to set one up" | Sign in with their real email | After auth, run the [`create-artist`](/skills/create-artist) skill to start their roster |
+| "I have an account, here's my email" — they want to add a new artist | Sign in with their real email | Run the [`create-artist`](https://github.com/recoupable/skills/tree/main/skills/create-artist) skill |
+| "I don't have an account but I want to set one up" | Sign in with their real email | After auth, run the [`create-artist`](https://github.com/recoupable/skills/tree/main/skills/create-artist) skill to start their roster |
 
 **The key distinction:** `agent+` emails create isolated, unrecoverable accounts. Use them ONLY for one-shot work (research, content generation) where losing the API key has no cost. For anything that creates persistent records — artists, releases, scheduled tasks — use the user's real email.
 

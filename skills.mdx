@@ -7,9 +7,36 @@ description: "Markdown playbooks that teach AI agents how to do music industry w
 
 The API tells an agent **how** to take action. Skills tell it **when** and **why**.
 
-A Skill is a markdown file an agent reads to get domain-specific instructions for a task. They live in a separate repo so any agent (Claude Code, Cursor, or your own) can install them without coupling to a specific platform.
+A Skill is a markdown file an agent reads to get domain-specific instructions for a task. They live in a separate repo — [recoupable/skills](https://github.com/recoupable/skills) — so any agent (Claude Code, Cursor, or your own) can install them without coupling to a specific platform.
 
-The sidebar lists every skill, grouped by purpose. Each docs page summarizes when the agent uses the skill, what it produces, and which API endpoints it depends on. The canonical instructions stay in the source repo on GitHub.
+Each row below links to the canonical `SKILL.md` in source — that's what the agent loads at runtime, and it's where the full instructions live.
+
+---
+
+## Setup skills
+
+Run these first when an agent connects to Recoup. They handle authentication, sandbox scaffolding, and the playbook for creating a new artist.
+
+| Skill | What it does | Install |
+|---|---|---|
+| [getting-started](https://github.com/recoupable/skills/tree/main/skills/getting-started) | Set up Recoup from scratch — get an API key, verify it, and make the first call via REST or MCP. | `npx skills add recoupable/skills --skill getting-started` |
+| [recoup-api](https://github.com/recoupable/skills/tree/main/skills/recoup-api) | The agent's universal client for the Recoup API inside a sandbox — auth, scoping, and connector actions for Google Docs, Drive, Sheets, Gmail, TikTok. | `npx skills add recoupable/skills --skill recoup-api` |
+| [setup-sandbox](https://github.com/recoupable/skills/tree/main/skills/setup-sandbox) | Scaffold the workspace for an account's orgs and artists when a sandbox has no existing file system. | `npx skills add recoupable/skills --skill setup-sandbox` |
+| [artist-workspace](https://github.com/recoupable/skills/tree/main/skills/artist-workspace) | Manage an artist's directory — identity, brand, voice, audience, songs, face guides. | `npx skills add recoupable/skills --skill artist-workspace` |
+| [create-artist](https://github.com/recoupable/skills/tree/main/skills/create-artist) | End-to-end 8-step API playbook for creating, identifying, and enriching a new artist account from a single name. | `npx skills add recoupable/skills --skill create-artist` |
+
+## Playbook skills
+
+These run during the agent's actual work — research, content, songwriting, releases, growth.
+
+| Skill | What it does | Install |
+|---|---|---|
+| [music-industry-research](https://github.com/recoupable/skills/tree/main/skills/music-industry-research) | Use the `/api/research/*` endpoints for analytics, audience demographics, playlists, charts, and people search. | `npx skills add recoupable/skills --skill music-industry-research` |
+| [content-creation](https://github.com/recoupable/skills/tree/main/skills/content-creation) | Compose the content endpoints (image, video, caption, transcribe, edit, upscale, analyze) into short-form videos, Reels, TikToks, and lipsync clips. | `npx skills add recoupable/skills --skill content-creation` |
+| [song-writing](https://github.com/recoupable/skills/tree/main/skills/song-writing) | Write and evaluate songs using the 7 C's framework — hook, clarity, character, and the rest. | `npx skills add recoupable/skills --skill song-writing` |
+| [trend-to-song](https://github.com/recoupable/skills/tree/main/skills/trend-to-song) | Reverse the traditional workflow — start from a cultural moment and build a song + distribution plan around it. | `npx skills add recoupable/skills --skill trend-to-song` |
+| [release-management](https://github.com/recoupable/skills/tree/main/skills/release-management) | Plan a release end-to-end — `RELEASE.md` documents, DSP pitches, press one-sheets, production specs, tour coordination. | `npx skills add recoupable/skills --skill release-management` |
+| [streaming-growth](https://github.com/recoupable/skills/tree/main/skills/streaming-growth) | Grow a new artist past the streaming milestones that unlock Spotify Showcase, Marquee, and algorithmic boosting. | `npx skills add recoupable/skills --skill streaming-growth` |
 
 ---
 

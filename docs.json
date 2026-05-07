@@ -425,30 +425,9 @@
         "tab": "Skills",
         "groups": [
           {
-            "group": "Overview",
+            "group": "Skills",
             "pages": [
               "skills"
-            ]
-          },
-          {
-            "group": "Setup",
-            "pages": [
-              "skills/recoup-api",
-              "skills/getting-started",
-              "skills/setup-sandbox",
-              "skills/artist-workspace",
-              "skills/create-artist"
-            ]
-          },
-          {
-            "group": "Playbooks",
-            "pages": [
-              "skills/music-industry-research",
-              "skills/song-writing",
-              "skills/trend-to-song",
-              "skills/release-management",
-              "skills/content-creation",
-              "skills/streaming-growth"
             ]
           }
         ]
@@ -457,15 +436,9 @@
         "tab": "Plugins",
         "groups": [
           {
-            "group": "Overview",
+            "group": "Plugins",
             "pages": [
               "plugins"
-            ]
-          },
-          {
-            "group": "Available plugins",
-            "pages": [
-              "plugins/music-catalog-diligence"
             ]
           }
         ]
