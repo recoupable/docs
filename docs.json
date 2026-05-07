@@ -405,26 +405,16 @@
       },
       {
         "tab": "Workflows",
-        "groups": [
-          {
-            "group": "Workflows",
-            "pages": [
-              "workflows",
-              "workflows/create-artist",
-              "workflows/generate-music-video"
-            ]
-          }
+        "pages": [
+          "workflows",
+          "workflows/create-artist",
+          "workflows/generate-music-video"
         ]
       },
       {
         "tab": "Skills & Plugins",
-        "groups": [
-          {
-            "group": "Skills & Plugins",
-            "pages": [
-              "skills"
-            ]
-          }
+        "pages": [
+          "skills"
         ]
       }
     ],
