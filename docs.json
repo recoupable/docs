@@ -413,8 +413,30 @@
       },
       {
         "tab": "Skills & Plugins",
-        "pages": [
-          "skills"
+        "groups": [
+          {
+            "group": "Skills",
+            "pages": [
+              "skills",
+              "skills/getting-started",
+              "skills/recoup-api",
+              "skills/setup-sandbox",
+              "skills/artist-workspace",
+              "skills/create-artist",
+              "skills/music-industry-research",
+              "skills/content-creation",
+              "skills/song-writing",
+              "skills/trend-to-song",
+              "skills/release-management",
+              "skills/streaming-growth"
+            ]
+          },
+          {
+            "group": "Plugins",
+            "pages": [
+              "plugins/music-catalog-diligence"
+            ]
+          }
         ]
       }
     ],
@@ -425,10 +447,6 @@
   "redirects": [
     {
       "source": "/plugins",
-      "destination": "/skills"
-    },
-    {
-      "source": "/plugins/music-catalog-diligence",
       "destination": "/skills"
     }
   ],

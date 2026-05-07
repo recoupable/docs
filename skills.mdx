@@ -22,11 +22,11 @@ Run these first when an agent connects to Recoup. They handle authentication, sa
 
 | Skill | What it does | Install |
 |---|---|---|
-| [getting-started](https://github.com/recoupable/skills/tree/main/skills/getting-started) | Set up Recoup from scratch — get an API key, verify it, and make the first call via REST or MCP. | `npx skills add recoupable/skills --skill getting-started` |
-| [recoup-api](https://github.com/recoupable/skills/tree/main/skills/recoup-api) | The agent's universal client for the Recoup API inside a sandbox — auth, scoping, and connector actions for Google Docs, Drive, Sheets, Gmail, TikTok. | `npx skills add recoupable/skills --skill recoup-api` |
-| [setup-sandbox](https://github.com/recoupable/skills/tree/main/skills/setup-sandbox) | Scaffold the workspace for an account's orgs and artists when a sandbox has no existing file system. | `npx skills add recoupable/skills --skill setup-sandbox` |
-| [artist-workspace](https://github.com/recoupable/skills/tree/main/skills/artist-workspace) | Manage an artist's directory — identity, brand, voice, audience, songs, face guides. | `npx skills add recoupable/skills --skill artist-workspace` |
-| [create-artist](https://github.com/recoupable/skills/tree/main/skills/create-artist) | End-to-end 8-step process for creating, identifying, and enriching a new artist account from a single name. | `npx skills add recoupable/skills --skill create-artist` |
+| [Set up Recoup](/skills/getting-started) | Set up Recoup from scratch — get an API key, verify it, and make the first call via REST or MCP. | `npx skills add recoupable/skills --skill getting-started` |
+| [Use the Recoup API](/skills/recoup-api) | The agent's universal client for the Recoup API inside a sandbox — auth, scoping, and connector actions for Google Docs, Drive, Sheets, Gmail, TikTok. | `npx skills add recoupable/skills --skill recoup-api` |
+| [Bootstrap a sandbox](/skills/setup-sandbox) | Scaffold the workspace for an account's orgs and artists when a sandbox has no existing file system. | `npx skills add recoupable/skills --skill setup-sandbox` |
+| [Work with an artist](/skills/artist-workspace) | Manage an artist's directory — identity, brand, voice, audience, songs, face guides. | `npx skills add recoupable/skills --skill artist-workspace` |
+| [Create an artist](/skills/create-artist) | End-to-end 8-step process for creating, identifying, and enriching a new artist account from a single name. | `npx skills add recoupable/skills --skill create-artist` |
 
 ### Doing the work
 
@@ -34,12 +34,12 @@ Run during the agent's actual day — research, content, songwriting, releases, 
 
 | Skill | What it does | Install |
 |---|---|---|
-| [music-industry-research](https://github.com/recoupable/skills/tree/main/skills/music-industry-research) | Use the `/api/research/*` endpoints for analytics, audience demographics, playlists, charts, and people search. | `npx skills add recoupable/skills --skill music-industry-research` |
-| [content-creation](https://github.com/recoupable/skills/tree/main/skills/content-creation) | Compose the content endpoints (image, video, caption, transcribe, edit, upscale, analyze) into short-form videos, Reels, TikToks, and lipsync clips. | `npx skills add recoupable/skills --skill content-creation` |
-| [song-writing](https://github.com/recoupable/skills/tree/main/skills/song-writing) | Write and evaluate songs using the 7 C's framework — hook, clarity, character, and the rest. | `npx skills add recoupable/skills --skill song-writing` |
-| [trend-to-song](https://github.com/recoupable/skills/tree/main/skills/trend-to-song) | Reverse the traditional workflow — start from a cultural moment and build a song + distribution plan around it. | `npx skills add recoupable/skills --skill trend-to-song` |
-| [release-management](https://github.com/recoupable/skills/tree/main/skills/release-management) | Plan a release end-to-end — `RELEASE.md` documents, DSP pitches, press one-sheets, production specs, tour coordination. | `npx skills add recoupable/skills --skill release-management` |
-| [streaming-growth](https://github.com/recoupable/skills/tree/main/skills/streaming-growth) | Grow a new artist past the streaming milestones that unlock Spotify Showcase, Marquee, and algorithmic boosting. | `npx skills add recoupable/skills --skill streaming-growth` |
+| [Research the music industry](/skills/music-industry-research) | Use the `/api/research/*` endpoints for analytics, audience demographics, playlists, charts, and people search. | `npx skills add recoupable/skills --skill music-industry-research` |
+| [Create content](/skills/content-creation) | Compose the content endpoints (image, video, caption, transcribe, edit, upscale, analyze) into short-form videos, Reels, TikToks, and lipsync clips. | `npx skills add recoupable/skills --skill content-creation` |
+| [Write a song](/skills/song-writing) | Write and evaluate songs using the 7 C's framework — hook, clarity, character, and the rest. | `npx skills add recoupable/skills --skill song-writing` |
+| [Turn a trend into a song](/skills/trend-to-song) | Reverse the traditional workflow — start from a cultural moment and build a song + distribution plan around it. | `npx skills add recoupable/skills --skill trend-to-song` |
+| [Plan a release](/skills/release-management) | Plan a release end-to-end — `RELEASE.md` documents, DSP pitches, press one-sheets, production specs, tour coordination. | `npx skills add recoupable/skills --skill release-management` |
+| [Grow streaming](/skills/streaming-growth) | Grow a new artist past the streaming milestones that unlock Spotify Showcase, Marquee, and algorithmic boosting. | `npx skills add recoupable/skills --skill streaming-growth` |
 
 ### Install
 
@@ -104,9 +104,9 @@ The marketplace lives at [recoupable/plugins](https://github.com/recoupable/plug
 
 ### Available plugins
 
-| Plugin | What it does | Source |
-|---|---|---|
-| **music-catalog-diligence** | Review royalties, rights, valuation, and deal materials for music catalog transactions — buyer, seller, lender, or post-close. Bundles 10 skills (`catalog-ingest`, `royalty-audit`, `rights-diligence`, `catalog-analysis`, `financing-underwrite`, `seller-prep`, `post-close-admin`, `ic-memo-package`, `diligence-kickoff`, plus shared QC), 9 slash commands, and 5 sub-agent personas. | [recoupable/music-catalog-diligence](https://github.com/recoupable/music-catalog-diligence) |
+| Plugin | What it does |
+|---|---|
+| [Catalog due diligence](/plugins/music-catalog-diligence) | Review royalties, rights, valuation, and deal materials for music catalog transactions — buyer, seller, lender, or post-close. Bundles 10 skills, 9 slash commands, and 5 sub-agent personas. |
 
 ### Install
 
