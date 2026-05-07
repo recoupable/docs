@@ -16,32 +16,20 @@ https://developers.recoupable.com/workflows/generate-music-video.md
 
 Swap in your own artist and song. The LLM will scaffold the `VIDEO.md` checklist, run the API calls, and compose the final video. The rest of this page is the recipe the LLM will follow — and the same recipe you can run by hand if you'd rather drive it yourself.
 
-## How the workflow runs
-
-The chain is 6 sequential API calls plus one local compose step. Long deterministic chains executed from prose memory tend to drop steps — the agent reads the doc once, runs a couple of calls, and forgets the rest. To prevent that from a sandbox, **drive the work from a checklist file**: scaffold a `VIDEO.md` with one checkbox per step before any API call, then tick each box and persist captured values (image URL, video URL, caption) back to the frontmatter as you go. The file becomes the workflow state, and a fresh turn can resume by reading it.
-
 ## Prerequisites
 
 - An auth credential for `api.recoupable.com`. Two options — pick one and use it for every call below:
   - **API key** (`recoup_sk_…`, recommended for sandbox / agent use): pass as `-H "x-api-key: $RECOUP_API_KEY"`. Get one with no signup via `POST /api/agents/signup` (see [Authentication](/authentication)).
   - **Privy access token** (for end-user flows in chat/UI): pass as `-H "Authorization: Bearer $RECOUP_ACCESS_TOKEN"`.
   - The examples below use `x-api-key`. Substitute `Authorization: Bearer …` if you're using a Privy token.
-- `$ARTIST_NAME` — display name (e.g. `"The Weeknd"`)
-- `$SONG_TITLE` — the song the video is for
-- `$SONG_LYRICS_CLIP` — short lyric/topic snippet to root the visuals and caption (1–2 sentences)
-- `$REFERENCE_IMAGE_URL` *(optional)* — a face-guide / editorial image of the artist; if omitted, the base image is generated from text alone
-- A local song file (`song.mp3`) for the final compose step
-- `ffmpeg` installed locally for step 7
-
-The flow has three phases, run from a single checklist file:
-
-1. **Prep** — pick a template that defines the visual style and motion
-2. **Generate** — image → optional upscale → video → optional upscale → caption
-3. **Compose** — overlay the song audio and caption text on the rendered video, output a 9:16 deliverable
+- `$ARTIST_NAME`, `$SONG_TITLE`, `$SONG_LYRICS_CLIP` (a 1–2 sentence mood snippet)
+- `$REFERENCE_IMAGE_URL` *(optional)* — an artist photo or album cover to seed the image; if your template's purpose is "show this exact image" (e.g. `album-record-store`), set this and skip image generation in step 2
+- A local `song.mp3` for step 5
+- `ffmpeg` installed locally for step 5
 
 ## Step 0: Scaffold the workspace BEFORE any API call
 
-Pick a slug, make the directory, and write the initial `VIDEO.md` template — frontmatter holds the values the chain captures (filled as you go); body holds the unchecked steps:
+The `VIDEO.md` checklist *is* the workflow state — tick boxes and persist values back to the frontmatter as you go. To resume later, find the first unchecked box.
 
 ```bash
 VIDEO_SLUG=$(echo "$SONG_TITLE" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-//; s/-$//')
@@ -54,9 +42,7 @@ artistName: $ARTIST_NAME
 songTitle: $SONG_TITLE
 template:
 imageUrl:
-imageUpscaledUrl:
 videoUrl:
-videoUpscaledUrl:
 captionText:
 finalVideoPath:
 ---
@@ -65,216 +51,140 @@ finalVideoPath:
 
 ## Pipeline checklist
 
-- [ ] 1. Pick a template (\`GET /api/content/templates\`) — capture \`template\`
+- [ ] 1. Pick template (\`GET /api/content/templates\` + detail) — capture \`template\`
 - [ ] 2. Generate the base image (\`POST /api/content/image\`) — capture \`imageUrl\`
-- [ ] 3. (Optional) Upscale the image (\`POST /api/content/upscale\`) — capture \`imageUpscaledUrl\`
-- [ ] 4. Generate the video (\`POST /api/content/video\`) — capture \`videoUrl\`
-- [ ] 5. (Optional) Upscale the video (\`POST /api/content/upscale\`) — capture \`videoUpscaledUrl\`
-- [ ] 6. Generate the caption (\`POST /api/content/caption\`) — capture \`captionText\`
-- [ ] 7. Compose the final 9:16 video with song audio + caption overlay (local \`ffmpeg\`)
+  - [ ] 2a. (Optional) Upscale image (\`POST /api/content/upscale\` with \`type: "image"\`)
+- [ ] 3. Generate the video (\`POST /api/content/video\`) — capture \`videoUrl\`
+  - [ ] 3a. (Optional) Upscale video (\`POST /api/content/upscale\` with \`type: "video"\`)
+- [ ] 4. Generate the caption (\`POST /api/content/caption\`) — capture \`captionText\`
+- [ ] 5. Compose 9:16 final with audio + caption (local \`ffmpeg\`) — capture \`finalVideoPath\`
 
 ## Notes
 EOF
 ```
 
-Don't proceed to step 1 until the file exists on disk.
+## Step 1: Pick a template (required: list **and** detail)
 
-**After every step that follows, do two writes back to `VIDEO.md`:** tick the checkbox for the step you just ran (`- [ ]` → `- [x]`) and persist any captured value into the frontmatter. Later steps read those values from the frontmatter — never re-derive what's already saved.
-
-## Resuming a partial run
-
-If `$VIDEO_DIR/VIDEO.md` already exists, do not re-scaffold and do not re-run completed steps. Read the file, find the first unchecked item, and resume from there using the values already saved in the frontmatter:
+Templates carry the prompt, reference images, and styling that drive the rest of the chain — you can't write a good Step 2 prompt without them. List, pick, then fetch detail:
 
 ```bash
-# Show the next unchecked step
-grep -n '^- \[ \]' "$VIDEO_DIR/VIDEO.md" | head -1
-```
+curl -sS "https://api.recoupable.com/api/content/templates" \
+  -H "x-api-key: $RECOUP_API_KEY" \
+  | jq -r '.templates[] | "\(.id) — \(.description)"'
 
-If every item is checked, the video is fully rendered — confirm with the user before doing anything else.
+TEMPLATE="album-record-store"   # or artist-caption-{bedroom,outside,stage}
 
-## Step 1: Pick a template
-
-Templates encode the visual style, motion direction, and whether the pipeline expects a face-guide / editorial image. List the available templates and pick one whose mood matches the song:
-
-```bash
-TEMPLATES=$(curl -sS "https://api.recoupable.com/api/content/templates" \
-  -H "x-api-key: $RECOUP_API_KEY")
-
-# Inspect the list to choose a template id (e.g. album-record-store,
-# artist-caption-stage, artist-caption-bedroom, artist-caption-outside):
-echo "$TEMPLATES" | jq -r '.templates[] | "\(.id) — \(.description)"'
-
-TEMPLATE="album-record-store"   # pick whichever fits
-```
-
-Optional: pull the full detail for the chosen template (style guide, reference images, motion prompt) so the prompts you build in steps 2 and 4 stay on-brand:
-
-```bash
 TEMPLATE_DETAIL=$(curl -sS "https://api.recoupable.com/api/content/templates/$TEMPLATE" \
   -H "x-api-key: $RECOUP_API_KEY")
 ```
 
-See [List Templates](/api-reference/content/templates) and [Template Detail](/api-reference/content/template-detail) for the full request/response schemas.
+See [List Templates](/api-reference/content/templates) and [Template Detail](/api-reference/content/template-detail).
 
-**After this step:** write `template: $TEMPLATE` into the frontmatter and tick `- [ ] 1.` → `- [x] 1.`.
+**After:** write `template` into frontmatter, tick the box.
 
 ## Step 2: Generate the base image
 
-Build the image prompt from the template's style guide plus the song's lyric/topic snippet. If you have a reference image of the artist, pass it as `reference_image_url`; the model will preserve facial likeness while reimagining the scene.
+Use the template's own prompt and reference images — don't write your own from scratch. The template encodes the visual style; freeform prompts almost always drift off-brand.
 
 ```bash
-IMAGE_PROMPT="Editorial portrait of $ARTIST_NAME, mood: \"$SONG_LYRICS_CLIP\", \
-cinematic lighting, 35mm, magazine cover composition"
+PROMPT=$(echo "$TEMPLATE_DETAIL" | jq -r '.image.prompt')
+REFS=$(echo "$TEMPLATE_DETAIL" | jq -c '[.image.reference_images[]?]')
 
-IMAGE_RESPONSE=$(curl -sS -X POST "https://api.recoupable.com/api/content/image" \
-  -H "x-api-key: $RECOUP_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d "$(jq -n \
-        --arg prompt "$IMAGE_PROMPT" \
+IMAGE_URL=$(curl -sS -X POST "https://api.recoupable.com/api/content/image" \
+  -H "x-api-key: $RECOUP_API_KEY" -H "Content-Type: application/json" \
+  -d "$(jq -n --arg prompt "$PROMPT" --argjson refs "$REFS" \
         --arg ref "$REFERENCE_IMAGE_URL" \
-        '{prompt: $prompt} + (if $ref == "" then {} else {reference_image_url: $ref} end)')")
-
-IMAGE_URL=$(echo "$IMAGE_RESPONSE" | jq -r '.imageUrl')
+        '{prompt: $prompt, images: $refs} + (if $ref == "" then {} else {reference_image_url: $ref} end)')" \
+  | jq -r '.imageUrl')
 ```
 
-If the template uses an editorial image directly (some templates expect you to pass through an existing artist photo rather than synthesize a new one), skip this step and set `IMAGE_URL=$REFERENCE_IMAGE_URL`.
+**Shortcut:** if `$REFERENCE_IMAGE_URL` is the exact image you want (e.g. an album cover for `album-record-store`, or a final editorial photo), set `IMAGE_URL=$REFERENCE_IMAGE_URL` and skip this call entirely.
 
-See [Generate Image](/api-reference/content/generate-image) for the full request/response schema.
+**Avoid:** prompts that aim for a real artist's likeness. Veo (used in step 3) rejects celebrity-likeness images with a 422. Use the template's prompt as-is and let the reference images carry the style.
 
-**After this step:** write `imageUrl: $IMAGE_URL` into the frontmatter and tick `- [ ] 2.` → `- [x] 2.`.
+See [Generate Image](/api-reference/content/generate-image).
 
-## Step 3: Upscale the image (optional)
+**After:** write `imageUrl`, tick the box.
 
-Bump resolution before motion generation. Skip this step if the source image is already high-resolution or you want to save credits.
+## Optional: Upscale (image or video)
+
+Same endpoint for both, swap `type`. Skip if you don't need the resolution bump.
 
 ```bash
-UPSCALE_RESPONSE=$(curl -sS -X POST "https://api.recoupable.com/api/content/upscale" \
-  -H "x-api-key: $RECOUP_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d "$(jq -n --arg url "$IMAGE_URL" '{url: $url, type: "image"}')")
+# Image (after step 2)
+IMAGE_URL=$(curl -sS -X POST "https://api.recoupable.com/api/content/upscale" \
+  -H "x-api-key: $RECOUP_API_KEY" -H "Content-Type: application/json" \
+  -d "$(jq -n --arg url "$IMAGE_URL" '{url: $url, type: "image"}')" \
+  | jq -r '.url')
 
-IMAGE_URL=$(echo "$UPSCALE_RESPONSE" | jq -r '.url')
+# Video (after step 3) — same call, type: "video", reassign $VIDEO_URL
 ```
 
-Note we overwrite `$IMAGE_URL` so step 4 picks up the upscaled version automatically.
+See [Upscale](/api-reference/content/upscale).
 
-See [Upscale](/api-reference/content/upscale) for the full request/response schema.
+## Step 3: Generate the video
 
-**After this step:** write `imageUpscaledUrl: $IMAGE_URL` into the frontmatter and tick `- [ ] 3.` → `- [x] 3.`.
-
-## Step 4: Generate the video
-
-Build a motion prompt from the template's `motion` field (or your own short description of how the camera and subject should move) and pass it with the image URL. If you want lipsync, also pass `audio_url` — the model will animate the artist's mouth to match.
+Pass the image and a short motion prompt. For lipsync, also pass a presigned `audio_url` to a song clip — the model will animate the artist's mouth.
 
 ```bash
-MOTION_PROMPT="Slow dolly-in, gentle wind, subtle head turn — match the mood: \"$SONG_LYRICS_CLIP\""
+MOTION=$(echo "$TEMPLATE_DETAIL" | jq -r '.video.movements[0] // "Slow camera drift, subtle subject motion"')
 
-# Optional: upload the song clip for lipsync. Omit this block to generate a silent motion clip.
-AUDIO_URL=""   # e.g. a presigned URL to a short song excerpt
-
-VIDEO_RESPONSE=$(curl -sS -X POST "https://api.recoupable.com/api/content/video" \
-  -H "x-api-key: $RECOUP_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d "$(jq -n \
-        --arg image "$IMAGE_URL" \
-        --arg prompt "$MOTION_PROMPT" \
-        --arg audio "$AUDIO_URL" \
-        '{image_url: $image, prompt: $prompt} + (if $audio == "" then {} else {audio_url: $audio} end)')")
-
-VIDEO_URL=$(echo "$VIDEO_RESPONSE" | jq -r '.videoUrl')
+VIDEO_URL=$(curl -sS --max-time 360 -X POST "https://api.recoupable.com/api/content/video" \
+  -H "x-api-key: $RECOUP_API_KEY" -H "Content-Type: application/json" \
+  -d "$(jq -n --arg image "$IMAGE_URL" --arg prompt "$MOTION" \
+        '{image_url: $image, prompt: $prompt, aspect_ratio: "9:16"}')" \
+  | jq -r '.videoUrl')
 ```
 
-The output is typically a 5–10 second 16:9 clip. Keep it; step 7 crops it to 9:16 and overlays the full song.
+Output is an 8s clip. Step 5 loops it to song length.
 
-See [Generate Video](/api-reference/content/generate-video) for the full request/response schema.
+See [Generate Video](/api-reference/content/generate-video).
 
-**After this step:** write `videoUrl: $VIDEO_URL` into the frontmatter and tick `- [ ] 4.` → `- [x] 4.`.
+**After:** write `videoUrl`, tick the box.
 
-## Step 5: Upscale the video (optional)
-
-Same upscale endpoint as step 3, with `type: "video"`. Skip if you don't need the extra resolution.
+## Step 4: Generate the caption
 
 ```bash
-UPSCALE_RESPONSE=$(curl -sS -X POST "https://api.recoupable.com/api/content/upscale" \
-  -H "x-api-key: $RECOUP_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d "$(jq -n --arg url "$VIDEO_URL" '{url: $url, type: "video"}')")
-
-VIDEO_URL=$(echo "$UPSCALE_RESPONSE" | jq -r '.url')
-```
-
-See [Upscale](/api-reference/content/upscale) for the full request/response schema.
-
-**After this step:** write `videoUpscaledUrl: $VIDEO_URL` into the frontmatter and tick `- [ ] 5.` → `- [x] 5.`.
-
-## Step 6: Generate the caption
-
-Compose a topic string from the song title, lyric snippet, and any artist context you want to flavor with. Pass the same `template` you picked in step 1 — the caption tone will match the visual style.
-
-```bash
-CAPTION_TOPIC="Song: \"$SONG_TITLE\". Lyrics: \"$SONG_LYRICS_CLIP\". Artist: $ARTIST_NAME."
+TOPIC="Song: \"$SONG_TITLE\". Lyrics: \"$SONG_LYRICS_CLIP\". Artist: $ARTIST_NAME."
 
 CAPTION_RESPONSE=$(curl -sS -X POST "https://api.recoupable.com/api/content/caption" \
-  -H "x-api-key: $RECOUP_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d "$(jq -n \
-        --arg topic "$CAPTION_TOPIC" \
-        --arg template "$TEMPLATE" \
+  -H "x-api-key: $RECOUP_API_KEY" -H "Content-Type: application/json" \
+  -d "$(jq -n --arg topic "$TOPIC" --arg template "$TEMPLATE" \
         '{topic: $topic, template: $template, length: "short"}')")
 
 CAPTION_TEXT=$(echo "$CAPTION_RESPONSE" | jq -r '.content')
-
-# Optional: capture the styling hints the template wants — feed these straight
-# into the ffmpeg drawtext filter in step 7 so the overlay matches the template.
-CAPTION_COLOR=$(echo "$CAPTION_RESPONSE" | jq -r '.color // "white"')
-CAPTION_STROKE=$(echo "$CAPTION_RESPONSE" | jq -r '.borderColor // "black"')
-CAPTION_MAX_FONT=$(echo "$CAPTION_RESPONSE" | jq -r '.maxFontSize // 42')
 ```
 
-The response is `{ content, font, color, borderColor, maxFontSize }`. `content` is the text itself; the other four are styling hints derived from the template — using them keeps the burned-in caption visually consistent with the template's brand. `length` accepts `"short"` (default), `"medium"`, or `"long"`. `"none"` skips caption generation entirely if your template doesn't render text overlays.
+The response is `{ content, font, color, borderColor, maxFontSize }`. `content` is the text; the other fields are template-driven styling hints — pull them through if you want the burned-in caption to match the template's brand. `length` accepts `"short"` (default), `"medium"`, `"long"`, or `"none"` to skip.
 
-See [Generate Caption](/api-reference/content/generate-caption) for the full request/response schema.
+See [Generate Caption](/api-reference/content/generate-caption).
 
-**After this step:** write `captionText` into the frontmatter and tick `- [ ] 6.` → `- [x] 6.`.
+**After:** write `captionText`, tick the box.
 
-## Step 7: Compose the final 9:16 video (local)
+## Step 5: Compose the final 9:16 video (local)
 
-The API returns a 16:9 motion clip. To get a vertical, social-ready deliverable you compose locally with `ffmpeg`: crop to 9:16, overlay the song audio for the full duration, and burn in the caption text. The internal `create-content` task runs this exact step.
+The API returns a 16:9 motion clip. Compose locally: crop to 9:16, overlay the song audio for the full duration, and burn in the caption.
 
 ```bash
-# Download the rendered video and the song
 curl -sS -o "$VIDEO_DIR/clip.mp4" "$VIDEO_URL"
-SONG_PATH="$VIDEO_DIR/song.mp3"   # provide your local song file here
+SONG_PATH="$VIDEO_DIR/song.mp3"           # provide your song file
 FINAL_PATH="$VIDEO_DIR/final.mp4"
 
-# Loop the clip to song length, crop 16:9 → 9:16, mix audio, draw caption
+# Write caption to a file — drawtext reads it via textfile=, sidesteps shell-escaping (apostrophes, etc.)
+echo -n "$CAPTION_TEXT" > "$VIDEO_DIR/caption.txt"
+
+# Single-line filter graph — newlines inside -filter_complex are literal characters and break the [v] label
 ffmpeg -y \
   -stream_loop -1 -i "$VIDEO_DIR/clip.mp4" \
   -i "$SONG_PATH" \
-  -filter_complex "
-    [0:v]crop=ih*9/16:ih,scale=1080:1920,
-         drawtext=fontfile=/System/Library/Fonts/Helvetica.ttc:
-                  text='$CAPTION_TEXT':
-                  fontcolor=white:fontsize=48:
-                  x=(w-text_w)/2:y=h-text_h-120:
-                  box=1:boxcolor=black@0.5:boxborderw=20[v]
-  " \
+  -filter_complex "[0:v]crop=ih*9/16:ih,scale=1080:1920,drawtext=fontfile=/System/Library/Fonts/Helvetica.ttc:textfile=$VIDEO_DIR/caption.txt:fontcolor=white:fontsize=48:x=(w-text_w)/2:y=h-text_h-120:box=1:boxcolor=black@0.5:boxborderw=20[v]" \
   -map "[v]" -map "1:a" \
   -shortest -c:v libx264 -c:a aac -pix_fmt yuv420p \
   "$FINAL_PATH"
 ```
 
-That's the deliverable. Copy `$FINAL_PATH` to your CMS / scheduler / posting tool of choice.
+**After:** write `finalVideoPath`, tick the box. With every box ticked, the music video is complete.
 
-**After this step:** write `finalVideoPath: $FINAL_PATH` into the frontmatter and tick `- [ ] 7.` → `- [x] 7.`. With every box ticked, the music video is complete.
+---
 
-## What this workflow doesn't enforce
-
-There's no server-side orchestrator forcing each step to run in order — the chain is honor-system. The `VIDEO.md` checklist is what gives you determinism in practice: as long as you tick boxes and persist values after each step, a fresh turn (or a different agent) can pick up exactly where the last one stopped. If you skip a checkbox or skip the persist, the next turn won't know that step ran and may either redo it or, worse, treat downstream calls as ready when they aren't.
-
-A few constraints to honor:
-
-- **Run steps in order.** The frontmatter values written at one step are the inputs for later steps.
-- **Don't continue past a 4xx/5xx without recovery.** Leave the box unchecked, write the error to `## Notes`, and resolve before resuming.
-- **Treat the file as the source of truth.** If something isn't on disk, don't assume it ran.
-- **Image and video generation are the most expensive calls.** If you re-render, do so deliberately — don't loop a failing pipeline.
+The checklist is the source of truth — if a box isn't ticked, treat the step as not run.
