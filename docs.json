@@ -165,6 +165,12 @@
         "tab": "Content",
         "groups": [
           {
+            "group": "Workflows",
+            "pages": [
+              "workflows/generate-music-video"
+            ]
+          },
+          {
             "group": "Content Creation",
             "pages": [
               "api-reference/content/create",
