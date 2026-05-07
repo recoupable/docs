@@ -100,6 +100,75 @@
         }
       }
     },
+    "/api/sandbox/reconnect": {
+      "get": {
+        "summary": "Reconnect to session sandbox",
+        "description": "Live runtime probe for the sandbox bound to a session. Unlike `GET /api/sandbox/status` (DB-only read), this endpoint actually runs a quick command inside the sandbox to verify it is reachable. Used by the chat UI on session re-entry / tab refocus to decide whether to flip out of \"loading sandbox…\" or surface a \"resume\" affordance. Returns one of three operational outcomes via the `status` field: `\"connected\"` (sandbox is alive, included `expiresAt` reflects current expiry), `\"expired\"` (the runtime state is gone — the UI should offer to resume from snapshot if `hasSnapshot` is true, otherwise create a fresh sandbox), or `\"no_sandbox\"` (no sandbox has been provisioned for this session yet).",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "query",
+            "required": true,
+            "description": "The id of the session whose sandbox to reconnect to.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reconnect probe completed. Inspect `status` for the outcome.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReconnectResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing `sessionId` query parameter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key / Bearer token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — the authenticated account does not own this session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — no session exists with the given `sessionId`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/sandbox/status": {
       "get": {
         "summary": "Get session sandbox status",
@@ -271,53 +340,88 @@
             "description": "Optimistic concurrency token for lifecycle transitions. Clients can pass this back to lifecycle-mutating endpoints to detect races."
           },
           "lifecycle": {
-            "type": "object",
-            "required": [
-              "serverTime",
-              "state",
-              "lastActivityAt",
-              "hibernateAfter",
-              "sandboxExpiresAt"
+            "$ref": "#/components/schemas/SandboxLifecycle"
+          }
+        }
+      },
+      "ReconnectResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "hasSnapshot",
+          "lifecycle"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "connected",
+              "expired",
+              "no_sandbox"
             ],
-            "properties": {
-              "serverTime": {
-                "type": "integer",
-                "format": "int64",
-                "description": "Server's current epoch milliseconds. Use this — not the client clock — when computing how much time is left before `hibernateAfter` or `sandboxExpiresAt`."
-              },
-              "state": {
-                "type": "string",
-                "nullable": true,
-                "enum": [
-                  "provisioning",
-                  "active",
-                  "hibernating",
-                  "hibernated",
-                  "restoring",
-                  "archived",
-                  "failed"
-                ],
-                "description": "Lifecycle FSM state. `null` for sessions that have never had a sandbox."
-              },
-              "lastActivityAt": {
-                "type": "integer",
-                "format": "int64",
-                "nullable": true,
-                "description": "Epoch milliseconds of the last recorded sandbox activity, or null if there has been none."
-              },
-              "hibernateAfter": {
-                "type": "integer",
-                "format": "int64",
-                "nullable": true,
-                "description": "Epoch milliseconds after which the sandbox is eligible for hibernation, or null when not applicable."
-              },
-              "sandboxExpiresAt": {
-                "type": "integer",
-                "format": "int64",
-                "nullable": true,
-                "description": "Epoch milliseconds when the sandbox runtime expires, or null when not applicable."
-              }
-            }
+            "description": "`connected` when the live runtime probe succeeded; `expired` when the recorded runtime state is no longer reachable (the UI should offer resume-from-snapshot or fresh-create); `no_sandbox` when the session has never had a sandbox provisioned."
+          },
+          "hasSnapshot": {
+            "type": "boolean",
+            "description": "True when a paused/snapshotted sandbox exists and can be resumed. Used by the UI to decide whether to show \"resume\" vs \"create\" affordances on `expired` / `no_sandbox`."
+          },
+          "expiresAt": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Epoch milliseconds when the sandbox runtime will expire. Present only when `status` is `\"connected\"`; reflects the freshly-probed expiry, which may differ from `lifecycle.sandboxExpiresAt` if the sandbox extended itself between writes."
+          },
+          "lifecycle": {
+            "$ref": "#/components/schemas/SandboxLifecycle"
+          }
+        }
+      },
+      "SandboxLifecycle": {
+        "type": "object",
+        "required": [
+          "serverTime",
+          "state",
+          "lastActivityAt",
+          "hibernateAfter",
+          "sandboxExpiresAt"
+        ],
+        "description": "Lifecycle envelope shared between `GET /api/sandbox/status` and `GET /api/sandbox/reconnect`. Server-clock-stamped snapshot of the sandbox's lifecycle FSM state and the timestamps the UI uses to render countdown timers.",
+        "properties": {
+          "serverTime": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Server's current epoch milliseconds. Use this — not the client clock — when computing how much time is left before `hibernateAfter` or `sandboxExpiresAt`."
+          },
+          "state": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "provisioning",
+              "active",
+              "hibernating",
+              "hibernated",
+              "restoring",
+              "archived",
+              "failed"
+            ],
+            "description": "Lifecycle FSM state. `null` for sessions that have never had a sandbox."
+          },
+          "lastActivityAt": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true,
+            "description": "Epoch milliseconds of the last recorded sandbox activity, or null if there has been none."
+          },
+          "hibernateAfter": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true,
+            "description": "Epoch milliseconds after which the sandbox is eligible for hibernation, or null when not applicable."
+          },
+          "sandboxExpiresAt": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true,
+            "description": "Epoch milliseconds when the sandbox runtime expires, or null when not applicable."
           }
         }
       },
