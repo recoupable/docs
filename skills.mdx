@@ -1,11 +1,11 @@
 ---
 title: "Skills & Plugins"
-description: "Two ways agents extend themselves on Recoup — single markdown files, or bundled toolkits."
+description: "Two ways agents extend themselves on Recoup — reusable workflow units, or bundled toolkits."
 ---
 
 Recoup gives agents two extension points:
 
-- A **skill** is a single markdown file teaching an agent how to do one task — *create an artist*, *plan a release*, *grow streams*. Installed individually, loaded by the agent when the task fits.
+- A **skill** is a self-contained folder — a `SKILL.md` plus any references, scripts, or assets it needs — that teaches an agent how to do one task. Installed individually, loaded by the agent when the task fits.
 - A **plugin** is a bundle — multiple skills wired together with slash commands and sub-agents around one workflow, installed once into the agent runtime.
 
 The API tells an agent **how** to take action. Skills and plugins tell it **when** and **why**.
