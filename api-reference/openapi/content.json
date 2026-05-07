@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "https://recoup-api.vercel.app"
+      "url": "https://api.recoupable.com"
     }
   ],
   "paths": {
@@ -428,11 +428,6 @@
     },
     "/api/image/generate": {
       "get": {
-        "servers": [
-          {
-            "url": "https://recoup-api.vercel.app"
-          }
-        ],
         "description": "Generate high-quality images using AI models. Images are automatically stored on Arweave and include In Process moment metadata for provenance and ownership tracking.",
         "parameters": [
           {

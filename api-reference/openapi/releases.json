@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "https://recoup-api.vercel.app"
+      "url": "https://api.recoupable.com"
     }
   ],
   "paths": {
@@ -353,7 +353,12 @@
     },
     "/api/tasks/runs": {
       "get": {
-        "description": "Returns an array of task runs. When runId is provided, the array contains that single run. When omitted, returns recent runs for the authenticated account. Use account_id to query runs for a specific account within your organizations.",
+        "summary": "Get task runs",
+        "description": "Returns task runs for the authenticated account. When `runId` is provided, the response contains that single run (`runs` length 1) or 404 if not found. When `runId` is omitted, returns recent runs filtered by account context (default authenticated account, or `account_id` override when authorized).",
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
         "parameters": [
           {
             "name": "runId",
@@ -389,7 +394,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Task runs retrieved successfully",
+            "description": "Task runs retrieved successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -399,11 +404,21 @@
             }
           },
           "400": {
-            "description": "Bad request - invalid parameters",
+            "description": "Bad request - invalid query parameters (for example non-numeric `limit`, out-of-range `limit`, or invalid empty values).",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/TaskRunsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskRunsErrorResponse"
                 }
               }
             }
@@ -413,7 +428,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/TaskRunsErrorResponse"
                 }
               }
             }
@@ -423,7 +438,26 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/TaskRunsErrorResponse"
+                },
+                "examples": {
+                  "notFound": {
+                    "summary": "Unknown run id",
+                    "value": {
+                      "status": "error",
+                      "error": "Task run not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error while fetching runs from Trigger.dev.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskRunsErrorResponse"
                 }
               }
             }
@@ -1051,11 +1085,6 @@
         }
       },
       "post": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
         "description": "Bulk create or fetch songs by ISRC. For each song, the API attempts to look up metadata via internal search. If no data is found, optional fallback fields (name, album, notes, artists) are used.",
         "requestBody": {
           "description": "Array of songs to create or fetch",
@@ -1173,11 +1202,6 @@
     },
     "/api/catalogs/songs": {
       "get": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
         "description": "Retrieve songs within a specific catalog with pagination support. This endpoint joins catalog_songs with songs, song_artists, and accounts to provide comprehensive song information for a given catalog.",
         "parameters": [
           {
@@ -1255,11 +1279,6 @@
         }
       },
       "post": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
         "description": "Batch add songs to a catalog by ISRC. For each song, the API attempts to look up metadata via internal search. If no data is found, optional fallback fields (name, album, notes, artists) are used.",
         "requestBody": {
           "description": "Array of songs to add to catalog",
@@ -1296,11 +1315,6 @@
         }
       },
       "delete": {
-        "servers": [
-          {
-            "url": "https://api.recoupable.com"
-          }
-        ],
         "description": "Batch remove songs from a catalog by ISRC. Deletes the relationship in catalog_songs for each catalog_id and ISRC pair.",
         "requestBody": {
           "description": "Array of songs to remove from catalog",
@@ -3048,6 +3062,26 @@
               "$ref": "#/components/schemas/TaskRunResponse"
             },
             "description": "List of recent task runs for the authenticated account. Each item is a raw Trigger.dev SDK run object (same shape as TaskRunResponse, but without `output` and `error` fields)."
+          }
+        }
+      },
+      "TaskRunsErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Always `error` for this response shape"
+          },
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message"
           }
         }
       },
