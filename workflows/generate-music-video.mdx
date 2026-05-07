@@ -267,12 +267,6 @@ ffmpeg -y \
 
 **After:** write `finalVideoPath`, tick the box. With every box ticked, the music video is complete.
 
-## Step 6: Publish (optional)
-
-Once the MP4 is rendered, push it to the artist's socials with the [Connectors API](/api-reference/connectors/list). One heads-up worth knowing:
-
-- **TikTok URL ownership.** `TIKTOK_PUBLISH_VIDEO` (pull-from-URL mode) requires the source domain be verified in the TikTok dev portal. `fal.media` URLs will fail with `url_ownership_unverified`. Use `TIKTOK_UPLOAD_VIDEO` instead, which accepts the same URL and uploads server-side.
-
 ---
 
 The checklist is the source of truth. If a box isn't ticked, treat the step as not run.
