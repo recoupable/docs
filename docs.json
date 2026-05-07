@@ -244,6 +244,12 @@
         "tab": "Content",
         "groups": [
           {
+            "group": "Workflows",
+            "pages": [
+              "workflows/generate-music-video"
+            ]
+          },
+          {
             "group": "Generate",
             "pages": [
               "api-reference/content/generate-image",
@@ -363,7 +369,9 @@
             "group": "Sessions",
             "pages": [
               "api-reference/sessions/create",
-              "api-reference/sessions/get"
+              "api-reference/sessions/get",
+              "api-reference/sandbox/create",
+              "api-reference/sandbox/status"
             ]
           },
           {
