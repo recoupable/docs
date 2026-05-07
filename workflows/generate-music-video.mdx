@@ -5,6 +5,19 @@ description: 'End-to-end workflow to produce a vertical, social-ready music vide
 
 This is the canonical recipe used internally by Recoup's `create-content` background task. Follow it step-by-step to produce a 9:16 music-video clip from an existing artist + song, ready to post.
 
+## Hand it to your LLM
+
+The fastest way to use this guide is to point an LLM at it directly — every page on this site is also served as raw markdown at the same path with a `.md` suffix, so models can fetch and follow it without parsing HTML:
+
+```
+Generate a music video for The Weeknd – "Blinding Lights" using
+https://developers.recoupable.com/workflows/generate-music-video.md
+```
+
+Swap in your own artist and song. The LLM will scaffold the `VIDEO.md` checklist, run the API calls, and compose the final video. The rest of this page is the recipe the LLM will follow — and the same recipe you can run by hand if you'd rather drive it yourself.
+
+## How the workflow runs
+
 The chain is 6 sequential API calls plus one local compose step. Long deterministic chains executed from prose memory tend to drop steps — the agent reads the doc once, runs a couple of calls, and forgets the rest. To prevent that from a sandbox, **drive the work from a checklist file**: scaffold a `VIDEO.md` with one checkbox per step before any API call, then tick each box and persist captured values (image URL, video URL, caption) back to the frontmatter as you go. The file becomes the workflow state, and a fresh turn can resume by reading it.
 
 ## Prerequisites
