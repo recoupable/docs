@@ -356,7 +356,8 @@
               "api-reference/sessions/create",
               "api-reference/sessions/get",
               "api-reference/sandbox/create",
-              "api-reference/sandbox/status"
+              "api-reference/sandbox/status",
+              "api-reference/sandbox/reconnect"
             ]
           },
           {

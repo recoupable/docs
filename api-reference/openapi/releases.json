@@ -3069,6 +3069,53 @@
           }
         }
       },
+      "CreateContentRunOutput": {
+        "type": "object",
+        "description": "Output payload for a `create-content` task run. Returned in `output` when `status` is `COMPLETED`. Agents should poll `/api/tasks/runs?runId=…` and read these fields once the run is done.",
+        "required": [
+          "videoSourceUrl",
+          "imageUrl",
+          "captionText",
+          "template"
+        ],
+        "properties": {
+          "videoSourceUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to the rendered final 9:16 video (image + motion + audio + caption already composed)."
+          },
+          "imageUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to the base image used for video generation."
+          },
+          "captionText": {
+            "type": "string",
+            "description": "The caption text burned into the video."
+          },
+          "template": {
+            "type": "string",
+            "description": "Template id used for this run (e.g. `album-record-store`, `artist-caption-bedroom`).",
+            "example": "artist-caption-bedroom"
+          },
+          "lipsync": {
+            "type": "boolean",
+            "description": "Whether lipsync was applied (audio-driven mouth animation)."
+          },
+          "audio": {
+            "type": "object",
+            "description": "Metadata about the song clip used in the final composition.",
+            "properties": {
+              "songTitle": { "type": "string" },
+              "songFilename": { "type": "string" },
+              "startSeconds": { "type": "number", "description": "Offset into the source song where the clip starts." },
+              "durationSeconds": { "type": "number", "description": "Length of the audio clip in seconds." },
+              "clipLyrics": { "type": "string", "nullable": true, "description": "Lyrics for the chosen clip, when available." },
+              "clipMood": { "type": "string", "nullable": true, "description": "Inferred mood for the chosen clip, when available." }
+            }
+          }
+        }
+      },
       "TaskRunsErrorResponse": {
         "type": "object",
         "required": [
@@ -3241,8 +3288,12 @@
             "nullable": true
           },
           "output": {
-            "description": "Task output data. Only present when retrieving by runId.",
-            "nullable": true
+            "description": "Task output data. Only present when retrieving by runId, and only populated when `status` is `COMPLETED`. Shape varies by `taskIdentifier`. The `create-content` task returns the schema below; other tasks return their own.",
+            "nullable": true,
+            "oneOf": [
+              { "$ref": "#/components/schemas/CreateContentRunOutput" },
+              { "type": "object", "description": "Generic task output (for tasks not yet schema'd)" }
+            ]
           },
           "error": {
             "type": "object",
