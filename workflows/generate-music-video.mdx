@@ -3,7 +3,7 @@ title: 'Generate a Music Video'
 description: 'End-to-end workflow to produce a vertical, social-ready music video — image, motion, caption — from an artist and a song.'
 ---
 
-This is the canonical recipe used internally by Recoup's `create-content` Trigger.dev task. Follow it step-by-step to produce a 9:16 music-video clip from an existing artist + song, ready to post.
+This is the canonical recipe used internally by Recoup's `create-content` background task. Follow it step-by-step to produce a 9:16 music-video clip from an existing artist + song, ready to post.
 
 The chain is 6 sequential API calls plus one local compose step. Long deterministic chains executed from prose memory tend to drop steps — the agent reads the doc once, runs a couple of calls, and forgets the rest. To prevent that from a sandbox, **drive the work from a checklist file**: scaffold a `VIDEO.md` with one checkbox per step before any API call, then tick each box and persist captured values (image URL, video URL, caption) back to the frontmatter as you go. The file becomes the workflow state, and a fresh turn can resume by reading it.
 
