@@ -169,6 +169,105 @@
         }
       }
     },
+    "/api/sessions/{sessionId}/discard-uncommitted": {
+      "post": {
+        "summary": "Discard uncommitted changes in session sandbox",
+        "description": "Runs git discard operations inside the sandbox bound to the session. When `filePath` is omitted, all uncommitted changes are discarded (`git reset --hard HEAD` + `git clean -fd`). When `filePath` is supplied, only that file (and optionally `oldPath`, its pre-rename path) is discarded. The sandbox must be active — call `POST /api/sandbox` to resume it first if the lifecycle state is not `active`.",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the session whose sandbox to operate on.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DiscardUncommittedRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Discard completed successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiscardUncommittedResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request — empty path, absolute path, path with `..` or `.git` segments, or `oldPath` provided without `filePath`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key / Bearer token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — the authenticated account does not own this session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — no session with the given `sessionId`, or the specified path has no uncommitted changes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict — the session sandbox is not currently active. Resume it with `POST /api/sandbox` before discarding changes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error — git command or sandbox connection failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/sandbox/status": {
       "get": {
         "summary": "Get session sandbox status",
@@ -422,6 +521,36 @@
             "format": "int64",
             "nullable": true,
             "description": "Epoch milliseconds when the sandbox runtime expires, or null when not applicable."
+          }
+        }
+      },
+      "DiscardUncommittedRequest": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Repo-relative path of the file to discard (e.g. `src/foo.ts`). Must not be empty, absolute, or contain `..`, `.`, `.git`, or null bytes. When omitted, all uncommitted changes in the working tree are discarded."
+          },
+          "oldPath": {
+            "type": "string",
+            "description": "Pre-rename path of the file (e.g. the old location before a rename). Only valid when `filePath` is also provided; supplying `oldPath` alone returns 400."
+          }
+        }
+      },
+      "DiscardUncommittedResponse": {
+        "type": "object",
+        "required": [
+          "discarded",
+          "hasUncommittedChanges"
+        ],
+        "properties": {
+          "discarded": {
+            "type": "boolean",
+            "description": "Always `true` when the operation succeeded."
+          },
+          "hasUncommittedChanges": {
+            "type": "boolean",
+            "description": "Whether any uncommitted changes remain in the working tree after the discard operation."
           }
         }
       },

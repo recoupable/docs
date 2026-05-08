@@ -298,7 +298,8 @@
             "pages": [
               "api-reference/sandbox/create",
               "api-reference/sandbox/status",
-              "api-reference/sandbox/reconnect"
+              "api-reference/sandbox/reconnect",
+              "api-reference/sandbox/discard-uncommitted"
             ]
           }
         ]
