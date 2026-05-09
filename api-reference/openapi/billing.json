@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "https://recoup-api.vercel.app"
+      "url": "https://api.recoupable.com"
     }
   ],
   "paths": {
