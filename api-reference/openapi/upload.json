@@ -16,7 +16,7 @@
   "paths": {
     "/api/upload": {
       "post": {
-        "description": "Uploads a file to the Arweave permanent storage network and returns a fetchable HTTPS gateway URL. Accepts a single file via multipart/form-data under the field name `file`. No authentication required.",
+        "description": "Uploads a file and returns a permanent CDN-fronted HTTPS URL. Accepts a single file via multipart/form-data under the field name `file`. No authentication required.",
         "requestBody": {
           "required": true,
           "content": {
@@ -47,7 +47,7 @@
             }
           },
           "500": {
-            "description": "Upload failed (no file provided or Arweave error)",
+            "description": "Upload failed (no file provided, unsupported MIME type, or storage error)",
             "content": {
               "application/json": {
                 "schema": {
@@ -94,8 +94,8 @@
           },
           "url": {
             "type": "string",
-            "description": "Fetchable HTTPS Arweave gateway URL.",
-            "example": "https://arweave.net/abc123"
+            "description": "Permanent fetchable HTTPS URL for the uploaded file.",
+            "example": "https://example.supabase.co/storage/v1/object/public/public-uploads/abc123.png"
           }
         }
       },
