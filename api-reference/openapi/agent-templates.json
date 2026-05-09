@@ -16,16 +16,14 @@
   "paths": {
     "/api/agent-templates": {
       "get": {
-        "description": "Returns agent prompt templates visible to the caller. When `userId` is provided, results include templates the user owns, public templates, and templates shared with that user; each row may include `is_favourite`. When `userId` is omitted, returns public templates only (`is_favourite` is always false). Private templates include `shared_emails` listing addresses the template is shared with.",
-        "parameters": [
+        "description": "Returns agent prompt templates visible to the **authenticated** caller. The account is resolved from `Authorization: Bearer` or `x-api-key` — there is no `userId` query parameter; clients cannot request another principal's scope. Response includes public templates, templates the caller owns, and private templates shared with the caller. Each row includes `is_favourite` for that caller. Private templates include `shared_emails` when applicable.",
+        "parameters": [],
+        "security": [
           {
-            "name": "userId",
-            "in": "query",
-            "description": "Optional user id (e.g. authenticated account id) used to scope accessible templates and favorite flags.",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -38,6 +36,16 @@
                   "items": {
                     "$ref": "#/components/schemas/AgentTemplate"
                   }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentTemplatesError"
                 }
               }
             }
@@ -57,10 +65,22 @@
     }
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Your Recoup API key. [Learn more](/quickstart#api-keys)."
+      }
+    },
     "schemas": {
       "AgentTemplate": {
         "type": "object",
-        "description": "A stored agent template row as returned from the API (shape matches the Chat app response).",
+        "description": "A stored agent template row as returned from the API.",
         "required": ["id", "title", "description", "prompt", "is_private"],
         "properties": {
           "id": {
@@ -82,12 +102,12 @@
           "updated_at": { "type": "string", "nullable": true },
           "is_favourite": {
             "type": "boolean",
-            "description": "Present when `userId` was provided; otherwise omitted or false."
+            "description": "Whether this template is a favorite for the authenticated caller."
           },
           "shared_emails": {
             "type": "array",
             "items": { "type": "string", "format": "email" },
-            "description": "For private templates, email addresses the template is shared with; empty array if public or none."
+            "description": "For private templates the caller owns or can access, email addresses the template is shared with; otherwise empty array."
           }
         }
       },
