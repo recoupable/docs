@@ -269,7 +269,7 @@
               "api-reference/sandboxes/setup",
               "api-reference/sandboxes/get-file",
               "api-reference/sandboxes/stage-file",
-              "api-reference/sandboxes/upload"
+              "api-reference/sandboxes/upload-files"
             ]
           },
           {
