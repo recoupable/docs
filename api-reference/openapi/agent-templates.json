@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Recoup API - Agent Templates",
-    "description": "Lists agent prompt templates (`GET /api/agent-templates`). This operation is documented only here; clients call the Recoup API base URL in `servers` below.",
+    "description": "Lists agent prompt templates (`GET /api/agent-templates`). Clients use the Recoup API base URL from `servers`.",
     "license": {
       "name": "MIT"
     },
@@ -81,7 +81,14 @@
       "AgentTemplate": {
         "type": "object",
         "description": "A stored agent template row as returned from the API.",
-        "required": ["id", "title", "description", "prompt", "is_private"],
+        "required": [
+          "id",
+          "title",
+          "description",
+          "prompt",
+          "is_private",
+          "is_favourite"
+        ],
         "properties": {
           "id": {
             "type": "string",
