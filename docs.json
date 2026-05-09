@@ -22,13 +22,6 @@
               "mcp",
               "authentication"
             ]
-          },
-          {
-            "group": "Agents",
-            "pages": [
-              "agents",
-              "content-agent"
-            ]
           }
         ]
       },
@@ -59,16 +52,6 @@
             "group": "Fans",
             "pages": [
               "api-reference/fans/get"
-            ]
-          },
-          {
-            "group": "Tasks",
-            "pages": [
-              "api-reference/tasks/get",
-              "api-reference/tasks/create",
-              "api-reference/tasks/update",
-              "api-reference/tasks/delete",
-              "api-reference/tasks/runs"
             ]
           }
         ]
@@ -182,6 +165,12 @@
         "tab": "Content",
         "groups": [
           {
+            "group": "Workflows",
+            "pages": [
+              "workflows/generate-music-video"
+            ]
+          },
+          {
             "group": "Content Creation",
             "pages": [
               "api-reference/content/create",
@@ -195,7 +184,9 @@
               "api-reference/content/templates",
               "api-reference/content/template-detail",
               "api-reference/content/validate",
-              "api-reference/content/estimate"
+              "api-reference/content/estimate",
+              "api-reference/image/generation",
+              "api-reference/transcribe/audio"
             ]
           },
           {
@@ -203,37 +194,6 @@
             "pages": [
               "api-reference/posts/get",
               "api-reference/comments/get"
-            ]
-          },
-          {
-            "group": "Content Agent",
-            "pages": [
-              "api-reference/content-agent/webhook",
-              "api-reference/content-agent/callback"
-            ]
-          },
-          {
-            "group": "Image",
-            "pages": [
-              "api-reference/image/generation"
-            ]
-          },
-          {
-            "group": "Transcribe",
-            "pages": [
-              "api-reference/transcribe/audio"
-            ]
-          },
-          {
-            "group": "Sandboxes",
-            "pages": [
-              "api-reference/sandboxes/list",
-              "api-reference/sandboxes/create",
-              "api-reference/sandboxes/snapshot",
-              "api-reference/sandboxes/delete",
-              "api-reference/sandboxes/setup",
-              "api-reference/sandboxes/file",
-              "api-reference/sandboxes/upload"
             ]
           }
         ]
@@ -266,7 +226,7 @@
         ]
       },
       {
-        "tab": "Accounts",
+        "tab": "Agents & Sandboxes",
         "groups": [
           {
             "group": "Agent Onboarding",
@@ -276,15 +236,61 @@
             ]
           },
           {
-            "group": "Connectors",
+            "group": "Agents",
             "pages": [
-              "api-reference/connectors/list",
-              "api-reference/connectors/authorize",
-              "api-reference/connectors/disconnect",
-              "api-reference/connectors/list-actions",
-              "api-reference/connectors/execute-action"
+              "agents",
+              "content-agent"
             ]
           },
+          {
+            "group": "Tasks",
+            "pages": [
+              "api-reference/tasks/get",
+              "api-reference/tasks/create",
+              "api-reference/tasks/update",
+              "api-reference/tasks/delete",
+              "api-reference/tasks/runs"
+            ]
+          },
+          {
+            "group": "Content Agent",
+            "pages": [
+              "api-reference/content-agent/webhook",
+              "api-reference/content-agent/callback"
+            ]
+          },
+          {
+            "group": "Sandboxes",
+            "pages": [
+              "api-reference/sandboxes/list",
+              "api-reference/sandboxes/create",
+              "api-reference/sandboxes/snapshot",
+              "api-reference/sandboxes/delete",
+              "api-reference/sandboxes/setup",
+              "api-reference/sandboxes/file",
+              "api-reference/sandboxes/upload"
+            ]
+          },
+          {
+            "group": "Sessions",
+            "pages": [
+              "api-reference/sessions/create",
+              "api-reference/sessions/get"
+            ]
+          },
+          {
+            "group": "Session Sandboxes",
+            "pages": [
+              "api-reference/sandbox/create",
+              "api-reference/sandbox/status",
+              "api-reference/sandbox/reconnect"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Accounts",
+        "groups": [
           {
             "group": "Pulses",
             "pages": [
@@ -320,7 +326,8 @@
             "group": "Subscriptions",
             "pages": [
               "api-reference/subscriptions/checkout-sessions-create",
-              "api-reference/subscriptions/portal-sessions-create"
+              "api-reference/subscriptions/portal-sessions-create",
+              "api-reference/accounts/subscription-get"
             ]
           },
           {
@@ -342,6 +349,21 @@
             "group": "Notifications",
             "pages": [
               "api-reference/notifications/create"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Tools & Reference",
+        "groups": [
+          {
+            "group": "Connectors",
+            "pages": [
+              "api-reference/connectors/list",
+              "api-reference/connectors/authorize",
+              "api-reference/connectors/disconnect",
+              "api-reference/connectors/list-actions",
+              "api-reference/connectors/execute-action"
             ]
           },
           {

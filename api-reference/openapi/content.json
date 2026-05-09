@@ -291,7 +291,7 @@
     },
     "/api/sandboxes/file": {
       "get": {
-        "description": "Retrieve the raw contents of a file from the authenticated account's sandbox GitHub repository. Resolves the github_repo from the [account's snapshot](/api-reference/sandboxes/list), then fetches the file at the specified path from the repository's main branch. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "description": "Retrieve the contents of a file from the authenticated account's sandbox GitHub repository. Resolves the github_repo from the [account's snapshot](/api-reference/sandboxes/list), then fetches the file at the specified path from the repository's main branch. **Text files are returned verbatim. Binary files (`.mp3`, `.png`, `.jpg`, `.mp4`, `.pdf`, etc.) are returned base64-encoded — decode before writing to disk.** Authentication is handled via the x-api-key header or Authorization Bearer token.",
         "parameters": [
           {
             "name": "path",
@@ -3773,7 +3773,7 @@
           },
           "content": {
             "type": "string",
-            "description": "The raw text content of the file"
+            "description": "The file content. Text files (`.md`, `.json`, `.txt`, source code, etc.) are returned verbatim. Binary files (`.mp3`, `.png`, `.jpg`, `.mp4`, `.pdf`, etc.) are returned base64-encoded — decode before writing to disk. The encoding is inferred from the file extension server-side; `encoding` field is not yet returned but planned."
           }
         }
       },
