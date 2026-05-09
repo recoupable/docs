@@ -16,7 +16,7 @@
   "paths": {
     "/api/agent-templates": {
       "get": {
-        "description": "Returns agent prompt templates visible to the **authenticated** caller. The account is resolved from `Authorization: Bearer` or `x-api-key` — there is no `userId` query parameter; clients cannot request another principal's scope. Response includes public templates, templates the caller owns, and private templates shared with the caller. Each row includes `is_favourite` for that caller. Private templates include `shared_emails` when applicable.",
+        "description": "Returns agent prompt templates visible to the **authenticated** caller. The account is resolved from `Authorization: Bearer` or `x-api-key` — there is no `userId` query parameter; clients cannot request another principal's scope. Response includes public templates, templates the caller owns, and private templates shared with the caller. Each row includes `is_favourite` for that caller. For **private templates the caller owns**, `shared_emails` lists recipients the template was shared with; for other rows it is empty.",
         "parameters": [],
         "security": [
           {
@@ -114,7 +114,7 @@
           "shared_emails": {
             "type": "array",
             "items": { "type": "string", "format": "email" },
-            "description": "For private templates the caller owns or can access, email addresses the template is shared with; otherwise empty array."
+            "description": "Email addresses for accounts the template is shared with — only populated for **private templates owned by** the authenticated caller; otherwise empty array."
           }
         }
       },
