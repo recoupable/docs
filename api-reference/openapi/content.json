@@ -358,7 +358,7 @@
         }
       }
     },
-    "/api/sandboxes/staged-files": {
+    "/api/sandboxes/stage-files": {
       "post": {
         "description": "Issue a presigned upload token so the browser can upload a file directly to Vercel Blob, then call `POST /api/sandboxes/files` with the resulting blob URL to commit it to the sandbox repo. Use `upload()` from `@vercel/blob/client` rather than calling this route by hand. Max file size 100MB. Authentication: pass the caller's access token via `clientPayload` as `JSON.stringify({ token })`.",
         "requestBody": {

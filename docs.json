@@ -267,8 +267,8 @@
               "api-reference/sandboxes/snapshot",
               "api-reference/sandboxes/delete",
               "api-reference/sandboxes/setup",
-              "api-reference/sandboxes/file",
-              "api-reference/sandboxes/staged-files",
+              "api-reference/sandboxes/get-file",
+              "api-reference/sandboxes/stage-files",
               "api-reference/sandboxes/commit-files"
             ]
           },
