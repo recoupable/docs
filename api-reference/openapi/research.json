@@ -271,6 +271,54 @@
         }
       }
     },
+    "/api/agent-templates": {
+      "servers": [
+        {
+          "url": "https://chat.recoupable.com"
+        }
+      ],
+      "get": {
+        "summary": "List agent templates",
+        "description": "Returns saved prompt templates for agents. Omit `userId` to retrieve public templates only; each item includes `is_favourite: false`. Pass `userId` (same id the Chat app uses for the account, e.g. Privy user id) to include that user's private templates, shared templates, and public templates in one merged list, with `is_favourite` reflecting the user's favorites. Private templates include `shared_emails` for addresses the template is shared with.",
+        "security": [],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "Optional. When omitted, only public templates are returned.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Templates retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AgentTemplate"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to fetch templates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentTemplatesErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/chats/{id}/artist": {
       "get": {
         "description": "Retrieve the artist associated with a specific chat room. Returns 404 if the chat does not exist or is not accessible by the authenticated caller.",

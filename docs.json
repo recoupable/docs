@@ -236,6 +236,12 @@
             ]
           },
           {
+            "group": "Agent templates",
+            "pages": [
+              "api-reference/agent-templates/list"
+            ]
+          },
+          {
             "group": "Agents",
             "pages": [
               "agents",

@@ -1,0 +1,102 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup API - Agent Templates",
+    "description": "Agent prompt templates exposed by the Recoup API.",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.recoupable.com"
+    }
+  ],
+  "paths": {
+    "/api/agent-templates": {
+      "get": {
+        "description": "Returns agent prompt templates visible to the caller. When `userId` is provided, results include templates the user owns, public templates, and templates shared with that user; each row may include `is_favourite`. When `userId` is omitted, returns public templates only (`is_favourite` is always false). Private templates include `shared_emails` listing addresses the template is shared with.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "Optional user id (e.g. authenticated account id) used to scope accessible templates and favorite flags.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Templates retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AgentTemplate"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to fetch templates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentTemplatesError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AgentTemplate": {
+        "type": "object",
+        "description": "A stored agent template row as returned from the API (shape matches the Chat app response).",
+        "required": ["id", "title", "description", "prompt", "is_private"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "prompt": { "type": "string" },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "nullable": true
+          },
+          "creator": { "type": "string", "nullable": true },
+          "is_private": { "type": "boolean" },
+          "created_at": { "type": "string", "nullable": true },
+          "favorites_count": { "type": "integer", "nullable": true },
+          "updated_at": { "type": "string", "nullable": true },
+          "is_favourite": {
+            "type": "boolean",
+            "description": "Present when `userId` was provided; otherwise omitted or false."
+          },
+          "shared_emails": {
+            "type": "array",
+            "items": { "type": "string", "format": "email" },
+            "description": "For private templates, email addresses the template is shared with; empty array if public or none."
+          }
+        }
+      },
+      "AgentTemplatesError": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string" }
+        }
+      }
+    }
+  }
+}
