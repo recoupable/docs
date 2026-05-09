@@ -358,6 +358,54 @@
         }
       }
     },
+    "/api/sandboxes/staged-files": {
+      "post": {
+        "description": "Issue a presigned client-upload token for the Vercel Blob handshake used by the sandbox file-staging flow. Browsers POST a `HandleUploadBody` here, upload directly to Vercel Blob with the returned token, then pass the resulting blob URLs to `POST /api/sandboxes/files` which commits them to the account's sandbox GitHub repository and cleans up the blobs. Maximum file size is 100MB and uploaded blobs are given a random suffix. Authentication: pass the caller's access token via `clientPayload` as `JSON.stringify({ token })` — `@vercel/blob/client.upload()` does not allow setting an `Authorization` header on the handshake POST, so token transport rides on `clientPayload`. The browser performs an OPTIONS preflight before the POST; both are CORS-enabled.",
+        "requestBody": {
+          "description": "`HandleUploadBody` envelope from `@vercel/blob/client`. Either a token-generation request or an upload-completed callback. The same route handles both because Vercel Blob calls back to the original handshake URL after the direct upload finishes.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "description": "Opaque payload as defined by `@vercel/blob/client`. Callers should use `upload()` from that library rather than constructing this body by hand."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Either a generated client token (token-generation phase) or an upload-completed acknowledgement (callback phase). Shape is defined by `@vercel/blob/client` and should be returned to the library verbatim by the caller.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — invalid `HandleUploadBody`, missing or invalid `clientPayload.token`, or downstream Vercel Blob handshake failure.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable error message."
+                    }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/sandboxes/files": {
       "post": {
         "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Accepts an array of file URLs and commits each file to the specified directory path within the repository. Supports submodule resolution — if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
