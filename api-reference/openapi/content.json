@@ -385,25 +385,18 @@
               }
             }
           },
-          "400": {
-            "description": "Invalid body or upstream Vercel Blob failure.",
+          "401": {
+            "description": "Missing or invalid auth on the handshake POST.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string",
-                      "description": "Human-readable error message."
-                    }
-                  },
-                  "required": ["error"]
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
                 }
               }
             }
           },
-          "401": {
-            "description": "Missing or invalid auth on the handshake POST.",
+          "500": {
+            "description": "Invalid body or upstream Vercel Blob failure.",
             "content": {
               "application/json": {
                 "schema": {
