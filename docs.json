@@ -243,6 +243,16 @@
             ]
           },
           {
+            "group": "Agent Templates",
+            "pages": [
+              "api-reference/agent-templates/list",
+              "api-reference/agent-templates/create",
+              "api-reference/agent-templates/update",
+              "api-reference/agent-templates/delete",
+              "api-reference/agent-templates/favorite"
+            ]
+          },
+          {
             "group": "Tasks",
             "pages": [
               "api-reference/tasks/get",
