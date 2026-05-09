@@ -3,21 +3,16 @@ title: "What is Recoup?"
 description: "Infrastructure for agents to operate the music business."
 ---
 
-<Info>
-**AI agent?** Base URL: `https://api.recoupable.com/api`. Use `x-api-key` if your human has a key. Otherwise, `POST /api/agents/signup` with their email, ask them for the verification code from their inbox, then `POST /api/agents/verify` to get a key. [Agent guide →](/agents) | [Endpoint map ↓](#for-ai-agents)
-</Info>
+Recoup is the agent harness for the music business. APIs, an MCP server, and a CLI for the agents and developers running labels, distributors, catalog companies, management firms, and independent artists. Agents do the work that used to take a full team, programmatically.
 
-Whether you're an indie artist, a label, a distributor, a catalog company, or a management firm, you're juggling research, content, marketing, distribution, and fan engagement all at once. That's what agents are for. Recoup is the agent harness for the music business, built by people who've done it: not just the context (your catalog, artists, releases, fans), but the domain expertise and workflows that operate it day-to-day. Agents do the work that used to take a full team, programmatically.
+## Choose your path
 
----
-
-## Get started
-
-- **[Quickstart](/quickstart):** get an API key and make your first call. Under a minute.
-- **[Agent onboarding](/agents):** the operating manual for AI agents using Recoup in production. Covers the throwaway-vs-account decision, the roster, and the persistent filesystem.
-- **[Authentication](/authentication):** reference for API keys, Bearer tokens, and access scoping.
-
----
+| If you are... | Start here |
+|---|---|
+| A developer trying the API | [Quickstart](/quickstart) — key in two calls, first request in minutes |
+| A developer building an integration | The category tabs above (Chat, Research, Artists, Catalog, Content, Automation, Accounts) |
+| An AI agent reading these docs | [Agent onboarding](/agents) — your operating manual |
+| An LLM running a workflow from a URL | [Workflows](/workflows) — fetchable markdown recipes |
 
 ## Three interfaces
 
@@ -45,125 +40,10 @@ Whether you're an indie artist, a label, a distributor, a catalog company, or a 
   </Card>
 </CardGroup>
 
----
-
-## What's in the API
-
-Organized by what agents actually do when running a music business.
-
-<CardGroup cols={2}>
-  <Card
-    title="Chat"
-    icon="messages-square"
-    href="/api-reference/chat/stream"
-  >
-    Stream completions, manage threads, copy or delete messages, compact long histories. Pass `artist_account_id` to scope responses to a specific artist.
-  </Card>
-  <Card
-    title="Research"
-    icon="search"
-    href="/api-reference/research/search"
-  >
-    Streaming metrics, audience demographics, playlist placements, festivals, charts, deep research, and web extraction across Chartmetric, Spotify, Instagram, and X.
-  </Card>
-  <Card
-    title="Artists"
-    icon="users"
-    href="/api-reference/artists/list"
-  >
-    Add artists, link social accounts, pin priority work, browse fans and posts. The people side of your roster.
-  </Card>
-  <Card
-    title="Catalog"
-    icon="disc-3"
-    href="/api-reference/songs/songs"
-  >
-    Songs, catalogs, and AI-driven audio analysis. Organize releases into collections. The music side of your roster.
-  </Card>
-  <Card
-    title="Content"
-    icon="sparkles"
-    href="/api-reference/content/generate-image"
-  >
-    Generate images, videos, captions; transcribe audio; edit, upscale, analyze video. Compose primitives yourself, or use the full pipeline end to end with templates and cost estimation.
-  </Card>
-  <Card
-    title="Automation"
-    icon="repeat"
-    href="/api-reference/tasks/get"
-  >
-    Schedule recurring tasks. Trigger pulses on events. Dispatch notifications when work completes.
-  </Card>
-  <Card
-    title="Accounts"
-    icon="building-2"
-    href="/api-reference/accounts/get"
-  >
-    Sign up agents, scope to organizations, connect external platforms via OAuth, run isolated sandboxes, manage subscriptions.
-  </Card>
-</CardGroup>
-
----
-
-## Guides
-
-<CardGroup cols={2}>
-  <Card
-    title="Quickstart"
-    icon="play"
-    href="/quickstart"
-  >
-    API key, first request, working integration. Under a minute.
-  </Card>
-  <Card
-    title="Authentication"
-    icon="key"
-    href="/authentication"
-  >
-    API keys, Bearer tokens, and organization-level access control.
-  </Card>
-  <Card
-    title="Agent onboarding"
-    icon="user-plus"
-    href="/agents"
-  >
-    Programmatic signup for AI agents. API key in two calls (signup + verify), no browser required.
-  </Card>
-  <Card
-    title="Content Agent"
-    icon="message-square"
-    href="/content-agent"
-  >
-    Slack bot that generates social-ready artist videos on @mention.
-  </Card>
-</CardGroup>
-
----
-
 ## Base URL
 
 ```
 https://api.recoupable.com/api
 ```
 
-All endpoints require `x-api-key` header authentication unless noted.
-
----
-
-## For AI agents
-
-If you are an LLM or AI agent, fetch the canonical OpenAPI specifications. They're the single source of truth for endpoint paths, parameters, and response shapes. Base URL: `https://api.recoupable.com/api`.
-
-| Domain | OpenAPI spec |
-|--------|--------------|
-| Research (streaming metrics, audience, playlists, charts, web intelligence) | [`openapi/research.json`](/api-reference/openapi/research.json) |
-| Content (images, videos, captions, transcription, editing, upscaling, analysis, templates) | [`openapi/content.json`](/api-reference/openapi/content.json) |
-| Releases (artists, songs, catalogs) | [`openapi/releases.json`](/api-reference/openapi/releases.json) |
-| Accounts (agents, accounts, organizations, sandboxes, subscriptions, admins) | [`openapi/accounts.json`](/api-reference/openapi/accounts.json) |
-| Social (Spotify, Instagram, X, social scraping, connectors) | [`openapi/social.json`](/api-reference/openapi/social.json) |
-| AI (language model catalog) | [`openapi/ai.json`](/api-reference/openapi/ai.json) |
-| Sessions (agent sessions for sandbox runs) | [`openapi/sessions.json`](/api-reference/openapi/sessions.json) |
-
-Authentication: `x-api-key` header (or `Authorization: Bearer <token>` for Privy). To get a key, `POST /api/agents/signup` with the human's email, then `POST /api/agents/verify` with the code from their inbox. Full flow at [/agents](/agents).
-
-For a guided entry point by category, use the top navigation. Every endpoint has its own reference page.
+All endpoints require `x-api-key` header authentication unless noted. See [Authentication](/authentication) for the full auth model and [Credits](/credits) for what's billed.
