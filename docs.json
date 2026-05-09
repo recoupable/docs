@@ -333,8 +333,7 @@
           {
             "group": "Billing",
             "pages": [
-              "api-reference/billing/credits",
-              "api-reference/billing/subscription"
+              "api-reference/billing/credits"
             ]
           },
           {
