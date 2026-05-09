@@ -61,7 +61,7 @@
     },
     "/api/subscription": {
       "get": {
-        "description": "Returns whether the authenticated account is on a pro subscription. An account is considered pro if it has an active Stripe subscription itself, or if any of its organizations does.",
+        "description": "Returns the authenticated account's active Stripe subscription (account-level preferred over organization-level), along with a derived `isPro` flag and a `source` marker indicating where the subscription is anchored. `subscription` is `null` when the account has no active subscription anywhere.",
         "security": [
           {
             "apiKeyAuth": []
@@ -72,11 +72,11 @@
         ],
         "responses": {
           "200": {
-            "description": "Pro status retrieved.",
+            "description": "Subscription retrieved.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SubscriptionStatusResponse"
+                  "$ref": "#/components/schemas/SubscriptionResponse"
                 }
               }
             }
@@ -163,15 +163,90 @@
           }
         }
       },
-      "SubscriptionStatusResponse": {
+      "SubscriptionResponse": {
         "type": "object",
         "required": [
-          "isPro"
+          "isPro",
+          "source",
+          "subscription"
         ],
         "properties": {
           "isPro": {
             "type": "boolean",
             "description": "True when the account or any of its organizations has an active Stripe subscription."
+          },
+          "source": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "account",
+              "organization",
+              null
+            ],
+            "description": "Where the active subscription is anchored. `null` when there is no active subscription."
+          },
+          "subscription": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/StripeSubscription"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The active Stripe Subscription (account-level preferred over org-level), or `null` when none."
+          }
+        }
+      },
+      "StripeSubscription": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "A Stripe Subscription object. The full schema mirrors the upstream Stripe Subscription resource (see https://docs.stripe.com/api/subscriptions/object); the documented properties below are the load-bearing fields used by clients.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the subscription."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "canceled",
+              "incomplete",
+              "incomplete_expired",
+              "past_due",
+              "trialing",
+              "unpaid"
+            ],
+            "description": "The status of the subscription."
+          },
+          "current_period_start": {
+            "type": "integer",
+            "description": "Start of the current period (Unix timestamp)."
+          },
+          "current_period_end": {
+            "type": "integer",
+            "description": "End of the current period (Unix timestamp)."
+          },
+          "cancel_at_period_end": {
+            "type": "boolean",
+            "description": "If true, the subscription will be canceled at the end of the current period."
+          },
+          "canceled_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Unix timestamp at which the subscription was canceled, or null."
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Arbitrary key/value pairs attached to the subscription. Recoup writes `accountId` here."
           }
         }
       },

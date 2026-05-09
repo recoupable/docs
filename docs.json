@@ -326,7 +326,7 @@
             "group": "Billing",
             "pages": [
               "api-reference/billing/credits",
-              "api-reference/billing/subscription-status"
+              "api-reference/billing/subscription"
             ]
           },
           {
