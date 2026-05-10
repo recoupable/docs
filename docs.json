@@ -276,7 +276,8 @@
             "group": "Sessions",
             "pages": [
               "api-reference/sessions/create",
-              "api-reference/sessions/get"
+              "api-reference/sessions/get",
+              "api-reference/sessions/patch"
             ]
           },
           {
