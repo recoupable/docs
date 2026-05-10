@@ -287,19 +287,10 @@
             "description": "New display title for the session (rename)."
           },
           "status": {
-            "anyOf": [
-              {
-                "type": "string",
-                "enum": [
-                  "running",
-                  "completed",
-                  "failed",
-                  "archived"
-                ]
-              },
-              {
-                "type": "null"
-              }
+            "type": "string",
+            "enum": [
+              "running",
+              "archived"
             ],
             "description": "Set to `\"archived\"` to archive the session or `\"running\"` to unarchive it."
           }
