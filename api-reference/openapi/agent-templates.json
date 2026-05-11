@@ -311,7 +311,7 @@
     "/api/agent-templates/{id}/favorite": {
       "put": {
         "summary": "Toggle favorite on an agent template",
-        "description": "Mark or unmark an agent template as a favorite for the authenticated account. The endpoint is idempotent - calling it repeatedly with the same `is_favourite` value has no additional effect.",
+        "description": "Mark or unmark an agent template as a favorite for the authenticated account. The endpoint is idempotent - calling it repeatedly with the same `is_favourite` value has no additional effect. The caller must be able to see the template (own it, the template is public, or it has been shared with them).",
         "security": [
           {
             "apiKeyAuth": []
@@ -374,6 +374,26 @@
               }
             }
           },
+          "403": {
+            "description": "Forbidden - the template is private and has not been shared with the authenticated account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Template not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -407,7 +427,10 @@
         "nullable": true,
         "description": "The account that created the template. May be null when the creator account is unavailable.",
         "required": [
-          "id"
+          "id",
+          "name",
+          "image",
+          "is_admin"
         ],
         "properties": {
           "id": {
@@ -427,7 +450,7 @@
           },
           "is_admin": {
             "type": "boolean",
-            "description": "Whether the creator is a Recoup admin"
+            "description": "Whether the creator is a Recoup admin (their account email is on the platform admin allow-list)"
           }
         }
       },
@@ -438,9 +461,14 @@
           "title",
           "description",
           "prompt",
+          "tags",
+          "creator",
           "is_private",
           "is_favourite",
-          "shared_emails"
+          "favorites_count",
+          "shared_emails",
+          "created_at",
+          "updated_at"
         ],
         "properties": {
           "id": {
@@ -462,11 +490,10 @@
           },
           "tags": {
             "type": "array",
-            "nullable": true,
             "items": {
               "type": "string"
             },
-            "description": "Free-form tags used to categorize the template"
+            "description": "Free-form tags used to categorize the template. Empty array when there are no tags."
           },
           "creator": {
             "$ref": "#/components/schemas/AgentTemplateCreator"
@@ -481,7 +508,6 @@
           },
           "favorites_count": {
             "type": "integer",
-            "nullable": true,
             "description": "Total number of accounts that have favorited this template"
           },
           "shared_emails": {
@@ -490,12 +516,11 @@
               "type": "string",
               "format": "email"
             },
-            "description": "Emails that have explicit access to a private template. Empty for public templates."
+            "description": "Emails the template has been shared with. Only populated for private templates the authenticated account owns; empty for public templates and for private templates shared with the caller."
           },
           "created_at": {
             "type": "string",
             "format": "date-time",
-            "nullable": true,
             "description": "ISO 8601 timestamp of when the template was created"
           },
           "updated_at": {
@@ -513,8 +538,7 @@
           "description",
           "prompt",
           "tags",
-          "is_private",
-          "share_emails"
+          "is_private"
         ],
         "properties": {
           "title": {
@@ -552,7 +576,7 @@
               "type": "string",
               "format": "email"
             },
-            "description": "Emails to grant access to. Only applied when `is_private` is true. Pass an empty array when there are no shares."
+            "description": "Emails to grant access to. Only applied when `is_private` is true. Defaults to an empty array when omitted."
           }
         }
       },
