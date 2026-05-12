@@ -154,7 +154,7 @@
           }
         ],
         "requestBody": {
-          "required": true,
+          "required": false,
           "content": {
             "application/json": {
               "schema": {
@@ -214,8 +214,154 @@
               }
             }
           },
+          "500": {
+            "description": "Internal server error — the session could not be updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sessions/{sessionId}/chats": {
+      "get": {
+        "summary": "List session chats",
+        "description": "Returns chat summaries for the session plus the caller's default model id for new chats.",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the session whose chats to list.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chats retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListSessionChatsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key / Bearer token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — the authenticated account does not own this session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — no session exists with the given id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create session chat",
+        "description": "Creates a new chat in the session. Optional body may include `id` to use a client-generated id when idempotent creation is needed.",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the session to attach the chat to.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSessionChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Chat created or returned (idempotent when `id` matches an existing chat in this session).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateSessionChatResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — invalid optional `id` in body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key / Bearer token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — the authenticated account does not own this session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — no session exists with the given id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
           "409": {
-            "description": "Conflict — sandbox is still being paused; retry unarchiving in a few seconds.",
+            "description": "Conflict — requested `id` belongs to a chat in another session.",
             "content": {
               "application/json": {
                 "schema": {
@@ -290,9 +436,85 @@
             "type": "string",
             "enum": [
               "running",
+              "completed",
+              "failed",
               "archived"
             ],
-            "description": "Set to `\"archived\"` to archive the session or `\"running\"` to unarchive it."
+            "description": "Lifecycle status. Use `archived` to archive, `running` to unarchive."
+          },
+          "linesAdded": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Lines added across the session's commits — cached for session list display."
+          },
+          "linesRemoved": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Lines removed across the session's commits — cached for session list display."
+          }
+        }
+      },
+      "ChatSummary": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Chat"
+          },
+          {
+            "type": "object",
+            "required": [
+              "hasUnread",
+              "isStreaming"
+            ],
+            "properties": {
+              "hasUnread": {
+                "type": "boolean",
+                "description": "Whether the caller has unread assistant activity in this chat."
+              },
+              "isStreaming": {
+                "type": "boolean",
+                "description": "True when an assistant stream is active (`activeStreamId` is set)."
+              }
+            }
+          }
+        ]
+      },
+      "ListSessionChatsResponse": {
+        "type": "object",
+        "required": [
+          "chats",
+          "defaultModelId"
+        ],
+        "properties": {
+          "chats": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatSummary"
+            }
+          },
+          "defaultModelId": {
+            "type": "string",
+            "description": "Default AI Gateway model id for new chats in this product context."
+          }
+        }
+      },
+      "CreateSessionChatRequest": {
+        "type": "object",
+        "description": "All fields are optional. An empty body creates a chat with a server-generated id.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Optional client-generated chat id. When supplied, creation is idempotent for chats already in this session; if the id exists on another session, the request fails with 409."
+          }
+        }
+      },
+      "CreateSessionChatResponse": {
+        "type": "object",
+        "required": [
+          "chat"
+        ],
+        "properties": {
+          "chat": {
+            "$ref": "#/components/schemas/Chat"
           }
         }
       },
