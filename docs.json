@@ -465,6 +465,18 @@
     {
       "source": "/workflows/generate-music-video",
       "destination": "/skills"
+    },
+    {
+      "source": "/api-reference/sandboxes/file",
+      "destination": "/api-reference/sandboxes/get-file"
+    },
+    {
+      "source": "/api-reference/sandboxes/upload",
+      "destination": "/api-reference/sandboxes/upload-files"
+    },
+    {
+      "source": "/api-reference/comments/get",
+      "destination": "/api-reference/posts/get"
     }
   ],
   "logo": {
