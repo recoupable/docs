@@ -243,6 +243,16 @@
             ]
           },
           {
+            "group": "Templates",
+            "pages": [
+              "api-reference/templates/list",
+              "api-reference/templates/create",
+              "api-reference/templates/update",
+              "api-reference/templates/delete",
+              "api-reference/templates/favorite"
+            ]
+          },
+          {
             "group": "Tasks",
             "pages": [
               "api-reference/tasks/get",
