@@ -550,6 +550,62 @@
         }
       }
     },
+    "/api/credits/sessions": {
+      "post": {
+        "description": "Create a one-time payment checkout session to top up credits on the authenticated account. Returns a hosted Stripe Checkout URL that the client should redirect to. The session is configured for an arbitrary `credits` quantity priced server-side per credit; on successful payment the purchased credits are added to the account's balance.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Session creation parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCreditsSessionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Checkout session created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateCreditsSessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreditsSessionErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreditsSessionErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/subscriptions/portal": {
       "post": {
         "description": "Create a subscription management session for the authenticated account. Returns a hosted URL where the customer can update payment method, view invoices, or cancel. The client should redirect the user to that URL.",
@@ -3147,6 +3203,66 @@
             "type": "string",
             "description": "Human-readable error message.",
             "example": "Account not found"
+          }
+        }
+      },
+      "CreateCreditsSessionRequest": {
+        "type": "object",
+        "required": [
+          "successUrl",
+          "credits"
+        ],
+        "properties": {
+          "successUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "The URL to redirect to after a successful payment.",
+            "example": "https://chat.recoupable.com?credits=success"
+          },
+          "credits": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The number of credits to purchase. The total charge is computed server-side as `credits` multiplied by the configured per-credit price.",
+            "example": 250
+          },
+          "accountId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account to create the session for. Only applicable when the authenticated account has admin access to multiple accounts. If not provided, creates a session for the API key's own account.",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          }
+        }
+      },
+      "CreateCreditsSessionResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "url"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The checkout session ID.",
+            "example": "cs_test_a1b2c3d4e5f6g7h8i9j0"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "The hosted checkout URL. Redirect to this URL to complete the payment.",
+            "example": "https://checkout.stripe.com/pay/cs_test_a1b2c3d4e5f6g7h8i9j0"
+          }
+        }
+      },
+      "CreditsSessionErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message.",
+            "example": "credits must be a positive integer"
           }
         }
       },

@@ -318,7 +318,13 @@
               "api-reference/accounts/id",
               "api-reference/accounts/create",
               "api-reference/accounts/update",
-              "api-reference/accounts/add-artist",
+              "api-reference/accounts/add-artist"
+            ]
+          },
+          {
+            "group": "Credits",
+            "pages": [
+              "api-reference/credits/sessions-create",
               "api-reference/accounts/credits-get"
             ]
           },
