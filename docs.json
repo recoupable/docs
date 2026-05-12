@@ -267,8 +267,9 @@
               "api-reference/sandboxes/snapshot",
               "api-reference/sandboxes/delete",
               "api-reference/sandboxes/setup",
-              "api-reference/sandboxes/file",
-              "api-reference/sandboxes/upload"
+              "api-reference/sandboxes/get-file",
+              "api-reference/sandboxes/stage-file",
+              "api-reference/sandboxes/upload-files"
             ]
           },
           {
@@ -306,7 +307,8 @@
               "api-reference/accounts/id",
               "api-reference/accounts/create",
               "api-reference/accounts/update",
-              "api-reference/accounts/add-artist"
+              "api-reference/accounts/add-artist",
+              "api-reference/accounts/credits-get"
             ]
           },
           {
