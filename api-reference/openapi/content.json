@@ -358,6 +358,56 @@
         }
       }
     },
+    "/api/sandboxes/staged-file": {
+      "post": {
+        "description": "Issue a presigned upload token so the browser can upload a file directly to Vercel Blob, then call `POST /api/sandboxes/files` with the resulting blob URL to commit it to the sandbox repo. Use `upload()` from `@vercel/blob/client` rather than calling this route by hand. Max file size 100MB.",
+        "requestBody": {
+          "description": "`HandleUploadBody` envelope from `@vercel/blob/client`.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Handshake response from `@vercel/blob/client` — return verbatim to the library.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid auth on the handshake POST.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Invalid body or upstream Vercel Blob failure.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/sandboxes/files": {
       "post": {
         "description": "Upload one or more files to the authenticated account's sandbox GitHub repository. Accepts an array of file URLs and commits each file to the specified directory path within the repository. Supports submodule resolution \u2014 if the target path falls within a git submodule, the file is committed to the submodule's repository. Authentication is handled via the x-api-key header or Authorization Bearer token.",
