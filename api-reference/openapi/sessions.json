@@ -83,7 +83,7 @@
     "/api/sessions/{sessionId}": {
       "get": {
         "summary": "Get session by id",
-        "description": "Returns a single agent session by its id.",
+        "description": "**Authentication:** Send **exactly one** of `x-api-key` or `Authorization: Bearer <privy-access-token>`. Sending **both** headers or **neither** yields **401** (Recoup API `validateAuthContext`). Returns a single agent session by its id.",
         "parameters": [
           {
             "name": "sessionId",
@@ -107,7 +107,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized - invalid or missing API key / Bearer token",
+            "description": "Unauthorized — invalid or missing credentials, or ambiguous authentication (both `x-api-key` and `Authorization` were sent, or neither was sent). Response body uses `{ \"status\": \"error\", \"error\": \"...\" }`.",
             "content": {
               "application/json": {
                 "schema": {
@@ -142,7 +142,7 @@
     "/api/sessions/{sessionId}/chats": {
       "get": {
         "summary": "List session chats",
-        "description": "Lists every chat in the given session as a `ChatSummary` (chat row plus per-account `hasUnread` and `isStreaming` flags), along with the caller's default model id. Chats are sorted by `createdAt` ascending.",
+        "description": "**Authentication:** Send **exactly one** of `x-api-key` or `Authorization: Bearer <privy-access-token>`. Sending **both** headers or **neither** yields **401** (Recoup API `validateAuthContext`). The session must exist (**404**) and belong to the authenticated account (**403**). Lists every chat in the given session as a `ChatSummary` (chat row plus per-account `hasUnread` and `isStreaming` flags), along with the caller's default model id. Chats are sorted by `createdAt` ascending.",
         "parameters": [
           {
             "name": "sessionId",
@@ -166,7 +166,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key / Bearer token.",
+            "description": "Unauthorized — invalid or missing credentials, or ambiguous authentication (both `x-api-key` and `Authorization` were sent, or neither was sent). Response body uses `{ \"status\": \"error\", \"error\": \"...\" }`.",
             "content": {
               "application/json": {
                 "schema": {
@@ -199,7 +199,7 @@
       },
       "post": {
         "summary": "Create session chat",
-        "description": "Creates a new chat inside the given session. Callers may pass `{ id }` to claim a deterministic chat id — useful for optimistic UI flows where the client generates the id locally and then persists it. If a chat with that id already exists in **this** session the call is idempotent and returns the existing row; if it exists in **another** session, 409 is returned.",
+        "description": "**Authentication:** Same as `GET` on this path — **exactly one** of `x-api-key` or `Authorization: Bearer <privy-access-token>`; both or neither → **401** (`validateAuthContext`). Session must exist and be owned by the caller (**404** / **403**). Creates a new chat inside the given session. Callers may pass `{ id }` to claim a deterministic chat id — useful for optimistic UI flows where the client generates the id locally and then persists it. If a chat with that id already exists in **this** session the call is idempotent and returns the existing row; if it exists in **another** session, 409 is returned.",
         "parameters": [
           {
             "name": "sessionId",
@@ -243,7 +243,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key / Bearer token.",
+            "description": "Unauthorized — invalid or missing credentials, or ambiguous authentication (both `x-api-key` and `Authorization` were sent, or neither was sent). Response body uses `{ \"status\": \"error\", \"error\": \"...\" }`.",
             "content": {
               "application/json": {
                 "schema": {
@@ -301,11 +301,13 @@
       "ApiKeyAuth": {
         "type": "apiKey",
         "in": "header",
-        "name": "x-api-key"
+        "name": "x-api-key",
+        "description": "Personal or organization API key for server-side and automation clients."
       },
       "BearerAuth": {
         "type": "http",
-        "scheme": "bearer"
+        "scheme": "bearer",
+        "description": "Privy-issued user access token (`Authorization: Bearer <token>`) for browser clients (e.g. Open Agents)."
       }
     },
     "schemas": {
