@@ -243,7 +243,7 @@
             ]
           },
           {
-            "group": "Agent Templates",
+            "group": "Templates",
             "pages": [
               "api-reference/agent-templates/list",
               "api-reference/agent-templates/create",
