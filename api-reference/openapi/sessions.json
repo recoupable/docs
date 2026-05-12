@@ -440,17 +440,17 @@
               "failed",
               "archived"
             ],
-            "description": "Lifecycle status. Use `archived` to archive, `running` to unarchive."
+            "description": "Lifecycle status (matches the DB CHECK). `running` is active / unarchived; `completed` and `failed` are terminal; `archived` archives the row. Use `running` to unarchive from `archived`."
           },
           "linesAdded": {
             "type": "integer",
             "minimum": 0,
-            "description": "Lines added across the session's commits — cached for session list display."
+            "description": "Updates the persisted `lines_added` column on the session (≥ 0)."
           },
           "linesRemoved": {
             "type": "integer",
             "minimum": 0,
-            "description": "Lines removed across the session's commits — cached for session list display."
+            "description": "Updates the persisted `lines_removed` column on the session (≥ 0)."
           }
         }
       },
