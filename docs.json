@@ -296,6 +296,16 @@
             ]
           },
           {
+            "group": "Agent Templates",
+            "pages": [
+              "api-reference/templates/list",
+              "api-reference/templates/create",
+              "api-reference/templates/update",
+              "api-reference/templates/delete",
+              "api-reference/templates/favorite"
+            ]
+          },
+          {
             "group": "Pulses",
             "pages": [
               "api-reference/pulses/update",
@@ -327,7 +337,8 @@
               "api-reference/accounts/id",
               "api-reference/accounts/create",
               "api-reference/accounts/update",
-              "api-reference/accounts/add-artist"
+              "api-reference/accounts/add-artist",
+              "api-reference/accounts/credits-get"
             ]
           },
           {
@@ -346,8 +357,9 @@
               "api-reference/sandboxes/snapshot",
               "api-reference/sandboxes/delete",
               "api-reference/sandboxes/setup",
-              "api-reference/sandboxes/file",
-              "api-reference/sandboxes/upload"
+              "api-reference/sandboxes/get-file",
+              "api-reference/sandboxes/stage-file",
+              "api-reference/sandboxes/upload-files"
             ]
           },
           {
@@ -355,6 +367,8 @@
             "pages": [
               "api-reference/sessions/create",
               "api-reference/sessions/get",
+              "api-reference/sessions/list-chats",
+              "api-reference/sessions/create-chat",
               "api-reference/sandbox/create",
               "api-reference/sandbox/status",
               "api-reference/sandbox/reconnect"
