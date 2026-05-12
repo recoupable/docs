@@ -552,7 +552,7 @@
     },
     "/api/credits/sessions": {
       "post": {
-        "description": "Create a one-time payment checkout session to top up credits on the authenticated account. Returns a hosted Stripe Checkout URL that the client should redirect to. The session is configured for an arbitrary `credits` quantity priced server-side per credit; on successful payment the purchased credits are added to the account's balance.",
+        "description": "Create a one-time payment checkout session to top up credits on the authenticated account. Returns a hosted Stripe Checkout URL that the client should redirect to. **One credit equals one US cent ($0.01).** The total charge in USD is therefore `credits / 100` — e.g. `credits: 250` charges $2.50, `credits: 10000` charges $100.00. On successful payment the purchased credits are added to the account's balance.",
         "security": [
           {
             "apiKeyAuth": []
@@ -3222,7 +3222,7 @@
           "credits": {
             "type": "integer",
             "minimum": 1,
-            "description": "The number of credits to purchase. The total charge is computed server-side as `credits` multiplied by the configured per-credit price.",
+            "description": "The number of credits to purchase. One credit equals one US cent ($0.01), so the total charge in USD is `credits / 100`. Example: `250` charges $2.50.",
             "example": 250
           },
           "accountId": {
