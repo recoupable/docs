@@ -229,14 +229,14 @@
         "tab": "Agents & Sandboxes",
         "groups": [
           {
-            "group": "Agent Onboarding",
+            "group": "Workflows",
             "pages": [
               "api-reference/agents/signup",
               "api-reference/agents/verify"
             ]
           },
           {
-            "group": "Agent templates",
+            "group": "Templates",
             "pages": [
               "api-reference/agent-templates/list"
             ]
