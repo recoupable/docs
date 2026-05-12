@@ -322,13 +322,6 @@
             ]
           },
           {
-            "group": "Credits",
-            "pages": [
-              "api-reference/credits/sessions-create",
-              "api-reference/accounts/credits-get"
-            ]
-          },
-          {
             "group": "Organizations",
             "pages": [
               "api-reference/organizations/list",
@@ -343,11 +336,13 @@
             ]
           },
           {
-            "group": "Subscriptions",
+            "group": "Billing",
             "pages": [
               "api-reference/subscriptions/sessions-create",
               "api-reference/subscriptions/portal-create",
-              "api-reference/accounts/subscription-get"
+              "api-reference/accounts/subscription-get",
+              "api-reference/credits/sessions-create",
+              "api-reference/accounts/credits-get"
             ]
           },
           {
