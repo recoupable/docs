@@ -5,19 +5,19 @@ description: "Review royalties, rights, valuation, and deal materials for music 
 
 A bundled toolkit for music catalog M&A and financing. Drives the full diligence workflow: ingest a data room, normalize royalty statements, audit rights and chain of title, build a valuation model, and produce an IC memo or financing pack. Built around a shared QC discipline so every artifact lands with citations and confidence levels.
 
-**Bundles:** 10 skills (`catalog-ingest`, `royalty-audit`, `rights-diligence`, `catalog-analysis`, `financing-underwrite`, `seller-prep`, `post-close-admin`, `ic-memo-package`, `diligence-kickoff`, plus shared QC), 9 slash commands, and 5 sub-agent personas.
+**Bundles:** 9 catalog skills (`catalog-ingest`, `royalty-audit`, `rights-diligence`, `catalog-analysis`, `financing-underwrite`, `seller-prep`, `post-close-admin`, `ic-memo-package`, `diligence-kickoff`), 5 specialist sub-agent personas, and 6 slash commands.
 
 ## Install
 
 | Agent | How |
 |---|---|
-| **Claude Code** | `/plugin marketplace add recoupable/plugins` then `/plugin install music-catalog-diligence@recoupable-plugins` |
-| **Claude Cowork** | Customize → Plugins → + → Create plugin → Add marketplace → paste `https://github.com/recoupable/plugins` → Sync |
-| **Codex** | `codex plugin marketplace add recoupable/plugins`, then in a session: `codex /plugins` → search → Install |
-| **Cursor** | Manual clone. See the [Skills & Plugins page](/skills#cursor) for the exact commands. |
+| **Claude Code** | `/plugin marketplace add recoupable/skills` then `/plugin install music-catalog-diligence@recoup` |
+| **Claude Cowork** | Customize → Plugins → + → Create plugin → Add marketplace → paste `https://github.com/recoupable/skills` → Sync → install `music-catalog-diligence` |
+| **Codex** | `codex plugin marketplace add recoupable/skills` then `codex plugin install music-catalog-diligence@recoup` |
+| **Cursor** | Add `recoupable/skills` as a plugin marketplace source, then install the plugin from the listed entries. |
 
-Full per-runtime instructions on the [Skills & Plugins page](/skills#install-1).
+Full per-runtime instructions and the broad skills bundle are on the [Skills & Plugins page](/skills#install).
 
 ## Source
 
-The full plugin (skills, commands, agents, references) lives at [`recoupable/music-catalog-diligence`](https://github.com/recoupable/music-catalog-diligence).
+Lives in-tree at [`recoupable/skills/plugins/music-catalog-diligence`](https://github.com/recoupable/skills/tree/main/plugins/music-catalog-diligence).

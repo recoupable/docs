@@ -1,9 +1,9 @@
 ---
 title: "Skills & Plugins"
-description: "Two ways agents extend themselves on Recoup: reusable workflow units, or bundled toolkits."
+description: "Two ways agents extend themselves on Recoup: reusable workflow units, or bundled toolkits. One marketplace serves both."
 ---
 
-Recoup gives agents two extension points:
+Recoup gives agents two extension points, both distributed from the same marketplace at [`recoupable/skills`](https://github.com/recoupable/skills):
 
 - A **skill** is a self-contained folder containing a `SKILL.md` plus any references, scripts, or assets it needs. It teaches an agent how to do one task. Installed individually, loaded by the agent when the task fits.
 - A **plugin** is a bundle. Multiple skills wired together with slash commands and sub-agents around one workflow, installed once into the agent runtime.
@@ -12,15 +12,81 @@ The API tells an agent **how** to take action. Skills and plugins tell it **when
 
 ---
 
+## Install
+
+The marketplace lives at `https://github.com/recoupable/skills`. Add it once in any supported agent, then install whichever skills or plugins you want.
+
+### Claude Code
+
+```bash
+/plugin marketplace add recoupable/skills
+/plugin install recoup-skills@recoup
+/plugin install music-catalog-diligence@recoup
+```
+
+The first command registers the repo as a Git-backed marketplace. The second installs the broad skills bundle (every skill in the tables below). The third installs the catalog diligence plugin. After install, slash commands and the loaded skills appear immediately. If they don't, restart the conversation.
+
+### Claude Cowork
+
+1. Open Claude Desktop and switch to the **Cowork** tab
+2. Click **Customize** in the left sidebar → **Plugins**
+3. Click the **+** button → **Create plugin** → **Add marketplace**
+4. Paste the marketplace URL: `https://github.com/recoupable/skills`
+5. Click **Sync**
+
+Cowork pulls the marketplace manifest, lists every available plugin (`recoup-skills`, `music-catalog-diligence`), and lets you install whichever you want as Personal plugins. After install, the plugin's skills and slash commands are available in any Cowork task.
+
+Cowork plugins require a paid Claude plan (Pro, Max, Team, or Enterprise). Plugins run locally on the user's machine. Updates pull automatically when we push to the marketplace repo.
+
+### Codex
+
+```bash
+codex plugin marketplace add recoupable/skills
+codex plugin install recoup-skills@recoup
+codex plugin install music-catalog-diligence@recoup
+```
+
+After install, invoke a plugin by describing the task (e.g. "kick off catalog diligence on this data room") or by typing `@music-catalog-diligence`. The skills inside the broad bundle (`recoup-skills`) load automatically when their trigger descriptions match.
+
+### Cursor
+
+Cursor reads the same marketplace manifest. Add `recoupable/skills` as a plugin marketplace source in Cursor's plugin settings, then install plugins from the listed entries. For a fallback manual install:
+
+```bash
+mkdir -p ~/.cursor/plugins/local
+git clone https://github.com/recoupable/skills.git ~/.cursor/plugins/local/recoup-skills
+```
+
+Then reload the Cursor window (`Cmd+Shift+P` → **Reload Window**). Cursor doesn't follow symlinks in `~/.cursor/plugins/local/`. The directory must be a real copy. To pull updates later, run `git -C ~/.cursor/plugins/local/recoup-skills pull` and reload the window.
+
+### Universal CLI (skills CLI)
+
+The [`skills`](https://github.com/vercel-labs/add-skill) CLI works with 50+ agents (Claude Code, Codex, OpenCode, Cursor, and more). Best for installing one skill or every skill in one shot:
+
+```bash
+# Install every skill
+npx skills add recoupable/skills
+
+# Install one skill
+npx skills add recoupable/skills --skill short-video
+
+# Preview before installing
+npx skills add recoupable/skills --list
+```
+
+Add `-a claude-code` to target a specific agent, `--global` to install across every project, or `-y` to skip the confirmation prompt (CI-friendly). Full CLI reference: [vercel-labs/add-skill](https://github.com/vercel-labs/add-skill).
+
+---
+
 ## Skills
 
-Each skill below links to its source `SKILL.md` in [`recoupable/skills`](https://github.com/recoupable/skills). That's what the agent loads at runtime, and where the full instructions live.
+Each skill below links to its docs page. The canonical `SKILL.md` lives in [`recoupable/skills`](https://github.com/recoupable/skills). That's what the agent loads at runtime.
 
 ### Setup
 
 Run these first when an agent connects to Recoup. They handle authentication, sandbox scaffolding, and the eight-step process for creating a new artist.
 
-| Skill | What it does | Install |
+| Skill | What it does | Install (CLI) |
 |---|---|---|
 | [Set up Recoup](/skills/getting-started) | Set up Recoup from scratch. Get an API key, verify it, and make the first call via REST or MCP. | `npx skills add recoupable/skills --skill getting-started` |
 | [Use the Recoup API](/skills/recoup-api) | The agent's universal client for the Recoup API inside a sandbox. Handles auth, scoping, and connector actions for Google Docs, Drive, Sheets, Gmail, TikTok. | `npx skills add recoupable/skills --skill recoup-api` |
@@ -32,45 +98,19 @@ Run these first when an agent connects to Recoup. They handle authentication, sa
 
 Run during the agent's actual day: research, content, songwriting, releases, growth.
 
-| Skill | What it does | Install |
+| Skill | What it does | Install (CLI) |
 |---|---|---|
 | [Research the music industry](/skills/music-industry-research) | Use the `/api/research/*` endpoints for analytics, audience demographics, playlists, charts, and people search. | `npx skills add recoupable/skills --skill music-industry-research` |
 | [Create content](/skills/content-creation) | Composes the content endpoints (image, video, caption, transcribe, edit, upscale, analyze) into short-form videos, Reels, TikToks, and lipsync clips. | `npx skills add recoupable/skills --skill content-creation` |
+| [Make a short video](/skills/short-video) | End-to-end playbook for a 9:16 social-ready music video. Async pipeline plus the manual template-to-ffmpeg recipe. | `npx skills add recoupable/skills --skill short-video` |
 | [Write a song](/skills/song-writing) | Write and evaluate songs using the 7 C's framework: hook, clarity, character, and the rest. | `npx skills add recoupable/skills --skill song-writing` |
 | [Turn a trend into a song](/skills/trend-to-song) | Reverse the traditional workflow. Start from a cultural moment and build a song + distribution plan around it. | `npx skills add recoupable/skills --skill trend-to-song` |
 | [Plan a release](/skills/release-management) | Plan a release end-to-end: `RELEASE.md` documents, DSP pitches, press one-sheets, production specs, tour coordination. | `npx skills add recoupable/skills --skill release-management` |
 | [Grow streaming](/skills/streaming-growth) | Grow a new artist past the streaming milestones that unlock Spotify Showcase, Marquee, and algorithmic boosting. | `npx skills add recoupable/skills --skill streaming-growth` |
 
-### Install
-
-The fastest way is the [`skills`](https://github.com/vercel-labs/add-skill) CLI. It works with Claude Code, Codex, OpenCode, Cursor, and 50+ other agents.
-
-```bash
-# Everything
-npx skills add recoupable/skills
-
-# One skill
-npx skills add recoupable/skills --skill recoup-api
-
-# Preview before installing
-npx skills add recoupable/skills --list
-```
-
-Add `-a claude-code` to target a specific agent, `--global` to install across every project, or `-y` to skip the confirmation prompt (CI-friendly). Full CLI reference: [vercel-labs/add-skill](https://github.com/vercel-labs/add-skill).
-
-#### Other paths
-
-```bash
-# Claude Code marketplace
-/plugin marketplace add recoupable/skills
-
-# Manual clone
-git clone https://github.com/recoupable/skills.git
-```
-
 ### How a skill is structured
 
-Every skill is a directory with a `SKILL.md` at the root. The `description` field in the YAML frontmatter is what the agent reads to decide when to invoke it. Write it as a trigger, not a summary.
+Every skill is a directory under [`recoupable/skills/skills/`](https://github.com/recoupable/skills/tree/main/skills) with a `SKILL.md` at the root. The `description` field in the YAML frontmatter is what the agent reads to decide when to invoke the skill. Write it as a trigger, not a summary.
 
 ```text
 skills/
@@ -100,100 +140,45 @@ Step-by-step instructions the agent follows.
 
 A plugin is a packaged toolkit. Multiple skills, slash commands, and sub-agents bundled around one workflow, so a team can install the whole thing into the agent they already use instead of wiring pieces together themselves.
 
-The marketplace lives at [recoupable/plugins](https://github.com/recoupable/plugins). Each plugin is its own Git repo so it can be developed, versioned, and distributed independently.
+Plugins live in [`recoupable/skills/plugins/`](https://github.com/recoupable/skills/tree/main/plugins). Each plugin gets its own directory with its own manifests per agent runtime.
 
 ### Available plugins
 
 | Plugin | What it does |
 |---|---|
-| [Catalog due diligence](/plugins/music-catalog-diligence) | Review royalties, rights, valuation, and deal materials for music catalog transactions across buyer, seller, lender, or post-close use cases. Bundles 10 skills, 9 slash commands, and 5 sub-agent personas. |
-
-### Install
-
-The plugin is hosted on GitHub at [`recoupable/music-catalog-diligence`](https://github.com/recoupable/music-catalog-diligence). Each agent reads from that source in a slightly different way.
-
-These instructions are written for the agent. Surface the command (or click sequence) literally to the user when prompted.
-
-#### Claude Code
-
-```bash
-/plugin marketplace add recoupable/plugins
-/plugin install music-catalog-diligence@recoupable-plugins
-```
-
-The first command registers the [registry repo](https://github.com/recoupable/plugins) as a Git-backed marketplace. The second installs the plugin from it. After install, the plugin's slash commands (`/catalog-diligence`, `/catalog-kickoff`, etc.) appear immediately. If they don't, restart the conversation.
-
-#### Claude Cowork
-
-1. Open Claude Desktop and switch to the **Cowork** tab
-2. Click **Customize** in the left sidebar → **Plugins**
-3. Click the **+** button → **Create plugin** → **Add marketplace**
-4. Paste the marketplace URL: `https://github.com/recoupable/plugins`
-5. Click **Sync**
-
-Cowork pulls the marketplace's `.claude-plugin/marketplace.json`, fetches each listed plugin from its source repo, and installs them as Personal plugins. After install, `music-catalog-diligence` appears in the Personal Plugins list and its slash commands (`/catalog-diligence`, `/catalog-kickoff`, etc.) are available in any Cowork task.
-
-Cowork plugins require a paid Claude plan (Pro, Max, Team, or Enterprise). Plugins run locally on the user's machine. Updates pull automatically when we push to the marketplace repo.
-
-#### Codex
-
-```bash
-codex plugin marketplace add recoupable/plugins
-```
-
-Then inside a Codex session, open the plugin directory and install the plugin:
-
-```bash
-codex /plugins
-```
-
-Search for `music-catalog-diligence`, select it, and click **Install**. After install, invoke the plugin by describing the task (e.g. "kick off catalog diligence on this data room") or by typing `@music-catalog-diligence`.
-
-The marketplace add command is fully scriptable. The install step currently goes through the interactive `/plugins` UI; there's no headless one-shot install yet.
-
-#### Cursor
-
-Cursor's curated marketplace doesn't list `recoupable/music-catalog-diligence` yet, so the only path today is a manual local install:
-
-```bash
-mkdir -p ~/.cursor/plugins/local
-git clone https://github.com/recoupable/music-catalog-diligence.git ~/.cursor/plugins/local/music-catalog-diligence
-```
-
-Then have the user reload the Cursor window (`Cmd+Shift+P` → **Reload Window**) so the plugin gets picked up. Important: Cursor doesn't follow symlinks in `~/.cursor/plugins/local/`. The directory must be a real copy.
-
-To pull updates later, run `git -C ~/.cursor/plugins/local/music-catalog-diligence pull` and reload the window again.
+| [Catalog due diligence](/plugins/music-catalog-diligence) | Review royalties, rights, valuation, and deal materials for music catalog transactions across buyer, seller, lender, or post-close use cases. Bundles 9 catalog skills, 5 specialist sub-agents, and 6 slash commands. |
 
 ### How a plugin is structured
 
-Every plugin lives in its own repo, then gets registered in [recoupable/plugins](https://github.com/recoupable/plugins). Manifests for each agent runtime sit at the plugin root:
+Plugins live in-tree at [`recoupable/skills/plugins/<name>/`](https://github.com/recoupable/skills/tree/main/plugins). Each plugin carries manifests for every supported agent runtime:
 
 ```text
-my-plugin/
-├── .claude-plugin/plugin.json   ← Claude Code manifest
-├── .codex-plugin/plugin.json    ← Codex manifest (+ skills bundling)
-├── .cursor-plugin/plugin.json   ← Cursor manifest
-├── skills/                      ← bundled skills (SKILL.md files)
-├── commands/                    ← slash-command definitions
-├── agents/                      ← optional sub-agent personas
-├── references/                  ← long-form domain material
-├── scripts/                     ← executable helpers
-└── README.md
+plugins/
+└── my-plugin/
+    ├── .claude-plugin/plugin.json   ← Claude Code manifest
+    ├── .codex-plugin/plugin.json    ← Codex manifest
+    ├── .cursor-plugin/plugin.json   ← Cursor manifest
+    ├── skills/                      ← bundled skills (SKILL.md files)
+    ├── commands/                    ← slash-command definitions
+    ├── agents/                      ← sub-agent personas
+    ├── references/                  ← long-form domain material
+    ├── scripts/                     ← executable helpers
+    └── README.md
 ```
 
-Claude Code and Cursor load the full plugin surface (skills, commands, agents). Codex loads the bundled `skills/` through `.codex-plugin/plugin.json`. Claude-specific commands and agents remain available through Claude Code, and will surface in Codex when its packaging path supports them.
+Claude Code, Cursor, and Codex all read from the same per-runtime manifests. Adding a new plugin means dropping a directory under `plugins/` with the three manifests and an entry in the root `marketplace.source.json` (CI generates the platform-specific marketplace files from that single source of truth).
 
 ---
 
 ## Contribute
 
-**Skills.** Add a directory under `skills/` in [recoupable/skills](https://github.com/recoupable/skills), follow the structure above, and open a PR. See [contributing.md](https://github.com/recoupable/skills/blob/main/contributing.md) for the full guidelines.
+**A new skill?** Add a directory under `skills/` in [`recoupable/skills`](https://github.com/recoupable/skills), follow the structure above, register it in `marketplace.source.json`, and open a PR. See [contributing.md](https://github.com/recoupable/skills/blob/main/contributing.md) for the full guidelines.
 
 The bar: a skill should be specific enough that an agent would correctly invoke it without your help, and complete enough that it can finish the task without asking the user follow-ups it could have answered itself.
 
-**Plugins.** Open a PR against [recoupable/plugins](https://github.com/recoupable/plugins) with your repo and a marketplace entry. The bar:
+**A new plugin?** Add a directory under `plugins/<name>/` in [`recoupable/skills`](https://github.com/recoupable/skills) with the three manifests above, drop in your skills/commands/agents, register it in `marketplace.source.json`, and open a PR. The bar:
 
-- A clear workflow the plugin owns end-to-end (not just one skill, which belongs in [recoupable/skills](https://github.com/recoupable/skills))
+- A clear workflow the plugin owns end-to-end (not just one skill, which belongs in `skills/` directly)
 - Skills, commands, and agents that compose into the workflow
 - Tests or fixtures that prove the workflow runs against representative data
 - A `README.md` that says who it's for in one paragraph
