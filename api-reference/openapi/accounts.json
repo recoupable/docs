@@ -552,7 +552,7 @@
     },
     "/api/credits/sessions": {
       "post": {
-        "description": "Top up credits on the authenticated account.\n\n**One credit equals one US cent ($0.01).** The customer is charged `credits` plus a Stripe processing fee (US card pricing: 2.9% + $0.30) — e.g. `credits: 10000` charges $103.30 total ($100.00 credits + $3.30 fee).\n\n**Two outcomes, distinguished by response shape:**\n\n- **Auto-charged** — if the account has a card on file (from a prior subscription or top-up), the card is charged immediately and the response is `{ paymentIntentId, creditsPurchased, totalCents }`. Credits land in the account's balance asynchronously via Stripe webhook (typically within seconds). No human interaction required.\n\n- **Checkout required** — if no card is on file, or the saved card requires 3-D Secure authentication, the response is `{ id, url }` with a hosted Stripe Checkout URL. Redirect the user to that URL; credits land on successful payment.\n\nClients should discriminate on the presence of `url` (Checkout) vs `paymentIntentId` (auto-charged). Cards entered through the Checkout fallback are saved for future top-ups, so a customer's second top-up typically auto-charges.",
+        "description": "Top up credits on the authenticated account.\n\n**One credit equals one US cent (\\$0.01).** The customer is charged `credits` plus a Stripe processing fee (US card pricing: 2.9% + \\$0.30) — e.g. `credits: 10000` charges \\$103.30 total (\\$100.00 credits + \\$3.30 fee).\n\n**Two outcomes, distinguished by response shape:**\n\n- **Auto-charged** — if the account has a card on file (from a prior subscription or top-up), the card is charged immediately and the response is `{ paymentIntentId, creditsPurchased, totalCents }`. Credits land in the account's balance asynchronously via Stripe webhook (typically within seconds). No human interaction required.\n\n- **Checkout required** — if no card is on file, or the saved card requires 3-D Secure authentication, the response is `{ id, url }` with a hosted Stripe Checkout URL. Redirect the user to that URL; credits land on successful payment.\n\nClients should discriminate on the presence of `url` (Checkout) vs `paymentIntentId` (auto-charged). Cards entered through the Checkout fallback are saved for future top-ups, so a customer's second top-up typically auto-charges.",
         "security": [
           {
             "apiKeyAuth": []
@@ -3216,20 +3216,19 @@
       "CreateCreditsSessionRequest": {
         "type": "object",
         "required": [
-          "successUrl",
           "credits"
         ],
         "properties": {
           "successUrl": {
             "type": "string",
             "format": "uri",
-            "description": "The URL to redirect to after a successful payment.",
+            "description": "The URL to redirect the customer to after a successful Stripe Checkout payment. Only used when the response is a Checkout fallback (no card on file or 3-D Secure required) — ignored when the card on file is charged directly. Defaults to a generic Recoup success page if omitted.",
             "example": "https://chat.recoupable.com?credits=success"
           },
           "credits": {
             "type": "integer",
             "minimum": 1,
-            "description": "The number of credits to purchase. One credit equals one US cent ($0.01), so the total charge in USD is `credits / 100`. Example: `250` charges $2.50.",
+            "description": "The number of credits to purchase. One credit equals one US cent (\\$0.01), so the value of the credits in USD is `credits / 100`. Example: `250` is \\$2.50 worth of credits (the customer is also charged a Stripe processing fee on top).",
             "example": 250
           },
           "accountId": {
