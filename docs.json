@@ -1,66 +1,73 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
+  "theme": "sequoia",
   "name": "Recoup",
   "colors": {
-    "primary": "#345A5D",
-    "light": "#4A7A7D",
-    "dark": "#1E3A3D"
+    "primary": "#0a0a0a",
+    "light": "#ededed",
+    "dark": "#0a0a0a"
   },
-  "favicon": "/favicon.ico",
+  "favicon": "/logo/icon-lightmode.svg",
+  "appearance": {
+    "default": "system"
+  },
+  "fonts": {
+    "heading": {
+      "family": "Geist Pixel Square",
+      "weight": 400,
+      "source": "/fonts/GeistPixel/GeistPixel-Square.woff2",
+      "format": "woff2"
+    },
+    "body": {
+      "family": "Geist",
+      "weight": 400,
+      "source": "/fonts/Geist/Geist-Variable.woff2",
+      "format": "woff2"
+    }
+  },
+  "background": {
+    "color": {
+      "light": "#f3f3f3",
+      "dark": "#171717"
+    }
+  },
+  "styling": {
+    "eyebrows": "breadcrumbs",
+    "codeblocks": "dark"
+  },
+  "icons": {
+    "library": "lucide"
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Quickstart",
+        "tab": "Overview",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Start here",
             "pages": [
               "index",
               "quickstart",
+              "authentication",
+              "credits",
+              "agents"
+            ]
+          },
+          {
+            "group": "Interfaces",
+            "pages": [
               "cli",
               "mcp",
-              "authentication"
+              "content-agent"
             ]
           }
         ]
       },
       {
-        "tab": "Artists",
+        "tab": "Chat",
         "groups": [
           {
-            "group": "Workflows",
-            "pages": [
-              "workflows/create-artist"
-            ]
-          },
-          {
-            "group": "Artists",
-            "pages": [
-              "api-reference/artists/list",
-              "api-reference/artists/create",
-              "api-reference/artists/update",
-              "api-reference/artists/pin",
-              "api-reference/artists/unpin",
-              "api-reference/artists/delete",
-              "api-reference/artists/socials",
-              "api-reference/artist/socials-scrape",
-              "api-reference/artist/profile"
-            ]
-          },
-          {
-            "group": "Fans",
-            "pages": [
-              "api-reference/fans/get"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Research",
-        "groups": [
-          {
-            "group": "Chat",
+            "group": "AI Chat",
             "pages": [
               "api-reference/chat/stream",
               "api-reference/chat/create",
@@ -75,6 +82,17 @@
               "api-reference/chat/compact"
             ]
           },
+          {
+            "group": "Models",
+            "pages": [
+              "api-reference/ai/models"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Research",
+        "groups": [
           {
             "group": "Artist discovery",
             "pages": [
@@ -131,7 +149,7 @@
             ]
           },
           {
-            "group": "Web & social",
+            "group": "Web intelligence",
             "pages": [
               "api-reference/research/instagram-posts",
               "api-reference/research/web",
@@ -139,72 +157,6 @@
               "api-reference/research/people",
               "api-reference/research/extract",
               "api-reference/research/enrich"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Releases",
-        "groups": [
-          {
-            "group": "Songs & Catalogs",
-            "pages": [
-              "api-reference/songs/songs",
-              "api-reference/songs/create",
-              "api-reference/songs/analyze",
-              "api-reference/songs/analyze-presets",
-              "api-reference/songs/catalogs",
-              "api-reference/songs/catalog-songs",
-              "api-reference/songs/catalog-songs-add",
-              "api-reference/songs/catalog-songs-delete"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Content",
-        "groups": [
-          {
-            "group": "Workflows",
-            "pages": [
-              "workflows/generate-music-video"
-            ]
-          },
-          {
-            "group": "Content Creation",
-            "pages": [
-              "api-reference/content/create",
-              "api-reference/content/generate-image",
-              "api-reference/content/generate-video",
-              "api-reference/content/generate-caption",
-              "api-reference/content/transcribe-audio",
-              "api-reference/content/edit",
-              "api-reference/content/upscale",
-              "api-reference/content/analyze-video",
-              "api-reference/content/templates",
-              "api-reference/content/template-detail",
-              "api-reference/content/validate",
-              "api-reference/content/estimate",
-              "api-reference/image/generation",
-              "api-reference/transcribe/audio"
-            ]
-          },
-          {
-            "group": "Posts & Comments",
-            "pages": [
-              "api-reference/posts/get",
-              "api-reference/comments/get"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Social Media",
-        "groups": [
-          {
-            "group": "Social",
-            "pages": [
-              "api-reference/social/scrape"
             ]
           },
           {
@@ -218,42 +170,123 @@
             ]
           },
           {
-            "group": "Apify",
+            "group": "Instagram",
+            "pages": []
+          },
+          {
+            "group": "Social Scraping",
             "pages": [
+              "api-reference/social/scrape",
               "api-reference/apify/scraper"
             ]
           }
         ]
       },
       {
-        "tab": "Agents & Sandboxes",
+        "tab": "Artists",
         "groups": [
           {
-            "group": "Agent Onboarding",
+            "group": "Artist Management",
             "pages": [
-              "api-reference/agents/signup",
-              "api-reference/agents/verify"
+              "api-reference/artists/list",
+              "api-reference/artists/create",
+              "api-reference/artists/update",
+              "api-reference/artists/pin",
+              "api-reference/artists/unpin",
+              "api-reference/artists/delete",
+              "api-reference/artist/profile",
+              "api-reference/artists/socials",
+              "api-reference/artist/socials-scrape"
             ]
           },
           {
-            "group": "Agents",
+            "group": "Fans & Posts",
             "pages": [
-              "agents",
-              "content-agent"
+              "api-reference/fans/get",
+              "api-reference/posts/get"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Catalog",
+        "groups": [
+          {
+            "group": "Songs",
+            "pages": [
+              "api-reference/songs/songs",
+              "api-reference/songs/create",
+              "api-reference/songs/analyze",
+              "api-reference/songs/analyze-presets"
+            ]
+          },
+          {
+            "group": "Catalogs",
+            "pages": [
+              "api-reference/songs/catalogs",
+              "api-reference/songs/catalog-songs",
+              "api-reference/songs/catalog-songs-add",
+              "api-reference/songs/catalog-songs-delete"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Content",
+        "groups": [
+          {
+            "group": "Generate",
+            "pages": [
+              "api-reference/content/generate-image",
+              "api-reference/content/generate-video",
+              "api-reference/content/generate-caption"
+            ]
+          },
+          {
+            "group": "Edit",
+            "pages": [
+              "api-reference/content/edit",
+              "api-reference/content/upscale"
+            ]
+          },
+          {
+            "group": "Analyze",
+            "pages": [
+              "api-reference/content/analyze-video",
+              "api-reference/content/transcribe-audio"
             ]
           },
           {
             "group": "Templates",
             "pages": [
-              "api-reference/templates/list",
-              "api-reference/templates/create",
-              "api-reference/templates/update",
-              "api-reference/templates/delete",
-              "api-reference/templates/favorite"
+              "api-reference/content/templates",
+              "api-reference/content/template-detail",
+              "api-reference/content/validate",
+              "api-reference/content/estimate"
             ]
           },
           {
-            "group": "Tasks",
+            "group": "Legacy",
+            "pages": [
+              "api-reference/content/create",
+              "api-reference/image/generation",
+              "api-reference/transcribe/audio"
+            ]
+          },
+          {
+            "group": "Content Agent",
+            "pages": [
+              "api-reference/content-agent/webhook",
+              "api-reference/content-agent/callback"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Automation",
+        "groups": [
+          {
+            "group": "Scheduled Tasks",
             "pages": [
               "api-reference/tasks/get",
               "api-reference/tasks/create",
@@ -263,10 +296,57 @@
             ]
           },
           {
-            "group": "Content Agent",
+            "group": "Agent Templates",
             "pages": [
-              "api-reference/content-agent/webhook",
-              "api-reference/content-agent/callback"
+              "api-reference/templates/list",
+              "api-reference/templates/create",
+              "api-reference/templates/update",
+              "api-reference/templates/delete",
+              "api-reference/templates/favorite"
+            ]
+          },
+          {
+            "group": "Pulses",
+            "pages": [
+              "api-reference/pulses/update",
+              "api-reference/pulses/list"
+            ]
+          },
+          {
+            "group": "Notifications",
+            "pages": [
+              "api-reference/notifications/create"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Accounts",
+        "groups": [
+          {
+            "group": "Agent Onboarding",
+            "pages": [
+              "api-reference/agents/signup",
+              "api-reference/agents/verify"
+            ]
+          },
+          {
+            "group": "Accounts",
+            "pages": [
+              "api-reference/accounts/get",
+              "api-reference/accounts/id",
+              "api-reference/accounts/create",
+              "api-reference/accounts/update",
+              "api-reference/accounts/add-artist",
+              "api-reference/accounts/credits-get"
+            ]
+          },
+          {
+            "group": "Organizations",
+            "pages": [
+              "api-reference/organizations/list",
+              "api-reference/organizations/create",
+              "api-reference/organizations/add-artist"
             ]
           },
           {
@@ -288,46 +368,20 @@
               "api-reference/sessions/create",
               "api-reference/sessions/get",
               "api-reference/sessions/list-chats",
-              "api-reference/sessions/create-chat"
-            ]
-          },
-          {
-            "group": "Session Sandboxes",
-            "pages": [
+              "api-reference/sessions/create-chat",
               "api-reference/sandbox/create",
               "api-reference/sandbox/status",
               "api-reference/sandbox/reconnect"
             ]
-          }
-        ]
-      },
-      {
-        "tab": "Accounts",
-        "groups": [
-          {
-            "group": "Pulses",
-            "pages": [
-              "api-reference/pulses/update",
-              "api-reference/pulses/list"
-            ]
           },
           {
-            "group": "Accounts",
+            "group": "Connectors",
             "pages": [
-              "api-reference/accounts/get",
-              "api-reference/accounts/id",
-              "api-reference/accounts/create",
-              "api-reference/accounts/update",
-              "api-reference/accounts/add-artist",
-              "api-reference/accounts/credits-get"
-            ]
-          },
-          {
-            "group": "Organizations",
-            "pages": [
-              "api-reference/organizations/list",
-              "api-reference/organizations/create",
-              "api-reference/organizations/add-artist"
+              "api-reference/connectors/list",
+              "api-reference/connectors/authorize",
+              "api-reference/connectors/disconnect",
+              "api-reference/connectors/list-actions",
+              "api-reference/connectors/execute-action"
             ]
           },
           {
@@ -352,69 +406,94 @@
               "api-reference/admins/sandboxes-orgs",
               "api-reference/admins/emails",
               "api-reference/admins/privy",
+              "api-reference/admins/agent-signups",
               "api-reference/admins/coding-agent-slack-tags",
               "api-reference/admins/coding-pr",
               "api-reference/admins/content-slack-tags",
-              "api-reference/admins/agent-signups",
               "api-reference/admins/artists-pro"
-            ]
-          },
-          {
-            "group": "Notifications",
-            "pages": [
-              "api-reference/notifications/create"
             ]
           }
         ]
       },
       {
-        "tab": "Tools & Reference",
+        "tab": "Skills & Plugins",
         "groups": [
           {
-            "group": "Connectors",
+            "group": "Skills",
             "pages": [
-              "api-reference/connectors/list",
-              "api-reference/connectors/authorize",
-              "api-reference/connectors/disconnect",
-              "api-reference/connectors/list-actions",
-              "api-reference/connectors/execute-action"
+              "skills",
+              "skills/getting-started",
+              "skills/recoup-api",
+              "skills/setup-sandbox",
+              "skills/artist-workspace",
+              "skills/create-artist",
+              "skills/music-industry-research",
+              "skills/content-creation",
+              "skills/short-video",
+              "skills/song-writing",
+              "skills/trend-to-song",
+              "skills/release-management",
+              "skills/streaming-growth"
             ]
           },
           {
-            "group": "AI",
+            "group": "Plugins",
             "pages": [
-              "api-reference/ai/models"
+              "plugins/music-catalog-diligence"
             ]
           }
         ]
       }
     ],
     "global": {
-      "anchors": [
-        {
-          "anchor": "Recoup App",
-          "href": "https://chat.recoupable.com",
-          "icon": "rocket"
-        },
-        {
-          "anchor": "Website",
-          "href": "https://recoupable.com",
-          "icon": "globe"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://research.recoupable.com/",
-          "icon": "newspaper"
-        }
-      ]
+      "anchors": []
     }
   },
+  "redirects": [
+    {
+      "source": "/plugins",
+      "destination": "/skills"
+    },
+    {
+      "source": "/workflows",
+      "destination": "/skills"
+    },
+    {
+      "source": "/workflows/create-artist",
+      "destination": "/skills"
+    },
+    {
+      "source": "/workflows/generate-music-video",
+      "destination": "/skills"
+    },
+    {
+      "source": "/api-reference/sandboxes/file",
+      "destination": "/api-reference/sandboxes/get-file"
+    },
+    {
+      "source": "/api-reference/sandboxes/upload",
+      "destination": "/api-reference/sandboxes/upload-files"
+    },
+    {
+      "source": "/api-reference/comments/get",
+      "destination": "/api-reference/posts/get"
+    }
+  ],
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.png"
+    "light": "/logo/wordmark-lightmode.svg",
+    "dark": "/logo/wordmark-darkmode.svg",
+    "href": "https://recoupable.com"
   },
   "navbar": {
     "links": [
+      {
+        "label": "Blog",
+        "href": "https://research.recoupable.com/"
+      },
+      {
+        "label": "GitHub",
+        "href": "https://github.com/recoupable"
+      },
       {
         "label": "Support",
         "href": "mailto:agent@recoupable.com"
@@ -422,8 +501,8 @@
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://chat.recoupable.com"
+      "label": "Get API Key",
+      "href": "https://chat.recoupable.com/keys"
     }
   },
   "contextual": {

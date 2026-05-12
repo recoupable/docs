@@ -195,7 +195,7 @@
         }
       },
       "delete": {
-        "description": "Delete a chat room by ID. This operation also removes related room records (memory emails, memories) before deleting the room itself.",
+        "description": "Delete a chat room by ID. This operation also removes related room records (memory emails, messages) before deleting the room itself.",
         "requestBody": {
           "description": "Chat deletion parameters",
           "required": true,
@@ -332,7 +332,7 @@
     },
     "/api/chats/{id}/messages": {
       "get": {
-        "description": "Retrieve all messages (memories) for a specific chat room in chronological order.",
+        "description": "Retrieve all messages for a specific chat room in chronological order.",
         "parameters": [
           {
             "name": "id",
@@ -3020,7 +3020,7 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the memory message"
+            "description": "UUID of the message"
           },
           "room_id": {
             "type": "string",
@@ -3029,12 +3029,12 @@
           },
           "content": {
             "type": "object",
-            "description": "Structured message payload stored for the memory"
+            "description": "Structured message payload"
           },
           "updated_at": {
             "type": "string",
             "format": "date-time",
-            "description": "ISO timestamp of the memory update"
+            "description": "ISO timestamp of the message update"
           }
         }
       },

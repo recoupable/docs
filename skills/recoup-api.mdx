@@ -1,0 +1,16 @@
+---
+title: "Use the Recoup API"
+description: "The agent's universal client for the Recoup API inside a sandbox: auth, scoping, and connector actions for Google Docs, Drive, Sheets, Gmail, TikTok."
+---
+
+Loads implicitly before any `curl` against `api.recoupable.com` so the agent picks the right base URL, headers, scoping flags, and uses the org's existing connectors instead of holding third-party credentials.
+
+## Install
+
+```bash
+npx skills add recoupable/skills --skill recoup-api
+```
+
+## Source
+
+The full instructions live at [`recoupable/skills/skills/recoup-api`](https://github.com/recoupable/skills/tree/main/skills/recoup-api).

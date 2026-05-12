@@ -1,0 +1,16 @@
+---
+title: "Make a short video"
+description: "End-to-end playbook for producing a vertical, social-ready short-form music video (image, motion, caption, composed final) from an artist and a song."
+---
+
+Triggers on "make a video", "generate content for", "create a TikTok or Reel", "produce a music-video clip", "short-form video", or "music video for X". Has two paths: an async pipeline (`POST /api/content/create` + poll `/api/tasks/runs`) for short-shell agents, and a manual five-step recipe (template → image → video → caption → ffmpeg compose) when you want to swap a single stage.
+
+## Install
+
+```bash
+npx skills add recoupable/skills --skill short-video
+```
+
+## Source
+
+The full instructions live at [`recoupable/skills/skills/short-video`](https://github.com/recoupable/skills/tree/main/skills/short-video).

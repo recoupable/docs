@@ -1,187 +1,49 @@
 ---
-title: "Recoup API Documentation"
-description: "Use the Recoup API to build your record label. Access research, content creation, chat, artist analytics, social media, and platform management endpoints."
+title: "What is Recoup?"
+description: "Infrastructure for agents to operate the music business."
 ---
 
-# Welcome to the Recoup API
+Recoup is the agent harness for the music business. APIs, an MCP server, and a CLI for the agents and developers running labels, distributors, catalog companies, management firms, and independent artists. Agents do the work that used to take a full team, programmatically.
 
-Use the Recoup API to build your record label. Generate content, Access artist analytics, Manage catalogs, Team chats, and task automation to power your record labels.
+## Choose your path
 
-## Quickest start — one curl call
+| If you are... | Start here |
+|---|---|
+| A developer trying the API | [Quickstart](/quickstart). Key in two calls, first request in minutes. |
+| A developer building an integration | The category tabs above (Chat, Research, Artists, Catalog, Content, Automation, Accounts). |
+| An AI agent reading these docs | [Agent onboarding](/agents). Your operating manual. |
+| An agent that needs to know how to do music-industry work | [Skills & Plugins](/skills). Installable playbooks the agent loads when relevant. |
 
-Get a working API key in a single unauthenticated request. No dashboard, no browser, no human in the loop.
+## Three interfaces
 
-```bash
-export RECOUP_API_KEY=$(curl -s -X POST "https://api.recoupable.com/api/agents/signup" \
-  -H "Content-Type: application/json" \
-  -d '{"email": "agent+'$(date +%s)-$RANDOM'@recoupable.com"}' | jq -r .api_key)
-```
-
-`$RECOUP_API_KEY` is now ready to pass in the `x-api-key` header on any request. See the [Agents guide](/agents) for the full signup and verification flow.
-
-## What is Recoup?
-
-Recoup is an AI agent platform for smarter song rollouts, unforgettable fan experiences, and lasting artist growth. Empowering music executives with actionable insights and next-gen tools.
-
-This is where record labels, musicians, and managers start to build on Recoup AI technology like chat, tasks, agents, and more.
-
-## Base URL
-
-All API requests should be made to:
-
-```bash
-https://api.recoupable.com/api
-```
-
-## Authentication
-
-Most API endpoints are authenticated using an API key passed in the `x-api-key` header. The only exceptions are the [agent onboarding](/agents) endpoints — [`POST /api/agents/signup`](/api-reference/agents/signup) and [`POST /api/agents/verify`](/api-reference/agents/verify) — which are intentionally unauthenticated so agents can obtain their first API key.
-
-1. Navigate to the [API Keys Management Page](https://chat.recoupable.com/keys)
-2. Sign in with your account
-3. Create a new API key and copy it immediately (it's only shown once)
-
-```bash
-curl -X GET "https://api.recoupable.com/api/artists?accountId=YOUR_ACCOUNT_ID" \
-  -H "Content-Type: application/json" \
-  -H "x-api-key: YOUR_API_KEY"
-```
-
-<Warning>
-Keep your API key secure. Do not share it publicly or commit it to version control.
-</Warning>
-
-## Get Started
-
-<CardGroup cols={2}>
+<CardGroup cols={3}>
   <Card
-    title="Agent Signup"
-    icon="user-plus"
-    href="/agents"
-  >
-    Get an API key in one curl call. The fastest path for AI agents — no dashboard required.
-  </Card>
-  <Card
-    title="Quickstart"
-    icon="rocket"
+    title="REST API"
+    icon="code"
     href="/quickstart"
   >
-    Get your API key and make your first request in minutes.
+    Standard HTTP endpoints. Pass your API key in `x-api-key` and call any of them.
+  </Card>
+  <Card
+    title="MCP Server"
+    icon="cpu"
+    href="/mcp"
+  >
+    Connect Claude, ChatGPT, Cursor, or any MCP-compatible agent directly. One URL.
   </Card>
   <Card
     title="CLI"
     icon="terminal"
     href="/cli"
   >
-    Install and use the Recoup CLI to interact with the platform from your terminal.
-  </Card>
-  <Card
-    title="MCP Server"
-    icon="plug"
-    href="/mcp"
-  >
-    Connect Recoup to AI assistants via the Model Context Protocol.
+    `recoup whoami` to verify, `recoup artists list` to explore. Install with `npm i -g @recoupable/cli`.
   </Card>
 </CardGroup>
 
-## API Sections
+## Base URL
 
-The API is organized into six main sections. Use these links to jump to the right area.
+```
+https://api.recoupable.com/api
+```
 
-<CardGroup cols={2}>
-  <Card
-    title="Research"
-    icon="magnifying-glass-chart"
-    href="/api-reference/research/search"
-  >
-    30 endpoints for artist research: search, lookup, profile, metrics, audience, cities, similar artists, playlists, albums, tracks, career history, insights, genres, festivals, web presence, and more.
-  </Card>
-  <Card
-    title="Content Creation"
-    icon="wand-magic-sparkles"
-    href="/api-reference/content/create"
-  >
-    Generate images, videos, and captions. Transcribe audio, edit content, upscale media, analyze videos, manage templates, and estimate costs.
-  </Card>
-  <Card
-    title="Chat"
-    icon="comments"
-    href="/api-reference/chat/chats"
-  >
-    Conversations with artist context. Create, stream, and generate messages. Copy messages, delete trailing messages, and manage chat history.
-  </Card>
-  <Card
-    title="Social Media"
-    icon="share-nodes"
-    href="/api-reference/connectors/list"
-  >
-    Spotify, Instagram, X (Twitter), and generic social scraping. Search artists, scrape profiles and comments, track trends, and manage OAuth connectors.
-  </Card>
-  <Card
-    title="Releases"
-    icon="music"
-    href="/api-reference/songs/songs"
-  >
-    Songs, catalogs, and task management. Analyze songs, manage catalog collections, and schedule recurring tasks with cron-based automation.
-  </Card>
-  <Card
-    title="Accounts"
-    icon="building"
-    href="/api-reference/pulses/update"
-  >
-    Accounts, organizations, workspaces, subscriptions, pulses, notifications, sandboxes, and admin tools.
-  </Card>
-</CardGroup>
-
-## Agents
-
-<CardGroup cols={2}>
-  <Card
-    title="Content Agent"
-    icon="robot"
-    href="/content-agent"
-  >
-    Content creation agent accessible via Slack. Generates images, videos, and captions for artists automatically.
-  </Card>
-  <Card
-    title="Authentication"
-    icon="key"
-    href="/authentication"
-  >
-    API key authentication, account-scoped access, and organization-level permissions.
-  </Card>
-</CardGroup>
-
-## Quick Reference for LLMs
-
-If you are an LLM navigating these docs, here is a summary of the endpoint structure:
-
-- **`/api/artists/*`** — Artist management (list, create, socials, socials-scrape, profile)
-- **`/api/research/*`** — Artist research (search, lookup, profile, metrics, audience, cities, similar, urls, instagram-posts, playlists, albums, track, tracks, career, insights, genres, festivals, web, deep, people, extract, enrich, milestones, venues, rank, charts, radio, discover, curator, playlist)
-- **`/api/content/*`** — Content creation (create, generate-image, generate-video, generate-caption, transcribe-audio, edit, upscale, analyze-video, templates, validate, estimate)
-- **`/api/chat/*`** — Chat (chats, artist, messages, messages-copy, messages-trailing-delete, create, update, delete, generate, stream, compact)
-- **`/api/songs/*`** — Songs and catalogs (songs, create, analyze, analyze-presets, catalogs, catalogs-create, catalogs-delete, catalog-songs, catalog-songs-add, catalog-songs-delete)
-- **`/api/tasks/*`** — Task automation (get, create, update, delete, runs)
-- **`/api/spotify/*`** — Spotify (search, artist, artist-albums, artist-top-tracks, album)
-- **`/api/instagram/*`** — Instagram (comments, profiles)
-- **`/api/x/*`** — X/Twitter (search, trends)
-- **`/api/connectors/*`** — OAuth connectors (list, authorize, disconnect)
-- **`/api/accounts/*`** — Accounts (get, id, create, update, add-artist)
-- **`/api/organizations/*`** — Organizations (list, create, add-artist)
-- **`/api/sandboxes/*`** — Sandboxes (list, create, snapshot, delete, setup, file, upload)
-- **`/api/content-agent/*`** — Content agent webhooks (webhook, callback)
-- **`/api/agents/*`** — Agent onboarding (signup, verify) — no auth required
-
-Base URL: `https://api.recoupable.com/api`
-
-[OpenAPI Specification](https://github.com/sweetmantech/docs/blob/main/api-reference/openapi.json)
-
-## Need Help?
-
-<Card
-  title="Contact Support"
-  icon="envelope"
-  href="mailto:agent@recoupable.com"
->
-  Reach out to our team at agent@recoupable.com for assistance with the Recoup API.
-</Card>
+All endpoints require `x-api-key` header authentication unless noted. See [Authentication](/authentication) for the full auth model and [Credits](/credits) for what's billed.

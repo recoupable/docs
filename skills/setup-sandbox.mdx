@@ -1,0 +1,16 @@
+---
+title: "Bootstrap a sandbox"
+description: "Scaffold the workspace for an account's orgs and artists when a sandbox has no existing file system."
+---
+
+Runs once when a sandbox is fresh. If the sandbox already has an `orgs/` directory at the root, this is a no-op; the skill skips itself.
+
+## Install
+
+```bash
+npx skills add recoupable/skills --skill setup-sandbox
+```
+
+## Source
+
+The full instructions live at [`recoupable/skills/skills/setup-sandbox`](https://github.com/recoupable/skills/tree/main/skills/setup-sandbox).

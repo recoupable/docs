@@ -1,0 +1,67 @@
+---
+title: "Credits"
+description: "How Recoup credits work: what's billed, how to check your balance, and how to upgrade."
+---
+
+Some Recoup endpoints are billed in **credits**. Primarily endpoints that hit external data providers, run AI inference, or generate content. The rest of the API is free at the API layer.
+
+---
+
+## What's billed
+
+| Family | Billed? | Notes |
+|--------|---------|-------|
+| **Research** (`/api/research/*`) | Yes | Each successful call deducts credits. Costs vary by endpoint and parameters (e.g. `enrich` charges by processor tier; `extract` charges by URL count). |
+| **Content generation** (`/api/image/generate`) | Yes | Image generation is priced per call. |
+| **AI Chat streaming** (`POST /api/chat`) | Yes | Variable cost based on model token usage, with a per-request minimum. |
+| **Everything else** | Free at the API layer | Artist CRUD, sandboxes, sessions, scheduled tasks, social integrations, account/org management, agent signup, Spotify proxies, etc. Subscription gating may still apply. |
+
+Failed calls (4xx / 5xx) do **not** deduct credits. Deduction happens only after the upstream call succeeds.
+
+---
+
+## Check your balance
+
+```bash
+curl -sS https://api.recoupable.com/api/credits/get \
+  -H "x-api-key: $RECOUP_API_KEY"
+```
+
+Response shape:
+
+```json
+{
+  "remaining_credits": 245,
+  "account_id": "acc_…"
+}
+```
+
+---
+
+## Subscription
+
+Recoup has two tiers. Both refill on a monthly cycle.
+
+| Tier | How you get it | Monthly credits |
+|------|---------------|----------------|
+| **Free** | Default for every new account | Monthly allowance refills automatically |
+| **Pro** | Stripe subscription via the chat dashboard | Substantially higher monthly allowance |
+
+### Upgrade to Pro
+
+1. Sign in at [chat.recoupable.com](https://chat.recoupable.com)
+2. Open Billing → **Subscribe**
+3. Stripe checkout creates a subscription tied to the account your API key authenticates against. New subscriptions include a **30-day trial**
+
+### Check your tier
+
+```bash
+curl -sS https://api.recoupable.com/api/accounts/$ACCOUNT_ID/subscription \
+  -H "x-api-key: $RECOUP_API_KEY"
+```
+
+Get `$ACCOUNT_ID` from [`GET /api/accounts/id`](/api-reference/accounts/id) if you don't already have it. Response includes `isPro` (boolean), `status`, `plan`, and `source` (whether the subscription comes from the account itself or an organization the account belongs to). Full schema at [Get Subscription](/api-reference/accounts/subscription-get).
+
+### One-time top-ups
+
+**Coming soon.** Today the only way to add credits beyond the monthly refill is to subscribe (or wait for the next cycle). Per-request top-ups are on the roadmap.
