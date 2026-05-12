@@ -22,7 +22,7 @@
     }
   ],
   "paths": {
-    "/api/templates": {
+    "/api/agents/templates": {
       "get": {
         "summary": "List templates",
         "description": "Retrieve every template visible to the authenticated account. The response combines templates the account owns, public templates created by other accounts, and private templates that have been shared with the authenticated account's email.",
@@ -133,7 +133,7 @@
         }
       }
     },
-    "/api/templates/{id}": {
+    "/api/agents/templates/{id}": {
       "patch": {
         "summary": "Update a template",
         "description": "Update fields on an existing template owned by the authenticated account. All body fields are optional and only the supplied fields are modified. Providing `share_emails` replaces the existing share list for the template.",
@@ -308,7 +308,7 @@
         }
       }
     },
-    "/api/templates/{id}/favorite": {
+    "/api/agents/templates/{id}/favorite": {
       "put": {
         "summary": "Toggle favorite on a template",
         "description": "Mark or unmark an template as a favorite for the authenticated account. The endpoint is idempotent - calling it repeatedly with the same `is_favourite` value has no additional effect. The caller must be able to see the template (own it, the template is public, or it has been shared with them).",
