@@ -489,7 +489,7 @@
           },
           "defaultModelId": {
             "type": "string",
-            "description": "Default model id surfaced to clients with no explicit preference (e.g. `openai/gpt-5.4`)."
+            "description": "Default model id surfaced to clients with no explicit preference (e.g. `openai/gpt-5-mini`). Matches the server's `DEFAULT_MODEL` fallback so the UI's pre-selected default lines up with execution."
           }
         }
       },
