@@ -402,14 +402,6 @@
         ]
       },
       {
-        "tab": "Workflows",
-        "pages": [
-          "workflows",
-          "workflows/create-artist",
-          "workflows/generate-music-video"
-        ]
-      },
-      {
         "tab": "Skills & Plugins",
         "groups": [
           {
@@ -445,6 +437,18 @@
   "redirects": [
     {
       "source": "/plugins",
+      "destination": "/skills"
+    },
+    {
+      "source": "/workflows",
+      "destination": "/skills"
+    },
+    {
+      "source": "/workflows/create-artist",
+      "destination": "/skills"
+    },
+    {
+      "source": "/workflows/generate-music-video",
       "destination": "/skills"
     }
   ],
