@@ -552,7 +552,7 @@
     },
     "/api/credits/sessions": {
       "post": {
-        "description": "Create a one-time payment checkout session to top up credits on the authenticated account. Returns a hosted Stripe Checkout URL that the client should redirect to. **One credit equals one US cent ($0.01).** The total charge in USD is therefore `credits / 100` — e.g. `credits: 250` charges $2.50, `credits: 10000` charges $100.00. On successful payment the purchased credits are added to the account's balance.",
+        "description": "Top up credits on the authenticated account.\n\n**One credit equals one US cent (\\$0.01).** The customer is charged `credits` plus a Stripe processing fee (US card pricing: 2.9% + \\$0.30) — e.g. `credits: 10000` charges \\$103.30 total (\\$100.00 credits + \\$3.30 fee).\n\n**Two outcomes, distinguished by response shape:**\n\n- **Auto-charged** — if the account has a card on file (from a prior subscription or top-up), the card is charged immediately and the response is `{ paymentIntentId, creditsPurchased, totalCents }`. Credits land in the account's balance asynchronously via Stripe webhook (typically within seconds). No human interaction required.\n\n- **Checkout required** — if no card is on file, or the saved card requires 3-D Secure authentication, the response is `{ id, url }` with a hosted Stripe Checkout URL. Redirect the user to that URL; credits land on successful payment.\n\nClients should discriminate on the presence of `url` (Checkout) vs `paymentIntentId` (auto-charged). Cards entered through the Checkout fallback are saved for future top-ups, so a customer's second top-up typically auto-charges.",
         "security": [
           {
             "apiKeyAuth": []
@@ -562,7 +562,7 @@
           }
         ],
         "requestBody": {
-          "description": "Session creation parameters",
+          "description": "Top-up parameters",
           "required": true,
           "content": {
             "application/json": {
@@ -574,11 +574,11 @@
         },
         "responses": {
           "200": {
-            "description": "Checkout session created successfully",
+            "description": "Top-up initiated successfully. Some fields are conditional on which path was taken — see each field's description.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CreateCreditsSessionResponse"
+                  "$ref": "#/components/schemas/CreditsTopupResponse"
                 }
               }
             }
@@ -3209,20 +3209,19 @@
       "CreateCreditsSessionRequest": {
         "type": "object",
         "required": [
-          "successUrl",
           "credits"
         ],
         "properties": {
           "successUrl": {
             "type": "string",
             "format": "uri",
-            "description": "The URL to redirect to after a successful payment.",
+            "description": "The URL to redirect the customer to after a successful Stripe Checkout payment. Only used when the response is a Checkout fallback (no card on file or 3-D Secure required) — ignored when the card on file is charged directly. Defaults to a generic Recoup success page if omitted.",
             "example": "https://chat.recoupable.com?credits=success"
           },
           "credits": {
             "type": "integer",
             "minimum": 1,
-            "description": "The number of credits to purchase. One credit equals one US cent ($0.01), so the total charge in USD is `credits / 100`. Example: `250` charges $2.50.",
+            "description": "The number of credits to purchase. One credit equals one US cent (\\$0.01), so the value of the credits in USD is `credits / 100`. Example: `250` is \\$2.50 worth of credits (the customer is also charged a Stripe processing fee on top).",
             "example": 250
           },
           "accountId": {
@@ -3233,22 +3232,36 @@
           }
         }
       },
-      "CreateCreditsSessionResponse": {
+      "CreditsTopupResponse": {
         "type": "object",
-        "required": [
-          "id",
-          "url"
-        ],
+        "description": "Top-up response. Two paths share this shape — clients can discriminate on the presence of `url` (Checkout fallback) vs `paymentIntentId` (auto-charged).",
         "properties": {
+          "paymentIntentId": {
+            "type": "string",
+            "description": "**Auto-charge path only.** The Stripe PaymentIntent ID for the off-session charge. Useful for reconciliation and support. Omitted on the Checkout fallback path.",
+            "example": "pi_3O1a2b3c4d5e6f7g_h8i9j0kL"
+          },
+          "creditsPurchased": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "**Auto-charge path only.** The number of credits purchased, matching the `credits` request field. These credits are added to the account's balance asynchronously via Stripe webhook (typically within seconds). Omitted on the Checkout fallback path.",
+            "example": 250
+          },
+          "totalCents": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "**Auto-charge path only.** Total amount in cents charged to the saved card, equal to `creditsPurchased` plus the Stripe processing fee. Omitted on the Checkout fallback path.",
+            "example": 289
+          },
           "id": {
             "type": "string",
-            "description": "The checkout session ID.",
+            "description": "**Checkout fallback only.** The Stripe Checkout Session ID. Omitted on the auto-charge path.",
             "example": "cs_test_a1b2c3d4e5f6g7h8i9j0"
           },
           "url": {
             "type": "string",
             "format": "uri",
-            "description": "The hosted checkout URL. Redirect to this URL to complete the payment.",
+            "description": "**Checkout fallback only.** The hosted Stripe Checkout URL — redirect the customer here to enter card details and complete payment. Omitted on the auto-charge path.",
             "example": "https://checkout.stripe.com/pay/cs_test_a1b2c3d4e5f6g7h8i9j0"
           }
         }
