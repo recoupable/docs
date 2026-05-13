@@ -382,6 +382,74 @@
           }
         }
       }
+    },
+    "/api/sessions/{sessionId}/chats/{chatId}": {
+      "get": {
+        "summary": "Get session chat",
+        "description": "Returns the chat's persisted UI message stream plus its current streaming state so callers can hydrate or refresh a chat view. `messages` is an array of `parts` payloads — one per `chat_messages` row — ordered by `created_at` ascending (ties broken by id). `isStreaming` is derived from `activeStreamId`.",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the parent session.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the chat being fetched.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionChatResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key / Bearer token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — the authenticated account does not own this session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — no session exists with the given id, the chat does not exist, or the chat belongs to a different session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -630,6 +698,56 @@
         "properties": {
           "chat": {
             "$ref": "#/components/schemas/Chat"
+          }
+        }
+      },
+      "SessionChatResponse": {
+        "type": "object",
+        "description": "Response body for `GET /api/sessions/{sessionId}/chats/{chatId}`.",
+        "required": [
+          "chat",
+          "isStreaming",
+          "messages"
+        ],
+        "properties": {
+          "chat": {
+            "type": "object",
+            "required": [
+              "id",
+              "modelId",
+              "activeStreamId"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Chat id."
+              },
+              "modelId": {
+                "type": "string",
+                "nullable": true,
+                "description": "AI Gateway model identifier the chat is configured to use, if any."
+              },
+              "activeStreamId": {
+                "type": "string",
+                "nullable": true,
+                "description": "Id of an in-flight assistant stream, if one is active."
+              }
+            }
+          },
+          "isStreaming": {
+            "type": "boolean",
+            "description": "True when `chat.activeStreamId` is non-null."
+          },
+          "messages": {
+            "type": "array",
+            "description": "Persisted UI message stream — one entry per `chat_messages` row, ordered by `created_at` ascending. Each entry is the raw `parts` payload from that row (an array of `UIMessage` parts as serialized by the agent).",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
           }
         }
       },
