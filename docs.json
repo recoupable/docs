@@ -290,7 +290,9 @@
               "api-reference/sessions/patch",
               "api-reference/sessions/list-chats",
               "api-reference/sessions/create-chat",
-              "api-reference/sessions/get-chat"
+              "api-reference/sessions/get-chat",
+              "api-reference/sessions/patch-chat",
+              "api-reference/sessions/delete-chat"
             ]
           },
           {
