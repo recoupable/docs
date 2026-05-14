@@ -23,7 +23,7 @@ Failed calls (4xx / 5xx) do **not** deduct credits. Deduction happens only after
 ## Check your balance
 
 ```bash
-curl -sS https://api.recoupable.com/api/credits/get \
+curl -sS https://api.recoupable.com/api/accounts/$ACCOUNT_ID/credits \
   -H "x-api-key: $RECOUP_API_KEY"
 ```
 
@@ -31,10 +31,16 @@ Response shape:
 
 ```json
 {
+  "account_id": "acc_…",
   "remaining_credits": 245,
-  "account_id": "acc_…"
+  "total_credits": 1000,
+  "used_credits": 755,
+  "is_pro": true,
+  "timestamp": "2026-04-24T17:50:43.475"
 }
 ```
+
+`total_credits` is your plan-derived monthly allotment. `remaining_credits` can exceed `total_credits` after a manual or automatic top-up — `used_credits` clamps to 0 in that case. Full schema at [Get Account Credits](/api-reference/accounts/credits-get).
 
 ---
 
@@ -64,4 +70,90 @@ Get `$ACCOUNT_ID` from [`GET /api/accounts/id`](/api-reference/accounts/id) if y
 
 ### One-time top-ups
 
-**Coming soon.** Today the only way to add credits beyond the monthly refill is to subscribe (or wait for the next cycle). Per-request top-ups are on the roadmap.
+You can purchase credits any time via [`POST /api/credits/sessions`](/api-reference/credits/sessions-create). The endpoint adapts to what's on the account:
+
+- **Card on file → silent auto-charge.** Recoup charges your saved Stripe card off-session and returns `paymentIntentId`, `creditsPurchased`, and `totalCents`. Credits land within seconds.
+- **No card, or Stripe declines the saved card → Stripe Checkout fallback.** The response contains a Checkout `url` you open in the browser. When Stripe specifically declined a saved card, the response also includes a `declineReason` (e.g. `insufficient_funds`, `expired_card`) so you can explain *why* before sending the user to update billing.
+
+```bash
+curl -sS -X POST https://api.recoupable.com/api/credits/sessions \
+  -H "x-api-key: $RECOUP_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"credits": 100, "successUrl": "https://chat.recoupable.com/credits/success"}'
+```
+
+Full request/response schema at [Create Credits Top-Up Session](/api-reference/credits/sessions-create).
+
+---
+
+## Automatic top-up
+
+Every billed API request runs a credit gate before it executes. If `remaining_credits` doesn't cover the request's cost **and** the account has a saved Stripe card, Recoup silently charges **$5 (500 credits)** off-session and lets the request proceed. Most accounts with a working card never see an "insufficient credits" failure — the top-up is invisible.
+
+The decision tree:
+
+1. **Enough credits?** → Request proceeds, credits deducted on success.
+2. **Short, but a saved card succeeds at $5 off-session charge?** → Balance increments by 500, request proceeds.
+3. **No card on file, *or* Stripe declined the card, *or* request needs more than 500 credits?** → Request returns **HTTP 402** with a recovery URL (see below).
+
+### When auto top-up doesn't trigger
+
+- The account has no saved Stripe card → 402 with `checkoutUrl`, no `declineReason`.
+- Stripe declines the saved card (insufficient funds, expired, fraud, 3-D Secure required, etc.) → 402 with `checkoutUrl` + `declineReason`.
+- A single request needs more than 500 credits (rare — only `POST /api/research/deep` at 25 and oversized `extract` calls come close) → request fails even though the top-up succeeded.
+
+### Tuning
+
+The auto top-up amount is currently a constant at **$5 / 500 credits**. Per-account thresholds are not yet exposed — reach out to support if you need a different default.
+
+---
+
+## 402 Payment Required
+
+When the gate can't get the account credited in time, billed endpoints return **HTTP 402** with a unified body:
+
+```json
+{
+  "error": "insufficient_credits",
+  "remaining_credits": 12,
+  "required_credits": 100,
+  "checkoutUrl": "https://pay.recoupable.com/c/pay/cs_live_…",
+  "declineReason": {
+    "code": "card_declined",
+    "declineCode": "insufficient_funds",
+    "message": "Your card has insufficient funds."
+  }
+}
+```
+
+| Field | When it appears | Meaning |
+|-------|-----------------|---------|
+| `error` | Always | Literally `"insufficient_credits"` |
+| `remaining_credits` | Always | Account balance at the moment of the failed request |
+| `required_credits` | Always | What this endpoint needed |
+| `checkoutUrl` | Always | A Stripe Checkout URL for a $5 top-up — open it to recover |
+| `declineReason` | Only when Stripe actively declined a saved card | Stripe's own decline metadata; surface to the user so they understand *why* |
+
+The shape is intentionally identical to the Checkout-fallback response from [`POST /api/credits/sessions`](/api-reference/credits/sessions-create) — a client that knows how to render one knows how to render the other.
+
+**How to react:**
+
+- **Browser-driven UI** (e.g., the Recoup chat app): if `declineReason` is present, show its `message` to the user; otherwise open `checkoutUrl` in a new tab to collect a card.
+- **Programmatic / LLM-driven client**: relay `declineReason.message` if present, and surface `checkoutUrl` as a link the human needs to visit to update billing.
+
+---
+
+## Cost per endpoint
+
+Current as of this revision of the page. The authoritative source is the per-endpoint reference docs and the `required_credits` field on any 402 response.
+
+| Endpoint | Cost |
+|----------|------|
+| `POST /api/chat` (streaming) | ≥1 credit per turn — variable based on model token usage |
+| `GET /api/research/*` (artist & non-artist research) | 5 credits per call |
+| `POST /api/research/people` | 5 credits per call |
+| `POST /api/research/web` | 5 credits per call |
+| `POST /api/research/extract` | 5 credits × number of URLs |
+| `POST /api/research/enrich` | 5 / 10 / 25 credits (base / core / ultra processor) |
+| `POST /api/research/deep` | 25 credits per call |
+| `POST /api/image/generate` | Per-call price; see endpoint reference |
