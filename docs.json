@@ -307,20 +307,20 @@
         "tab": "Accounts",
         "groups": [
           {
+            "group": "Accounts",
+            "pages": [
+              "api-reference/accounts/id",
+              "api-reference/accounts/get",
+              "api-reference/accounts/create",
+              "api-reference/accounts/update",
+              "api-reference/accounts/add-artist"
+            ]
+          },
+          {
             "group": "Pulses",
             "pages": [
               "api-reference/pulses/update",
               "api-reference/pulses/list"
-            ]
-          },
-          {
-            "group": "Accounts",
-            "pages": [
-              "api-reference/accounts/get",
-              "api-reference/accounts/id",
-              "api-reference/accounts/create",
-              "api-reference/accounts/update",
-              "api-reference/accounts/add-artist"
             ]
           },
           {
