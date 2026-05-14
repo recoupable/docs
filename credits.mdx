@@ -73,7 +73,7 @@ Get `$ACCOUNT_ID` from [`GET /api/accounts/id`](/api-reference/accounts/id) if y
 You can purchase credits any time via [`POST /api/credits/sessions`](/api-reference/credits/sessions-create). The endpoint adapts to what's on the account:
 
 - **Card on file → silent auto-charge.** Recoup charges your saved Stripe card off-session and returns `paymentIntentId`, `creditsPurchased`, and `totalCents`. Credits land within seconds.
-- **No card, or Stripe declines the saved card → Stripe Checkout fallback.** The response contains a Checkout `url` you open in the browser. When Stripe specifically declined a saved card, the response also includes a `declineReason` (e.g. `insufficient_funds`, `expired_card`) so you can explain *why* before sending the user to update billing.
+- **No card, or Stripe declines the saved card → Stripe Checkout fallback.** The response contains a Checkout `url` you open in the browser. When Stripe specifically declined a saved card, the response also includes a `declineReason` (e.g. `insufficient_funds`, `expired_card`) so you can explain *why* before sending the customer to update billing.
 
 ```bash
 curl -sS -X POST https://api.recoupable.com/api/credits/sessions \
@@ -158,13 +158,13 @@ When the gate can't get the account credited in time, billed endpoints return **
 | `remaining_credits` | Always | Account balance at the moment of the failed request |
 | `required_credits` | Always | What this endpoint needed |
 | `checkoutUrl` | Always | A Stripe Checkout URL for a $5 top-up — open it to recover |
-| `declineReason` | Only when Stripe actively declined a saved card | Stripe's own decline metadata; surface to the user so they understand *why* |
+| `declineReason` | Only when Stripe actively declined a saved card | Stripe's own decline metadata; surface to the customer so they understand *why* |
 
 The shape closely matches the Checkout-fallback response from [`POST /api/credits/sessions`](/api-reference/credits/sessions-create), but this 402 payload uses `checkoutUrl` for the recovery link (versus `url` on the top-up response). The `declineReason` field is identical in both places.
 
 **How to react:**
 
-- **Browser-driven UI** (e.g., the Recoup chat app): if `declineReason` is present, show its `message` to the user; otherwise open `checkoutUrl` in a new tab to collect a card.
+- **Browser-driven UI** (e.g., the Recoup chat app): if `declineReason` is present, show its `message`; otherwise open `checkoutUrl` in a new tab to collect a card.
 - **Programmatic / LLM-driven client**: relay `declineReason.message` if present, and surface `checkoutUrl` as a link the human needs to visit to update billing.
 
 ---
