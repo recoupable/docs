@@ -3330,10 +3330,12 @@
             "example": "550e8400-e29b-41d4-a716-446655440000"
           },
           "card": {
-            "nullable": true,
             "oneOf": [
               {
                 "$ref": "#/components/schemas/SavedCard"
+              },
+              {
+                "type": "null"
               }
             ],
             "description": "Default card on file. `null` when the account has never saved a payment method \u2014 the top-up flow will route through a checkout session in that case."
