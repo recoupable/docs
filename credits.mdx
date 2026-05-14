@@ -11,10 +11,10 @@ Some Recoup endpoints are billed in **credits** — primarily endpoints that hit
 
 | Family | Billed? | Notes |
 |--------|---------|-------|
-| **Research** (`/api/research/*`) | Yes | Each successful call deducts credits. Costs vary by endpoint and parameters (e.g. `enrich` charges by processor tier; `extract` charges by URL count). |
-| **Content generation** (`/api/image/generate`) | Yes | Image generation is priced per call. |
-| **AI Chat — streaming** (`POST /api/chat`) | Yes | Variable cost based on model token usage, with a per-request minimum. |
-| **Everything else** | Free at the API layer | Artist CRUD, sandboxes, sessions, scheduled tasks, social integrations, account/org management, agent signup, Spotify proxies, etc. Subscription gating may still apply. |
+| **Research** ([`/api/research/*`](/api-reference/research/search)) | Yes | Each successful call deducts credits. Costs vary by endpoint and parameters (e.g. [`enrich`](/api-reference/research/enrich) charges by processor tier; [`extract`](/api-reference/research/extract) charges by URL count). |
+| **Content generation** ([`/api/image/generate`](/api-reference/image/generation)) | Yes | Image generation is priced per call. |
+| **AI Chat — streaming** ([`POST /api/chat`](/api-reference/chat/stream)) | Yes | Variable cost based on model token usage, with a per-request minimum. |
+| **Everything else** | Free at the API layer | [Artist CRUD](/api-reference/artists/list), [sandboxes](/api-reference/sandboxes/list), [sessions](/api-reference/sessions/get), [scheduled tasks](/api-reference/tasks/get), [social integrations](/api-reference/social/scrape), [account/org management](/api-reference/accounts/id), [agent signup](/api-reference/agents/signup), [Spotify proxies](/api-reference/spotify/search), etc. Subscription gating may still apply. |
 
 Failed calls (4xx / 5xx) do **not** deduct credits. Deduction happens only after the upstream call succeeds.
 
@@ -134,7 +134,7 @@ When the gate can't get the account credited in time, billed endpoints return **
 | `checkoutUrl` | Always | A Stripe Checkout URL for a $5 top-up — open it to recover |
 | `declineReason` | Only when Stripe actively declined a saved card | Stripe's own decline metadata; surface to the user so they understand *why* |
 
-The shape is intentionally identical to the Checkout-fallback response from [`POST /api/credits/sessions`](/api-reference/credits/sessions-create) — a client that knows how to render one knows how to render the other.
+The shape closely matches the Checkout-fallback response from [`POST /api/credits/sessions`](/api-reference/credits/sessions-create), but this 402 payload uses `checkoutUrl` for the recovery link (versus `url` on the top-up response). The `declineReason` field is identical in both places.
 
 **How to react:**
 
