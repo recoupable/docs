@@ -84,6 +84,32 @@ curl -sS -X POST https://api.recoupable.com/api/credits/sessions \
 
 Full request/response schema at [Create Credits Top-Up Session](/api-reference/credits/sessions-create).
 
+### Check which card will be charged
+
+Before triggering a silent off-session charge, inspect the default Stripe payment method on file:
+
+```bash
+curl -sS https://api.recoupable.com/api/accounts/$ACCOUNT_ID/payment-method \
+  -H "x-api-key: $RECOUP_API_KEY"
+```
+
+Response shape:
+
+```json
+{
+  "account_id": "acc_…",
+  "card": {
+    "brand": "visa",
+    "last4": "4242",
+    "exp_month": 12,
+    "exp_year": 2026,
+    "funding": "credit"
+  }
+}
+```
+
+`card` is `null` when no payment method has been saved yet — the next top-up call will route through Stripe Checkout to collect one. Expired cards are still returned (with their original `exp_month` / `exp_year`); callers should compare against the current date and warn the user, since an off-session charge against an expired card will decline. Full schema at [Get Default Payment Method](/api-reference/accounts/payment-method-get).
+
 ---
 
 ## Automatic top-up
