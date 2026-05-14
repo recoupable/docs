@@ -108,7 +108,7 @@ Response shape:
 }
 ```
 
-`card` is `null` when no payment method has been saved yet — the next top-up call will route through a checkout session to collect one. Expired cards are still returned (with their original `exp_month` / `exp_year`); callers should compare against the current date and warn the user, since an off-session charge against an expired card will decline. Full schema at [Get Default Payment Method](/api-reference/accounts/payment-method-get).
+`card` is `null` when no payment method has been saved yet — the next top-up call will route through a checkout session to collect one. Expired cards are still returned (with their original `exp_month` / `exp_year`); callers should compare against the current date and warn the customer, since an off-session charge against an expired card will decline. Full schema at [Get Default Payment Method](/api-reference/accounts/payment-method-get).
 
 ---
 
