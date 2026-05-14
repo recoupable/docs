@@ -149,11 +149,11 @@ Current as of this revision of the page. The authoritative source is the per-end
 
 | Endpoint | Cost |
 |----------|------|
-| `POST /api/chat` (streaming) | ≥1 credit per turn — variable based on model token usage |
-| `GET /api/research/*` (artist & non-artist research) | 5 credits per call |
-| `POST /api/research/people` | 5 credits per call |
-| `POST /api/research/web` | 5 credits per call |
-| `POST /api/research/extract` | 5 credits × number of URLs |
-| `POST /api/research/enrich` | 5 / 10 / 25 credits (base / core / ultra processor) |
-| `POST /api/research/deep` | 25 credits per call |
-| `POST /api/image/generate` | Per-call price; see endpoint reference |
+| [`POST /api/chat`](/api-reference/chat/stream) (streaming) | ≥1 credit per turn — variable based on model token usage |
+| [`GET /api/research/*`](/api-reference/research/search) (artist & non-artist research) | 5 credits per call |
+| [`POST /api/research/people`](/api-reference/research/people) | 5 credits per call |
+| [`POST /api/research/web`](/api-reference/research/web) | 5 credits per call |
+| [`POST /api/research/extract`](/api-reference/research/extract) | 5 credits × number of URLs |
+| [`POST /api/research/enrich`](/api-reference/research/enrich) | 5 / 10 / 25 credits (base / core / ultra processor) |
+| [`POST /api/research/deep`](/api-reference/research/deep) | 25 credits per call |
+| [`POST /api/image/generate`](/api-reference/image/generation) | Per-call price; see endpoint reference |
