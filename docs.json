@@ -317,6 +317,17 @@
             ]
           },
           {
+            "group": "Billing",
+            "pages": [
+              "api-reference/subscriptions/sessions-create",
+              "api-reference/subscriptions/portal-create",
+              "api-reference/accounts/subscription-get",
+              "api-reference/credits/sessions-create",
+              "api-reference/accounts/credits-get",
+              "api-reference/accounts/payment-method-get"
+            ]
+          },
+          {
             "group": "Pulses",
             "pages": [
               "api-reference/pulses/update",
@@ -335,17 +346,6 @@
             "group": "Workspaces",
             "pages": [
               "api-reference/workspaces/create"
-            ]
-          },
-          {
-            "group": "Billing",
-            "pages": [
-              "api-reference/subscriptions/sessions-create",
-              "api-reference/subscriptions/portal-create",
-              "api-reference/accounts/subscription-get",
-              "api-reference/credits/sessions-create",
-              "api-reference/accounts/credits-get",
-              "api-reference/accounts/payment-method-get"
             ]
           },
           {
