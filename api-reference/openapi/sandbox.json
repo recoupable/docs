@@ -206,7 +206,7 @@
             }
           },
           "400": {
-            "description": "Invalid request — malformed JSON, sandbox not initialized, invalid or empty path, absolute path, path with `..` or `.git` segments, or `oldPath` provided without `filePath`.",
+            "description": "Invalid request — malformed JSON, sandbox not initialized, invalid or empty path, absolute path, path with `..`, `.`, `.git`, or null bytes, or `oldPath` provided without `filePath`.",
             "content": {
               "application/json": {
                 "schema": {
@@ -236,7 +236,7 @@
             }
           },
           "404": {
-            "description": "Not found — no session with the given `sessionId`, or the specified path has no uncommitted changes.",
+            "description": "Not found — session: no session exists with the given `sessionId`. Targeted discard: when `filePath` is provided, the specified path has no uncommitted changes to discard.",
             "content": {
               "application/json": {
                 "schema": {
