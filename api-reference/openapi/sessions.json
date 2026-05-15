@@ -933,7 +933,7 @@
       },
       "SessionChatResponse": {
         "type": "object",
-        "description": "Response body for `GET /api/sessions/{sessionId}/chats/{chatId}`.",
+        "description": "Response body for `GET /api/sessions/{sessionId}/chats/{chatId}`. Carries the full chat row plus its streaming state and persisted UI message stream — enough for both initial render and in-tab refresh.",
         "required": [
           "chat",
           "isStreaming",
@@ -941,28 +941,7 @@
         ],
         "properties": {
           "chat": {
-            "type": "object",
-            "required": [
-              "id",
-              "modelId",
-              "activeStreamId"
-            ],
-            "properties": {
-              "id": {
-                "type": "string",
-                "description": "Chat id."
-              },
-              "modelId": {
-                "type": "string",
-                "nullable": true,
-                "description": "AI Gateway model identifier the chat is configured to use, if any."
-              },
-              "activeStreamId": {
-                "type": "string",
-                "nullable": true,
-                "description": "Id of an in-flight assistant stream, if one is active."
-              }
-            }
+            "$ref": "#/components/schemas/Chat"
           },
           "isStreaming": {
             "type": "boolean",
