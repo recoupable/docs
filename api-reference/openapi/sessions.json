@@ -382,6 +382,105 @@
           }
         }
       }
+    },
+    "/api/sessions/{sessionId}/chats/{chatId}": {
+      "patch": {
+        "operationId": "patchSessionChatById",
+        "summary": "Update session chat",
+        "description": "Renames the chat and/or updates its configured model id. Both body fields are optional in the schema, but **at least one** must be supplied with a non-empty value after trimming — otherwise `400`. The chat must belong to the given session and the authenticated account must own that session.",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the parent session.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the chat to update.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchSessionChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Chat updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateSessionChatResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — malformed JSON body, empty body, or neither `title` nor `modelId` provided with a non-empty trimmed value.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key / Bearer token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — the authenticated account does not own this session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — no session exists with the given id, no chat exists with the given id, or the chat does not belong to this session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error — the chat could not be updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -431,6 +530,20 @@
               "vercel"
             ],
             "description": "Which sandbox provider to use. Currently only `vercel` is accepted."
+          }
+        }
+      },
+      "PatchSessionChatRequest": {
+        "type": "object",
+        "description": "At least one property must be sent with a non-empty trimmed string value. Omitting both or sending only whitespace yields `400`.",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "New display title for the chat (rename)."
+          },
+          "modelId": {
+            "type": "string",
+            "description": "AI Gateway model identifier for this chat (e.g. `openai/gpt-5.4`). The server may normalize or reject models not allowed for the caller."
           }
         }
       },
