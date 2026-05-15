@@ -1966,7 +1966,7 @@
             "name": "page",
             "in": "query",
             "required": false,
-            "description": "1-indexed page number. Server returns rows `(page - 1) * limit` through `page * limit - 1`. Defaults to 1. Use `has_more` in the response to drive a 'load more' control.",
+            "description": "1-indexed page number. Server returns rows `(page - 1) * limit` through `page * limit - 1`. Defaults to 1. Use `total_count` in the response to drive a 'load more' control (`page * limit < total_count`).",
             "schema": {
               "type": "integer",
               "minimum": 1,
@@ -2042,7 +2042,7 @@
             "name": "page",
             "in": "query",
             "required": false,
-            "description": "1-indexed page number. Server returns rows `(page - 1) * limit` through `page * limit - 1`. Defaults to 1. Use `has_more` in the response to drive a 'load more' control on the drilldown.",
+            "description": "1-indexed page number. Server returns rows `(page - 1) * limit` through `page * limit - 1`. Defaults to 1. Use `total_count` in the response to drive a 'load more' control on the drilldown (`page * limit < total_count`).",
             "schema": {
               "type": "integer",
               "minimum": 1,
@@ -2175,7 +2175,7 @@
     "schemas": {
       "AdminCreditsRollupResponse": {
         "type": "object",
-        "required": ["status", "period", "page", "limit", "has_more", "total_count", "rows"],
+        "required": ["status", "period", "page", "limit", "total_count", "rows"],
         "properties": {
           "status": {
             "type": "string",
@@ -2197,14 +2197,10 @@
             "minimum": 1,
             "description": "Page size used for this response (echoes the request, or the default if omitted)"
           },
-          "has_more": {
-            "type": "boolean",
-            "description": "True when at least one additional row exists past this page — drives the 'load more' control. Computed by fetching `limit + 1` rows server-side and checking whether the extra row came back."
-          },
           "total_count": {
             "type": "integer",
             "minimum": 0,
-            "description": "Total number of distinct accounts with at least one `usage_events` row in the selected period (i.e. the size of the full result set before pagination). Lets the UI show 'X of Y accounts'. Computed via a separate `COUNT(DISTINCT account_id)` query."
+            "description": "Total number of distinct accounts with at least one `usage_events` row in the selected period (i.e. the size of the full result set before pagination). The client derives `has_more` as `page * limit < total_count` and shows 'X of Y accounts'. Computed via a `COUNT(DISTINCT account_id)` query alongside the paginated row fetch."
           },
           "rows": {
             "type": "array",
@@ -2248,7 +2244,7 @@
       },
       "AdminCreditsEventsResponse": {
         "type": "object",
-        "required": ["status", "account_id", "period", "page", "limit", "has_more", "total_count", "events"],
+        "required": ["status", "account_id", "period", "page", "limit", "total_count", "events"],
         "properties": {
           "status": {
             "type": "string",
@@ -2275,14 +2271,10 @@
             "minimum": 1,
             "description": "Page size used for this response (echoes the request, or the default if omitted)"
           },
-          "has_more": {
-            "type": "boolean",
-            "description": "True when at least one additional event exists past this page — drives the 'load more' control on the drilldown. Same `limit + 1` probe as the rollup endpoint."
-          },
           "total_count": {
             "type": "integer",
             "minimum": 0,
-            "description": "Total number of `usage_events` rows for this account in the selected period (i.e. the size of the full result set before pagination). Lets the drilldown UI show 'X of Y events'. Computed via a separate `COUNT(*)` query."
+            "description": "Total number of `usage_events` rows for this account in the selected period (i.e. the size of the full result set before pagination). The client derives `has_more` as `page * limit < total_count` and shows 'X of Y events'. Computed via a `COUNT(*)` query alongside the paginated row fetch."
           },
           "events": {
             "type": "array",
