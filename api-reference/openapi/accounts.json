@@ -1935,6 +1935,129 @@
         }
       }
     },
+    "/api/admins/credits/rollup": {
+      "get": {
+        "description": "Returns the per-account rollup of credit usage over the selected period, sorted by total credits deducted descending. Each row carries the account identity (UUID + display name + primary email) and the aggregated spend so the admin dashboard can render a top-spenders table without joining client-side. Pair with `GET /api/admins/credits/events?account_id=…&period=…` to drill into the individual `usage_events` rows for a single account. Requires the authenticated account to be a Recoup admin.",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "description": "Rollup window. `daily` = today (last 1 day), `weekly` = last 7 days, `monthly` = last 30 days, `all` = no cutoff (every event ever recorded). Defaults to `monthly`. Follows the existing admin period convention.",
+            "schema": {
+              "type": "string",
+              "enum": ["all", "daily", "weekly", "monthly"],
+              "default": "monthly"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Maximum number of accounts to return, sorted by total credits deducted descending. Defaults to 100; max 500.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          }
+        ],
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
+        "responses": {
+          "200": {
+            "description": "Credit usage rollup retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AdminCreditsRollupResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid `period` or `limit` parameter",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/AccountErrorResponse" } }
+            }
+          },
+          "401": { "description": "Unauthorized - missing or invalid credentials" },
+          "403": { "description": "Forbidden - authenticated account is not a Recoup admin" },
+          "500": {
+            "description": "Internal server error while computing the rollup",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/AccountErrorResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/admins/credits/events": {
+      "get": {
+        "description": "Returns the raw `usage_events` rows for a single account over the selected period, sorted by `created_at` descending. Powers the drilldown view that expands when a row in the [`/api/admins/credits/rollup`](/api-reference/admins/credits-rollup) table is opened. Each event represents one debit (main agent turn, subagent step, chat completion, or research call), with token counts and `credits_deducted_cents` matching the wallet drop on `credits_usage` for that account. Requires the authenticated account to be a Recoup admin.",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "query",
+            "required": true,
+            "description": "UUID of the account whose `usage_events` rows to return.",
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "description": "Window to filter `created_at` against. Same semantics as the rollup endpoint. Defaults to `monthly`.",
+            "schema": {
+              "type": "string",
+              "enum": ["all", "daily", "weekly", "monthly"],
+              "default": "monthly"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Maximum number of events to return, sorted by `created_at` descending. Defaults to 100; max 500.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          }
+        ],
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usage events retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AdminCreditsEventsResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or invalid `account_id`, `period`, or `limit`",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/AccountErrorResponse" } }
+            }
+          },
+          "401": { "description": "Unauthorized - missing or invalid credentials" },
+          "403": { "description": "Forbidden - authenticated account is not a Recoup admin" },
+          "500": {
+            "description": "Internal server error while fetching usage events",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/AccountErrorResponse" } }
+            }
+          }
+        }
+      }
+    },
     "/api/agents/signup": {
       "post": {
         "description": "Register an agent. For new agent+ emails, returns an API key immediately. For all other cases, sends a verification code to the email \u2014 call [POST /api/agents/verify](/api-reference/agents/verify) with the code to get your API key.\n\n**Tip:** If you're unsure what email to register, generate a unique `agent+{suffix}@recoupable.com` address (e.g. `agent+1744410896-28439@recoupable.com`, combining a Unix timestamp with a random integer). This guarantees a fresh `agent+` address on every call \u2014 including multiple signups within the same second \u2014 and returns an API key instantly with no email verification required.",
@@ -2028,6 +2151,154 @@
       }
     },
     "schemas": {
+      "AdminCreditsRollupResponse": {
+        "type": "object",
+        "required": ["status", "period", "rows"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"],
+            "description": "Status of the request"
+          },
+          "period": {
+            "type": "string",
+            "enum": ["all", "daily", "weekly", "monthly"],
+            "description": "The period the response was computed over (echoes the request)"
+          },
+          "rows": {
+            "type": "array",
+            "description": "Per-account credit usage totals, sorted by `total_credits_deducted_cents` descending",
+            "items": {
+              "type": "object",
+              "required": ["account_id", "total_credits_deducted_cents", "event_count"],
+              "properties": {
+                "account_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "UUID of the account"
+                },
+                "account_name": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Display name from the `accounts` table; null if the account has no name set"
+                },
+                "account_email": {
+                  "type": "string",
+                  "format": "email",
+                  "nullable": true,
+                  "description": "Primary email from `account_emails` joined for human-readable rows; null if no email is on file"
+                },
+                "total_credits_deducted_cents": {
+                  "type": "integer",
+                  "description": "Sum of `usage_events.credits_deducted_cents` across every event for this account in the selected period"
+                },
+                "event_count": {
+                  "type": "integer",
+                  "description": "Number of `usage_events` rows aggregated into this total"
+                }
+              }
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message (only present if status is 'error')"
+          }
+        }
+      },
+      "AdminCreditsEventsResponse": {
+        "type": "object",
+        "required": ["status", "account_id", "period", "events"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"],
+            "description": "Status of the request"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account whose events were returned (echoes the request)"
+          },
+          "period": {
+            "type": "string",
+            "enum": ["all", "daily", "weekly", "monthly"],
+            "description": "The period the response was filtered to (echoes the request)"
+          },
+          "events": {
+            "type": "array",
+            "description": "Raw `usage_events` rows, sorted by `created_at` descending",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "created_at",
+                "source",
+                "agent_type",
+                "input_tokens",
+                "cached_input_tokens",
+                "output_tokens",
+                "tool_call_count",
+                "credits_deducted_cents"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "nanoid primary key of the `usage_events` row"
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "When the event was recorded"
+                },
+                "source": {
+                  "type": "string",
+                  "enum": ["web", "api"],
+                  "description": "Which surface originated the debit. `web` = open-agents chat. `api` = recoupable api (chat completion or research call)."
+                },
+                "agent_type": {
+                  "type": "string",
+                  "enum": ["main", "subagent"],
+                  "description": "`main` for the top-level agent turn or any non-agent debit; `subagent` for a nested task-tool step"
+                },
+                "provider": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Provider slug (e.g. `anthropic`). Null when the debit isn't tied to a specific provider (e.g. research)."
+                },
+                "model_id": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Gateway model slug (e.g. `anthropic/claude-opus-4.6`). Null for research/x402-style debits."
+                },
+                "input_tokens": {
+                  "type": "integer",
+                  "description": "Total input tokens for the call (including cached). 0 for non-LLM debits."
+                },
+                "cached_input_tokens": {
+                  "type": "integer",
+                  "description": "Subset of `input_tokens` that hit the provider cache (priced at the cache-read rate)."
+                },
+                "output_tokens": {
+                  "type": "integer",
+                  "description": "Output tokens for the call. 0 for non-LLM debits."
+                },
+                "tool_call_count": {
+                  "type": "integer",
+                  "description": "Number of tool calls observed in this step"
+                },
+                "credits_deducted_cents": {
+                  "type": "integer",
+                  "description": "The amount debited from `credits_usage.remaining_credits` for this event. Same value the wallet dropped by on this turn."
+                }
+              }
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message (only present if status is 'error')"
+          }
+        }
+      },
       "ArtistsProResponse": {
         "type": "object",
         "required": [
