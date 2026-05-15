@@ -1937,7 +1937,7 @@
     },
     "/api/admins/credits/rollup": {
       "get": {
-        "description": "Returns the per-account rollup of credit usage over the selected period, sorted by total credits deducted descending. Each row carries the account identity (UUID + display name + primary email) and the aggregated spend so the admin dashboard can render a top-spenders table without joining client-side. Pair with `GET /api/admins/credits/events?account_id=…&period=…` to drill into the individual `usage_events` rows for a single account. Requires the authenticated account to be a Recoup admin.",
+        "description": "Returns the per-account rollup of credit usage over the selected period, sorted by total credits deducted descending. Each row carries the account identity (UUID + display name + primary email) and the aggregated spend so the admin dashboard can render a top-spenders table without joining client-side. Pair with [`GET /api/admins/credits/events?account_id=…&period=…`](/api-reference/admins/credits-events) to drill into the individual `usage_events` rows for a single account. Requires the authenticated account to be a Recoup admin.",
         "parameters": [
           {
             "name": "period",
