@@ -2175,7 +2175,7 @@
     "schemas": {
       "AdminCreditsRollupResponse": {
         "type": "object",
-        "required": ["status", "period", "page", "limit", "has_more", "rows"],
+        "required": ["status", "period", "page", "limit", "has_more", "total_count", "rows"],
         "properties": {
           "status": {
             "type": "string",
@@ -2200,6 +2200,11 @@
           "has_more": {
             "type": "boolean",
             "description": "True when at least one additional row exists past this page — drives the 'load more' control. Computed by fetching `limit + 1` rows server-side and checking whether the extra row came back."
+          },
+          "total_count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Total number of distinct accounts with at least one `usage_events` row in the selected period (i.e. the size of the full result set before pagination). Lets the UI show 'X of Y accounts'. Computed via a separate `COUNT(DISTINCT account_id)` query."
           },
           "rows": {
             "type": "array",
@@ -2243,7 +2248,7 @@
       },
       "AdminCreditsEventsResponse": {
         "type": "object",
-        "required": ["status", "account_id", "period", "page", "limit", "has_more", "events"],
+        "required": ["status", "account_id", "period", "page", "limit", "has_more", "total_count", "events"],
         "properties": {
           "status": {
             "type": "string",
@@ -2273,6 +2278,11 @@
           "has_more": {
             "type": "boolean",
             "description": "True when at least one additional event exists past this page — drives the 'load more' control on the drilldown. Same `limit + 1` probe as the rollup endpoint."
+          },
+          "total_count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Total number of `usage_events` rows for this account in the selected period (i.e. the size of the full result set before pagination). Lets the drilldown UI show 'X of Y events'. Computed via a separate `COUNT(*)` query."
           },
           "events": {
             "type": "array",
