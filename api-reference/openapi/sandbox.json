@@ -206,7 +206,7 @@
             }
           },
           "400": {
-            "description": "Invalid request — malformed JSON, sandbox not initialized, invalid or empty path, absolute path, path with `..` or `.git` segments, or `oldPath` without `filePath`.",
+            "description": "Invalid request — malformed JSON, sandbox not initialized, invalid or empty path, absolute path, path with `..` or `.git` segments, or `oldPath` provided without `filePath`.",
             "content": {
               "application/json": {
                 "schema": {
