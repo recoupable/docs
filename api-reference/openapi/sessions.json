@@ -382,6 +382,114 @@
           }
         }
       }
+    },
+    "/api/sessions/{sessionId}/chats/{chatId}/messages": {
+      "post": {
+        "summary": "Persist assistant chat message",
+        "description": "Upserts an **assistant** UI message into the chat identified by `chatId` under `sessionId`. Intended for agent workflows persisting streamed output (AI SDK UI message shape). The server accepts only messages with `role: assistant`, a non-empty string `id`, and a `parts` array; other payloads yield **400**. Duplicate message ids already tied to another chat or role yield **409**.",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the parent session.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the chat to write into.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PersistAssistantMessageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Message upserted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersistAssistantMessageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON body, or `message` is missing / not a valid assistant UI message.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersistAssistantMessageBadRequest"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key / Bearer token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — the authenticated account does not own this session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — no session exists with the given id, or no chat exists under that session for `chatId`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict — the message id already belongs to a different chat or role.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageIdConflictError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error — the message could not be persisted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -657,6 +765,94 @@
             "type": "string",
             "enum": [
               "Chat ID conflict"
+            ]
+          }
+        }
+      },
+      "PersistAssistantMessageRequest": {
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "$ref": "#/components/schemas/AssistantUIMessage"
+          }
+        }
+      },
+      "AssistantUIMessage": {
+        "type": "object",
+        "description": "Minimal assistant-branch AI SDK UI message. Servers validate `role === \"assistant\"`, string `id`, and array `parts`; extra keys are allowed on the payload.",
+        "required": [
+          "id",
+          "role",
+          "parts"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Stable message id used for upsert."
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "assistant"
+            ]
+          },
+          "parts": {
+            "type": "array",
+            "description": "Message parts (text, reasoning, tool calls, etc.) as produced by the UI/agent pipeline.",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "PersistAssistantMessageResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "status"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "status": {
+            "type": "string",
+            "description": "Upsert outcome from persistence (e.g. `inserted` when a new row was written, `updated` when an existing row was replaced)."
+          }
+        }
+      },
+      "PersistAssistantMessageBadRequest": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "e.g. `Invalid JSON body` or `A valid assistant message is required`."
+          }
+        }
+      },
+      "MessageIdConflictError": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "enum": [
+              "Message ID already belongs to a different chat or role"
             ]
           }
         }
