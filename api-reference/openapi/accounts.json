@@ -1954,12 +1954,23 @@
             "name": "limit",
             "in": "query",
             "required": false,
-            "description": "Maximum number of accounts to return, sorted by total credits deducted descending. Defaults to 100; max 500.",
+            "description": "Page size — number of accounts to return per request, sorted by total credits deducted descending. Defaults to 100; max 500.",
             "schema": {
               "type": "integer",
               "minimum": 1,
               "maximum": 500,
               "default": 100
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "1-indexed page number. Server returns rows `(page - 1) * limit` through `page * limit - 1`. Defaults to 1. Use `has_more` in the response to drive a 'load more' control.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
             }
           }
         ],
@@ -2019,12 +2030,23 @@
             "name": "limit",
             "in": "query",
             "required": false,
-            "description": "Maximum number of events to return, sorted by `created_at` descending. Defaults to 100; max 500.",
+            "description": "Page size — number of events to return per request, sorted by `created_at` descending. Defaults to 100; max 500.",
             "schema": {
               "type": "integer",
               "minimum": 1,
               "maximum": 500,
               "default": 100
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "1-indexed page number. Server returns rows `(page - 1) * limit` through `page * limit - 1`. Defaults to 1. Use `has_more` in the response to drive a 'load more' control on the drilldown.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
             }
           }
         ],
@@ -2153,7 +2175,7 @@
     "schemas": {
       "AdminCreditsRollupResponse": {
         "type": "object",
-        "required": ["status", "period", "rows"],
+        "required": ["status", "period", "page", "limit", "has_more", "rows"],
         "properties": {
           "status": {
             "type": "string",
@@ -2164,6 +2186,20 @@
             "type": "string",
             "enum": ["all", "daily", "weekly", "monthly"],
             "description": "The period the response was computed over (echoes the request)"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "1-indexed page returned (echoes the request, or 1 if omitted)"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Page size used for this response (echoes the request, or the default if omitted)"
+          },
+          "has_more": {
+            "type": "boolean",
+            "description": "True when at least one additional row exists past this page — drives the 'load more' control. Computed by fetching `limit + 1` rows server-side and checking whether the extra row came back."
           },
           "rows": {
             "type": "array",
@@ -2207,7 +2243,7 @@
       },
       "AdminCreditsEventsResponse": {
         "type": "object",
-        "required": ["status", "account_id", "period", "events"],
+        "required": ["status", "account_id", "period", "page", "limit", "has_more", "events"],
         "properties": {
           "status": {
             "type": "string",
@@ -2223,6 +2259,20 @@
             "type": "string",
             "enum": ["all", "daily", "weekly", "monthly"],
             "description": "The period the response was filtered to (echoes the request)"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "1-indexed page returned (echoes the request, or 1 if omitted)"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Page size used for this response (echoes the request, or the default if omitted)"
+          },
+          "has_more": {
+            "type": "boolean",
+            "description": "True when at least one additional event exists past this page — drives the 'load more' control on the drilldown. Same `limit + 1` probe as the rollup endpoint."
           },
           "events": {
             "type": "array",
