@@ -885,18 +885,24 @@
       },
       "UpdateSessionChatRequest": {
         "type": "object",
-        "description": "Body for `PATCH /api/sessions/{sessionId}/chats/{chatId}`. At least one of `title` or `modelId` must be provided. `title` is trimmed; both must be non-empty after trimming.",
-        "minProperties": 1,
+        "description": "Body for `PATCH /api/sessions/{sessionId}/chats/{chatId}`. At least one of `title` or `modelId` must be provided; whichever is provided is trimmed and must be non-empty after trimming.",
+        "additionalProperties": false,
+        "anyOf": [
+          { "required": ["title"] },
+          { "required": ["modelId"] }
+        ],
         "properties": {
           "title": {
             "type": "string",
             "minLength": 1,
-            "description": "New display title for the chat."
+            "pattern": "\\S",
+            "description": "New display title for the chat. Trimmed; must be non-empty after trimming."
           },
           "modelId": {
             "type": "string",
             "minLength": 1,
-            "description": "AI Gateway model identifier the chat should be configured to use."
+            "pattern": "\\S",
+            "description": "AI Gateway model identifier the chat should be configured to use. Trimmed; must be non-empty after trimming."
           }
         }
       },
