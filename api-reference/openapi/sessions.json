@@ -401,7 +401,7 @@
             "name": "chatId",
             "in": "path",
             "required": true,
-            "description": "The id of the chat to write into.",
+            "description": "The target chat id under `sessionId` — the same opaque string returned by `POST /api/sessions/{sessionId}/chats` or listed by `GET /api/sessions/{sessionId}/chats`.",
             "schema": {
               "type": "string"
             }
@@ -469,7 +469,7 @@
             }
           },
           "409": {
-            "description": "Conflict — the message id already belongs to a different chat or role.",
+            "description": "Message id conflict — the message id already belongs to a different chat or role.",
             "content": {
               "application/json": {
                 "schema": {
@@ -611,7 +611,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Chat id (nanoid)."
+            "description": "Opaque chat id returned by list/create endpoints. Callers may supply `id` on `POST /api/sessions/{sessionId}/chats`; when omitted the server generates a UUID."
           },
           "sessionId": {
             "type": "string",
@@ -804,10 +804,7 @@
           "parts": {
             "type": "array",
             "description": "Message parts (text, reasoning, tool calls, etc.) as produced by the UI/agent pipeline.",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
+            "items": true
           }
         },
         "additionalProperties": true
