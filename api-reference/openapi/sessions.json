@@ -382,6 +382,75 @@
           }
         }
       }
+    },
+    "/api/sessions/{sessionId}/chats/{chatId}/read": {
+      "post": {
+        "summary": "Mark session chat as read",
+        "description": "Upserts the caller's `chat_reads` row for the chat, setting `lastReadAt` to the current time. Idempotent — safe to call repeatedly. After success, `hasUnread` is false for this chat on `GET /api/sessions/{sessionId}/chats` until new assistant activity arrives.",
+        "operationId": "markSessionChatRead",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the parent session.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the chat to mark read.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat marked read successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarkChatReadResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key / Bearer token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — the authenticated account does not own this session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the session or chat does not exist, or the chat does not belong to this session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -813,6 +882,18 @@
           "updatedAt": {
             "type": "string",
             "format": "date-time"
+          }
+        }
+      },
+      "MarkChatReadResponse": {
+        "type": "object",
+        "required": [
+          "success"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Always `true` on success."
           }
         }
       },
