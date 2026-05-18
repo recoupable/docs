@@ -8,17 +8,13 @@ description: "Use the Recoup API to build your record label. Access research, co
 Use the Recoup API to build your record label. Generate content, Access artist analytics, Manage catalogs, Team chats, and task automation to power your record labels.
 
 <Note>
-**Setting up Recoup in Claude Code?** Run these two commands inside Claude Code:
+**Setting up Recoup in Claude?**
 
-```text
-/plugin marketplace add recoupable/skills
-```
+1. In Claude, open **Customize → Browse plugins** and install **Recoupable**.
+2. Ask Claude:
+   > Run the `recoup-setup` skill.
 
-Then ask Claude:
-
-> Run the `recoup-setup` skill.
-
-It will issue an API key, save it locally, and seed memory so Claude knows to use Recoup whenever you ask about streaming data, campaigns, artists, releases, or syncing documents.
+The skill verifies your email, issues an API key, saves it locally, and prints a memory block to paste into **Settings → Global instructions** so Claude knows to use Recoup whenever you ask about streaming data, campaigns, artists, releases, or syncing documents.
 </Note>
 
 ## Quickest start — one curl call
