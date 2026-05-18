@@ -448,6 +448,16 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Server error — the read state could not be persisted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
