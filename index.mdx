@@ -8,9 +8,34 @@ description: "Use the Recoup API to build your record label. Access research, co
 Use the Recoup API to build your record label. Generate content, Access artist analytics, Manage catalogs, Team chats, and task automation to power your record labels.
 
 <Note>
-**Setting up Recoup in Claude?**
+**Setting up Recoup in Claude?** Recoup ships as a Claude plugin distributed through a **private organization marketplace** — Team or Enterprise plan required.
 
-1. In Claude, open **Customize → Browse plugins** and install **Recoupable**.
+**For your IT admin (one-time setup)**
+
+1. Create a private GitHub repo in your org (e.g. `your-org/claude-plugins`) with a single file at `.claude-plugin/marketplace.json`:
+
+   ```json
+   {
+     "name": "recoupable",
+     "owner": { "name": "Recoupable", "email": "agent@recoupable.com" },
+     "plugins": [
+       {
+         "name": "recoupable",
+         "description": "Music industry skills — artists, songs, releases, content, analytics",
+         "source": { "source": "github", "repo": "recoupable/skills" }
+       }
+     ]
+   }
+   ```
+
+2. Install the [Claude GitHub App](https://github.com/apps/claude) on that repo.
+3. In Claude: **Organization settings → Plugins → Add plugin → GitHub** and select the repo. Initial sync is automatic.
+
+Full admin walkthrough: [Manage Claude plugins for your organization](https://support.claude.com/en/articles/13837433-manage-claude-cowork-plugins-for-your-organization).
+
+**For everyone else (after the admin step above)**
+
+1. Open Claude → **Customize → Browse plugins** and install **Recoupable**.
 2. Ask Claude:
    > Run the `recoup-setup` skill.
 
