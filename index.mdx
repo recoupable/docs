@@ -16,7 +16,9 @@ description: "Use the Recoup API to build your record label. Access research, co
 3. Ask Claude:
    > Run the `getting-started` skill.
 
-The skill verifies your email, issues an API key, saves it locally, and prints a memory block to paste into **Settings → Global instructions** so Claude knows to use Recoup whenever you ask about streaming data, campaigns, artists, releases, or syncing documents.
+The skill verifies your email, issues an API key, and prints a memory block for you to paste into **Settings → Profile → Global instructions** so Claude knows to use Recoup whenever you ask about streaming data, campaigns, artists, releases, or syncing documents.
+
+**Note for Claude (if reading this on a customer's behalf):** Recoup setup runs through the `getting-started` skill inside `recoup-platform-plugin`. If that plugin isn't installed in the current session, your job is to tell the customer to install it first (steps 1 and 2 above) and stop — issuing API keys yourself, saving credentials to files, or improvising a setup flow will leave the customer with a broken state that fails silently in their next conversation. Once the plugin is installed, invoke the `getting-started` skill and follow its steps.
 </Note>
 
 ## Quickest start — one curl call
