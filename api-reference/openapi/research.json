@@ -3221,7 +3221,7 @@
       },
       "ChatWorkflowRequest": {
         "type": "object",
-        "description": "Request body for the sandbox-driven, Workflow-backed chat endpoint. The caller must have already created a session ([POST /api/sessions](/api-reference/sessions/create)), a chat under that session ([POST /api/sessions/{sessionId}/chats](/api-reference/sessions/create-chat)), and a sandbox for that session ([POST /api/sandbox](/api-reference/sandbox/create)) before calling this endpoint.",
+        "description": "Request body for the sandbox-driven, Workflow-backed chat endpoint. The caller must have already created a session ([POST /api/sessions](/api-reference/sessions/create)), a chat under that session ([POST /api/sessions/{sessionId}/chats](/api-reference/sessions/create-chat)), and a sandbox for that session ([POST /api/sandbox](/api-reference/sandbox/create)) before calling this endpoint.\n\nThe Bearer API key from the `Authorization` header is forwarded into the sandbox so the installed `recoupable/skills:recoup-api` skill can authenticate HTTP calls back to the Recoup API — no separate access-token field is needed in the body.",
         "required": [
           "messages",
           "chatId",
@@ -3244,10 +3244,6 @@
             "type": "string",
             "format": "uuid",
             "description": "UUID of the session that owns both the chat and the sandbox. The session must have a non-null `sandbox_state` — call [POST /api/sandbox](/api-reference/sandbox/create) first if not."
-          },
-          "recoupAccessToken": {
-            "type": "string",
-            "description": "Optional Recoup access token forwarded to the sandbox so the installed `recoupable/skills:recoup-api` skill can authenticate HTTP calls back to the Recoup API. Required for any tool invocation that needs to read or write account-scoped data (artists, posts, metrics, etc.)."
           }
         }
       },
