@@ -58,25 +58,40 @@
         ]
       },
       {
-        "tab": "Research",
+        "tab": "Chats",
         "groups": [
           {
-            "group": "Chat",
+            "group": "Streaming",
             "pages": [
               "api-reference/chat/workflow",
               "api-reference/chat/stream",
+              "api-reference/chat/generate"
+            ]
+          },
+          {
+            "group": "Chats",
+            "pages": [
               "api-reference/chat/create",
               "api-reference/chat/chats",
               "api-reference/chat/artist",
-              "api-reference/chat/messages",
-              "api-reference/chat/messages-copy",
-              "api-reference/chat/messages-trailing-delete",
               "api-reference/chat/update",
               "api-reference/chat/delete",
-              "api-reference/chat/generate",
               "api-reference/chat/compact"
             ]
           },
+          {
+            "group": "Messages",
+            "pages": [
+              "api-reference/chat/messages",
+              "api-reference/chat/messages-copy",
+              "api-reference/chat/messages-trailing-delete"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Research",
+        "groups": [
           {
             "group": "Artist discovery",
             "pages": [
