@@ -592,6 +592,80 @@
         }
       }
     },
+    "/api/transcribe/voice": {
+      "post": {
+        "summary": "Transcribe voice",
+        "description": "Transcribe a short microphone recording into plain text. Accepts base64-encoded audio (up to 10 MB base64 / ~7.5 MB raw) and returns a single transcript string. Designed for real-time voice dictation in the chat UI.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Base64-encoded audio clip",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TranscribeVoiceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Voice transcribed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranscribeVoiceResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — missing or oversized audio field",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranscribeVoiceErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing or invalid Bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranscribeVoiceErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload too large — audio exceeds 10 MB base64 limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranscribeVoiceErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Transcription failed — provider error or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranscribeVoiceErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/content": {
       "patch": {
         "description": "Apply ffmpeg edits to a video — trim, crop, resize, or overlay text. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array.",
@@ -4142,6 +4216,51 @@
             },
             "description": "Array of uploaded file details"
           }
+        }
+      }
+    },
+    "TranscribeVoiceRequest": {
+      "type": "object",
+      "required": [
+        "audio"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "audio": {
+          "type": "string",
+          "description": "Base64-encoded audio data. Maximum 10 MB base64 (~7.5 MB raw audio).",
+          "example": "UklGRiQAAABXQVZFZm10IBAAAA..."
+        },
+        "mimeType": {
+          "type": "string",
+          "description": "MIME type of the audio clip (e.g. \"audio/webm\", \"audio/mp4\"). Informational only.",
+          "example": "audio/webm"
+        }
+      }
+    },
+    "TranscribeVoiceResponse": {
+      "type": "object",
+      "required": [
+        "text"
+      ],
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "Transcribed text from the audio clip.",
+          "example": "Hello, this is a test recording."
+        }
+      }
+    },
+    "TranscribeVoiceErrorResponse": {
+      "type": "object",
+      "required": [
+        "error"
+      ],
+      "properties": {
+        "error": {
+          "type": "string",
+          "description": "Error message describing what went wrong.",
+          "example": "Missing required field: audio"
         }
       }
     }
