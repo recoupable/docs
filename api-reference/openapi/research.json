@@ -793,8 +793,18 @@
               }
             }
           },
+          "403": {
+            "description": "The API key's account does not own the referenced `sessionId` or `chatId`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatStreamErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
-            "description": "Session or chat not found, or not owned by the API key's account.",
+            "description": "Session or chat not found.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3244,6 +3254,16 @@
             "type": "string",
             "format": "uuid",
             "description": "UUID of the session that owns both the chat and the sandbox. The session must have a non-null `sandbox_state` — call [POST /api/sandbox](/api-reference/sandbox/create) first if not."
+          },
+          "context": {
+            "type": "object",
+            "description": "Optional per-prompt context overrides forwarded into the agent loop.",
+            "properties": {
+              "contextLimit": {
+                "type": "integer",
+                "description": "Upper bound on the number of tokens / messages of conversation history the agent should consider for this prompt. Overrides the model's default for this call only."
+              }
+            }
           }
         }
       },
