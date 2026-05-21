@@ -72,7 +72,8 @@
               "api-reference/chat/update",
               "api-reference/chat/delete",
               "api-reference/chat/generate",
-              "api-reference/chat/compact"
+              "api-reference/chat/compact",
+              "api-reference/chat/stop"
             ]
           },
           {

@@ -733,6 +733,63 @@
         }
       }
     },
+    "/api/chat/{chatId}/stop": {
+      "post": {
+        "description": "Stop the workflow currently streaming for a chat. Cancels the running agent workflow and clears the chat's active stream so a new message can be sent. Idempotent: returns `stopped: false` when no workflow is active. Authenticate with a Privy Bearer token or `x-api-key`; the chat must belong to the authenticated account.",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "description": "UUID of the chat whose workflow should be stopped.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stop request processed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StopChatWorkflowResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The chat belongs to a different account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatGenerateErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Chat not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatGenerateErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/research": {
       "get": {
         "description": "Unified Chartmetric search. This is the discovery primitive for the detail-lookup endpoints — use `type=artists` to find an `id` for [GET /api/research/albums](/api-reference/research/albums), `type=tracks` for [GET /api/research/track](/api-reference/research/track), `type=playlists` for [GET /api/research/playlist](/api-reference/research/playlist), etc. Pick the right `id` from the returned results and pass it to the appropriate detail endpoint.\n\nThin proxy over Chartmetric's `/search`. Chartmetric's default search engine is narrow — for ambiguous queries like `Hotline Bling` or `Flowers` it often returns a single low-quality match. **Pass `beta=true` for higher relevance and accuracy**, which switches Chartmetric to its improved ranking engine. Beta results include a numeric `match_strength` score and have a slightly different shape than the default engine (see the response schema).",
@@ -2857,6 +2914,25 @@
       }
     },
     "schemas": {
+      "StopChatWorkflowResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "stopped"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Always true when the request was processed.",
+            "example": true
+          },
+          "stopped": {
+            "type": "boolean",
+            "description": "True when an active workflow was cancelled; false when no workflow was running.",
+            "example": true
+          }
+        }
+      },
       "ChatGenerateErrorResponse": {
         "type": "object",
         "required": [
