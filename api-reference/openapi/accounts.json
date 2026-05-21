@@ -550,6 +550,132 @@
         }
       }
     },
+    "/api/accounts/{id}/payment-method": {
+      "get": {
+        "description": "Retrieve the default payment method on file for an account. Returns `card: null` when no payment method has been saved yet \u2014 the top-up dialog uses this to decide whether to show a pre-charge confirmation (card present) or route to a checkout session to collect one (`card: null`). Cards are returned even when expired; callers should compare `exp_month` / `exp_year` against the current date and warn the customer, since an off-session charge against an expired card will decline.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the account. Must be the authenticated account or another accessible via organization membership.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default payment method retrieved successfully (may be `null` if none on file).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountPaymentMethodResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountPaymentMethodErrorResponse"
+                },
+                "example": {
+                  "error": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account not accessible to the authenticated account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountPaymentMethodErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountPaymentMethodErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/credits/sessions": {
+      "post": {
+        "description": "Top up credits on the authenticated account.\n\n**One credit equals one US cent (\\$0.01).** The customer is charged `credits` plus a Stripe processing fee (US card pricing: 2.9% + \\$0.30) \u2014 e.g. `credits: 10000` charges \\$103.30 total (\\$100.00 credits + \\$3.30 fee).\n\n**Two outcomes, distinguished by response shape:**\n\n- **Auto-charged** \u2014 if the account has a card on file (from a prior subscription or top-up), the card is charged immediately and the response is `{ paymentIntentId, creditsPurchased, totalCents }`. Credits land in the account's balance asynchronously via Stripe webhook (typically within seconds). No human interaction required.\n\n- **Checkout required** \u2014 if no card is on file, or the saved card requires 3-D Secure authentication, the response is `{ id, url }` with a hosted Stripe Checkout URL. Redirect to that URL; credits land on successful payment.\n\nClients should discriminate on the presence of `url` (Checkout) vs `paymentIntentId` (auto-charged). Cards entered through the Checkout fallback are saved for future top-ups, so a customer's second top-up typically auto-charges.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Top-up parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCreditsSessionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Top-up initiated successfully. Some fields are conditional on which path was taken \u2014 see each field's description.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreditsTopupResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreditsSessionErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreditsSessionErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/subscriptions/portal": {
       "post": {
         "description": "Create a subscription management session for the authenticated account. Returns a hosted URL where the customer can update payment method, view invoices, or cancel. The client should redirect the user to that URL.",
@@ -842,7 +968,7 @@
     },
     "/api/admins": {
       "get": {
-        "description": "Check if the authenticated account is a Recoup admin. An account is considered an admin if it is a member of the Recoup organization. No input parameters required — authentication is performed via the x-api-key or Authorization header.",
+        "description": "Check if the authenticated account is a Recoup admin. An account is considered an admin if it is a member of the Recoup organization. No input parameters required \u2014 authentication is performed via the x-api-key or Authorization header.",
         "parameters": [],
         "security": [
           {
@@ -1809,9 +1935,154 @@
         }
       }
     },
+    "/api/admins/credits/rollup": {
+      "get": {
+        "description": "Returns the per-account rollup of credit usage over the selected period, sorted by total credits deducted descending. Each row carries the account identity (UUID + display name + primary email) and the aggregated spend so the admin dashboard can render a top-spenders table without joining client-side. Pair with [`GET /api/admins/credits/events?account_id=…&period=…`](/api-reference/admins/credits-events) to drill into the individual `usage_events` rows for a single account. Requires the authenticated account to be a Recoup admin.",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "description": "Rollup window. `daily` = today (last 1 day), `weekly` = last 7 days, `monthly` = last 30 days, `all` = no cutoff (every event ever recorded). Defaults to `monthly`. Follows the existing admin period convention.",
+            "schema": {
+              "type": "string",
+              "enum": ["all", "daily", "weekly", "monthly"],
+              "default": "monthly"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Page size — number of accounts to return per request, sorted by total credits deducted descending. Defaults to 100; max 500.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "1-indexed page number. Server returns rows `(page - 1) * limit` through `page * limit - 1`. Defaults to 1. Use `total_count` in the response to drive a 'load more' control (`page * limit < total_count`).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          }
+        ],
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
+        "responses": {
+          "200": {
+            "description": "Credit usage rollup retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AdminCreditsRollupResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid `period` or `limit` parameter",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/AccountErrorResponse" } }
+            }
+          },
+          "401": { "description": "Unauthorized - missing or invalid credentials" },
+          "403": { "description": "Forbidden - authenticated account is not a Recoup admin" },
+          "500": {
+            "description": "Internal server error while computing the rollup",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/AccountErrorResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/admins/credits/events": {
+      "get": {
+        "description": "Returns the raw `usage_events` rows for a single account over the selected period, sorted by `created_at` descending. Powers the drilldown view that expands when a row in the [`/api/admins/credits/rollup`](/api-reference/admins/credits-rollup) table is opened. Each event represents one debit (main agent turn, subagent step, chat completion, or research call), with token counts and `credits_deducted_cents` matching the wallet drop on `credits_usage` for that account. Requires the authenticated account to be a Recoup admin.",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "query",
+            "required": true,
+            "description": "UUID of the account whose `usage_events` rows to return.",
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "description": "Window to filter `created_at` against. Same semantics as the rollup endpoint. Defaults to `monthly`.",
+            "schema": {
+              "type": "string",
+              "enum": ["all", "daily", "weekly", "monthly"],
+              "default": "monthly"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Page size — number of events to return per request, sorted by `created_at` descending. Defaults to 100; max 500.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "1-indexed page number. Server returns rows `(page - 1) * limit` through `page * limit - 1`. Defaults to 1. Use `total_count` in the response to drive a 'load more' control on the drilldown (`page * limit < total_count`).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          }
+        ],
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usage events retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AdminCreditsEventsResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or invalid `account_id`, `period`, or `limit`",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/AccountErrorResponse" } }
+            }
+          },
+          "401": { "description": "Unauthorized - missing or invalid credentials" },
+          "403": { "description": "Forbidden - authenticated account is not a Recoup admin" },
+          "500": {
+            "description": "Internal server error while fetching usage events",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/AccountErrorResponse" } }
+            }
+          }
+        }
+      }
+    },
     "/api/agents/signup": {
       "post": {
-        "description": "Register an agent. For new agent+ emails, returns an API key immediately. For all other cases, sends a verification code to the email — call [POST /api/agents/verify](/api-reference/agents/verify) with the code to get your API key.\n\n**Tip:** If you're unsure what email to register, generate a unique `agent+{suffix}@recoupable.com` address (e.g. `agent+1744410896-28439@recoupable.com`, combining a Unix timestamp with a random integer). This guarantees a fresh `agent+` address on every call — including multiple signups within the same second — and returns an API key instantly with no email verification required.",
+        "description": "Register an agent. For new agent+ emails, returns an API key immediately. For all other cases, sends a verification code to the email \u2014 call [POST /api/agents/verify](/api-reference/agents/verify) with the code to get your API key.\n\n**Tip:** If you're unsure what email to register, generate a unique `agent+{suffix}@recoupable.com` address (e.g. `agent+1744410896-28439@recoupable.com`, combining a Unix timestamp with a random integer). This guarantees a fresh `agent+` address on every call \u2014 including multiple signups within the same second \u2014 and returns an API key instantly with no email verification required.",
         "security": [],
         "requestBody": {
           "description": "Agent email to register",
@@ -1902,6 +2173,184 @@
       }
     },
     "schemas": {
+      "AdminCreditsRollupResponse": {
+        "type": "object",
+        "required": ["status", "period", "page", "limit", "total_count", "rows"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"],
+            "description": "Status of the request"
+          },
+          "period": {
+            "type": "string",
+            "enum": ["all", "daily", "weekly", "monthly"],
+            "description": "The period the response was computed over (echoes the request)"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "1-indexed page returned (echoes the request, or 1 if omitted)"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Page size used for this response (echoes the request, or the default if omitted)"
+          },
+          "total_count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Total number of distinct accounts with at least one `usage_events` row in the selected period (i.e. the size of the full result set before pagination). The client derives `has_more` as `page * limit < total_count` and shows 'X of Y accounts'. Computed via a `COUNT(DISTINCT account_id)` query alongside the paginated row fetch."
+          },
+          "rows": {
+            "type": "array",
+            "description": "Per-account credit usage totals, sorted by `total_credits_deducted_cents` descending",
+            "items": {
+              "type": "object",
+              "required": ["account_id", "total_credits_deducted_cents", "event_count"],
+              "properties": {
+                "account_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "UUID of the account"
+                },
+                "account_name": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Display name from the `accounts` table; null if the account has no name set"
+                },
+                "account_email": {
+                  "type": "string",
+                  "format": "email",
+                  "nullable": true,
+                  "description": "Primary email from `account_emails` joined for human-readable rows; null if no email is on file"
+                },
+                "total_credits_deducted_cents": {
+                  "type": "integer",
+                  "description": "Sum of `usage_events.credits_deducted_cents` across every event for this account in the selected period"
+                },
+                "event_count": {
+                  "type": "integer",
+                  "description": "Number of `usage_events` rows aggregated into this total"
+                }
+              }
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message (only present if status is 'error')"
+          }
+        }
+      },
+      "AdminCreditsEventsResponse": {
+        "type": "object",
+        "required": ["status", "account_id", "period", "page", "limit", "total_count", "events"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "error"],
+            "description": "Status of the request"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account whose events were returned (echoes the request)"
+          },
+          "period": {
+            "type": "string",
+            "enum": ["all", "daily", "weekly", "monthly"],
+            "description": "The period the response was filtered to (echoes the request)"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "1-indexed page returned (echoes the request, or 1 if omitted)"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Page size used for this response (echoes the request, or the default if omitted)"
+          },
+          "total_count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Total number of `usage_events` rows for this account in the selected period (i.e. the size of the full result set before pagination). The client derives `has_more` as `page * limit < total_count` and shows 'X of Y events'. Computed via a `COUNT(*)` query alongside the paginated row fetch."
+          },
+          "events": {
+            "type": "array",
+            "description": "Raw `usage_events` rows, sorted by `created_at` descending",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "created_at",
+                "source",
+                "agent_type",
+                "input_tokens",
+                "cached_input_tokens",
+                "output_tokens",
+                "tool_call_count",
+                "credits_deducted_cents"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "nanoid primary key of the `usage_events` row"
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "When the event was recorded"
+                },
+                "source": {
+                  "type": "string",
+                  "enum": ["web", "api"],
+                  "description": "Which surface originated the debit. `web` = open-agents chat. `api` = recoupable api (chat completion or research call)."
+                },
+                "agent_type": {
+                  "type": "string",
+                  "enum": ["main", "subagent"],
+                  "description": "`main` for the top-level agent turn or any non-agent debit; `subagent` for a nested task-tool step"
+                },
+                "provider": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Provider slug (e.g. `anthropic`). Null when the debit isn't tied to a specific provider (e.g. research)."
+                },
+                "model_id": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Gateway model slug (e.g. `anthropic/claude-opus-4.6`). Null for research/x402-style debits."
+                },
+                "input_tokens": {
+                  "type": "integer",
+                  "description": "Total input tokens for the call (including cached). 0 for non-LLM debits."
+                },
+                "cached_input_tokens": {
+                  "type": "integer",
+                  "description": "Subset of `input_tokens` that hit the provider cache (priced at the cache-read rate)."
+                },
+                "output_tokens": {
+                  "type": "integer",
+                  "description": "Output tokens for the call. 0 for non-LLM debits."
+                },
+                "tool_call_count": {
+                  "type": "integer",
+                  "description": "Number of tool calls observed in this step"
+                },
+                "credits_deducted_cents": {
+                  "type": "integer",
+                  "description": "The amount debited from `credits_usage.remaining_credits` for this event. Same value the wallet dropped by on this turn."
+                }
+              }
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message (only present if status is 'error')"
+          }
+        }
+      },
       "ArtistsProResponse": {
         "type": "object",
         "required": [
@@ -2933,7 +3382,7 @@
               "string",
               "null"
             ],
-            "description": "API key returned immediately for new agent+ prefix emails. Null for all other cases — check your email for a verification code.",
+            "description": "API key returned immediately for new agent+ prefix emails. Null for all other cases \u2014 check your email for a verification code.",
             "example": "recoup_sk_abc123..."
           },
           "message": {
@@ -3147,6 +3596,158 @@
             "type": "string",
             "description": "Human-readable error message.",
             "example": "Account not found"
+          }
+        }
+      },
+      "SavedCard": {
+        "type": "object",
+        "required": [
+          "brand",
+          "last4",
+          "exp_month",
+          "exp_year",
+          "funding"
+        ],
+        "properties": {
+          "brand": {
+            "type": "string",
+            "description": "Card brand. Common values: `visa`, `mastercard`, `amex`, `discover`, `diners`, `jcb`, `unionpay`, `unknown`.",
+            "example": "visa"
+          },
+          "last4": {
+            "type": "string",
+            "pattern": "^\\d{4}$",
+            "description": "Last four digits of the card number. Safe to display in UI for identification.",
+            "example": "4242"
+          },
+          "exp_month": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12,
+            "description": "Card expiration month (1-12). Compare against the current month to detect expired cards.",
+            "example": 12
+          },
+          "exp_year": {
+            "type": "integer",
+            "description": "Card expiration year (full 4-digit year). Compare against the current year to detect expired cards.",
+            "example": 2026
+          },
+          "funding": {
+            "type": "string",
+            "description": "Funding type. Common values: `credit`, `debit`, `prepaid`, `unknown`.",
+            "example": "credit"
+          }
+        }
+      },
+      "AccountPaymentMethodResponse": {
+        "type": "object",
+        "required": [
+          "account_id",
+          "card"
+        ],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier of the account this payment method belongs to.",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "card": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SavedCard"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Default card on file. `null` when the account has never saved a payment method \u2014 the top-up flow will route through a checkout session in that case."
+          }
+        }
+      },
+      "AccountPaymentMethodErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message.",
+            "example": "Unauthorized"
+          }
+        }
+      },
+      "CreateCreditsSessionRequest": {
+        "type": "object",
+        "required": [
+          "credits"
+        ],
+        "properties": {
+          "successUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "The URL to redirect the customer to after a successful Stripe Checkout payment. Only used when the response is a Checkout fallback (no card on file or 3-D Secure required) \u2014 ignored when the card on file is charged directly. Defaults to a generic Recoup success page if omitted.",
+            "example": "https://chat.recoupable.com?credits=success"
+          },
+          "credits": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The number of credits to purchase. One credit equals one US cent (\\$0.01), so the value of the credits in USD is `credits / 100`. Example: `250` is \\$2.50 worth of credits (the customer is also charged a Stripe processing fee on top).",
+            "example": 250
+          },
+          "accountId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account to create the session for. Only applicable when the authenticated account has admin access to multiple accounts. If not provided, creates a session for the API key's own account.",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          }
+        }
+      },
+      "CreditsTopupResponse": {
+        "type": "object",
+        "description": "Top-up response. Two paths share this shape \u2014 clients can discriminate on the presence of `url` (Checkout fallback) vs `paymentIntentId` (auto-charged).",
+        "properties": {
+          "paymentIntentId": {
+            "type": "string",
+            "description": "**Auto-charge path only.** The Stripe PaymentIntent ID for the off-session charge. Useful for reconciliation and support. Omitted on the Checkout fallback path.",
+            "example": "pi_3O1a2b3c4d5e6f7g_h8i9j0kL"
+          },
+          "creditsPurchased": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "**Auto-charge path only.** The number of credits purchased, matching the `credits` request field. These credits are added to the account's balance asynchronously via Stripe webhook (typically within seconds). Omitted on the Checkout fallback path.",
+            "example": 250
+          },
+          "totalCents": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "**Auto-charge path only.** Total amount in cents charged to the saved card, equal to `creditsPurchased` plus the Stripe processing fee. Omitted on the Checkout fallback path.",
+            "example": 289
+          },
+          "id": {
+            "type": "string",
+            "description": "**Checkout fallback only.** The Stripe Checkout Session ID. Omitted on the auto-charge path.",
+            "example": "cs_test_a1b2c3d4e5f6g7h8i9j0"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "**Checkout fallback only.** The hosted Stripe Checkout URL \u2014 redirect the customer here to enter card details and complete payment. Omitted on the auto-charge path.",
+            "example": "https://checkout.stripe.com/pay/cs_test_a1b2c3d4e5f6g7h8i9j0"
+          }
+        }
+      },
+      "CreditsSessionErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message.",
+            "example": "credits must be a positive integer"
           }
         }
       },

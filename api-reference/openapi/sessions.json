@@ -137,6 +137,250 @@
             }
           }
         }
+      },
+      "patch": {
+        "operationId": "patchSessionById",
+        "summary": "Update session",
+        "description": "Renames a session or changes its status (e.g. archive / unarchive). All body fields are optional; omitted fields are left unchanged.",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the session to update.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchSessionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Session updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetSessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — malformed JSON body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key / Bearer token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — the authenticated account does not own this session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — no session exists with the given id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error — the session could not be updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sessions/{sessionId}/chats": {
+      "get": {
+        "summary": "List session chats",
+        "description": "Lists every chat in the given session as a `ChatSummary` (chat row plus per-account `hasUnread` and `isStreaming` flags), along with the caller's default model id. Chats are sorted by `createdAt` ascending.",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the parent session.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chats retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListSessionChatsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key / Bearer token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — the authenticated account does not own this session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — no session exists with the given id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create session chat",
+        "description": "Creates a new chat inside the given session. Callers may pass `{ id }` to claim a deterministic chat id — useful for optimistic UI flows where the client generates the id locally and then persists it. If a chat with that id already exists in **this** session the call is idempotent and returns the existing row; if it exists in **another** session, 409 is returned.",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the parent session.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSessionChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Chat created, or existing chat returned (idempotent on same-session reuse).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateSessionChatResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid chat id — body contained `id` but it was an empty string or not a string.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidChatIdError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key / Bearer token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — the authenticated account does not own this session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — no session exists with the given id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Chat id conflict — a chat with the requested id already exists on a different session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatIdConflictError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error — the chat could not be persisted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
@@ -187,6 +431,36 @@
               "vercel"
             ],
             "description": "Which sandbox provider to use. Currently only `vercel` is accepted."
+          }
+        }
+      },
+      "PatchSessionRequest": {
+        "type": "object",
+        "description": "All fields are optional. Omitted fields are left unchanged.",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "New display title for the session (rename)."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "running",
+              "completed",
+              "failed",
+              "archived"
+            ],
+            "description": "Lifecycle status (matches the DB CHECK). `running` is active / unarchived; `completed` and `failed` are terminal; `archived` archives the row. Use `running` to unarchive from `archived`."
+          },
+          "linesAdded": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Updates the persisted `lines_added` column on the session (≥ 0)."
+          },
+          "linesRemoved": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Updates the persisted `lines_removed` column on the session (≥ 0)."
           }
         }
       },
@@ -261,6 +535,129 @@
           "updatedAt": {
             "type": "string",
             "format": "date-time"
+          }
+        }
+      },
+      "ChatSummary": {
+        "type": "object",
+        "description": "Chat row enriched with per-account `hasUnread` and computed `isStreaming` flags for chat-list rendering.",
+        "required": [
+          "id",
+          "sessionId",
+          "title",
+          "createdAt",
+          "updatedAt",
+          "hasUnread",
+          "isStreaming"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "modelId": {
+            "type": "string",
+            "nullable": true
+          },
+          "activeStreamId": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastAssistantMessageAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "hasUnread": {
+            "type": "boolean",
+            "description": "True when `lastAssistantMessageAt` is newer than the caller's `chat_reads.last_read_at` (or no read row exists yet)."
+          },
+          "isStreaming": {
+            "type": "boolean",
+            "description": "True when `activeStreamId` is non-null."
+          }
+        }
+      },
+      "ListSessionChatsResponse": {
+        "type": "object",
+        "required": [
+          "chats",
+          "defaultModelId"
+        ],
+        "properties": {
+          "chats": {
+            "type": "array",
+            "description": "Every chat in the session, sorted by `createdAt` ascending.",
+            "items": {
+              "$ref": "#/components/schemas/ChatSummary"
+            }
+          },
+          "defaultModelId": {
+            "type": "string",
+            "description": "Default model id surfaced to clients with no explicit preference (e.g. `openai/gpt-5.4`)."
+          }
+        }
+      },
+      "CreateSessionChatRequest": {
+        "type": "object",
+        "description": "Body for `POST /api/sessions/{sessionId}/chats`. Both an empty body and an omitted body are valid.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Optional client-supplied chat id (used for optimistic UI flows). When omitted, the server generates a UUID. When supplied, must be a non-empty string."
+          }
+        }
+      },
+      "CreateSessionChatResponse": {
+        "type": "object",
+        "required": [
+          "chat"
+        ],
+        "properties": {
+          "chat": {
+            "$ref": "#/components/schemas/Chat"
+          }
+        }
+      },
+      "InvalidChatIdError": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "enum": [
+              "Invalid chat id"
+            ]
+          }
+        }
+      },
+      "ChatIdConflictError": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "enum": [
+              "Chat ID conflict"
+            ]
           }
         }
       },
