@@ -736,7 +736,7 @@
     "/api/chat/workflow": {
       "post": {
         "summary": "Stream sandbox-driven chat (Vercel Workflow)",
-        "description": "Streams an agent loop that runs as a durable [Vercel Workflow](https://vercel.com/docs/workflow) against a previously-provisioned [session sandbox](/api-reference/sandbox/create). The agent has access to a fixed set of sandbox-only tools — `bash`, `read`, `write`, `grep`, `glob`, `todo`, `task`, `ask_user_question`, `skill`, `fetch` — and no MCP or Composio tools. Skills installed in the sandbox (e.g., `recoupable/skills:recoup-api`) act as the HTTP bridge back to the Recoup API.\n\nThe response is a Server-Sent Events stream of UI message parts compatible with the Vercel AI SDK `createUIMessageStreamResponse`. The `x-workflow-run-id` response header carries the durable run ID — clients can pass it to `GET /api/chat/{chatId}/stream` (coming soon) to resume the stream after a disconnect, or `POST /api/chat/{chatId}/stop` (coming soon) to cancel an in-flight run.\n\nThe caller must have already provisioned a sandbox via [POST /api/sandbox](/api-reference/sandbox/create); this endpoint returns `400` with `Sandbox not initialized` if `sessions.sandbox_state` is empty. If a workflow is already running for this chat (`chats.active_stream_id` points at a live run), the endpoint resumes that stream instead of starting a new one; if another request races and claims the slot first, the duplicate is cancelled and `409` is returned.\n\nThis endpoint is parallel to [POST /api/chat](/api-reference/chat/stream) — it does not replace it. The legacy `/api/chat` continues to serve MCP- and Composio-tool chat for clients that need it.",
+        "description": "Streams an agent loop running as a durable [Vercel Workflow](https://vercel.com/docs/workflow) against the session's sandbox. The agent uses sandbox-only tools (`bash`, `read`, `write`, `grep`, `glob`, `todo`, `task`, `ask_user_question`, `skill`, `fetch`) — no MCP or Composio. Requires a sandbox provisioned via [POST /api/sandbox](/api-reference/sandbox/create). Parallel to [POST /api/chat](/api-reference/chat/stream) — does not replace it.",
         "security": [
           {
             "apiKeyAuth": []
@@ -3231,7 +3231,7 @@
       },
       "ChatWorkflowRequest": {
         "type": "object",
-        "description": "Request body for the sandbox-driven, Workflow-backed chat endpoint. The caller must have already created a session ([POST /api/sessions](/api-reference/sessions/create)), a chat under that session ([POST /api/sessions/{sessionId}/chats](/api-reference/sessions/create-chat)), and a sandbox for that session ([POST /api/sandbox](/api-reference/sandbox/create)) before calling this endpoint.\n\nThe Bearer API key from the `Authorization` header is forwarded into the sandbox so the installed `recoupable/skills:recoup-api` skill can authenticate HTTP calls back to the Recoup API — no separate access-token field is needed in the body.",
+        "description": "Request body for the sandbox-driven, Workflow-backed chat endpoint. Requires an existing session, chat, and provisioned sandbox. The Bearer key from the `Authorization` header is forwarded into the sandbox for skill-based callbacks to the Recoup API — no separate access-token field needed.",
         "required": [
           "messages",
           "chatId",
