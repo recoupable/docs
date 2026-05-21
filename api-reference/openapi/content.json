@@ -4217,50 +4217,50 @@
             "description": "Array of uploaded file details"
           }
         }
-      }
-    },
-    "TranscribeVoiceRequest": {
-      "type": "object",
-      "required": [
-        "audio"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "audio": {
-          "type": "string",
-          "description": "Base64-encoded audio data. Maximum 10 MB base64 (~7.5 MB raw audio).",
-          "example": "UklGRiQAAABXQVZFZm10IBAAAA..."
-        },
-        "mimeType": {
-          "type": "string",
-          "description": "MIME type of the audio clip (e.g. \"audio/webm\", \"audio/mp4\"). Informational only.",
-          "example": "audio/webm"
+      },
+      "TranscribeVoiceRequest": {
+        "type": "object",
+        "required": [
+          "audio"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "audio": {
+            "type": "string",
+            "description": "Base64-encoded audio data. Maximum 10 MB base64 (~7.5 MB raw audio).",
+            "example": "UklGRiQAAABXQVZFZm10IBAAAA..."
+          },
+          "mimeType": {
+            "type": "string",
+            "description": "MIME type of the audio clip (e.g. \"audio/webm\", \"audio/mp4\"). Informational only.",
+            "example": "audio/webm"
+          }
         }
-      }
-    },
-    "TranscribeVoiceResponse": {
-      "type": "object",
-      "required": [
-        "text"
-      ],
-      "properties": {
-        "text": {
-          "type": "string",
-          "description": "Transcribed text from the audio clip.",
-          "example": "Hello, this is a test recording."
+      },
+      "TranscribeVoiceResponse": {
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Transcribed text from the audio clip.",
+            "example": "Hello, this is a test recording."
+          }
         }
-      }
-    },
-    "TranscribeVoiceErrorResponse": {
-      "type": "object",
-      "required": [
-        "error"
-      ],
-      "properties": {
-        "error": {
-          "type": "string",
-          "description": "Error message describing what went wrong.",
-          "example": "Missing required field: audio"
+      },
+      "TranscribeVoiceErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong.",
+            "example": "Missing required field: audio"
+          }
         }
       }
     }
