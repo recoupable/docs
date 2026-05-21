@@ -733,6 +733,60 @@
         }
       }
     },
+    "/api/chat/{chatId}/stop": {
+      "post": {
+        "description": "Stop the response currently being generated for a chat, freeing it to accept a new message. Idempotent — returns `stopped: false` when nothing is in progress. The chat must belong to the authenticated account.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "description": "UUID of the chat to stop.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stop request processed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StopChatResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The chat belongs to a different account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatGenerateErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Chat not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatGenerateErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/chat/workflow": {
       "post": {
         "summary": "Stream sandbox-driven chat (Vercel Workflow)",
@@ -2950,6 +3004,25 @@
       }
     },
     "schemas": {
+      "StopChatResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "stopped"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Always true when the request was processed.",
+            "example": true
+          },
+          "stopped": {
+            "type": "boolean",
+            "description": "True when an in-progress response was cancelled; false when nothing was running.",
+            "example": true
+          }
+        }
+      },
       "ChatGenerateErrorResponse": {
         "type": "object",
         "required": [

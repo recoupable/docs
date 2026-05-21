@@ -64,6 +64,7 @@
             "group": "Streaming",
             "pages": [
               "api-reference/chat/workflow",
+              "api-reference/chat/stop",
               "api-reference/chat/stream",
               "api-reference/chat/generate"
             ]
