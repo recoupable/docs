@@ -735,11 +735,8 @@
     },
     "/api/chat/{chatId}/stop": {
       "post": {
-        "description": "Stop the workflow currently streaming for a chat. Cancels the running agent workflow and clears the chat's active stream so a new message can be sent. Idempotent: returns `stopped: false` when no workflow is active. Authenticate with a Privy Bearer token or `x-api-key`; the chat must belong to the authenticated account.",
+        "description": "Stop the response currently being generated for a chat, freeing it to accept a new message. Idempotent — returns `stopped: false` when nothing is in progress. The chat must belong to the authenticated account.",
         "security": [
-          {
-            "bearerAuth": []
-          },
           {
             "apiKeyAuth": []
           }
@@ -749,7 +746,7 @@
             "name": "chatId",
             "in": "path",
             "required": true,
-            "description": "UUID of the chat whose workflow should be stopped.",
+            "description": "UUID of the chat to stop.",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -762,7 +759,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/StopChatWorkflowResponse"
+                  "$ref": "#/components/schemas/StopChatResponse"
                 }
               }
             }
@@ -3007,7 +3004,7 @@
       }
     },
     "schemas": {
-      "StopChatWorkflowResponse": {
+      "StopChatResponse": {
         "type": "object",
         "required": [
           "success",
@@ -3021,7 +3018,7 @@
           },
           "stopped": {
             "type": "boolean",
-            "description": "True when an active workflow was cancelled; false when no workflow was running.",
+            "description": "True when an in-progress response was cancelled; false when nothing was running.",
             "example": true
           }
         }
