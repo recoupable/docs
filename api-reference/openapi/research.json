@@ -764,12 +764,22 @@
               }
             }
           },
+          "400": {
+            "description": "chatId is not a valid UUID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StopChatErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "The chat belongs to a different account",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ChatGenerateErrorResponse"
+                  "$ref": "#/components/schemas/StopChatErrorResponse"
                 }
               }
             }
@@ -779,7 +789,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ChatGenerateErrorResponse"
+                  "$ref": "#/components/schemas/StopChatErrorResponse"
                 }
               }
             }
@@ -3020,6 +3030,26 @@
             "type": "boolean",
             "description": "True when an in-progress response was cancelled; false when nothing was running.",
             "example": true
+          }
+        }
+      },
+      "StopChatErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
           }
         }
       },
