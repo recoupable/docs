@@ -20,7 +20,8 @@
               "quickstart",
               "cli",
               "mcp",
-              "authentication"
+              "authentication",
+              "credits"
             ]
           }
         ]
@@ -57,24 +58,41 @@
         ]
       },
       {
-        "tab": "Research",
+        "tab": "Chats",
         "groups": [
           {
-            "group": "Chat",
+            "group": "Streaming",
             "pages": [
+              "api-reference/chat/workflow",
+              "api-reference/chat/stop",
               "api-reference/chat/stream",
+              "api-reference/chat/generate"
+            ]
+          },
+          {
+            "group": "Chats",
+            "pages": [
               "api-reference/chat/create",
               "api-reference/chat/chats",
               "api-reference/chat/artist",
-              "api-reference/chat/messages",
-              "api-reference/chat/messages-copy",
-              "api-reference/chat/messages-trailing-delete",
               "api-reference/chat/update",
               "api-reference/chat/delete",
-              "api-reference/chat/generate",
               "api-reference/chat/compact"
             ]
           },
+          {
+            "group": "Messages",
+            "pages": [
+              "api-reference/chat/messages",
+              "api-reference/chat/messages-copy",
+              "api-reference/chat/messages-trailing-delete"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Research",
+        "groups": [
           {
             "group": "Artist discovery",
             "pages": [
@@ -309,20 +327,31 @@
         "tab": "Accounts",
         "groups": [
           {
+            "group": "Accounts",
+            "pages": [
+              "api-reference/accounts/id",
+              "api-reference/accounts/get",
+              "api-reference/accounts/create",
+              "api-reference/accounts/update",
+              "api-reference/accounts/add-artist"
+            ]
+          },
+          {
+            "group": "Billing",
+            "pages": [
+              "api-reference/subscriptions/sessions-create",
+              "api-reference/subscriptions/portal-create",
+              "api-reference/accounts/subscription-get",
+              "api-reference/credits/sessions-create",
+              "api-reference/accounts/credits-get",
+              "api-reference/accounts/payment-method-get"
+            ]
+          },
+          {
             "group": "Pulses",
             "pages": [
               "api-reference/pulses/update",
               "api-reference/pulses/list"
-            ]
-          },
-          {
-            "group": "Accounts",
-            "pages": [
-              "api-reference/accounts/get",
-              "api-reference/accounts/id",
-              "api-reference/accounts/create",
-              "api-reference/accounts/update",
-              "api-reference/accounts/add-artist"
             ]
           },
           {
@@ -340,16 +369,6 @@
             ]
           },
           {
-            "group": "Billing",
-            "pages": [
-              "api-reference/subscriptions/sessions-create",
-              "api-reference/subscriptions/portal-create",
-              "api-reference/accounts/subscription-get",
-              "api-reference/credits/sessions-create",
-              "api-reference/accounts/credits-get"
-            ]
-          },
-          {
             "group": "Admins",
             "pages": [
               "api-reference/admins/check",
@@ -361,7 +380,9 @@
               "api-reference/admins/coding-pr",
               "api-reference/admins/content-slack-tags",
               "api-reference/admins/agent-signups",
-              "api-reference/admins/artists-pro"
+              "api-reference/admins/artists-pro",
+              "api-reference/admins/credits-rollup",
+              "api-reference/admins/credits-events"
             ]
           },
           {
