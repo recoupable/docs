@@ -949,13 +949,37 @@
           },
           "messages": {
             "type": "array",
-            "description": "Persisted UI message stream — one entry per `chat_messages` row, ordered by `created_at` ascending. Each entry is the raw `parts` payload from that row (an array of `UIMessage` parts as serialized by the agent).",
+            "description": "Persisted UI message stream — one serialized `UIMessage` per `chat_messages` row, ordered by `created_at` ascending (ties broken by `id`). Each item is the full message object, not a bare parts array.",
             "items": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "additionalProperties": true
-              }
+              "type": "object",
+              "description": "A serialized `UIMessage` as stored by the agent.",
+              "required": [
+                "id",
+                "role",
+                "parts"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Message id."
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "assistant"
+                  ]
+                },
+                "parts": {
+                  "type": "array",
+                  "description": "Ordered message parts (text, tool calls, data parts, etc.).",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              },
+              "additionalProperties": true
             }
           }
         }
