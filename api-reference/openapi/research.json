@@ -733,6 +733,163 @@
         }
       }
     },
+    "/api/chat/{chatId}/stop": {
+      "post": {
+        "description": "Stop the response currently being generated for a chat, freeing it to accept a new message. Idempotent — returns `stopped: false` when nothing is in progress. The chat must belong to the authenticated account.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "description": "UUID of the chat to stop.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stop request processed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StopChatResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "chatId is not a valid UUID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StopChatErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The chat belongs to a different account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StopChatErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Chat not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StopChatErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat/workflow": {
+      "post": {
+        "summary": "Stream sandbox-driven chat (Vercel Workflow)",
+        "description": "Streams an agent loop running as a durable [Vercel Workflow](https://vercel.com/docs/workflow) against the session's sandbox. The agent uses sandbox-only tools (`bash`, `read`, `write`, `grep`, `glob`, `todo`, `task`, `ask_user_question`, `skill`, `fetch`) — no MCP or Composio. Requires a sandbox provisioned via [POST /api/sandbox](/api-reference/sandbox/create). Parallel to [POST /api/chat](/api-reference/chat/stream) — does not replace it.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Chat workflow request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatWorkflowRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Server-Sent Events stream of UI message parts compatible with the Vercel AI SDK `createUIMessageStreamResponse`. The `x-workflow-run-id` response header carries the durable workflow run ID for resume/stop operations.",
+            "headers": {
+              "x-workflow-run-id": {
+                "description": "Durable workflow run ID. Persist alongside the chat so a later `GET /api/chat/{chatId}/stream` request can resume this run after a disconnect.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-Sent Events stream containing UI message parts"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — missing required fields, invalid body, or sandbox not initialized for the session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatStreamErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatStreamErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The API key's account does not own the referenced `sessionId` or `chatId`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatStreamErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Session or chat not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatStreamErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Another workflow is already running for this chat and could not be resumed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatStreamErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/research": {
       "get": {
         "description": "Unified Chartmetric search. This is the discovery primitive for the detail-lookup endpoints — use `type=artists` to find an `id` for [GET /api/research/albums](/api-reference/research/albums), `type=tracks` for [GET /api/research/track](/api-reference/research/track), `type=playlists` for [GET /api/research/playlist](/api-reference/research/playlist), etc. Pick the right `id` from the returned results and pass it to the appropriate detail endpoint.\n\nThin proxy over Chartmetric's `/search`. Chartmetric's default search engine is narrow — for ambiguous queries like `Hotline Bling` or `Flowers` it often returns a single low-quality match. **Pass `beta=true` for higher relevance and accuracy**, which switches Chartmetric to its improved ranking engine. Beta results include a numeric `match_strength` score and have a slightly different shape than the default engine (see the response schema).",
@@ -2857,6 +3014,45 @@
       }
     },
     "schemas": {
+      "StopChatResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "stopped"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Always true when the request was processed.",
+            "example": true
+          },
+          "stopped": {
+            "type": "boolean",
+            "description": "True when an in-progress response was cancelled; false when nothing was running.",
+            "example": true
+          }
+        }
+      },
+      "StopChatErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
       "ChatGenerateErrorResponse": {
         "type": "object",
         "required": [
@@ -3133,6 +3329,44 @@
           "topic": {
             "type": "string",
             "description": "Topic name for the new chat room (e.g., 'Pulse Feb 2'). Only applies when creating a new room - ignored if room already exists. To edit the topic of an existing room, use [PATCH /api/chats](/api-reference/chat/update)."
+          }
+        }
+      },
+      "ChatWorkflowRequest": {
+        "type": "object",
+        "description": "Request body for the sandbox-driven, Workflow-backed chat endpoint. Requires an existing session, chat, and provisioned sandbox. The Bearer key from the `Authorization` header is forwarded into the sandbox for skill-based callbacks to the Recoup API — no separate access-token field needed.",
+        "required": [
+          "messages",
+          "chatId",
+          "sessionId"
+        ],
+        "properties": {
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UIMessage"
+            },
+            "description": "Conversation history as an array of `UIMessage` objects, matching the [Vercel AI SDK](https://sdk.vercel.ai/) `UIMessage` shape. The last entry is typically the new user turn — the agent loop reads the entire array and persists the latest user message before the workflow starts."
+          },
+          "chatId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of an existing chat under `sessionId`. The chat's `active_stream_id` column is used for compare-and-set race control across concurrent requests."
+          },
+          "sessionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the session that owns both the chat and the sandbox. The session must have a non-null `sandbox_state` — call [POST /api/sandbox](/api-reference/sandbox/create) first if not."
+          },
+          "context": {
+            "type": "object",
+            "description": "Optional per-prompt context overrides forwarded into the agent loop.",
+            "properties": {
+              "contextLimit": {
+                "type": "integer",
+                "description": "Upper bound on the number of tokens / messages of conversation history the agent should consider for this prompt. Overrides the model's default for this call only."
+              }
+            }
           }
         }
       },
