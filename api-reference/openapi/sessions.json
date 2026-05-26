@@ -659,13 +659,6 @@
             "type": "string",
             "format": "uuid",
             "description": "Recoupable organization id. When provided, the session is created against the org's workspace repo (`recoupable/<organizationId>`) and the caller must have access to that organization. When omitted, the session is personal and uses the caller's own workspace repo (`recoupable/<accountId>`)."
-          },
-          "sandboxType": {
-            "type": "string",
-            "enum": [
-              "vercel"
-            ],
-            "description": "Which sandbox provider to use. Currently only `vercel` is accepted."
           }
         }
       },
