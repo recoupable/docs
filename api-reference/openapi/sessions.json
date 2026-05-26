@@ -284,7 +284,7 @@
             }
           },
           "404": {
-            "description": "Not found — no session or chat exists with the given ids.",
+            "description": "Not found — no session exists with the given id, the chat does not exist, or the chat belongs to a different session.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1247,19 +1247,7 @@
         }
       },
       "MarkChatReadResponse": {
-        "type": "object",
-        "required": [
-          "status"
-        ],
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "ok"
-            ],
-            "description": "Always `\"ok\"` on success."
-          }
-        }
+        "$ref": "#/components/schemas/DeleteSessionChatResponse"
       },
       "Error": {
         "type": "object",
