@@ -1247,7 +1247,18 @@
         }
       },
       "MarkChatReadResponse": {
-        "$ref": "#/components/schemas/DeleteSessionChatResponse"
+        "type": "object",
+        "required": [
+          "success"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
+        }
       },
       "Error": {
         "type": "object",
