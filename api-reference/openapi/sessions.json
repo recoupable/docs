@@ -649,38 +649,16 @@
     "schemas": {
       "CreateSessionRequest": {
         "type": "object",
-        "description": "All fields are optional. An empty body is valid and creates a session with default settings.",
+        "description": "All fields are optional. An empty body is valid and creates a personal session — the server provisions (or reuses) a workspace repo at `recoupable/<accountId>` for the authenticated user. Include `organizationId` to create an org session instead — the server provisions (or reuses) `recoupable/<organizationId>`. The caller never constructs repo URLs.",
         "properties": {
           "title": {
             "type": "string",
             "description": "Display title for the session. When omitted, the server generates one."
           },
-          "repoOwner": {
+          "organizationId": {
             "type": "string",
-            "description": "GitHub repository owner (user or org). Validated against GitHub's owner-name rules."
-          },
-          "repoName": {
-            "type": "string",
-            "description": "GitHub repository name. Validated against GitHub's repo-name rules."
-          },
-          "branch": {
-            "type": "string",
-            "description": "Branch the session should check out. Ignored when `isNewBranch` is true — the server generates a new branch name in that case."
-          },
-          "cloneUrl": {
-            "type": "string",
-            "description": "Clone URL the sandbox should fetch from."
-          },
-          "isNewBranch": {
-            "type": "boolean",
-            "description": "When true, the server generates a fresh branch name (e.g. `xx/abcdef12`) instead of using `branch`."
-          },
-          "sandboxType": {
-            "type": "string",
-            "enum": [
-              "vercel"
-            ],
-            "description": "Which sandbox provider to use. Currently only `vercel` is accepted."
+            "format": "uuid",
+            "description": "Recoupable organization id. When provided, the session is created against the org's workspace repo (`recoupable/<organizationId>`) and the caller must have access to that organization. When omitted, the session is personal and uses the caller's own workspace repo (`recoupable/<accountId>`)."
           }
         }
       },
