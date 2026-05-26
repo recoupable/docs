@@ -461,6 +461,256 @@
           }
         }
       }
+    },
+    "/api/sessions/{sessionId}/chats/{chatId}": {
+      "get": {
+        "summary": "Get session chat",
+        "description": "Returns the chat's persisted UI message stream plus its current streaming state so callers can hydrate or refresh a chat view. `messages` is an array of `parts` payloads — one per `chat_messages` row — ordered by `created_at` ascending (ties broken by id). `isStreaming` is derived from `activeStreamId`.",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the parent session.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the chat being fetched.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionChatResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key / Bearer token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — the authenticated account does not own this session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — no session exists with the given id, the chat does not exist, or the chat belongs to a different session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update session chat",
+        "description": "Applies a partial update to the chat. Body must include at least one of `title` or `modelId` and any provided value must be a non-empty string (whitespace is trimmed for `title`).",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the parent session.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the chat being updated.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSessionChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Chat updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateSessionChatResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body — JSON parse failed, neither `title` nor `modelId` was provided, or one of them was empty.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key / Bearer token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — the authenticated account does not own this session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — no session exists with the given id, the chat does not exist, or the chat belongs to a different session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error — the chat could not be updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete session chat",
+        "description": "Removes the chat (cascade clears `chat_messages` and `chat_reads`). Refuses with 400 if this is the only chat in the session — sessions must always retain at least one chat.",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the parent session.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "description": "The id of the chat being deleted.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteSessionChatResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Cannot delete the only chat in a session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key / Bearer token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — the authenticated account does not own this session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — no session exists with the given id, the chat does not exist, or the chat belongs to a different session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error — the chat could not be deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -709,6 +959,107 @@
         "properties": {
           "chat": {
             "$ref": "#/components/schemas/Chat"
+          }
+        }
+      },
+      "UpdateSessionChatRequest": {
+        "type": "object",
+        "description": "Body for `PATCH /api/sessions/{sessionId}/chats/{chatId}`. At least one of `title` or `modelId` must be provided; whichever is provided is trimmed and must be non-empty after trimming.",
+        "additionalProperties": false,
+        "anyOf": [
+          { "required": ["title"] },
+          { "required": ["modelId"] }
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "New display title for the chat. Trimmed; must be non-empty after trimming."
+          },
+          "modelId": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "AI Gateway model identifier the chat should be configured to use. Trimmed; must be non-empty after trimming."
+          }
+        }
+      },
+      "UpdateSessionChatResponse": {
+        "type": "object",
+        "required": [
+          "chat"
+        ],
+        "properties": {
+          "chat": {
+            "$ref": "#/components/schemas/Chat"
+          }
+        }
+      },
+      "DeleteSessionChatResponse": {
+        "type": "object",
+        "required": [
+          "success"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
+        }
+      },
+      "SessionChatResponse": {
+        "type": "object",
+        "description": "Response body for `GET /api/sessions/{sessionId}/chats/{chatId}`. Carries the full chat row plus its streaming state and persisted UI message stream — enough for both initial render and in-tab refresh.",
+        "required": [
+          "chat",
+          "isStreaming",
+          "messages"
+        ],
+        "properties": {
+          "chat": {
+            "$ref": "#/components/schemas/Chat"
+          },
+          "isStreaming": {
+            "type": "boolean",
+            "description": "True when `chat.activeStreamId` is non-null."
+          },
+          "messages": {
+            "type": "array",
+            "description": "Persisted UI message stream — one serialized `UIMessage` per `chat_messages` row, ordered by `created_at` ascending (ties broken by `id`). Each item is the full message object, not a bare parts array.",
+            "items": {
+              "type": "object",
+              "description": "A serialized `UIMessage` as stored by the agent.",
+              "required": [
+                "id",
+                "role",
+                "parts"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Message id."
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "assistant"
+                  ]
+                },
+                "parts": {
+                  "type": "array",
+                  "description": "Ordered message parts (text, tool calls, data parts, etc.).",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              },
+              "additionalProperties": true
+            }
           }
         }
       },

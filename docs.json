@@ -58,24 +58,41 @@
         ]
       },
       {
-        "tab": "Research",
+        "tab": "Chats",
         "groups": [
           {
-            "group": "Chat",
+            "group": "Streaming",
             "pages": [
+              "api-reference/chat/workflow",
+              "api-reference/chat/stop",
               "api-reference/chat/stream",
+              "api-reference/chat/generate"
+            ]
+          },
+          {
+            "group": "Chats",
+            "pages": [
               "api-reference/chat/create",
               "api-reference/chat/chats",
               "api-reference/chat/artist",
-              "api-reference/chat/messages",
-              "api-reference/chat/messages-copy",
-              "api-reference/chat/messages-trailing-delete",
               "api-reference/chat/update",
               "api-reference/chat/delete",
-              "api-reference/chat/generate",
               "api-reference/chat/compact"
             ]
           },
+          {
+            "group": "Messages",
+            "pages": [
+              "api-reference/chat/messages",
+              "api-reference/chat/messages-copy",
+              "api-reference/chat/messages-trailing-delete"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Research",
+        "groups": [
           {
             "group": "Artist discovery",
             "pages": [
@@ -291,6 +308,9 @@
               "api-reference/sessions/patch",
               "api-reference/sessions/list-chats",
               "api-reference/sessions/create-chat",
+              "api-reference/sessions/get-chat",
+              "api-reference/sessions/patch-chat",
+              "api-reference/sessions/delete-chat",
               "api-reference/sessions/mark-chat-read"
             ]
           },
