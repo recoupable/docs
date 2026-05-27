@@ -9,17 +9,13 @@
     "version": "1.0.0"
   },
   "security": [
-    { "bearerAuth": [] },
-    { "apiKeyAuth": [] }
+    { "apiKeyAuth": [] },
+    { "bearerAuth": [] }
   ],
   "paths": {
     "/api/upload": {
       "post": {
         "description": "Uploads a file and returns a permanent CDN-fronted HTTPS URL. Accepts a single file via multipart/form-data under the field name `file`. The caller's accountId is stamped onto the storage object's metadata as `uploaded_by` for audit purposes.",
-        "security": [
-          { "bearerAuth": [] },
-          { "apiKeyAuth": [] }
-        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -95,17 +91,14 @@
   },
   "components": {
     "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT",
-        "description": "Privy-issued access token, passed as `Authorization: Bearer <token>`."
-      },
       "apiKeyAuth": {
         "type": "apiKey",
         "in": "header",
-        "name": "x-api-key",
-        "description": "Account or organization API key."
+        "name": "x-api-key"
+      },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
       }
     },
     "schemas": {
