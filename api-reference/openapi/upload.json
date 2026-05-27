@@ -13,10 +13,18 @@
       "url": "https://recoup-api.vercel.app"
     }
   ],
+  "security": [
+    { "bearerAuth": [] },
+    { "apiKeyAuth": [] }
+  ],
   "paths": {
     "/api/upload": {
       "post": {
-        "description": "Uploads a file and returns a permanent CDN-fronted HTTPS URL. Accepts a single file via multipart/form-data under the field name `file`. No authentication required.",
+        "description": "Uploads a file and returns a permanent CDN-fronted HTTPS URL. Accepts a single file via multipart/form-data under the field name `file`. The caller's accountId is stamped onto the storage object's metadata as `uploaded_by` for audit purposes.",
+        "security": [
+          { "bearerAuth": [] },
+          { "apiKeyAuth": [] }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -28,7 +36,7 @@
                   "file": {
                     "type": "string",
                     "format": "binary",
-                    "description": "The file bytes to upload."
+                    "description": "The file bytes to upload. The file's Content-Type must be on the server allowlist (image/*, application/pdf, text/csv, text/markdown, text/plain, application/json, audio/mpeg, audio/wav, audio/x-m4a, audio/webm). Typeless / octet-stream uploads are rejected."
                   }
                 }
               }
@@ -46,8 +54,38 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request — multipart body could not be parsed or no `file` field was provided.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication. Provide either an `Authorization: Bearer <token>` header or `x-api-key`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadErrorResponse"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Unsupported file type — the file's Content-Type is not on the server allowlist or is empty / `application/octet-stream`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadErrorResponse"
+                }
+              }
+            }
+          },
           "500": {
-            "description": "Upload failed (no file provided, unsupported MIME type, or storage error)",
+            "description": "Internal storage error. Full details are logged server-side.",
             "content": {
               "application/json": {
                 "schema": {
@@ -61,6 +99,20 @@
     }
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Privy-issued access token, passed as `Authorization: Bearer <token>`."
+      },
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Account or organization API key."
+      }
+    },
     "schemas": {
       "UploadResponse": {
         "type": "object",
@@ -84,7 +136,7 @@
           },
           "fileType": {
             "type": "string",
-            "description": "The MIME type of the uploaded file. Falls back to `application/octet-stream` if the client did not provide one.",
+            "description": "The MIME type of the uploaded file, exactly as provided by the client. Must be on the server allowlist.",
             "example": "image/png"
           },
           "fileSize": {
@@ -113,7 +165,7 @@
           },
           "error": {
             "type": "string",
-            "description": "Error message describing what went wrong.",
+            "description": "Human-readable error message. For 500 errors this is intentionally generic; full details are logged server-side.",
             "example": "No file provided"
           }
         }
