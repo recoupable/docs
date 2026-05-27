@@ -291,7 +291,7 @@
     },
     "/api/sandboxes/file": {
       "get": {
-        "description": "Retrieve the raw contents of a file from the authenticated account's sandbox GitHub repository. Resolves the github_repo from the [account's snapshot](/api-reference/sandboxes/list), then fetches the file at the specified path from the repository's main branch. Authentication is handled via the x-api-key header or Authorization Bearer token.",
+        "description": "Retrieve the contents of a file from the authenticated account's sandbox GitHub repository. Resolves the github_repo from the [account's snapshot](/api-reference/sandboxes/list), then fetches the file at the specified path from the repository's main branch. **Text files are returned verbatim. Binary files (`.mp3`, `.png`, `.jpg`, `.mp4`, `.pdf`, etc.) are returned base64-encoded — decode before writing to disk.** Authentication is handled via the x-api-key header or Authorization Bearer token.",
         "parameters": [
           {
             "name": "path",
@@ -347,6 +347,56 @@
           },
           "404": {
             "description": "Not found - no snapshot, no github_repo, or file not found in repository",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sandboxes/staged-file": {
+      "post": {
+        "description": "Issue a presigned upload token so the browser can upload a file directly to Vercel Blob, then call `POST /api/sandboxes/files` with the resulting blob URL to commit it to the sandbox repo. Use `upload()` from `@vercel/blob/client` rather than calling this route by hand. Max file size 100MB.",
+        "requestBody": {
+          "description": "`HandleUploadBody` envelope from `@vercel/blob/client`.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Handshake response from `@vercel/blob/client` — return verbatim to the library.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid auth on the handshake POST.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SandboxErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Invalid body or upstream Vercel Blob failure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3773,7 +3823,7 @@
           },
           "content": {
             "type": "string",
-            "description": "The raw text content of the file"
+            "description": "The file content. Text files (`.md`, `.json`, `.txt`, source code, etc.) are returned verbatim. Binary files (`.mp3`, `.png`, `.jpg`, `.mp4`, `.pdf`, etc.) are returned base64-encoded — decode before writing to disk. The encoding is inferred from the file extension server-side; `encoding` field is not yet returned but planned."
           }
         }
       },
