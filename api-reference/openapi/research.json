@@ -16,12 +16,12 @@
   "paths": {
     "/api/chats": {
       "get": {
-        "description": "Returns the caller's chats joined to their parent sessions. Each row carries `sessionId` so consumers can construct the canonical `/sessions/{sessionId}/chats/{id}` URL. Personal Bearer tokens see only the caller's chats; org keys see chats across the org's member accounts; admin keys see all chats.",
+        "description": "Returns chats for the authenticated account. Personal Bearer tokens see only the caller's chats; org keys see chats across the org's member accounts; admin keys see all chats. Each row carries the chat id and the session id needed to build the chat URL.",
         "parameters": [
           {
             "name": "artist_account_id",
             "in": "query",
-            "description": "Optional. Filter chats to only include those for the specified artist. The filter is wired through but currently has no effect — `sessions.artist_id` is not yet populated, so no rows match. Will start filtering once the artist column is backfilled onto sessions.",
+            "description": "Optional. Filter chats to only include those for the specified artist. The parameter is accepted but currently has no effect; artist filtering returns in a future release.",
             "required": false,
             "schema": {
               "type": "string",
@@ -3256,12 +3256,12 @@
           "accountId": {
             "type": "string",
             "format": "uuid",
-            "description": "Owning account, inherited from the parent session."
+            "description": "Owning account for this chat."
           },
           "sessionId": {
             "type": "string",
             "format": "uuid",
-            "description": "Parent session. Use with `id` to build the canonical `/sessions/{sessionId}/chats/{id}` URL."
+            "description": "Session that owns this chat. Combine with `id` to build the chat URL: `/sessions/{sessionId}/chats/{id}`."
           },
           "updatedAt": {
             "type": "string",
@@ -3848,7 +3848,7 @@
             "items": {
               "$ref": "#/components/schemas/ChatRoom"
             },
-            "description": "Array of session-scoped chat objects"
+            "description": "Array of chat objects"
           }
         }
       },
