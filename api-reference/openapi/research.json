@@ -21,9 +21,8 @@
           {
             "name": "artist_account_id",
             "in": "query",
-            "description": "Reserved for the artist-surface migration. Currently accepted but does not filter — the new session-scoped listing does not yet carry artist linkage. Will return once `sessions.artist_id` is backfilled.",
+            "description": "Optional. Filter chats to only include those for the specified artist. The filter is wired through but currently has no effect — `sessions.artist_id` is not yet populated, so no rows match. Will start filtering once the artist column is backfilled onto sessions.",
             "required": false,
-            "deprecated": true,
             "schema": {
               "type": "string",
               "format": "uuid"
