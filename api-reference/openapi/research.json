@@ -16,13 +16,14 @@
   "paths": {
     "/api/chats": {
       "get": {
-        "description": "Retrieve chat rooms (conversations) for the authenticated account. If the account has access to organizations, pass account_id to filter to a specific account within those organizations. Optionally filter by an artist_account_id. The endpoint returns metadata about each room, including the topic, associated artist, and last updated timestamp.",
+        "description": "Returns the caller's chats joined to their parent sessions. Each row carries `sessionId` so consumers can construct the canonical `/sessions/{sessionId}/chats/{id}` URL. Personal Bearer tokens see only the caller's chats; org keys see chats across the org's member accounts; admin keys see all chats.",
         "parameters": [
           {
             "name": "artist_account_id",
             "in": "query",
-            "description": "Optional. Filter chats to only include those for the specified artist.",
+            "description": "Reserved for the artist-surface migration. Currently accepted but does not filter — the new session-scoped listing does not yet carry artist linkage. Will return once `sessions.artist_id` is backfilled.",
             "required": false,
+            "deprecated": true,
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -3842,9 +3843,45 @@
           "chats": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ChatRoom"
+              "$ref": "#/components/schemas/SessionScopedChat"
             },
-            "description": "Array of chat room objects"
+            "description": "Array of session-scoped chat objects"
+          }
+        }
+      },
+      "SessionScopedChat": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "accountId",
+          "sessionId",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Chat id."
+          },
+          "title": {
+            "type": "string",
+            "description": "Display title for the chat."
+          },
+          "accountId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Owning account, inherited from the parent session."
+          },
+          "sessionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Parent session. Use with id to build the canonical /sessions/{sessionId}/chats/{id} URL."
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of the last update."
           }
         }
       },
