@@ -3236,33 +3236,37 @@
       },
       "ChatRoom": {
         "type": "object",
+        "required": [
+          "id",
+          "title",
+          "accountId",
+          "sessionId",
+          "updatedAt"
+        ],
         "properties": {
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the chat room"
+            "description": "Chat id."
           },
-          "account_id": {
+          "title": {
+            "type": "string",
+            "description": "Display title for the chat."
+          },
+          "accountId": {
             "type": "string",
             "format": "uuid",
-            "nullable": true,
-            "description": "UUID of the associated account (can be null if not set)"
+            "description": "Owning account, inherited from the parent session."
           },
-          "topic": {
+          "sessionId": {
             "type": "string",
-            "nullable": true,
-            "description": "Optional topic or description of the room (null if not provided)"
+            "format": "uuid",
+            "description": "Parent session. Use with `id` to build the canonical `/sessions/{sessionId}/chats/{id}` URL."
           },
-          "updated_at": {
+          "updatedAt": {
             "type": "string",
             "format": "date-time",
-            "description": "ISO timestamp of the last update to the room"
-          },
-          "artist_id": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true,
-            "description": "UUID of the associated artist account (null when not applicable)"
+            "description": "ISO timestamp of the last update."
           }
         }
       },
@@ -3842,45 +3846,9 @@
           "chats": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SessionScopedChat"
+              "$ref": "#/components/schemas/ChatRoom"
             },
             "description": "Array of session-scoped chat objects"
-          }
-        }
-      },
-      "SessionScopedChat": {
-        "type": "object",
-        "required": [
-          "id",
-          "title",
-          "accountId",
-          "sessionId",
-          "updatedAt"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Chat id."
-          },
-          "title": {
-            "type": "string",
-            "description": "Display title for the chat."
-          },
-          "accountId": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Owning account, inherited from the parent session."
-          },
-          "sessionId": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Parent session. Use with id to build the canonical /sessions/{sessionId}/chats/{id} URL."
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "ISO timestamp of the last update."
           }
         }
       },
