@@ -21,7 +21,7 @@
           {
             "name": "artist_account_id",
             "in": "query",
-            "description": "Optional. Filter chats to only include those for the specified artist. The parameter is accepted but currently has no effect; artist filtering returns in a future release.",
+            "description": "Optional. Filter chats to only include those whose owning session's `artistId` matches the supplied artist account id. Combine with `account_id` to scope by both owner and artist.",
             "required": false,
             "schema": {
               "type": "string",
