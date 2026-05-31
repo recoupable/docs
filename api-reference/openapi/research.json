@@ -3267,6 +3267,12 @@
             "type": "string",
             "format": "date-time",
             "description": "ISO timestamp of the last update."
+          },
+          "artistId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Artist account id this chat's session was created in the context of, or `null` when no artist was associated. Inherited from `sessions.artist_id` on the owning session."
           }
         }
       },
