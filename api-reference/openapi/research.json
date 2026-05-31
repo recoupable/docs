@@ -16,12 +16,12 @@
   "paths": {
     "/api/chats": {
       "get": {
-        "description": "Retrieve chat rooms (conversations) for the authenticated account. If the account has access to organizations, pass account_id to filter to a specific account within those organizations. Optionally filter by an artist_account_id. The endpoint returns metadata about each room, including the topic, associated artist, and last updated timestamp.",
+        "description": "Returns chats for the authenticated account. Personal Bearer tokens see only the caller's chats; org keys see chats across the org's member accounts; admin keys see all chats. Each row carries the chat id and the session id needed to build the chat URL.",
         "parameters": [
           {
             "name": "artist_account_id",
             "in": "query",
-            "description": "Optional. Filter chats to only include those for the specified artist.",
+            "description": "Optional. Filter chats to only include those whose owning session's `artistId` matches the supplied artist account id. Combine with `account_id` to scope by both owner and artist.",
             "required": false,
             "schema": {
               "type": "string",
@@ -3236,33 +3236,43 @@
       },
       "ChatRoom": {
         "type": "object",
+        "required": [
+          "id",
+          "title",
+          "accountId",
+          "sessionId",
+          "updatedAt"
+        ],
         "properties": {
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the chat room"
+            "description": "Chat id."
           },
-          "account_id": {
+          "title": {
+            "type": "string",
+            "description": "Display title for the chat."
+          },
+          "accountId": {
             "type": "string",
             "format": "uuid",
-            "nullable": true,
-            "description": "UUID of the associated account (can be null if not set)"
+            "description": "Owning account for this chat."
           },
-          "topic": {
+          "sessionId": {
             "type": "string",
-            "nullable": true,
-            "description": "Optional topic or description of the room (null if not provided)"
+            "format": "uuid",
+            "description": "Session that owns this chat. Combine with `id` to build the chat URL: `/sessions/{sessionId}/chats/{id}`."
           },
-          "updated_at": {
+          "updatedAt": {
             "type": "string",
             "format": "date-time",
-            "description": "ISO timestamp of the last update to the room"
+            "description": "ISO timestamp of the last update."
           },
-          "artist_id": {
+          "artistId": {
             "type": "string",
             "format": "uuid",
             "nullable": true,
-            "description": "UUID of the associated artist account (null when not applicable)"
+            "description": "Artist account id this chat's session was created in the context of, or `null` when no artist was associated. Inherited from `sessions.artist_id` on the owning session."
           }
         }
       },
@@ -3844,7 +3854,7 @@
             "items": {
               "$ref": "#/components/schemas/ChatRoom"
             },
-            "description": "Array of chat room objects"
+            "description": "Array of chat objects"
           }
         }
       },
