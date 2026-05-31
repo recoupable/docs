@@ -738,6 +738,11 @@
             "type": "string",
             "format": "uuid",
             "description": "Recoupable organization id. When provided, the session is created against the org's workspace repo (`recoupable/<organizationId>`) and the caller must have access to that organization. When omitted, the session is personal and uses the caller's own workspace repo (`recoupable/<accountId>`)."
+          },
+          "artistId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Artist account id to associate the session with. When provided, the session is created in the context of that artist — used by the chat sidebar to filter chats by artist. Optional; omit for a session with no artist context."
           }
         }
       },
@@ -945,8 +950,16 @@
         "description": "Body for `PATCH /api/sessions/{sessionId}/chats/{chatId}`. At least one of `title` or `modelId` must be provided; whichever is provided is trimmed and must be non-empty after trimming.",
         "additionalProperties": false,
         "anyOf": [
-          { "required": ["title"] },
-          { "required": ["modelId"] }
+          {
+            "required": [
+              "title"
+            ]
+          },
+          {
+            "required": [
+              "modelId"
+            ]
+          }
         ],
         "properties": {
           "title": {
@@ -1221,6 +1234,12 @@
           "updatedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "artistId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Artist account id this session was created in the context of, or `null` when no artist was associated. Set via `POST /api/sessions { artistId }`; surfaces here for clients (e.g. the chat sidebar) that filter sessions/chats by artist."
           }
         }
       },
