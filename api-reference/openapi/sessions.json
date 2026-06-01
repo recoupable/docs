@@ -1238,9 +1238,8 @@
             "format": "date-time"
           },
           "artistId": {
-            "type": "string",
+            "type": ["string", "null"],
             "format": "uuid",
-            "nullable": true,
             "description": "Artist account id this session was created in the context of, or `null` when no artist was associated. Set via `POST /api/sessions { artistId }`; surfaces here for clients (e.g. the chat sidebar) that filter sessions/chats by artist."
           }
         }
