@@ -1985,7 +1985,7 @@
     },
     "/api/research/metrics": {
       "get": {
-        "description": "Get platform-specific metrics for an artist over time — followers, listeners, views, engagement. Supports 14 platforms.",
+        "description": "Get platform-specific metrics for an artist over time — followers, listeners, views, engagement, and radio airplay. Supports 16 sources.",
         "parameters": [
           {
             "name": "artist",
@@ -2017,7 +2017,9 @@
                 "line",
                 "melon",
                 "wikipedia",
-                "bandsintown"
+                "bandsintown",
+                "radio",
+                "sxm"
               ]
             }
           },
