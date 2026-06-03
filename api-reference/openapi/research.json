@@ -2046,6 +2046,16 @@
               }
             }
           },
+          "202": {
+            "description": "Metrics refresh is pending. Retry this endpoint shortly.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchRefreshPendingResponse"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Validation error",
             "content": {
@@ -5012,6 +5022,35 @@
           }
         },
         "additionalProperties": true
+      },
+      "ResearchRefreshPendingResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "state",
+          "message"
+        ],
+        "description": "Returned when metrics are being refreshed and no cached result is available yet.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending"
+            ],
+            "example": "pending"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "refresh_pending"
+            ],
+            "example": "refresh_pending"
+          },
+          "message": {
+            "type": "string",
+            "example": "Research metrics refresh is pending. Retry this endpoint shortly."
+          }
+        }
       },
       "ResearchMilestone": {
         "type": "object",
