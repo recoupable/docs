@@ -2200,7 +2200,7 @@
                 "youtube"
               ]
             },
-            "description": "Streaming platform the the configured provider playlist is sourced from."
+            "description": "Streaming platform the configured provider playlist is sourced from."
           },
           {
             "name": "id",
@@ -6094,9 +6094,10 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/Error"
+              "$ref": "#/components/schemas/ResearchErrorResponse"
             },
             "example": {
+              "status": "error",
               "error": "Request failed with status 501"
             }
           }
