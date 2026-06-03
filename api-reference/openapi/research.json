@@ -892,7 +892,7 @@
     },
     "/api/research": {
       "get": {
-        "description": "Unified Chartmetric search. This is the discovery primitive for the detail-lookup endpoints — use `type=artists` to find an `id` for [GET /api/research/albums](/api-reference/research/albums), `type=tracks` for [GET /api/research/track](/api-reference/research/track), `type=playlists` for [GET /api/research/playlist](/api-reference/research/playlist), etc. Pick the right `id` from the returned results and pass it to the appropriate detail endpoint.\n\nThin proxy over Chartmetric's `/search`. Chartmetric's default search engine is narrow — for ambiguous queries like `Hotline Bling` or `Flowers` it often returns a single low-quality match. **Pass `beta=true` for higher relevance and accuracy**, which switches Chartmetric to its improved ranking engine. Beta results include a numeric `match_strength` score and have a slightly different shape than the default engine (see the response schema).",
+        "description": "Unified music research search. This is the discovery primitive for the detail-lookup endpoints — use `type=artists` to find an `id` for [GET /api/research/albums](/api-reference/research/albums), `type=tracks` for [GET /api/research/track](/api-reference/research/track), `type=playlists` for [GET /api/research/playlist](/api-reference/research/playlist), etc. Pick the right `id` from the returned results and pass it to the appropriate detail endpoint.\n\nSearches the configured research data source. Use the `type` and `limit` parameters to narrow results before passing a returned `id` to a detail endpoint.",
         "parameters": [
           {
             "name": "q",
@@ -935,7 +935,7 @@
             "name": "beta",
             "in": "query",
             "required": false,
-            "description": "When `true`, switches Chartmetric to its improved beta search engine — recommended for ambiguous queries. Results come back sorted by `match_strength` (higher is better) and include `target`/`platform` fields instead of the default-mode shape.",
+            "description": "Legacy search option. Accepted for compatibility; ignored by providers that do not support it.",
             "schema": {
               "type": "string",
               "enum": [
@@ -948,10 +948,10 @@
             "name": "platforms",
             "in": "query",
             "required": false,
-            "description": "Comma-separated platforms to include in beta results (e.g. `cm,spotify`). Only valid with `beta=true`; ignored otherwise.",
+            "description": "Comma-separated platforms to include in legacy search results. Accepted for compatibility; ignored by providers that do not support it.",
             "schema": {
               "type": "string",
-              "example": "cm,spotify"
+              "example": "spotify"
             }
           },
           {
@@ -1001,17 +1001,17 @@
     },
     "/api/research/albums": {
       "get": {
-        "description": "Get the album discography — albums, EPs, and singles with release dates — for a Chartmetric `artist_id`.\n\nThin proxy over Chartmetric's `/artist/:id/albums`. By default `is_primary=true`, so only albums where the artist is a main artist are returned — DJ compilations, soundtracks, and pure feature appearances are excluded. Pass `is_primary=false` to include them. Discover a Chartmetric `artist_id` via [GET /api/research](/api-reference/research/search) with `type=artists&beta=true`.",
+        "description": "Get the album discography — albums, EPs, and singles with release dates — for a provider `artist_id`.\n\nFetches provider data for `/artist/:id/albums`. By default `is_primary=true`, so only albums where the artist is a main artist are returned — DJ compilations, soundtracks, and pure feature appearances are excluded. Pass `is_primary=false` to include them. Discover a provider `artist_id` via [GET /api/research](/api-reference/research/search) with `type=artists`.",
         "parameters": [
           {
             "name": "artist_id",
             "in": "query",
             "required": true,
-            "description": "Chartmetric artist ID (positive integer). Obtain via [GET /api/research](/api-reference/research/search) with `type=artists&beta=true` — the `id` field in each result is the Chartmetric ID to pass here.",
+            "description": "Provider artist ID. Obtain it from search or lookup results.",
             "schema": {
               "type": "string",
-              "pattern": "^[1-9][0-9]*$",
-              "example": "3380"
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "example": "artist_123"
             }
           },
           {
@@ -1021,7 +1021,10 @@
             "description": "When `true` (default), returns only albums where the artist is a main artist. Set to `false` to include feature appearances, DJ compilations, and soundtracks.",
             "schema": {
               "type": "string",
-              "enum": ["true", "false"],
+              "enum": [
+                "true",
+                "false"
+              ],
               "default": "true"
             }
           },
@@ -1029,7 +1032,7 @@
             "name": "limit",
             "in": "query",
             "required": false,
-            "description": "Number of albums to return. Defaults to Chartmetric's default (100) when omitted.",
+            "description": "Number of albums to return. Defaults to the provider's default when omitted.",
             "schema": {
               "type": "string",
               "pattern": "^[1-9][0-9]*$"
@@ -1058,7 +1061,7 @@
             }
           },
           "400": {
-            "description": "Validation error — `artist_id` missing or not a positive integer",
+            "description": "Validation error — `artist_id` missing or invalid",
             "content": {
               "application/json": {
                 "schema": {
@@ -1087,8 +1090,8 @@
           {
             "name": "artist",
             "in": "query",
-            "required": true,
-            "description": "Artist name or Recoup artist ID (UUID).",
+            "required": false,
+            "description": "Artist name. Required unless `id` is provided.",
             "schema": {
               "type": "string"
             }
@@ -1106,6 +1109,17 @@
                 "youtube"
               ],
               "default": "instagram"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "description": "Provider artist ID returned by lookup or search. Required unless `artist` is provided.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "example": "artist_123"
             }
           }
         ],
@@ -1150,10 +1164,21 @@
           {
             "name": "artist",
             "in": "query",
-            "required": true,
-            "description": "Artist name or Recoup artist ID (UUID).",
+            "required": false,
+            "description": "Artist name. Required unless `id` is provided.",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "description": "Provider artist ID returned by lookup or search. Required unless `artist` is provided.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "example": "artist_123"
             }
           }
         ],
@@ -1298,10 +1323,21 @@
           {
             "name": "artist",
             "in": "query",
-            "required": true,
-            "description": "Artist name or Recoup artist ID (UUID).",
+            "required": false,
+            "description": "Artist name. Required unless `id` is provided.",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "description": "Provider artist ID returned by lookup or search. Required unless `artist` is provided.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "example": "artist_123"
             }
           }
         ],
@@ -1341,7 +1377,7 @@
     },
     "/api/research/curator": {
       "get": {
-        "description": "Get curator profile — name, image, follower counts across platforms, tag-based genre info, and Chartmetric playlist reach statistics. Requires a numeric Chartmetric curator ID (e.g. `2` for Spotify's own account). Discover a Chartmetric curator ID via [GET /api/research](/api-reference/research/search) with `type=curators&beta=true`. You can also find curators indirectly by looking up their playlists via [GET /api/research/playlists](/api-reference/research/playlists).",
+        "description": "Get curator profile — name, image, follower counts across platforms, tag-based genre info, and playlist reach statistics. Requires a numeric curator ID (e.g. `2` for Spotify's own account). Discover a curator ID via [GET /api/research](/api-reference/research/search) with `type=curators`. You can also find curators indirectly by looking up their playlists via [GET /api/research/playlists](/api-reference/research/playlists).",
         "parameters": [
           {
             "name": "platform",
@@ -1355,13 +1391,13 @@
                 "deezer"
               ]
             },
-            "description": "Streaming platform. Only Spotify, Apple Music, and Deezer have curator metadata on Chartmetric. (YouTube and Amazon are not supported by this endpoint.)"
+            "description": "Streaming platform. Only Spotify, Apple Music, and Deezer have curator metadata from the configured provider. (YouTube and Amazon are not supported by this endpoint.)"
           },
           {
             "name": "id",
             "in": "query",
             "required": true,
-            "description": "Numeric Chartmetric curator ID (e.g. `2` for Spotify's own account). Non-numeric values will be rejected. Obtain via [GET /api/research](/api-reference/research/search) with `type=curators&beta=true`.",
+            "description": "Numeric curator ID (e.g. `2` for Spotify's own account). Non-numeric values will be rejected. Obtain via [GET /api/research](/api-reference/research/search) with `type=curators`.",
             "schema": {
               "type": "string",
               "pattern": "^[0-9]+$",
@@ -1730,10 +1766,21 @@
           {
             "name": "artist",
             "in": "query",
-            "required": true,
-            "description": "Artist name or Recoup artist ID (UUID).",
+            "required": false,
+            "description": "Artist name. Required unless `id` is provided.",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "description": "Provider artist ID returned by lookup or search. Required unless `artist` is provided.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "example": "artist_123"
             }
           }
         ],
@@ -1778,10 +1825,21 @@
           {
             "name": "artist",
             "in": "query",
-            "required": true,
-            "description": "Artist name or Recoup artist ID (UUID).",
+            "required": false,
+            "description": "Artist name. Required unless `id` is provided.",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "description": "Provider artist ID returned by lookup or search. Required unless `artist` is provided.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "example": "artist_123"
             }
           }
         ],
@@ -1826,10 +1884,20 @@
           {
             "name": "url",
             "in": "query",
-            "required": true,
-            "description": "Platform URL or ID (e.g., Spotify artist URL, Spotify ID).",
+            "required": false,
+            "description": "Spotify artist URL. Required unless `spotifyId` is provided.",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "spotifyId",
+            "in": "query",
+            "required": false,
+            "description": "Spotify artist ID. Required unless `url` is provided.",
+            "schema": {
+              "type": "string",
+              "example": "3TVXtAsR1Inumwj472S9r4"
             }
           }
         ],
@@ -1874,8 +1942,8 @@
           {
             "name": "artist",
             "in": "query",
-            "required": true,
-            "description": "Artist name or Recoup artist ID (UUID).",
+            "required": false,
+            "description": "Artist name. Required unless `id` is provided.",
             "schema": {
               "type": "string"
             }
@@ -1903,6 +1971,17 @@
                 "wikipedia",
                 "bandsintown"
               ]
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "description": "Provider artist ID returned by lookup or search. Required unless `artist` is provided.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "example": "artist_123"
             }
           }
         ],
@@ -1947,10 +2026,21 @@
           {
             "name": "artist",
             "in": "query",
-            "required": true,
-            "description": "Artist name or Recoup artist ID.",
+            "required": false,
+            "description": "Artist name. Required unless `id` is provided.",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "description": "Provider artist ID returned by lookup or search. Required unless `artist` is provided.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "example": "artist_123"
             }
           }
         ],
@@ -2037,7 +2127,7 @@
     },
     "/api/research/playlist": {
       "get": {
-        "description": "Get playlist metadata — name, description, follower count, track count, and curator info.\n\nThin proxy over Chartmetric's `/playlist/:platform/:id` detail lookup. **`id` is Chartmetric's own numeric playlist ID, not the streaming-platform's native ID.** Discover the Chartmetric playlist ID via [GET /api/research](/api-reference/research/search) with `type=playlists&beta=true` — the `id` field in each result is the Chartmetric ID to pass here.",
+        "description": "Get playlist metadata — name, description, follower count, track count, and curator info.\n\nFetches provider data for `/playlist/:platform/:id` detail lookup. **`id` is the provider's playlist ID, not the streaming-platform's native ID.** Discover the provider playlist ID via [GET /api/research](/api-reference/research/search) with `type=playlists` — the `id` field in each result is the provider ID to pass here.",
         "parameters": [
           {
             "name": "platform",
@@ -2053,13 +2143,13 @@
                 "youtube"
               ]
             },
-            "description": "Streaming platform the Chartmetric playlist is sourced from."
+            "description": "Streaming platform the the configured provider playlist is sourced from."
           },
           {
             "name": "id",
             "in": "query",
             "required": true,
-            "description": "Chartmetric playlist ID (positive integer). This is **not** the streaming platform's native ID — e.g. Spotify's base62 ID `37i9dQZF1DXcBWIGoYBM5M` for RapCaviar maps to Chartmetric ID `848051`. Obtain via [GET /api/research](/api-reference/research/search) with `type=playlists&beta=true`.",
+            "description": "provider playlist ID (positive integer). This is **not** the streaming platform's native ID — e.g. Spotify's base62 ID `37i9dQZF1DXcBWIGoYBM5M` for RapCaviar maps to provider ID `848051`. Obtain via [GET /api/research](/api-reference/research/search) with `type=playlists`.",
             "schema": {
               "type": "string",
               "pattern": "^[1-9][0-9]*$",
@@ -2108,8 +2198,8 @@
           {
             "name": "artist",
             "in": "query",
-            "required": true,
-            "description": "Artist name or Recoup artist ID (UUID).",
+            "required": false,
+            "description": "Artist name. Required unless `id` is provided.",
             "schema": {
               "type": "string"
             }
@@ -2219,6 +2309,17 @@
             "schema": {
               "type": "boolean"
             }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "description": "Provider artist ID returned by lookup or search. Required unless `artist` is provided.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "example": "artist_123"
+            }
           }
         ],
         "responses": {
@@ -2262,10 +2363,21 @@
           {
             "name": "artist",
             "in": "query",
-            "required": true,
-            "description": "Artist name or Recoup artist ID (UUID).",
+            "required": false,
+            "description": "Artist name. Required unless `id` is provided.",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "description": "Provider artist ID returned by lookup or search. Required unless `artist` is provided.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "example": "artist_123"
             }
           }
         ],
@@ -2305,7 +2417,7 @@
     },
     "/api/research/radio": {
       "get": {
-        "description": "List radio stations tracked by Chartmetric. NOT artist-scoped. Returns station names, formats, and markets.",
+        "description": "List radio stations tracked by the configured provider. NOT artist-scoped. Returns station names, formats, and markets.",
         "responses": {
           "200": {
             "description": "Radio station list",
@@ -2342,15 +2454,26 @@
     },
     "/api/research/rank": {
       "get": {
-        "description": "Get an artist's global Chartmetric ranking as a single integer value.",
+        "description": "Get an artist's global the configured provider ranking as a single integer value.",
         "parameters": [
           {
             "name": "artist",
             "in": "query",
-            "required": true,
-            "description": "Artist name or Recoup artist ID.",
+            "required": false,
+            "description": "Artist name. Required unless `id` is provided.",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "description": "Provider artist ID returned by lookup or search. Required unless `artist` is provided.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "example": "artist_123"
             }
           }
         ],
@@ -2395,8 +2518,8 @@
           {
             "name": "artist",
             "in": "query",
-            "required": true,
-            "description": "Artist name or Recoup artist ID (UUID).",
+            "required": false,
+            "description": "Artist name. Required unless `id` is provided.",
             "schema": {
               "type": "string"
             }
@@ -2469,6 +2592,17 @@
               "type": "integer",
               "default": 10
             }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "description": "Provider artist ID returned by lookup or search. Required unless `artist` is provided.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "example": "artist_123"
+            }
           }
         ],
         "responses": {
@@ -2507,17 +2641,17 @@
     },
     "/api/research/track": {
       "get": {
-        "description": "Get full Chartmetric track metadata by numeric track `id` — title, artists, albums, release date, genres, popularity, and platform IDs.\n\nThis endpoint is a thin proxy over Chartmetric's `/track/:id` detail lookup. Discover a Chartmetric track ID via [GET /api/research](/api-reference/research/search) with `type=tracks&beta=true` — pick a result's `id`, then call this endpoint. Keeping the two concerns separate means predictable credit charging and no silent wrong-match behavior for ambiguous queries.",
+        "description": "Get full provider track metadata by track `id` — title, artists, albums, release date, genres, popularity, and platform IDs.\n\nThis endpoint is a thin proxy over the provider `/track/:id` detail lookup. Discover a provider track ID via [GET /api/research](/api-reference/research/search) with `type=tracks` — pick a result's `id`, then call this endpoint. Keeping the two concerns separate means predictable credit charging and no silent wrong-match behavior for ambiguous queries.",
         "parameters": [
           {
             "name": "id",
             "in": "query",
             "required": true,
-            "description": "Chartmetric track ID (positive integer). Obtain via [GET /api/research](/api-reference/research/search) with `type=tracks&beta=true` — beta-ranked search results include the `id` field directly.",
+            "description": "Provider track ID. Obtain it from search results or a track lookup.",
             "schema": {
               "type": "string",
-              "pattern": "^[1-9][0-9]*$",
-              "example": "15194376"
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "example": "track_123"
             }
           }
         ],
@@ -2553,7 +2687,7 @@
             }
           },
           "404": {
-            "description": "No Chartmetric track exists with the supplied `id`",
+            "description": "No provider track exists with the supplied `id`",
             "content": {
               "application/json": {
                 "schema": {
@@ -2572,10 +2706,21 @@
           {
             "name": "artist",
             "in": "query",
-            "required": true,
-            "description": "Artist name or Recoup artist ID (UUID).",
+            "required": false,
+            "description": "Artist name. Required unless `id` is provided.",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "description": "Provider artist ID returned by lookup or search. Required unless `artist` is provided.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "example": "artist_123"
             }
           }
         ],
@@ -2620,10 +2765,21 @@
           {
             "name": "artist",
             "in": "query",
-            "required": true,
-            "description": "Artist name or Recoup artist ID (UUID).",
+            "required": false,
+            "description": "Artist name. Required unless `id` is provided.",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "description": "Provider artist ID returned by lookup or search. Required unless `artist` is provided.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "example": "artist_123"
             }
           }
         ],
@@ -2668,10 +2824,21 @@
           {
             "name": "artist",
             "in": "query",
-            "required": true,
-            "description": "Artist name or Recoup artist ID.",
+            "required": false,
+            "description": "Artist name. Required unless `id` is provided.",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "description": "Provider artist ID returned by lookup or search. Required unless `artist` is provided.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "example": "artist_123"
             }
           }
         ],
@@ -2758,14 +2925,16 @@
     },
     "/api/research/track/playlists": {
       "get": {
-        "description": "Returns playlists featuring a specific track. Accepts a Chartmetric track ID (`id`) or a track name + optional artist (`q`, `artist`) for a Spotify-powered lookup. When no filter flag is passed, defaults to editorial + indie + majorCurator + popularIndie = `true`. Costs 5 credits per request.\n\nDiscover a Chartmetric track `id` via [GET /api/research](/api-reference/research/search) with `type=tracks&beta=true` — then pass the resulting `id` here for the most reliable match (avoids the ambiguity of name-based lookup).",
+        "description": "Returns playlists featuring a specific track. Accepts a provider track ID (`id`) or a track name + optional artist (`q`, `artist`) for a Spotify-powered lookup. When no filter flag is passed, defaults to editorial + indie + majorCurator + popularIndie = `true`. Costs 5 credits per request.\n\nDiscover a provider track `id` via [GET /api/research](/api-reference/research/search) with `type=tracks` — then pass the resulting `id` here for the most reliable match (avoids the ambiguity of name-based lookup).",
         "parameters": [
           {
             "name": "id",
             "in": "query",
-            "description": "Chartmetric track ID. Required if `q` is not provided. Obtain via [GET /api/research](/api-reference/research/search) with `type=tracks&beta=true`.",
+            "description": "Provider track ID. Required if `q` is not provided.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "example": "track_123"
             }
           },
           {
@@ -2779,10 +2948,11 @@
           {
             "name": "artist",
             "in": "query",
-            "description": "Artist name to disambiguate the track lookup when using `q`.",
+            "description": "Artist name. Required unless `id` is provided.",
             "schema": {
               "type": "string"
-            }
+            },
+            "required": false
           },
           {
             "name": "platform",
@@ -2956,7 +3126,7 @@
                     },
                     "placements": {
                       "type": "array",
-                      "description": "Playlist placement objects returned by Chartmetric (shape varies per platform).",
+                      "description": "Playlist placement objects returned by the configured provider (shape varies per platform).",
                       "items": {
                         "type": "object"
                       }
@@ -3895,7 +4065,7 @@
       },
       "ResearchAudienceResponse": {
         "type": "object",
-        "description": "Audience demographics and engagement metrics from Chartmetric. Contains two parallel families of fields: **followers** (`audience_*` and `top_*`) describe the artist's follower base, while **likers** (`audience_likers_*`, `likers_top_*`) describe the people who engage (like/comment) with the artist's posts. Engagement aggregates (`followers`, `avg_likes_per_post`, `engagement_rate`) and `notable_followers` round out the payload. All array shapes are upstream Chartmetric objects that pass through via `additionalProperties`.",
+        "description": "Audience demographics and engagement metrics from the configured provider. Contains two parallel families of fields: **followers** (`audience_*` and `top_*`) describe the artist's follower base, while **likers** (`audience_likers_*`, `likers_top_*`) describe the people who engage (like/comment) with the artist's posts. Engagement aggregates (`followers`, `avg_likes_per_post`, `engagement_rate`) and `notable_followers` round out the payload. All array shapes are upstream provider objects that pass through via `additionalProperties`.",
         "properties": {
           "status": {
             "type": "string",
@@ -3922,71 +4092,116 @@
           "top_countries": {
             "type": "array",
             "description": "Top countries by audience share.",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "top_cities": {
             "type": "array",
             "description": "Top cities by audience concentration.",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "likers_top_countries": {
             "type": "array",
             "description": "Top countries for the likers (engagement) cohort.",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "likers_top_cities": {
             "type": "array",
             "description": "Top cities for the likers cohort.",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "audience_genders": {
             "type": "array",
             "description": "Gender breakdown of the follower base.",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "audience_genders_per_age": {
             "type": "array",
             "description": "Follower gender split per age bracket.",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "audience_ethnicities": {
             "type": "array",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "audience_interests": {
             "type": "array",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "audience_brand_affinities": {
             "type": "array",
             "description": "Brand affinity scores for the follower cohort.",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "audience_likers_genders": {
             "type": "array",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "audience_likers_genders_per_age": {
             "type": "array",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "audience_likers_ethnicities": {
             "type": "array",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "audience_likers_interests": {
             "type": "array",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "audience_likers_brand_affinities": {
             "type": "array",
             "description": "Brand affinity scores for the likers cohort.",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "notable_followers": {
             "type": "array",
             "description": "Notable public/influential accounts in the follower base.",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           }
         },
         "additionalProperties": true
@@ -4085,7 +4300,7 @@
           },
           "id": {
             "type": "integer",
-            "description": "Chartmetric curator ID."
+            "description": "curator ID."
           },
           "user_id": {
             "type": "string",
@@ -4105,32 +4320,42 @@
           },
           "last_updated": {
             "type": "string",
-            "description": "ISO timestamp of the last Chartmetric sync."
+            "description": "ISO timestamp of the last provider sync."
           },
           "suspicion_score": {
             "type": "integer",
-            "description": "Chartmetric's internal suspicion score (lower is better)."
+            "description": "Provider-internal suspicion score (lower is better)."
           },
           "tags": {
             "type": "array",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "tag_ids": {
             "type": "array",
-            "items": { "type": "integer" }
+            "items": {
+              "type": "integer"
+            }
           },
           "tag_names": {
             "type": "array",
-            "items": { "type": "string" }
+            "items": {
+              "type": "string"
+            }
           },
           "spotifySocialUrls": {
             "type": "array",
             "description": "Spotify-linked social URLs for the curator.",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "cm_statistics": {
             "type": "object",
-            "description": "Aggregated Chartmetric statistics — playlist reach, editorial counts, velocity deltas, etc.",
+            "description": "Aggregated the configured provider statistics — playlist reach, editorial counts, velocity deltas, etc.",
             "additionalProperties": true
           },
           "instagram_followers": {
@@ -4532,7 +4757,7 @@
       },
       "ResearchInstagramPostsResponse": {
         "type": "object",
-        "description": "Top Instagram posts and reels sorted by engagement. Fields are returned directly from Chartmetric's DeepSocial integration.",
+        "description": "Top Instagram posts and reels sorted by engagement. Fields are returned directly from the configured provider's the configured research provider.",
         "properties": {
           "status": {
             "type": "string",
@@ -4595,11 +4820,11 @@
           },
           "data": {
             "type": "object",
-            "description": "Cross-platform artist identifiers returned by Chartmetric.",
+            "description": "Cross-platform artist identifiers returned by the configured provider.",
             "properties": {
               "id": {
                 "type": "integer",
-                "description": "Chartmetric artist ID"
+                "description": "provider artist ID"
               },
               "spotify_id": {
                 "type": "string"
@@ -4632,8 +4857,12 @@
             "items": {
               "type": "object",
               "properties": {
-                "timestp": { "type": "string" },
-                "value": { "type": "number" }
+                "timestp": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "number"
+                }
               },
               "additionalProperties": true
             }
@@ -4644,8 +4873,12 @@
             "items": {
               "type": "object",
               "properties": {
-                "timestp": { "type": "string" },
-                "value": { "type": "number" }
+                "timestp": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "number"
+                }
               },
               "additionalProperties": true
             }
@@ -4656,8 +4889,12 @@
             "items": {
               "type": "object",
               "properties": {
-                "timestp": { "type": "string" },
-                "value": { "type": "number" }
+                "timestp": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "number"
+                }
               },
               "additionalProperties": true
             }
@@ -4668,8 +4905,12 @@
             "items": {
               "type": "object",
               "properties": {
-                "timestp": { "type": "string" },
-                "value": { "type": "number" }
+                "timestp": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "number"
+                }
               },
               "additionalProperties": true
             }
@@ -4841,14 +5082,14 @@
       },
       "ResearchPlaylistResponse": {
         "type": "object",
-        "description": "Playlist metadata — name, description, follower count, track count, curator info, and Chartmetric-derived signals (editorial flag, suspicion score, active-ratio, week/month delta, mood/activity/genre tags).",
+        "description": "Playlist metadata — name, description, follower count, track count, curator info, and Provider-derived signals (editorial flag, suspicion score, active-ratio, week/month delta, mood/activity/genre tags).",
         "properties": {
           "status": {
             "type": "string"
           },
           "id": {
             "type": "integer",
-            "description": "Chartmetric playlist ID (same as the `id` query param)."
+            "description": "provider playlist ID (same as the `id` query param)."
           },
           "name": {
             "type": "string"
@@ -4904,11 +5145,11 @@
           },
           "active_ratio": {
             "type": "integer",
-            "description": "Fraction of days recently that the playlist was updated (Chartmetric-internal)."
+            "description": "Fraction of days recently that the playlist was updated (Provider-internal)."
           },
           "suspicion_score": {
             "type": "integer",
-            "description": "Chartmetric's internal playlist-suspicion score (lower is better)."
+            "description": "Provider-internal playlist-suspicion score (lower is better)."
           },
           "fdiff_week": {
             "type": "integer",
@@ -4924,31 +5165,49 @@
           },
           "sys_last_updated": {
             "type": "string",
-            "description": "ISO timestamp Chartmetric last synced the playlist."
+            "description": "ISO timestamp the provider last synced the playlist."
           },
           "genres": {
             "type": "array",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "moods": {
             "type": "array",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "activities": {
             "type": "array",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "mood_smart_ordered": {
             "type": "array",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "activity_smart_ordered": {
             "type": "array",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "tags": {
             "type": "array",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           }
         },
         "additionalProperties": true
@@ -4974,14 +5233,14 @@
       },
       "ResearchProfileResponse": {
         "type": "object",
-        "description": "Full artist profile — identity, biography, genres, geography, label/management, and Chartmetric-derived ranks/statistics. For longitudinal platform metrics (Spotify followers/listeners over time, social stats, etc.) call `GET /api/research/metrics` instead.",
+        "description": "Full artist profile — identity, biography, genres, geography, label/management, and Provider-derived ranks/statistics. For longitudinal platform metrics (Spotify followers/listeners over time, social stats, etc.) call `GET /api/research/metrics` instead.",
         "properties": {
           "status": {
             "type": "string"
           },
           "id": {
             "type": "integer",
-            "description": "Chartmetric artist ID."
+            "description": "provider artist ID."
           },
           "name": {
             "type": "string"
@@ -5029,7 +5288,7 @@
           },
           "hometown_city": {
             "nullable": true,
-            "description": "Chartmetric hometown-city object (null when unknown)."
+            "description": "Provider hometown-city object (null when unknown)."
           },
           "current_city": {
             "type": "string",
@@ -5041,11 +5300,11 @@
           },
           "cm_artist_rank": {
             "type": "integer",
-            "description": "Overall Chartmetric artist rank (lower is better)."
+            "description": "Overall Provider artist rank (lower is better)."
           },
           "cm_artist_score": {
             "type": "number",
-            "description": "Chartmetric artist-score aggregate (higher is better)."
+            "description": "Provider artist-score aggregate (higher is better)."
           },
           "cm_statistics": {
             "type": "object",
@@ -5064,7 +5323,10 @@
           },
           "genre_smart_ordered": {
             "type": "array",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "genreRank": {
             "type": "object",
@@ -5080,11 +5342,17 @@
           },
           "moods": {
             "type": "array",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "activities": {
             "type": "array",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "record_label": {
             "type": "string",
@@ -5104,7 +5372,10 @@
           },
           "topSongwriterCollaborators": {
             "type": "array",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "created_at": {
             "type": "string"
@@ -5125,7 +5396,7 @@
           },
           "stations": {
             "type": "array",
-            "description": "Radio stations tracked by Chartmetric.",
+            "description": "Radio stations tracked by the configured provider.",
             "items": {
               "type": "object",
               "additionalProperties": true
@@ -5147,7 +5418,7 @@
           "rank": {
             "type": "integer",
             "nullable": true,
-            "description": "Global Chartmetric artist rank."
+            "description": "Global Provider artist rank."
           }
         }
       },
@@ -5179,10 +5450,14 @@
             "type": "string"
           },
           "id": {
-            "description": "Chartmetric internal ID for use with the detail-lookup endpoints (`/api/research/track`, `/api/research/playlist`, `/api/research/albums`, etc.). Usually an integer; some playlist sources return a string.",
+            "description": "Provider ID for use with the detail-lookup endpoints (`/api/research/track`, `/api/research/playlist`, `/api/research/albums`, etc.). Usually an integer; some playlist sources return a string.",
             "oneOf": [
-              { "type": "integer" },
-              { "type": "string" }
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
             ]
           },
           "image_url": {
@@ -5214,7 +5489,9 @@
           "artist_names": {
             "type": "array",
             "nullable": true,
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "description": "Default-engine tracks only."
           }
         },
@@ -5295,14 +5572,14 @@
       },
       "ResearchTrackResponse": {
         "type": "object",
-        "description": "Track metadata — title, artists, albums, release date, genres, popularity, and platform IDs. Only the most commonly-used fields are enumerated here; the upstream Chartmetric response includes additional fields (e.g. `cm_statistics`, `activities`, `moods`) that pass through under `additionalProperties`.",
+        "description": "Track metadata — title, artists, albums, release date, genres, popularity, and platform IDs. Only the most commonly-used fields are enumerated here; the upstream provider response includes additional fields (e.g. `cm_statistics`, `activities`, `moods`) that pass through under `additionalProperties`.",
         "properties": {
           "status": {
             "type": "string"
           },
           "id": {
             "type": "integer",
-            "description": "Chartmetric track ID"
+            "description": "provider track ID"
           },
           "name": {
             "type": "string",
@@ -5331,7 +5608,7 @@
           },
           "score": {
             "type": "integer",
-            "description": "Chartmetric track score",
+            "description": "Provider track score",
             "nullable": true
           },
           "explicit": {
@@ -5340,13 +5617,13 @@
           },
           "artists": {
             "type": "array",
-            "description": "Credited artists. Each entry is a Chartmetric artist object; at minimum `id` and `name` are populated.",
+            "description": "Credited artists. Each entry is a provider artist object; at minimum `id` and `name` are populated.",
             "items": {
               "type": "object",
               "properties": {
                 "id": {
                   "type": "integer",
-                  "description": "Chartmetric artist ID"
+                  "description": "provider artist ID"
                 },
                 "name": {
                   "type": "string"
@@ -5367,7 +5644,7 @@
               "properties": {
                 "id": {
                   "type": "integer",
-                  "description": "Chartmetric album ID"
+                  "description": "provider album ID"
                 },
                 "name": {
                   "type": "string"
@@ -5413,7 +5690,7 @@
           },
           "cm_statistics": {
             "type": "object",
-            "description": "Chartmetric's aggregated cross-platform statistics for the track — Spotify popularity/streams, TikTok video counts, YouTube views, Shazam counts, Apple/Deezer/Amazon playlist reach, weekly deltas, etc. Fields are often null for less-popular tracks. Opaque object; inspect an actual response for the full field set.",
+            "description": "Provider aggregated cross-platform statistics for the track — Spotify popularity/streams, TikTok video counts, YouTube views, Shazam counts, Apple/Deezer/Amazon playlist reach, weekly deltas, etc. Fields are often null for less-popular tracks. Opaque object; inspect an actual response for the full field set.",
             "additionalProperties": true
           },
           "tempo": {
@@ -5424,14 +5701,20 @@
           "moods": {
             "type": "array",
             "nullable": true,
-            "description": "Chartmetric-inferred mood tags (e.g. `Happy`, `Melancholic`).",
-            "items": { "type": "object", "additionalProperties": true }
+            "description": "Provider-inferred mood tags (e.g. `Happy`, `Melancholic`).",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
           "activities": {
             "type": "array",
             "nullable": true,
-            "description": "Chartmetric-inferred activity tags (e.g. `Workout`, `Studying`).",
-            "items": { "type": "object", "additionalProperties": true }
+            "description": "Provider-inferred activity tags (e.g. `Workout`, `Studying`).",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           }
         },
         "additionalProperties": true
