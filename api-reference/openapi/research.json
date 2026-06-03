@@ -2525,7 +2525,7 @@
     },
     "/api/research/rank": {
       "get": {
-        "description": "Get an artist's global the configured provider ranking as a single integer value.",
+        "description": "Get an artist's global ranking as a single integer value when the configured research source supports that ranking.",
         "parameters": [
           {
             "name": "artist",
@@ -2587,7 +2587,7 @@
     },
     "/api/research/similar": {
       "get": {
-        "description": "Find similar artists based on audience overlap, genre, mood, and musicality. Use for competitive analysis and collaboration discovery.",
+        "description": "Find similar or related artists for competitive analysis and collaboration discovery. Weight parameters are applied when the configured research source supports weighted matching; otherwise the endpoint returns the closest available related-artist set.",
         "parameters": [
           {
             "name": "artist",
@@ -5513,7 +5513,7 @@
           "rank": {
             "type": "integer",
             "nullable": true,
-            "description": "Global Provider artist rank."
+            "description": "Global artist rank from the configured research source."
           }
         }
       },
@@ -5599,7 +5599,15 @@
             "type": "string"
           },
           "id": {
-            "type": "integer"
+            "oneOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Provider artist ID."
           },
           "similarity": {
             "type": "number",
