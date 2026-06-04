@@ -1729,80 +1729,12 @@
             }
           },
           {
-            "name": "editorial",
-            "in": "query",
-            "required": false,
-            "description": "Only editorial playlists.",
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "name": "since",
-            "in": "query",
-            "required": false,
-            "description": "Filter by date (YYYY-MM-DD).",
-            "schema": {
-              "type": "string",
-              "format": "date"
-            }
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "required": false,
-            "description": "Sort results by this field.",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
             "name": "limit",
             "in": "query",
             "required": false,
             "schema": {
               "type": "integer",
               "default": 20
-            }
-          },
-          {
-            "name": "indie",
-            "in": "query",
-            "description": "Include indie playlists.",
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "name": "majorCurator",
-            "in": "query",
-            "description": "Include major-curator playlists.",
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "name": "popularIndie",
-            "in": "query",
-            "description": "Include popular indie playlists.",
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "name": "personalized",
-            "in": "query",
-            "description": "Include personalized playlists.",
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "name": "chart",
-            "in": "query",
-            "description": "Include chart playlists.",
-            "schema": {
-              "type": "boolean"
             }
           },
           {
@@ -3863,37 +3795,23 @@
       },
       "ResearchPlaylistPlacement": {
         "type": "object",
+        "description": "A playlist the artist currently appears on.",
         "properties": {
+          "playlist_id": {
+            "type": "string"
+          },
           "playlist_name": {
             "type": "string"
           },
-          "track_name": {
-            "type": "string"
-          },
-          "position": {
-            "type": "integer",
-            "nullable": true
-          },
-          "peak_position": {
-            "type": "integer",
-            "nullable": true
-          },
-          "followers": {
-            "type": "integer",
-            "nullable": true,
-            "description": "Playlist follower count."
-          },
-          "added_at": {
+          "external_url": {
             "type": "string",
-            "nullable": true,
-            "description": "When the track was added."
+            "description": "Link to the playlist on the platform."
           },
-          "removed_at": {
+          "followers_total": {
             "type": "string",
-            "nullable": true,
-            "description": "When the track was removed (past placements only)."
+            "description": "Human-readable follower count, e.g. \"34.3M\"."
           },
-          "curator_name": {
+          "image_url": {
             "type": "string",
             "nullable": true
           }
