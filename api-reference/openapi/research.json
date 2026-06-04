@@ -907,7 +907,7 @@
             "name": "type",
             "in": "query",
             "required": false,
-            "description": "Entity type to search. Songstats supports artists, tracks, and labels.",
+            "description": "Entity type to search: artists, tracks, or labels.",
             "schema": {
               "type": "string",
               "enum": [
@@ -1890,58 +1890,6 @@
               }
             }
           },
-          "400": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResearchErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Authentication failed — invalid or missing API key",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResearchErrorResponse"
-                }
-              }
-            }
-          },
-          "501": {
-            "$ref": "#/components/responses/ResearchDataSourceUnsupported"
-          }
-        }
-      }
-    },
-    "/api/research/rank": {
-      "get": {
-        "description": "Artist global rank. **Not supported by the current data source (Songstats has no rank endpoint)** — always returns `501`.",
-        "parameters": [
-          {
-            "name": "artist",
-            "in": "query",
-            "required": false,
-            "description": "Artist name. Required unless `id` is provided.",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "id",
-            "in": "query",
-            "required": false,
-            "description": "Provider artist ID returned by lookup or search. Required unless `artist` is provided.",
-            "schema": {
-              "type": "string",
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
-              "example": "artist_123"
-            }
-          }
-        ],
-        "responses": {
           "400": {
             "description": "Validation error",
             "content": {
@@ -3446,7 +3394,7 @@
       },
       "ResearchAlbumsResponse": {
         "type": "object",
-        "description": "Artist catalog from Songstats `/artists/catalog`.",
+        "description": "Artist catalog (albums view).",
         "properties": {
           "status": {
             "type": "string",
@@ -3455,14 +3403,14 @@
           "albums": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SongstatsCatalogItem"
+              "$ref": "#/components/schemas/ResearchCatalogItem"
             }
           }
         }
       },
       "ResearchAudienceResponse": {
         "type": "object",
-        "description": "Audience demographics from Songstats `/artists/audience` for the requested `platform`.",
+        "description": "Audience demographics for the requested `platform`.",
         "properties": {
           "status": {
             "type": "string",
@@ -3485,7 +3433,7 @@
             }
           },
           "artist_info": {
-            "$ref": "#/components/schemas/SongstatsArtistRef"
+            "$ref": "#/components/schemas/ResearchArtistRef"
           },
           "source_ids": {
             "type": "array",
@@ -3497,7 +3445,7 @@
       },
       "ResearchCareerResponse": {
         "type": "object",
-        "description": "Career activity feed from Songstats `/artists/activities`.",
+        "description": "Career activity feed.",
         "properties": {
           "status": {
             "type": "string",
@@ -3506,7 +3454,7 @@
           "career": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SongstatsActivity"
+              "$ref": "#/components/schemas/ResearchActivity"
             }
           }
         }
@@ -3720,7 +3668,7 @@
       },
       "ResearchInsightsResponse": {
         "type": "object",
-        "description": "Noteworthy activity highlights from Songstats `/artists/activities`.",
+        "description": "Noteworthy activity highlights.",
         "properties": {
           "status": {
             "type": "string",
@@ -3729,14 +3677,14 @@
           "insights": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SongstatsActivity"
+              "$ref": "#/components/schemas/ResearchActivity"
             }
           }
         }
       },
       "ResearchLookupResponse": {
         "type": "object",
-        "description": "Artist resolved from a Spotify URL or ID via Songstats.",
+        "description": "Artist resolved from a Spotify URL or ID.",
         "properties": {
           "status": {
             "type": "string",
@@ -3751,13 +3699,13 @@
             "example": "Data Retrieved."
           },
           "artist_info": {
-            "$ref": "#/components/schemas/SongstatsArtistInfo"
+            "$ref": "#/components/schemas/ResearchArtistInfo"
           }
         }
       },
       "ResearchMetricsResponse": {
         "type": "object",
-        "description": "Current statistics for the artist on the requested `source` (Songstats `/artists/stats`).",
+        "description": "Current statistics for the artist on the requested `source`.",
         "properties": {
           "status": {
             "type": "string",
@@ -3774,11 +3722,11 @@
           "stats": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SongstatsMetricStat"
+              "$ref": "#/components/schemas/ResearchMetricStat"
             }
           },
           "artist_info": {
-            "$ref": "#/components/schemas/SongstatsArtistRef"
+            "$ref": "#/components/schemas/ResearchArtistRef"
           },
           "source_ids": {
             "type": "array",
@@ -3820,7 +3768,7 @@
       },
       "ResearchMilestonesResponse": {
         "type": "object",
-        "description": "Milestone activity entries from Songstats `/artists/activities` (same shape as career/insights).",
+        "description": "Milestone activity entries (same shape as career/insights).",
         "properties": {
           "status": {
             "type": "string",
@@ -3829,7 +3777,7 @@
           "milestones": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SongstatsActivity"
+              "$ref": "#/components/schemas/ResearchActivity"
             }
           }
         }
@@ -3973,7 +3921,7 @@
       },
       "ResearchProfileResponse": {
         "type": "object",
-        "description": "Full artist profile from Songstats `/artists/info`. For longitudinal platform metrics call `GET /api/research/metrics`.",
+        "description": "Full artist profile. For longitudinal platform metrics call `GET /api/research/metrics`.",
         "properties": {
           "status": {
             "type": "string",
@@ -3988,7 +3936,7 @@
             "example": "Data Retrieved."
           },
           "artist_info": {
-            "$ref": "#/components/schemas/SongstatsArtistInfo"
+            "$ref": "#/components/schemas/ResearchArtistInfo"
           }
         }
       },
@@ -4014,11 +3962,11 @@
       },
       "ResearchSearchResult": {
         "type": "object",
-        "description": "Search result. The `songstats_*_id` field present depends on `type` (artists | tracks | labels).",
+        "description": "Search result. Additional type-specific identifier fields pass through. The set depends on `type` (artists | tracks | labels).",
         "properties": {
           "id": {
             "type": "string",
-            "description": "Provider-neutral ID (alias of the `songstats_*_id` for the result type)."
+            "description": "Provider-neutral ID."
           },
           "name": {
             "type": "string"
@@ -4030,25 +3978,13 @@
           "site_url": {
             "type": "string",
             "nullable": true
-          },
-          "songstats_artist_id": {
-            "type": "string",
-            "description": "Present when `type=artists`."
-          },
-          "songstats_track_id": {
-            "type": "string",
-            "description": "Present when `type=tracks`."
-          },
-          "songstats_label_id": {
-            "type": "string",
-            "description": "Present when `type=labels`."
           }
         },
         "additionalProperties": true
       },
       "ResearchSimilarResponse": {
         "type": "object",
-        "description": "Similar artists from Songstats. Note: similarity is unweighted (no score/ranking fields).",
+        "description": "Similar artists. Similarity is unweighted (no score/ranking fields).",
         "properties": {
           "status": {
             "type": "string",
@@ -4057,14 +3993,14 @@
           "artists": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SongstatsArtistRef"
+              "$ref": "#/components/schemas/ResearchArtistRef"
             }
           }
         }
       },
       "ResearchTrackResponse": {
         "type": "object",
-        "description": "Track metadata and audio analysis from Songstats `/tracks/info`.",
+        "description": "Track metadata and audio analysis.",
         "properties": {
           "status": {
             "type": "string",
@@ -4079,19 +4015,19 @@
             "example": "Data Retrieved."
           },
           "track_info": {
-            "$ref": "#/components/schemas/SongstatsTrackInfo"
+            "$ref": "#/components/schemas/ResearchTrackInfo"
           },
           "audio_analysis": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SongstatsAudioAnalysisEntry"
+              "$ref": "#/components/schemas/ResearchAudioAnalysisEntry"
             }
           }
         }
       },
       "ResearchTracksResponse": {
         "type": "object",
-        "description": "Artist catalog from Songstats `/artists/catalog`.",
+        "description": "Artist catalog (tracks view).",
         "properties": {
           "status": {
             "type": "string",
@@ -4100,7 +4036,7 @@
           "tracks": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SongstatsCatalogItem"
+              "$ref": "#/components/schemas/ResearchCatalogItem"
             }
           }
         }
@@ -4312,46 +4248,43 @@
           }
         }
       },
-      "SongstatsArtistRef": {
+      "ResearchArtistRef": {
         "type": "object",
-        "description": "Provider-neutral artist reference as returned by Songstats.",
+        "description": "Provider-neutral artist reference.",
         "properties": {
-          "songstats_artist_id": {
+          "id": {
             "type": "string",
-            "description": "Provider-neutral Songstats artist ID.",
+            "description": "Provider-neutral artist ID.",
             "example": "wjcgfd9i"
-          },
-          "avatar": {
-            "type": "string",
-            "description": "Artist image URL."
-          },
-          "site_url": {
-            "type": "string",
-            "description": "Songstats artist page URL."
           },
           "name": {
             "type": "string",
             "example": "Drake"
           },
-          "id": {
+          "avatar": {
             "type": "string",
-            "description": "Alias of `songstats_artist_id`."
+            "description": "Artist image URL.",
+            "nullable": true
+          },
+          "site_url": {
+            "type": "string",
+            "description": "Artist page URL.",
+            "nullable": true
           }
-        }
+        },
+        "additionalProperties": true
       },
-      "SongstatsArtistMini": {
+      "ResearchArtistMini": {
         "type": "object",
         "description": "Minimal artist reference embedded in catalog/activity payloads.",
         "properties": {
           "name": {
             "type": "string"
-          },
-          "songstats_artist_id": {
-            "type": "string"
           }
-        }
+        },
+        "additionalProperties": true
       },
-      "SongstatsLink": {
+      "ResearchLink": {
         "type": "object",
         "description": "External platform link.",
         "properties": {
@@ -4373,21 +4306,17 @@
         },
         "additionalProperties": true
       },
-      "SongstatsArtistInfo": {
+      "ResearchArtistInfo": {
         "type": "object",
-        "description": "Full Songstats artist record (identity, bio, genres, platform links, related artists).",
+        "description": "Full artist record — identity, bio, genres, platform links, and related artists.",
         "properties": {
-          "songstats_artist_id": {
-            "type": "string",
-            "example": "wjcgfd9i"
+          "name": {
+            "type": "string"
           },
           "avatar": {
             "type": "string"
           },
           "site_url": {
-            "type": "string"
-          },
-          "name": {
             "type": "string"
           },
           "country": {
@@ -4408,29 +4337,26 @@
           "links": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SongstatsLink"
+              "$ref": "#/components/schemas/ResearchLink"
             }
           },
           "related_artists": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SongstatsArtistRef"
+              "$ref": "#/components/schemas/ResearchArtistRef"
             }
           }
         },
         "additionalProperties": true
       },
-      "SongstatsActivityTrackInfo": {
+      "ResearchActivityTrackInfo": {
         "type": "object",
         "description": "Track context attached to an activity entry.",
         "properties": {
-          "songstats_track_id": {
+          "title": {
             "type": "string"
           },
           "avatar": {
-            "type": "string"
-          },
-          "title": {
             "type": "string"
           },
           "release_date": {
@@ -4443,15 +4369,15 @@
           "artists": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SongstatsArtistMini"
+              "$ref": "#/components/schemas/ResearchArtistMini"
             }
           }
         },
         "additionalProperties": true
       },
-      "SongstatsActivity": {
+      "ResearchActivity": {
         "type": "object",
-        "description": "Dated activity event from Songstats `/artists/activities` (used by career, insights, and milestones).",
+        "description": "Dated activity event. Shared by career, insights, and milestones.",
         "properties": {
           "source": {
             "type": "string",
@@ -4482,22 +4408,19 @@
             "description": "Importance tier (lower = more significant)."
           },
           "track_info": {
-            "$ref": "#/components/schemas/SongstatsActivityTrackInfo"
+            "$ref": "#/components/schemas/ResearchActivityTrackInfo"
           }
         },
         "additionalProperties": true
       },
-      "SongstatsCatalogItem": {
+      "ResearchCatalogItem": {
         "type": "object",
-        "description": "Catalog entry from Songstats `/artists/catalog`. Note: unfiltered, so high-catalog artists include remixes/features.",
+        "description": "Catalog entry. Unfiltered — high-catalog artists include remixes/features.",
         "properties": {
-          "songstats_track_id": {
+          "title": {
             "type": "string"
           },
           "avatar": {
-            "type": "string"
-          },
-          "title": {
             "type": "string"
           },
           "release_date": {
@@ -4516,13 +4439,13 @@
           "artists": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SongstatsArtistMini"
+              "$ref": "#/components/schemas/ResearchArtistMini"
             }
           }
         },
         "additionalProperties": true
       },
-      "SongstatsCollaborator": {
+      "ResearchCollaborator": {
         "type": "object",
         "properties": {
           "name": {
@@ -4533,16 +4456,13 @@
             "items": {
               "type": "string"
             }
-          },
-          "songstats_collaborator_id": {
-            "type": "string"
           }
         },
         "additionalProperties": true
       },
-      "SongstatsMetricStat": {
+      "ResearchMetricStat": {
         "type": "object",
-        "description": "Per-source current statistics from Songstats `/artists/stats`.",
+        "description": "Per-source current statistics.",
         "properties": {
           "source": {
             "type": "string",
@@ -4566,7 +4486,7 @@
         },
         "additionalProperties": true
       },
-      "SongstatsAudioAnalysisEntry": {
+      "ResearchAudioAnalysisEntry": {
         "type": "object",
         "properties": {
           "key": {
@@ -4579,11 +4499,11 @@
           }
         }
       },
-      "SongstatsTrackInfo": {
+      "ResearchTrackInfo": {
         "type": "object",
-        "description": "Full Songstats track record.",
+        "description": "Full track record.",
         "properties": {
-          "songstats_track_id": {
+          "title": {
             "type": "string"
           },
           "avatar": {
@@ -4596,13 +4516,10 @@
             "type": "string",
             "nullable": true
           },
-          "title": {
-            "type": "string"
-          },
           "artists": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SongstatsArtistMini"
+              "$ref": "#/components/schemas/ResearchArtistMini"
             }
           },
           "is_remix": {
@@ -4611,7 +4528,7 @@
           "collaborators": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SongstatsCollaborator"
+              "$ref": "#/components/schemas/ResearchCollaborator"
             }
           },
           "labels": {
@@ -4642,7 +4559,7 @@
           "links": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SongstatsLink"
+              "$ref": "#/components/schemas/ResearchLink"
             }
           }
         },
