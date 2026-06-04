@@ -907,16 +907,13 @@
             "name": "type",
             "in": "query",
             "required": false,
-            "description": "Entity type to search.",
+            "description": "Entity type to search: artists, tracks, or labels.",
             "schema": {
               "type": "string",
               "enum": [
                 "artists",
                 "tracks",
-                "albums",
-                "playlists",
-                "curators",
-                "stations"
+                "labels"
               ],
               "default": "artists"
             }
@@ -1889,68 +1886,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchProfileResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResearchErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Authentication failed — invalid or missing API key",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResearchErrorResponse"
-                }
-              }
-            }
-          },
-          "501": {
-            "$ref": "#/components/responses/ResearchDataSourceUnsupported"
-          }
-        }
-      }
-    },
-    "/api/research/rank": {
-      "get": {
-        "description": "Get an artist's global ranking as a single integer value when the configured research source supports that ranking.",
-        "parameters": [
-          {
-            "name": "artist",
-            "in": "query",
-            "required": false,
-            "description": "Artist name. Required unless `id` is provided.",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "id",
-            "in": "query",
-            "required": false,
-            "description": "Provider artist ID returned by lookup or search. Required unless `artist` is provided.",
-            "schema": {
-              "type": "string",
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
-              "example": "artist_123"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Artist rank",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResearchRankResponse"
                 }
               }
             }
@@ -3457,187 +3392,60 @@
           }
         }
       },
-      "ResearchAlbum": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "id": {
-            "type": "integer"
-          },
-          "release_date": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": true
-      },
       "ResearchAlbumsResponse": {
         "type": "object",
+        "description": "Artist catalog (albums view).",
         "properties": {
           "status": {
             "type": "string",
-            "enum": [
-              "success",
-              "error"
-            ],
             "example": "success"
           },
           "albums": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ResearchAlbum"
+              "$ref": "#/components/schemas/ResearchCatalogItem"
             }
           }
         }
       },
       "ResearchAudienceResponse": {
         "type": "object",
-        "description": "Audience demographics and engagement metrics from the configured provider. Contains two parallel families of fields: **followers** (`audience_*` and `top_*`) describe the artist's follower base, while **likers** (`audience_likers_*`, `likers_top_*`) describe the people who engage (like/comment) with the artist's posts. Engagement aggregates (`followers`, `avg_likes_per_post`, `engagement_rate`) and `notable_followers` round out the payload. All array shapes are upstream provider objects that pass through via `additionalProperties`.",
+        "description": "Audience demographics for the requested `platform`.",
         "properties": {
           "status": {
             "type": "string",
             "example": "success"
           },
-          "timestp": {
+          "result": {
             "type": "string",
-            "description": "ISO timestamp at which this audience snapshot was captured."
+            "example": "success"
           },
-          "followers": {
-            "type": "integer",
-            "description": "Follower count on the underlying platform at snapshot time."
+          "message": {
+            "type": "string",
+            "example": "Data Retrieved."
           },
-          "avg_likes_per_post": {
-            "type": "integer"
-          },
-          "avg_commments_per_post": {
-            "type": "integer",
-            "description": "Note: field name is misspelled upstream as `avg_commments_per_post`."
-          },
-          "engagement_rate": {
-            "type": "number"
-          },
-          "top_countries": {
+          "audience": {
             "type": "array",
-            "description": "Top countries by audience share.",
+            "description": "Per-platform audience demographic entries. May be empty when the provider has no data for the artist/platform.",
             "items": {
               "type": "object",
               "additionalProperties": true
             }
           },
-          "top_cities": {
-            "type": "array",
-            "description": "Top cities by audience concentration.",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
+          "artist_info": {
+            "$ref": "#/components/schemas/ResearchArtistRef"
           },
-          "likers_top_countries": {
-            "type": "array",
-            "description": "Top countries for the likers (engagement) cohort.",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          },
-          "likers_top_cities": {
-            "type": "array",
-            "description": "Top cities for the likers cohort.",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          },
-          "audience_genders": {
-            "type": "array",
-            "description": "Gender breakdown of the follower base.",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          },
-          "audience_genders_per_age": {
-            "type": "array",
-            "description": "Follower gender split per age bracket.",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          },
-          "audience_ethnicities": {
+          "source_ids": {
             "type": "array",
             "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          },
-          "audience_interests": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          },
-          "audience_brand_affinities": {
-            "type": "array",
-            "description": "Brand affinity scores for the follower cohort.",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          },
-          "audience_likers_genders": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          },
-          "audience_likers_genders_per_age": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          },
-          "audience_likers_ethnicities": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          },
-          "audience_likers_interests": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          },
-          "audience_likers_brand_affinities": {
-            "type": "array",
-            "description": "Brand affinity scores for the likers cohort.",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          },
-          "notable_followers": {
-            "type": "array",
-            "description": "Notable public/influential accounts in the follower base.",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
+              "type": "string"
             }
           }
-        },
-        "additionalProperties": true
+        }
       },
       "ResearchCareerResponse": {
         "type": "object",
-        "description": "Career timeline — milestones, trajectory, and career stage history.",
+        "description": "Career activity feed.",
         "properties": {
           "status": {
             "type": "string",
@@ -3645,10 +3453,8 @@
           },
           "career": {
             "type": "array",
-            "description": "Career timeline data points",
             "items": {
-              "type": "object",
-              "additionalProperties": true
+              "$ref": "#/components/schemas/ResearchActivity"
             }
           }
         }
@@ -3860,142 +3666,76 @@
           }
         }
       },
-      "ResearchInsight": {
-        "type": "object",
-        "properties": {
-          "text": {
-            "type": "string",
-            "description": "The insight text."
-          }
-        },
-        "additionalProperties": true
-      },
       "ResearchInsightsResponse": {
         "type": "object",
+        "description": "Noteworthy activity highlights.",
         "properties": {
           "status": {
             "type": "string",
-            "enum": [
-              "success",
-              "error"
-            ],
             "example": "success"
           },
           "insights": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ResearchInsight"
+              "$ref": "#/components/schemas/ResearchActivity"
             }
           }
         }
       },
       "ResearchLookupResponse": {
         "type": "object",
-        "description": "Artist profile resolved from a platform URL or ID. Cross-platform IDs are nested inside a `data` object.",
+        "description": "Artist resolved from a Spotify URL or ID.",
         "properties": {
           "status": {
             "type": "string",
             "example": "success"
           },
-          "data": {
-            "type": "object",
-            "description": "Cross-platform artist identifiers returned by the configured provider.",
-            "properties": {
-              "id": {
-                "type": "integer",
-                "description": "provider artist ID"
-              },
-              "spotify_id": {
-                "type": "string"
-              },
-              "apple_music_id": {
-                "type": "string"
-              },
-              "deezer_id": {
-                "type": "string"
-              }
-            },
-            "additionalProperties": true
+          "result": {
+            "type": "string",
+            "example": "success"
+          },
+          "message": {
+            "type": "string",
+            "example": "Data Retrieved."
+          },
+          "artist_info": {
+            "$ref": "#/components/schemas/ResearchArtistInfo"
           }
         }
       },
       "ResearchMetricsResponse": {
         "type": "object",
-        "description": "Time-series metrics for the artist on the selected platform. Shape varies by platform — fields at the root (not wrapped in a `data` envelope) each hold their own time-series array of `{timestp, value}` points.\n\nFor Spotify, expect `followers`, `listeners`, `popularity`, and `followers_to_listeners_ratio`. Other platforms expose their own set (e.g. `subscribers` and `views` for `youtube_channel`).",
+        "description": "Current statistics for the artist on the requested `source`.",
         "properties": {
           "status": {
-            "type": "string"
-          },
-          "link": {
             "type": "string",
-            "description": "Canonical source URL on the upstream platform (e.g. the artist's Spotify URL)."
+            "example": "success"
           },
-          "followers": {
+          "result": {
+            "type": "string",
+            "example": "success"
+          },
+          "message": {
+            "type": "string",
+            "example": "Data Retrieved."
+          },
+          "stats": {
             "type": "array",
-            "description": "Time series of follower counts, when applicable to the source.",
             "items": {
-              "type": "object",
-              "properties": {
-                "timestp": {
-                  "type": "string"
-                },
-                "value": {
-                  "type": "number"
-                }
-              },
-              "additionalProperties": true
+              "$ref": "#/components/schemas/ResearchMetricStat"
             }
           },
-          "listeners": {
-            "type": "array",
-            "description": "Time series of listener counts (e.g. Spotify monthly listeners), when applicable.",
-            "items": {
-              "type": "object",
-              "properties": {
-                "timestp": {
-                  "type": "string"
-                },
-                "value": {
-                  "type": "number"
-                }
-              },
-              "additionalProperties": true
-            }
+          "artist_info": {
+            "$ref": "#/components/schemas/ResearchArtistRef"
           },
-          "popularity": {
+          "source_ids": {
             "type": "array",
-            "description": "Time series of the platform's popularity score, when applicable.",
+            "description": "Sources included in `stats`.",
             "items": {
-              "type": "object",
-              "properties": {
-                "timestp": {
-                  "type": "string"
-                },
-                "value": {
-                  "type": "number"
-                }
-              },
-              "additionalProperties": true
-            }
-          },
-          "followers_to_listeners_ratio": {
-            "type": "array",
-            "description": "Derived time series, when both followers and listeners are available (Spotify).",
-            "items": {
-              "type": "object",
-              "properties": {
-                "timestp": {
-                  "type": "string"
-                },
-                "value": {
-                  "type": "number"
-                }
-              },
-              "additionalProperties": true
+              "type": "string"
             }
           }
-        },
-        "additionalProperties": true
+        }
       },
       "ResearchRefreshPendingResponse": {
         "type": "object",
@@ -4026,46 +3766,18 @@
           }
         }
       },
-      "ResearchMilestone": {
-        "type": "object",
-        "properties": {
-          "date": {
-            "type": "string",
-            "description": "Date of the milestone event."
-          },
-          "summary": {
-            "type": "string",
-            "description": "Human-readable description of the event."
-          },
-          "platform": {
-            "type": "string",
-            "description": "Platform where the event occurred (e.g. spotify, apple_music)."
-          },
-          "track_name": {
-            "type": "string",
-            "description": "Name of the track involved, if any."
-          },
-          "stars": {
-            "type": "integer",
-            "description": "Importance rating (1-5 stars)."
-          }
-        }
-      },
       "ResearchMilestonesResponse": {
         "type": "object",
+        "description": "Milestone activity entries (same shape as career/insights).",
         "properties": {
           "status": {
             "type": "string",
-            "enum": [
-              "success",
-              "error"
-            ],
             "example": "success"
           },
           "milestones": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ResearchMilestone"
+              "$ref": "#/components/schemas/ResearchActivity"
             }
           }
         }
@@ -4209,171 +3921,22 @@
       },
       "ResearchProfileResponse": {
         "type": "object",
-        "description": "Full artist profile — identity, biography, genres, geography, label/management, and Provider-derived ranks/statistics. For longitudinal platform metrics (Spotify followers/listeners over time, social stats, etc.) call `GET /api/research/metrics` instead.",
-        "properties": {
-          "status": {
-            "type": "string"
-          },
-          "id": {
-            "type": "integer",
-            "description": "provider artist ID."
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "image_url": {
-            "type": "string",
-            "nullable": true
-          },
-          "cover_url": {
-            "type": "string",
-            "nullable": true
-          },
-          "code2": {
-            "type": "string",
-            "nullable": true,
-            "description": "ISO country code associated with the artist."
-          },
-          "isni": {
-            "type": "string",
-            "nullable": true
-          },
-          "band": {
-            "type": "boolean",
-            "description": "True if the artist is a band/group rather than a solo act."
-          },
-          "band_members": {
-            "nullable": true,
-            "description": "Band-member objects when known."
-          },
-          "gender": {
-            "type": "string",
-            "nullable": true
-          },
-          "gender_title": {
-            "type": "string",
-            "nullable": true
-          },
-          "pronoun_title": {
-            "type": "string",
-            "nullable": true
-          },
-          "hometown_city": {
-            "nullable": true,
-            "description": "Provider hometown-city object (null when unknown)."
-          },
-          "current_city": {
-            "type": "string",
-            "nullable": true
-          },
-          "current_city_id": {
-            "type": "integer",
-            "nullable": true
-          },
-          "cm_artist_rank": {
-            "type": "integer",
-            "description": "Overall Provider artist rank (lower is better)."
-          },
-          "cm_artist_score": {
-            "type": "number",
-            "description": "Provider artist-score aggregate (higher is better)."
-          },
-          "cm_statistics": {
-            "type": "object",
-            "additionalProperties": true,
-            "description": "Aggregated cross-platform snapshot — Spotify followers/monthly_listeners, Instagram/TikTok/YouTube counts, chart positions, etc. Fields may be null per-platform."
-          },
-          "career_status": {
-            "type": "object",
-            "additionalProperties": true,
-            "description": "Current career stage + momentum (e.g. `superstar`/`mainstream`/`developing` + `growth`/`steady`/`decline`)."
-          },
-          "genres": {
-            "description": "Primary/secondary/sub-genre breakdown. Object with keyed subgroups, not a flat array.",
-            "type": "object",
-            "additionalProperties": true
-          },
-          "genre_smart_ordered": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          },
-          "genreRank": {
-            "type": "object",
-            "additionalProperties": true
-          },
-          "subGenreRank1": {
-            "type": "object",
-            "additionalProperties": true
-          },
-          "subGenreRank2": {
-            "type": "object",
-            "additionalProperties": true
-          },
-          "moods": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          },
-          "activities": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          },
-          "record_label": {
-            "type": "string",
-            "nullable": true
-          },
-          "booking_agent": {
-            "type": "string",
-            "nullable": true
-          },
-          "press_contact": {
-            "type": "string",
-            "nullable": true
-          },
-          "general_manager": {
-            "type": "string",
-            "nullable": true
-          },
-          "topSongwriterCollaborators": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          },
-          "created_at": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": true
-      },
-      "ResearchRankResponse": {
-        "type": "object",
+        "description": "Full artist profile. For longitudinal platform metrics call `GET /api/research/metrics`.",
         "properties": {
           "status": {
             "type": "string",
-            "enum": [
-              "success",
-              "error"
-            ],
             "example": "success"
           },
-          "rank": {
-            "type": "integer",
-            "nullable": true,
-            "description": "Global artist rank from the configured research source."
+          "result": {
+            "type": "string",
+            "example": "success"
+          },
+          "message": {
+            "type": "string",
+            "example": "Data Retrieved."
+          },
+          "artist_info": {
+            "$ref": "#/components/schemas/ResearchArtistInfo"
           }
         }
       },
@@ -4399,94 +3962,21 @@
       },
       "ResearchSearchResult": {
         "type": "object",
-        "description": "Shape varies by `type` and search engine. Common fields are listed here; `additionalProperties: true` lets engine-specific fields pass through.\n\n**Default engine (`beta=false`):** entries include `name`, `id`, `image_url`, plus type-specific fields like `artist_names[]` (tracks), `isrc` (tracks), `sp_followers`/`sp_monthly_listeners`/`cm_artist_score` (artists), `owner_name` (playlists), etc.\n\n**Beta engine (`beta=true`):** entries include `name`, `id`, `imageUrl`, `target` (the entity type — e.g. `track`, `artist`, `playlist`), `platform` (e.g. `cm`, `spotify`), and `match_strength` (numeric relevance score, higher is better).",
+        "description": "Search result. Additional type-specific identifier fields pass through. The set depends on `type` (artists | tracks | labels).",
         "properties": {
+          "id": {
+            "type": "string",
+            "description": "Provider-neutral ID."
+          },
           "name": {
             "type": "string"
           },
-          "id": {
-            "description": "Provider ID for use with the detail-lookup endpoints (`/api/research/track`, `/api/research/playlist`, `/api/research/albums`, etc.). Usually an integer; some playlist sources return a string.",
-            "oneOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "string"
-              }
-            ]
-          },
-          "image_url": {
-            "type": "string",
-            "nullable": true,
-            "description": "Default-engine image URL. (Beta engine returns `imageUrl` instead.)"
-          },
-          "imageUrl": {
-            "type": "string",
-            "nullable": true,
-            "description": "Beta-engine image URL. (Default engine returns `image_url` instead.)"
-          },
-          "match_strength": {
-            "type": "number",
-            "description": "Beta-only relevance score — sort entries by this descending. Not present in default-engine results."
-          },
-          "target": {
-            "type": "string",
-            "description": "Beta-only entity type (`track`, `artist`, `playlist`, etc.). Not present in default-engine results."
-          },
-          "platform": {
-            "type": "string",
-            "description": "Beta-only source platform (e.g. `cm`, `spotify`). Not present in default-engine results."
-          },
-          "spotify_id": {
+          "avatar": {
             "type": "string",
             "nullable": true
           },
-          "artist_names": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "type": "string"
-            },
-            "description": "Default-engine tracks only."
-          }
-        },
-        "additionalProperties": true
-      },
-      "ResearchSimilarArtist": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "id": {
-            "oneOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "description": "Provider artist ID."
-          },
-          "similarity": {
-            "type": "number",
-            "description": "Similarity score (0-1)."
-          },
-          "career_stage": {
+          "site_url": {
             "type": "string",
-            "description": "undiscovered, developing, mid-level, mainstream, superstar, or legendary."
-          },
-          "recent_momentum": {
-            "type": "string",
-            "description": "decline, gradual decline, steady, growth, or explosive growth."
-          },
-          "sp_followers": {
-            "type": "integer",
-            "nullable": true
-          },
-          "sp_monthly_listeners": {
-            "type": "integer",
             "nullable": true
           }
         },
@@ -4494,209 +3984,59 @@
       },
       "ResearchSimilarResponse": {
         "type": "object",
+        "description": "Similar artists. Similarity is unweighted (no score/ranking fields).",
         "properties": {
           "status": {
             "type": "string",
-            "enum": [
-              "success",
-              "error"
-            ],
             "example": "success"
           },
           "artists": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ResearchSimilarArtist"
+              "$ref": "#/components/schemas/ResearchArtistRef"
             }
-          },
-          "total": {
-            "type": "integer"
           }
         }
       },
-      "ResearchTrackItem": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "id": {
-            "type": "integer"
-          },
-          "album_names": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": true
-      },
       "ResearchTrackResponse": {
         "type": "object",
-        "description": "Track metadata — title, artists, albums, release date, genres, popularity, and platform IDs. Only the most commonly-used fields are enumerated here; the upstream provider response includes additional fields (e.g. `cm_statistics`, `activities`, `moods`) that pass through under `additionalProperties`.",
+        "description": "Track metadata and audio analysis.",
         "properties": {
           "status": {
-            "type": "string"
-          },
-          "id": {
-            "type": "integer",
-            "description": "provider track ID"
-          },
-          "name": {
             "type": "string",
-            "description": "Track title"
+            "example": "success"
           },
-          "isrc": {
+          "result": {
             "type": "string",
-            "nullable": true
+            "example": "success"
           },
-          "image_url": {
+          "message": {
             "type": "string",
-            "nullable": true
+            "example": "Data Retrieved."
           },
-          "duration_ms": {
-            "type": "integer",
-            "nullable": true
+          "track_info": {
+            "$ref": "#/components/schemas/ResearchTrackInfo"
           },
-          "release_date": {
-            "type": "string",
-            "description": "ISO date string",
-            "nullable": true
-          },
-          "album_label": {
-            "type": "string",
-            "nullable": true
-          },
-          "score": {
-            "type": "integer",
-            "description": "Provider track score",
-            "nullable": true
-          },
-          "explicit": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "artists": {
-            "type": "array",
-            "description": "Credited artists. Each entry is a provider artist object; at minimum `id` and `name` are populated.",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "integer",
-                  "description": "provider artist ID"
-                },
-                "name": {
-                  "type": "string"
-                },
-                "image_url": {
-                  "type": "string",
-                  "nullable": true
-                }
-              },
-              "additionalProperties": true
-            }
-          },
-          "albums": {
-            "type": "array",
-            "description": "Albums the track appears on.",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "integer",
-                  "description": "provider album ID"
-                },
-                "name": {
-                  "type": "string"
-                },
-                "upc": {
-                  "type": "string",
-                  "nullable": true
-                },
-                "release_date": {
-                  "type": "string",
-                  "nullable": true
-                },
-                "label": {
-                  "type": "string",
-                  "nullable": true
-                },
-                "image_url": {
-                  "type": "string",
-                  "nullable": true
-                },
-                "popularity": {
-                  "type": "integer",
-                  "nullable": true
-                }
-              },
-              "additionalProperties": true
-            }
-          },
-          "genres": {
+          "audio_analysis": {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "integer"
-                },
-                "name": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": true
-            }
-          },
-          "cm_statistics": {
-            "type": "object",
-            "description": "Provider aggregated cross-platform statistics for the track — Spotify popularity/streams, TikTok video counts, YouTube views, Shazam counts, Apple/Deezer/Amazon playlist reach, weekly deltas, etc. Fields are often null for less-popular tracks. Opaque object; inspect an actual response for the full field set.",
-            "additionalProperties": true
-          },
-          "tempo": {
-            "type": "number",
-            "nullable": true,
-            "description": "Track tempo in BPM, when available."
-          },
-          "moods": {
-            "type": "array",
-            "nullable": true,
-            "description": "Provider-inferred mood tags (e.g. `Happy`, `Melancholic`).",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          },
-          "activities": {
-            "type": "array",
-            "nullable": true,
-            "description": "Provider-inferred activity tags (e.g. `Workout`, `Studying`).",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
+              "$ref": "#/components/schemas/ResearchAudioAnalysisEntry"
             }
           }
-        },
-        "additionalProperties": true
+        }
       },
       "ResearchTracksResponse": {
         "type": "object",
+        "description": "Artist catalog (tracks view).",
         "properties": {
           "status": {
             "type": "string",
-            "enum": [
-              "success",
-              "error"
-            ],
             "example": "success"
           },
           "tracks": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ResearchTrackItem"
+              "$ref": "#/components/schemas/ResearchCatalogItem"
             }
           }
         }
@@ -4907,6 +4247,323 @@
             "example": "Missing required parameter: artist"
           }
         }
+      },
+      "ResearchArtistRef": {
+        "type": "object",
+        "description": "Provider-neutral artist reference.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Provider-neutral artist ID.",
+            "example": "wjcgfd9i"
+          },
+          "name": {
+            "type": "string",
+            "example": "Drake"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "Artist image URL.",
+            "nullable": true
+          },
+          "site_url": {
+            "type": "string",
+            "description": "Artist page URL.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchArtistMini": {
+        "type": "object",
+        "description": "Minimal artist reference embedded in catalog/activity payloads.",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchLink": {
+        "type": "object",
+        "description": "External platform link.",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "Platform name, e.g. `spotify`, `apple_music`."
+          },
+          "external_id": {
+            "type": "string",
+            "description": "Platform-specific ID."
+          },
+          "url": {
+            "type": "string"
+          },
+          "isrc": {
+            "type": "string",
+            "description": "ISRC (tracks only)."
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchArtistInfo": {
+        "type": "object",
+        "description": "Full artist record — identity, bio, genres, platform links, and related artists.",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "site_url": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string",
+            "description": "ISO country code.",
+            "nullable": true
+          },
+          "bio": {
+            "type": "string",
+            "nullable": true
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchLink"
+            }
+          },
+          "related_artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchArtistRef"
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchActivityTrackInfo": {
+        "type": "object",
+        "description": "Track context attached to an activity entry.",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "release_date": {
+            "type": "string",
+            "nullable": true
+          },
+          "site_url": {
+            "type": "string"
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchArtistMini"
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchActivity": {
+        "type": "object",
+        "description": "Dated activity event. Shared by career, insights, and milestones.",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "Platform, e.g. `spotify`."
+          },
+          "activity_text": {
+            "type": "string",
+            "description": "Human-readable activity description."
+          },
+          "activity_type": {
+            "type": "string",
+            "description": "e.g. `playlist`, `chart`."
+          },
+          "activity_date": {
+            "type": "string",
+            "example": "2026-06-04"
+          },
+          "activity_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "activity_avatar": {
+            "type": "string",
+            "nullable": true
+          },
+          "activity_tier": {
+            "type": "integer",
+            "description": "Importance tier (lower = more significant)."
+          },
+          "track_info": {
+            "$ref": "#/components/schemas/ResearchActivityTrackInfo"
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchCatalogItem": {
+        "type": "object",
+        "description": "Catalog entry. Unfiltered — high-catalog artists include remixes/features.",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "release_date": {
+            "type": "string",
+            "nullable": true
+          },
+          "site_url": {
+            "type": "string"
+          },
+          "isrcs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchArtistMini"
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchCollaborator": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchMetricStat": {
+        "type": "object",
+        "description": "Per-source current statistics.",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "Platform the metrics belong to, e.g. `spotify`, `tiktok`."
+          },
+          "data": {
+            "type": "object",
+            "description": "Platform-specific metric fields. Keys vary by `source`.",
+            "additionalProperties": {
+              "type": "number"
+            },
+            "example": {
+              "monthly_listeners_current": 99222567,
+              "followers_total": 112035525,
+              "popularity_current": 100,
+              "streams_total": 137582496099,
+              "playlists_current": 169220,
+              "charts_current": 184
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchAudioAnalysisEntry": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Audio feature name, e.g. `acousticness`, `tempo`."
+          },
+          "value": {
+            "type": "string",
+            "description": "Feature value (string-encoded)."
+          }
+        }
+      },
+      "ResearchTrackInfo": {
+        "type": "object",
+        "description": "Full track record.",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "site_url": {
+            "type": "string"
+          },
+          "release_date": {
+            "type": "string",
+            "nullable": true
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchArtistMini"
+            }
+          },
+          "is_remix": {
+            "type": "boolean"
+          },
+          "collaborators": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchCollaborator"
+            }
+          },
+          "labels": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "distributors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchLink"
+            }
+          }
+        },
+        "additionalProperties": true
       }
     },
     "responses": {
