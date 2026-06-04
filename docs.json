@@ -106,8 +106,6 @@
             "pages": [
               "api-reference/research/metrics",
               "api-reference/research/audience",
-              "api-reference/research/cities",
-              "api-reference/research/genres",
               "api-reference/research/insights",
               "api-reference/research/career",
               "api-reference/research/milestones",
@@ -125,33 +123,15 @@
             ]
           },
           {
-            "group": "Playlists & curators",
+            "group": "Playlists",
             "pages": [
               "api-reference/research/playlists",
-              "api-reference/research/playlist",
-              "api-reference/research/track-playlists",
-              "api-reference/research/curator"
-            ]
-          },
-          {
-            "group": "Charts & radio",
-            "pages": [
-              "api-reference/research/charts",
-              "api-reference/research/radio",
-              "api-reference/research/discover"
-            ]
-          },
-          {
-            "group": "Touring & live",
-            "pages": [
-              "api-reference/research/festivals",
-              "api-reference/research/venues"
+              "api-reference/research/track-playlists"
             ]
           },
           {
             "group": "Web & social",
             "pages": [
-              "api-reference/research/instagram-posts",
               "api-reference/research/web",
               "api-reference/research/deep",
               "api-reference/research/people",
