@@ -932,29 +932,6 @@
             }
           },
           {
-            "name": "beta",
-            "in": "query",
-            "required": false,
-            "description": "Legacy search option. Accepted for compatibility; ignored by providers that do not support it.",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "true",
-                "false"
-              ]
-            }
-          },
-          {
-            "name": "platforms",
-            "in": "query",
-            "required": false,
-            "description": "Comma-separated platforms to include in legacy search results. Accepted for compatibility; ignored by providers that do not support it.",
-            "schema": {
-              "type": "string",
-              "example": "spotify"
-            }
-          },
-          {
             "name": "offset",
             "in": "query",
             "required": false,
