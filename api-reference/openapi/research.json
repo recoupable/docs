@@ -756,7 +756,7 @@
     "/api/chat": {
       "post": {
         "summary": "Stream sandbox-driven chat (Vercel Workflow)",
-        "description": "Streams an agent loop running as a durable [Vercel Workflow](https://vercel.com/docs/workflow) against the session's sandbox. The agent uses sandbox-only tools (`bash`, `read`, `write`, `grep`, `glob`, `todo`, `task`, `ask_user_question`, `skill`, `fetch`) — no MCP or Composio. Requires a sandbox provisioned via [POST /api/sandbox](/api-reference/sandbox/create).\n\n> **Note:** `POST /api/chat/workflow` is a deprecated alias of this endpoint, retained for backward compatibility while consumers migrate. Prefer `POST /api/chat`.",
+        "description": "Streams an agent loop running as a durable [Vercel Workflow](https://vercel.com/docs/workflow) against the session's sandbox. The agent uses sandbox-only tools (`bash`, `read`, `write`, `grep`, `glob`, `todo`, `task`, `ask_user_question`, `skill`, `fetch`) — no MCP or Composio. Requires a sandbox provisioned via [POST /api/sandbox](/api-reference/sandbox/create).",
         "security": [
           {
             "apiKeyAuth": []
@@ -835,54 +835,6 @@
           },
           "409": {
             "description": "Another workflow is already running for this chat and could not be resumed.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ChatStreamErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/chat/workflow": {
-      "post": {
-        "deprecated": true,
-        "summary": "Deprecated alias of POST /api/chat",
-        "description": "**Deprecated — use [POST /api/chat](/api-reference/chat/workflow).** This path is a backward-compatible alias retained while consumers migrate off `/api/chat/workflow`; it will be removed in a future release. Behaviour, request body, and responses are identical to `POST /api/chat`.",
-        "security": [
-          {
-            "apiKeyAuth": []
-          }
-        ],
-        "requestBody": {
-          "description": "Chat workflow request (identical to POST /api/chat)",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChatWorkflowRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Identical to POST /api/chat — Server-Sent Events stream of UI message parts with an `x-workflow-run-id` response header."
-          },
-          "400": {
-            "description": "Bad request — missing required fields, invalid body, or sandbox not initialized.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ChatStreamErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing or invalid API key.",
             "content": {
               "application/json": {
                 "schema": {
