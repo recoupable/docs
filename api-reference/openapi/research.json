@@ -753,7 +753,7 @@
         }
       }
     },
-    "/api/chat/workflow": {
+    "/api/chat": {
       "post": {
         "summary": "Stream sandbox-driven chat (Vercel Workflow)",
         "description": "Streams an agent loop running as a durable [Vercel Workflow](https://vercel.com/docs/workflow) against the session's sandbox. The agent uses sandbox-only tools (`bash`, `read`, `write`, `grep`, `glob`, `todo`, `task`, `ask_user_question`, `skill`, `fetch`) — no MCP or Composio. Requires a sandbox provisioned via [POST /api/sandbox](/api-reference/sandbox/create).",
