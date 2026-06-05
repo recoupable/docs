@@ -63,10 +63,10 @@
           {
             "group": "Streaming",
             "pages": [
-              "api-reference/chat/workflow",
-              "api-reference/chat/workflow-stream",
               "api-reference/chat/stop",
-              "api-reference/chat/generate"
+              "api-reference/chat/generate",
+              "api-reference/chat/workflow",
+              "api-reference/chat/workflow-stream"
             ]
           },
           {
