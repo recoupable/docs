@@ -748,7 +748,7 @@
       },
       "PatchSessionBody": {
         "type": "object",
-        "description": "Request body for `PATCH /api/sessions/{sessionId}`. All fields are optional; an empty object `{}` is valid and leaves the session unchanged.",
+        "description": "All fields are optional; an empty object `{}` is valid and leaves the session unchanged.",
         "properties": {
           "title": {
             "type": "string",
