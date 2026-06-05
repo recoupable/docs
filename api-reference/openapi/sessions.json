@@ -158,7 +158,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PatchSessionRequest"
+                "$ref": "#/components/schemas/PatchSessionBody"
               }
             }
           }
@@ -746,9 +746,9 @@
           }
         }
       },
-      "PatchSessionRequest": {
+      "PatchSessionBody": {
         "type": "object",
-        "description": "All fields are optional. Omitted fields are left unchanged.",
+        "description": "All fields are optional; an empty object `{}` is valid and leaves the session unchanged.",
         "properties": {
           "title": {
             "type": "string",
@@ -1084,9 +1084,11 @@
       },
       "Session": {
         "type": "object",
+        "description": "Agent session returned by [POST /api/sessions](/api-reference/sessions/create), [GET /api/sessions/{sessionId}](/api-reference/sessions/get), and [PATCH /api/sessions/{sessionId}](/api-reference/sessions/patch). The api serializes every field listed in `required` on each response, including `isNewBranch` (boolean, from the non-null `sessions.is_new_branch` column) and `artistId` (UUID or null).",
         "required": [
           "id",
           "userId",
+          "artistId",
           "title",
           "status",
           "isNewBranch",
@@ -1137,7 +1139,7 @@
           },
           "isNewBranch": {
             "type": "boolean",
-            "description": "True when this session created and pushed a new branch (not committing back to the original)."
+            "description": "Always present on session responses. True when this session created and pushed a new branch (not committing back to the original); false otherwise."
           },
           "globalSkillRefs": {
             "type": "array",
@@ -1236,9 +1238,8 @@
             "format": "date-time"
           },
           "artistId": {
-            "type": "string",
+            "type": ["string", "null"],
             "format": "uuid",
-            "nullable": true,
             "description": "Artist account id this session was created in the context of, or `null` when no artist was associated. Set via `POST /api/sessions { artistId }`; surfaces here for clients (e.g. the chat sidebar) that filter sessions/chats by artist."
           }
         }
