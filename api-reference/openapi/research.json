@@ -753,6 +753,86 @@
         }
       }
     },
+    "/api/chat/{chatId}/stream": {
+      "get": {
+        "summary": "Resume a chat response stream",
+        "description": "Reconnects to an in-progress chat response — the resume counterpart to [POST /api/chat](/api-reference/chat/workflow), which never resumes. Returns the live Server-Sent Events stream when a response is still being generated, or `204 No Content` when there is nothing to resume. The chat must belong to the authenticated account.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "description": "UUID of the chat to resume.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Server-Sent Events stream of UI message parts for the in-progress response, compatible with the Vercel AI SDK. The `x-workflow-run-id` response header carries the run ID for this response.",
+            "headers": {
+              "x-workflow-run-id": {
+                "description": "Durable workflow run ID of the resumed run.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-Sent Events stream containing UI message parts"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No active stream to resume for this chat."
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatStreamErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The authenticated account does not own the referenced chat.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatStreamErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Chat not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatStreamErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/chat": {
       "post": {
         "summary": "Stream sandbox-driven chat (Vercel Workflow)",
@@ -834,7 +914,7 @@
             }
           },
           "409": {
-            "description": "Another workflow is already running for this chat and could not be resumed.",
+            "description": "A response is already streaming for this chat. Reconnect to it via `GET /api/chat/{chatId}/stream` instead of POSTing again.",
             "content": {
               "application/json": {
                 "schema": {
