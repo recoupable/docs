@@ -2503,13 +2503,13 @@
     },
     "/api/research/track/stats": {
       "get": {
-        "description": "Get per-track, per-source current stats by ISRC (or Songstats/Spotify/Apple Music track id) — absolute `streams_total` plus playlist and chart reach. Thin passthrough to Songstats Get Track Current Stats; mirrors the `stats[].data` envelope of `GET /api/research/metrics`, but scoped to a single recording instead of the whole artist catalog.",
+        "description": "Get per-track, per-source current stats by ISRC or track id — absolute `streams_total`, playlist reach, and chart counts.",
         "parameters": [
           {
             "name": "isrc",
             "in": "query",
             "required": false,
-            "description": "Track ISRC. Provide exactly one of `isrc`, `songstats_track_id`, `spotify_track_id`, or `apple_music_track_id`.",
+            "description": "Track ISRC. Provide exactly one track identifier.",
             "schema": {
               "type": "string",
               "example": "USQY51771120"
@@ -2519,7 +2519,7 @@
             "name": "songstats_track_id",
             "in": "query",
             "required": false,
-            "description": "Songstats track id (returned by `GET /api/research/tracks`). Alternative to `isrc`.",
+            "description": "Songstats track id (from `GET /api/research/tracks`).",
             "schema": {
               "type": "string"
             }
@@ -2528,7 +2528,7 @@
             "name": "spotify_track_id",
             "in": "query",
             "required": false,
-            "description": "Spotify track id. Alternative to `isrc`.",
+            "description": "Spotify track id.",
             "schema": {
               "type": "string"
             }
@@ -2537,7 +2537,7 @@
             "name": "apple_music_track_id",
             "in": "query",
             "required": false,
-            "description": "Apple Music track id. Alternative to `isrc`.",
+            "description": "Apple Music track id.",
             "schema": {
               "type": "string"
             }
