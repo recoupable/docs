@@ -2500,6 +2500,174 @@
           }
         }
       }
+    },
+    "/api/research/track/stats": {
+      "get": {
+        "description": "Get per-track, per-source current stats by ISRC or track id — absolute `streams_total`, playlist reach, and chart counts.",
+        "parameters": [
+          {
+            "name": "isrc",
+            "in": "query",
+            "required": false,
+            "description": "Track ISRC. Provide exactly one track identifier.",
+            "schema": {
+              "type": "string",
+              "example": "USQY51771120"
+            }
+          },
+          {
+            "name": "songstats_track_id",
+            "in": "query",
+            "required": false,
+            "description": "Songstats track id (from `GET /api/research/tracks`).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spotify_track_id",
+            "in": "query",
+            "required": false,
+            "description": "Spotify track id.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "apple_music_track_id",
+            "in": "query",
+            "required": false,
+            "description": "Apple Music track id.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "required": true,
+            "description": "Comma-separated list of sources, or `all`. e.g. `spotify`, `apple_music`, `deezer`, `youtube`.",
+            "schema": {
+              "type": "string",
+              "example": "spotify"
+            }
+          },
+          {
+            "name": "with_playlists",
+            "in": "query",
+            "required": false,
+            "description": "Include the per-source `playlists[]` array in `data`.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "with_charts",
+            "in": "query",
+            "required": false,
+            "description": "Include the per-source `charts[]` array in `data`.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "with_stations",
+            "in": "query",
+            "required": false,
+            "description": "Include radio `stations[]` data where available.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "with_videos",
+            "in": "query",
+            "required": false,
+            "description": "Include video data where available.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "with_links",
+            "in": "query",
+            "required": false,
+            "description": "Include external links where available.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "only_current",
+            "in": "query",
+            "required": false,
+            "description": "Return only current counters, omitting historical/total breakdowns where applicable.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Max items in toggled arrays (e.g. `playlists[]`).",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Pagination offset for toggled arrays.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Per-track current stats, one entry per requested source.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchTrackStatsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error — missing identifier or `source`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No track matched the supplied identifier.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -4411,6 +4579,10 @@
         "type": "object",
         "description": "Full track record.",
         "properties": {
+          "songstats_track_id": {
+            "type": "string",
+            "description": "Songstats track id — pass to `GET /api/research/track/stats` or `GET /api/research/track`."
+          },
           "title": {
             "type": "string"
           },
@@ -4468,6 +4640,74 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ResearchLink"
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchTrackStatsResponse": {
+        "type": "object",
+        "description": "Per-track current statistics for the requested `source`(s). Mirrors `ResearchMetricsResponse`, scoped to a single recording.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "result": {
+            "type": "string",
+            "example": "success"
+          },
+          "message": {
+            "type": "string",
+            "example": "Data Retrieved."
+          },
+          "stats": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchTrackStat"
+            }
+          },
+          "track_info": {
+            "$ref": "#/components/schemas/ResearchTrackInfo"
+          },
+          "source_ids": {
+            "type": "array",
+            "description": "All source identifiers Songstats tracks for this recording — a superset of the sources returned in `stats`.",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ResearchTrackStat": {
+        "type": "object",
+        "description": "Per-source current statistics for a single track.",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "Platform the stats belong to, e.g. `spotify`, `apple_music`, `deezer`, `youtube`."
+          },
+          "data": {
+            "type": "object",
+            "description": "Per-source counters for this track. `streams_total` is the absolute play count. Keys vary by `source`; optional `playlists[]` / `charts[]` / `reposters[]` arrays appear when the matching `with_*` toggle is set.",
+            "additionalProperties": true,
+            "example": {
+              "streams_total": 84213771,
+              "popularity_current": 64,
+              "playlists_current": 1200,
+              "playlists_total": 4830,
+              "playlist_reach_current": 18450201,
+              "playlist_reach_total": 51200988,
+              "charts_current": 3,
+              "charts_total": 41,
+              "shazams_total": 220145,
+              "charted_cities_total": 87,
+              "charted_countries_total": 23,
+              "favorites_total": 0,
+              "reposts_total": 0,
+              "engagement_rate_total": 0,
+              "playlists_editorial_current": 12,
+              "playlists_editorial_total": 58
             }
           }
         },
