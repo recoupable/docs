@@ -2668,6 +2668,133 @@
           }
         }
       }
+    },
+    "/api/research/track/historic-stats": {
+      "get": {
+        "description": "Get historic per-track, per-source stats by ISRC or track id over a date range — a daily time-series of cumulative counters (e.g. `streams_total`). Diff the window endpoints for streams gained over a period.",
+        "parameters": [
+          {
+            "name": "isrc",
+            "in": "query",
+            "required": false,
+            "description": "Track ISRC. Provide exactly one track identifier.",
+            "schema": {
+              "type": "string",
+              "example": "USQY51771120"
+            }
+          },
+          {
+            "name": "songstats_track_id",
+            "in": "query",
+            "required": false,
+            "description": "Songstats track id (from `GET /api/research/tracks`).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spotify_track_id",
+            "in": "query",
+            "required": false,
+            "description": "Spotify track id.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "apple_music_track_id",
+            "in": "query",
+            "required": false,
+            "description": "Apple Music track id.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "required": true,
+            "description": "Comma-separated list of sources, or `all`. e.g. `spotify`, `apple_music`, `deezer`.",
+            "schema": {
+              "type": "string",
+              "example": "spotify"
+            }
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "description": "Start of the historic window (ISO date).",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2024-06-09"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "description": "End of the historic window (ISO date).",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2025-06-09"
+            }
+          },
+          {
+            "name": "with_aggregates",
+            "in": "query",
+            "required": false,
+            "description": "Include Songstats-aggregated points (`playlists_current`, `charts_current`, …).",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historic per-track stats, one time-series per requested source.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchTrackHistoricStatsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error — missing identifier or `source`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No track matched the supplied identifier.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -4708,6 +4835,83 @@
               "engagement_rate_total": 0,
               "playlists_editorial_current": 12,
               "playlists_editorial_total": 58
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "ResearchTrackHistoricStatsResponse": {
+        "type": "object",
+        "description": "Historic per-track statistics for the requested `source`(s). Same envelope as `ResearchTrackStatsResponse`, but each source's `data` holds a `history` time-series.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "result": {
+            "type": "string",
+            "example": "success"
+          },
+          "message": {
+            "type": "string",
+            "example": "Data Retrieved."
+          },
+          "stats": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchTrackHistoricStat"
+            }
+          },
+          "track_info": {
+            "$ref": "#/components/schemas/ResearchTrackInfo"
+          },
+          "source_ids": {
+            "type": "array",
+            "description": "All source identifiers Songstats tracks for this recording.",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ResearchTrackHistoricStat": {
+        "type": "object",
+        "description": "Per-source historic stats for a single track.",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "Platform the stats belong to, e.g. `spotify`, `apple_music`, `deezer`."
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "history": {
+                "type": "array",
+                "description": "Per-date snapshots, oldest→newest. `streams_total` is the cumulative play count *as of* that date — diff two dates for streams gained between them. Keys vary by source; extra aggregate keys appear when `with_aggregates=true`.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "properties": {
+                    "date": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "streams_total": {
+                      "type": "integer",
+                      "example": 574845367
+                    },
+                    "popularity_current": {
+                      "type": "integer"
+                    },
+                    "playlists_current": {
+                      "type": "integer"
+                    },
+                    "playlist_reach_current": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
             }
           }
         },
