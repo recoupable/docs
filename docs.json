@@ -118,7 +118,8 @@
             "pages": [
               "api-reference/research/albums",
               "api-reference/research/tracks",
-              "api-reference/research/track"
+              "api-reference/research/track",
+              "api-reference/research/track-stats"
             ]
           },
           {
