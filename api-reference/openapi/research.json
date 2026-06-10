@@ -2795,6 +2795,202 @@
           }
         }
       }
+    },
+    "/api/research/playcounts": {
+      "get": {
+        "description": "Latest platform-displayed play counts for all tracks on an album, served from the measurement store (populated by snapshots). Counts are scraped from public pages — not royalty-bearing stream counts.",
+        "parameters": [
+          {
+            "name": "spotify_album_id",
+            "in": "query",
+            "required": true,
+            "description": "Spotify album id.",
+            "schema": {
+              "type": "string",
+              "example": "5SKnXCvB4fcGSZu32o3LRY"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Latest snapshot counts for every track on the album.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchPlaycountsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error — missing `spotify_album_id`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No snapshot exists for this album yet — create one with `POST /api/research/snapshots`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/snapshots": {
+      "post": {
+        "description": "Capture platform-displayed play counts for a whole catalog, album list, or ISRC list in one server-side snapshot. Executes asynchronously; one album call captures all of its tracks. The cost estimate is returned before any scraper spend. Two snapshots over time yield per-track run-rates via [GET /api/research/track/playcount-deltas](/api-reference/research/track-playcount-deltas).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchSnapshotRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Snapshot accepted and queued.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchSnapshotResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error — provide exactly one of `catalog_id`, `album_ids`, `isrcs`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Per-organization monthly snapshot cap reached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/track/playcount-deltas": {
+      "get": {
+        "description": "Play-count change between [snapshots](/api-reference/research/snapshots) for one recording, with an annualized run-rate. Requires at least two captures in the window; returns an empty `deltas` array (not an error) when history is insufficient — create captures with [POST /api/research/snapshots](/api-reference/research/snapshots).",
+        "parameters": [
+          {
+            "name": "isrc",
+            "in": "query",
+            "required": true,
+            "description": "Track ISRC.",
+            "schema": {
+              "type": "string",
+              "example": "USUYG1069896"
+            }
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "required": true,
+            "description": "Window start (inclusive).",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2026-06-09"
+            }
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "required": false,
+            "description": "Window end (inclusive). Defaults to the latest capture.",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Per-platform deltas between the nearest captures.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchPlaycountDeltasResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error — missing `isrc` or `since`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown ISRC.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -4836,6 +5032,16 @@
               "playlists_editorial_current": 12,
               "playlists_editorial_total": 58
             }
+          },
+          "data_source": {
+            "type": "string",
+            "description": "Provenance of the numbers: `apify_spotify_playcount` (platform-displayed count from the measurement store), `songstats` (Songstats backfill), or `granted_analytics` (customer-granted data).",
+            "example": "apify_spotify_playcount"
+          },
+          "captured_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When this entry's values were captured into the measurement store."
           }
         },
         "additionalProperties": true
@@ -4908,6 +5114,11 @@
                     },
                     "playlist_reach_current": {
                       "type": "integer"
+                    },
+                    "data_source": {
+                      "type": "string",
+                      "description": "Per-point provenance. Provenance of the numbers: `apify_spotify_playcount` (platform-displayed count from the measurement store), `songstats` (Songstats backfill), or `granted_analytics` (customer-granted data).",
+                      "example": "songstats"
                     }
                   }
                 }
@@ -4916,6 +5127,233 @@
           }
         },
         "additionalProperties": true
+      },
+      "ResearchPlaycount": {
+        "type": "object",
+        "description": "Latest platform-displayed play count for one track, from the most recent album snapshot.",
+        "properties": {
+          "isrc": {
+            "type": "string",
+            "nullable": true,
+            "description": "ISRC of the recording; `null` when the platform track id has no mapping yet.",
+            "example": "USUYG1069896"
+          },
+          "spotify_track_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "description": "Track title as displayed on the platform."
+          },
+          "platform_displayed_play_count": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Play count as displayed on the public platform page. Scraped, not a royalty-bearing stream count — calibrate against customer-granted analytics for transaction-grade numbers.",
+            "example": 1331384578
+          },
+          "captured_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the snapshot captured this count."
+          },
+          "data_source": {
+            "type": "string",
+            "description": "Provenance of the numbers: `apify_spotify_playcount` (platform-displayed count from the measurement store), `songstats` (Songstats backfill), or `granted_analytics` (customer-granted data).",
+            "example": "apify_spotify_playcount"
+          }
+        }
+      },
+      "ResearchPlaycountsResponse": {
+        "type": "object",
+        "description": "Latest snapshot play counts for every track on an album.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "album": {
+            "type": "object",
+            "properties": {
+              "spotify_album_id": {
+                "type": "string",
+                "example": "5SKnXCvB4fcGSZu32o3LRY"
+              },
+              "name": {
+                "type": "string",
+                "nullable": true
+              },
+              "label": {
+                "type": "string",
+                "nullable": true
+              },
+              "copyright": {
+                "type": "string",
+                "nullable": true,
+                "description": "℗-line as displayed on the platform at capture time — usable for ownership re-verification per snapshot."
+              }
+            }
+          },
+          "playcounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchPlaycount"
+            }
+          }
+        }
+      },
+      "ResearchSnapshotRequest": {
+        "type": "object",
+        "description": "Provide exactly one of `catalog_id`, `album_ids`, or `isrcs`.",
+        "required": [
+          "platforms"
+        ],
+        "properties": {
+          "catalog_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Catalog to snapshot; resolves to its tracks server-side."
+          },
+          "album_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Spotify album ids to snapshot (one album call captures all of its tracks)."
+          },
+          "isrcs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "ISRCs to snapshot; resolved to albums server-side where a mapping exists."
+          },
+          "platforms": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Platforms to capture. Currently `spotify`.",
+            "example": [
+              "spotify"
+            ]
+          },
+          "schedule": {
+            "type": "string",
+            "enum": [
+              "once",
+              "monthly"
+            ],
+            "default": "once",
+            "description": "`once` runs a single snapshot; `monthly` registers a recurring snapshot."
+          }
+        }
+      },
+      "ResearchSnapshotResponse": {
+        "type": "object",
+        "description": "Snapshot accepted. Execution is asynchronous; the cost estimate is returned before any scraper spend.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "queued"
+            ],
+            "example": "queued"
+          },
+          "album_count": {
+            "type": "integer",
+            "description": "Albums the snapshot will capture.",
+            "example": 570
+          },
+          "estimated_cost_usd": {
+            "type": "number",
+            "description": "Estimated scraper cost for the full snapshot, returned before execution.",
+            "example": 1.71
+          }
+        }
+      },
+      "ResearchPlaycountDelta": {
+        "type": "object",
+        "description": "Change in a metric between the two snapshots nearest the requested window bounds.",
+        "properties": {
+          "platform": {
+            "type": "string",
+            "example": "spotify"
+          },
+          "metric": {
+            "type": "string",
+            "example": "platform_displayed_play_count"
+          },
+          "since": {
+            "type": "object",
+            "description": "Nearest capture at/after the `since` date.",
+            "properties": {
+              "captured_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "value": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          },
+          "until": {
+            "type": "object",
+            "description": "Nearest capture at/before the `until` date (latest capture when `until` is omitted).",
+            "properties": {
+              "captured_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "value": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          },
+          "delta": {
+            "type": "integer",
+            "format": "int64",
+            "description": "`until.value - since.value`."
+          },
+          "days": {
+            "type": "integer",
+            "description": "Days between the two captures."
+          },
+          "run_rate_annualized": {
+            "type": "integer",
+            "format": "int64",
+            "description": "`delta` scaled to 365 days — a TTM proxy once captures span a meaningful window."
+          }
+        }
+      },
+      "ResearchPlaycountDeltasResponse": {
+        "type": "object",
+        "description": "Per-platform deltas for one recording. `deltas` is empty when fewer than two captures exist in the window — the request never blocks on missing history.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "isrc": {
+            "type": "string",
+            "example": "USUYG1069896"
+          },
+          "deltas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchPlaycountDelta"
+            }
+          }
+        }
       }
     },
     "responses": {
