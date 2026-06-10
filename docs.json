@@ -121,8 +121,8 @@
               "api-reference/research/track",
               "api-reference/research/track-stats",
               "api-reference/research/track-historic-stats",
+              "api-reference/research/track-playcount-deltas",
               "api-reference/research/playcounts",
-              "api-reference/research/playcounts-deltas",
               "api-reference/research/snapshots"
             ]
           },

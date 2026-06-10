@@ -2801,7 +2801,7 @@
         "description": "Latest platform-displayed play counts for all tracks on an album, served from the measurement store (populated by snapshots). Counts are scraped from public pages — not royalty-bearing stream counts.",
         "parameters": [
           {
-            "name": "album_id",
+            "name": "spotify_album_id",
             "in": "query",
             "required": true,
             "description": "Spotify album id.",
@@ -2823,7 +2823,7 @@
             }
           },
           "400": {
-            "description": "Validation error — missing `album_id`.",
+            "description": "Validation error — missing `spotify_album_id`.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2912,7 +2912,7 @@
         }
       }
     },
-    "/api/research/playcounts/deltas": {
+    "/api/research/track/playcount-deltas": {
       "get": {
         "description": "Play-count change between snapshots for one recording, with an annualized run-rate. Requires at least two captures in the window; returns an empty `deltas` array (not an error) when history is insufficient.",
         "parameters": [
