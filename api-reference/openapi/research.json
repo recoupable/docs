@@ -2857,7 +2857,7 @@
     },
     "/api/research/snapshots": {
       "post": {
-        "description": "Capture platform-displayed play counts for a whole catalog, album list, or ISRC list in one server-side snapshot. Executes asynchronously; one album call captures all of its tracks. The cost estimate is returned before any scraper spend.",
+        "description": "Capture platform-displayed play counts for a whole catalog, album list, or ISRC list in one server-side snapshot. Executes asynchronously; one album call captures all of its tracks. The cost estimate is returned before any scraper spend. Two snapshots over time yield per-track run-rates via [GET /api/research/track/playcount-deltas](/api-reference/research/track-playcount-deltas).",
         "requestBody": {
           "required": true,
           "content": {
