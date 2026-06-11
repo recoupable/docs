@@ -77,7 +77,8 @@
               "api-reference/chat/artist",
               "api-reference/chat/update",
               "api-reference/chat/delete",
-              "api-reference/chat/compact"
+              "api-reference/chat/compact",
+              "api-reference/ai/models"
             ]
           },
           {
@@ -379,7 +380,7 @@
         ]
       },
       {
-        "tab": "Tools & Reference",
+        "tab": "Connectors",
         "groups": [
           {
             "group": "Connectors",
@@ -389,12 +390,6 @@
               "api-reference/connectors/disconnect",
               "api-reference/connectors/list-actions",
               "api-reference/connectors/execute-action"
-            ]
-          },
-          {
-            "group": "AI",
-            "pages": [
-              "api-reference/ai/models"
             ]
           }
         ]
