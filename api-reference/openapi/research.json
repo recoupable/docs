@@ -2503,7 +2503,7 @@
     },
     "/api/research/track/stats": {
       "get": {
-        "description": "Get per-track, per-source current stats by ISRC or track id — absolute `streams_total`, playlist reach, and chart counts. Spotify entries are served Apify-first from Recoup's measurement store (platform-displayed play counts, refreshed within a freshness TTL); other sources via Songstats, whose upstream errors pass through as their status code (e.g. 429 when the Songstats quota is exhausted).",
+        "description": "Get per-track, per-source current stats by ISRC or track id — absolute `streams_total`, playlist reach, and chart counts.",
         "parameters": [
           {
             "name": "isrc",
@@ -2675,13 +2675,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "Upstream provider error passthrough — e.g. 429 when the Songstats quota is exhausted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/research/track/historic-stats": {
       "get": {
-        "description": "Get historic per-track, per-source stats by ISRC or track id over a date range — a daily time-series of cumulative counters (e.g. `streams_total`). Diff the window endpoints for streams gained over a period. Spotify history is served from the measurement store: snapshot captures plus backfilled Songstats points, labeled per point via `data_source`. Tracks without backfilled history return their snapshot-only series and are enqueued for the backfill worker — the request never blocks. Other sources via Songstats, whose upstream errors pass through as their status code.",
+        "description": "Get historic per-track, per-source stats by ISRC or track id over a date range — a daily time-series of cumulative counters (e.g. `streams_total`). Diff the window endpoints for streams gained over a period.",
         "parameters": [
           {
             "name": "isrc",
@@ -2812,13 +2822,23 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "Upstream provider error passthrough — e.g. 429 when the Songstats quota is exhausted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/research/playcounts": {
       "get": {
-        "description": "Latest platform-displayed play counts for all tracks on an album, served from the measurement store (populated by snapshots). Counts are scraped from public pages — not royalty-bearing stream counts. Returns only tracks that have identifier mappings; unmapped tracks on the album are omitted until a snapshot maps them.",
+        "description": "Latest platform-displayed play counts for all tracks on an album, served from the measurement store (populated by snapshots). Counts are scraped from public pages — not royalty-bearing stream counts.",
         "parameters": [
           {
             "name": "spotify_album_id",
@@ -5178,8 +5198,10 @@
             "example": "USUYG1069896"
           },
           "spotify_track_id": {
-            "type": "string",
-            "nullable": true,
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "Spotify track id; `null` when the recording has an album mapping but no track-id mapping yet."
           },
           "name": {
@@ -5220,18 +5242,24 @@
                 "example": "5SKnXCvB4fcGSZu32o3LRY"
               },
               "name": {
-                "type": "string",
-                "nullable": true,
+                "type": [
+                  "string",
+                  "null"
+                ],
                 "description": "Album name from the song record."
               },
               "label": {
-                "type": "string",
-                "nullable": true,
+                "type": [
+                  "string",
+                  "null"
+                ],
                 "description": "Currently always `null` — populated once snapshots persist album metadata."
               },
               "copyright": {
-                "type": "string",
-                "nullable": true,
+                "type": [
+                  "string",
+                  "null"
+                ],
                 "description": "℗-line for ownership re-verification. Currently always `null` — populated once snapshots persist album metadata."
               }
             }
@@ -5424,7 +5452,13 @@
             "type": "string",
             "description": "Card decline reason when auto-recharge was attempted and failed."
           }
-        }
+        },
+        "required": [
+          "error",
+          "remaining_credits",
+          "required_credits",
+          "checkoutUrl"
+        ]
       }
     },
     "responses": {
