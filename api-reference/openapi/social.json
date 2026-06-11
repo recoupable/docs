@@ -577,6 +577,7 @@
     },
     "/api/connectors": {
       "get": {
+        "security": [{ "apiKeyAuth": [] }, { "bearerAuth": [] }],
         "description": "List available connectors and their connection status. Returns all supported third-party integrations (e.g., Google Sheets, TikTok, YouTube) along with whether they are currently connected.",
         "parameters": [
           {
@@ -634,6 +635,7 @@
         }
       },
       "delete": {
+        "security": [{ "apiKeyAuth": [] }, { "bearerAuth": [] }],
         "description": "Disconnect a connected account from a third-party service. This revokes the OAuth connection and removes stored credentials.",
         "requestBody": {
           "description": "Connection to disconnect",
@@ -690,6 +692,7 @@
         }
       },
       "post": {
+        "security": [{ "apiKeyAuth": [] }, { "bearerAuth": [] }],
         "description": "Generate an OAuth authorization URL for connecting a third-party service. Redirect to the returned URL to complete the OAuth flow.",
         "requestBody": {
           "description": "Authorization request details",
@@ -748,6 +751,7 @@
     },
     "/api/connectors/actions": {
       "get": {
+        "security": [{ "apiKeyAuth": [] }, { "bearerAuth": [] }],
         "description": "List the executable actions available across the authenticated account's connectors. Each action is a single tool that can be invoked via POST /api/connectors/actions — for example, the `googlesheets` connector exposes actions like `GOOGLESHEETS_WRITE_SPREADSHEET`. Actions whose parent connector is not yet connected are returned with `isConnected: false` and cannot be executed until the connector is authorized via POST /api/connectors.",
         "parameters": [
           {
@@ -805,6 +809,7 @@
         }
       },
       "post": {
+        "security": [{ "apiKeyAuth": [] }, { "bearerAuth": [] }],
         "description": "Execute a connector action with the given parameters. The `actionSlug` must come from a prior call to GET /api/connectors/actions, and `parameters` must match the `parameters` JSON Schema returned for that action. The action's parent connector must be currently connected (`isConnected: true` in the catalog) — otherwise this endpoint returns 409. The `result` field passes through whatever the underlying connector returns; its shape is action-specific.",
         "requestBody": {
           "description": "Action to execute and the parameters for it",
