@@ -2665,6 +2665,26 @@
                 }
               }
             }
+          },
+          "402": {
+            "description": "Insufficient research credits — the body includes a `checkoutUrl` to top up.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchInsufficientCreditsResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Upstream provider error passthrough — e.g. 429 when the Songstats quota is exhausted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -2792,6 +2812,26 @@
                 }
               }
             }
+          },
+          "402": {
+            "description": "Insufficient research credits — the body includes a `checkoutUrl` to top up.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchInsufficientCreditsResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Upstream provider error passthrough — e.g. 429 when the Songstats quota is exhausted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -2848,6 +2888,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient research credits — the body includes a `checkoutUrl` to top up.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchInsufficientCreditsResponse"
                 }
               }
             }
@@ -2985,6 +3035,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient research credits — the body includes a `checkoutUrl` to top up.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchInsufficientCreditsResponse"
                 }
               }
             }
@@ -4970,7 +5030,7 @@
       },
       "ResearchTrackStatsResponse": {
         "type": "object",
-        "description": "Per-track current statistics for the requested `source`(s). Mirrors `ResearchMetricsResponse`, scoped to a single recording.",
+        "description": "Per-track current statistics for the requested `source`(s). Mirrors `ResearchMetricsResponse`, scoped to a single recording. When every requested source is store-served, the response is the minimal envelope `{ result, stats }` — `track_info`, `source_ids`, and `message` appear only when Songstats served part of the request.",
         "properties": {
           "status": {
             "type": "string",
@@ -5012,7 +5072,7 @@
           },
           "data": {
             "type": "object",
-            "description": "Per-source counters for this track. `streams_total` is the absolute play count. Keys vary by `source`; optional `playlists[]` / `charts[]` / `reposters[]` arrays appear when the matching `with_*` toggle is set.",
+            "description": "Per-source counters for this track. `streams_total` is the absolute play count. Keys vary by `source`; optional `playlists[]` / `charts[]` / `reposters[]` arrays appear when the matching `with_*` toggle is set. Store-served (apify) entries carry only `streams_total` — a platform-displayed play count, not a royalty-bearing stream count.",
             "additionalProperties": true,
             "example": {
               "streams_total": 84213771,
@@ -5041,14 +5101,14 @@
           "captured_at": {
             "type": "string",
             "format": "date-time",
-            "description": "When this entry's values were captured into the measurement store."
+            "description": "When this entry's values were captured into the measurement store. Present only on store-served entries (`data_source: \"apify_spotify_playcount\"`)."
           }
         },
         "additionalProperties": true
       },
       "ResearchTrackHistoricStatsResponse": {
         "type": "object",
-        "description": "Historic per-track statistics for the requested `source`(s). Same envelope as `ResearchTrackStatsResponse`, but each source's `data` holds a `history` time-series.",
+        "description": "Historic per-track statistics for the requested `source`(s). Same envelope as `ResearchTrackStatsResponse`, but each source's `data` holds a `history` time-series. When only `spotify` is requested, the response is the minimal envelope `{ result, stats }` served entirely from the measurement store.",
         "properties": {
           "status": {
             "type": "string",
@@ -5134,12 +5194,15 @@
         "properties": {
           "isrc": {
             "type": "string",
-            "nullable": true,
-            "description": "ISRC of the recording; `null` when the platform track id has no mapping yet.",
+            "description": "ISRC of the recording. Only tracks with identifier mappings are returned, so this is always present.",
             "example": "USUYG1069896"
           },
           "spotify_track_id": {
-            "type": "string"
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Spotify track id; `null` when the recording has an album mapping but no track-id mapping yet."
           },
           "name": {
             "type": "string",
@@ -5179,17 +5242,25 @@
                 "example": "5SKnXCvB4fcGSZu32o3LRY"
               },
               "name": {
-                "type": "string",
-                "nullable": true
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Album name from the song record."
               },
               "label": {
-                "type": "string",
-                "nullable": true
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Currently always `null` — populated once snapshots persist album metadata."
               },
               "copyright": {
-                "type": "string",
-                "nullable": true,
-                "description": "℗-line as displayed on the platform at capture time — usable for ownership re-verification per snapshot."
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "℗-line for ownership re-verification. Currently always `null` — populated once snapshots persist album metadata."
               }
             }
           },
@@ -5354,6 +5425,40 @@
             }
           }
         }
+      },
+      "ResearchInsufficientCreditsResponse": {
+        "type": "object",
+        "description": "Returned (402) when the account lacks research credits and auto-recharge did not cover the call.",
+        "properties": {
+          "error": {
+            "type": "string",
+            "enum": [
+              "insufficient_credits"
+            ]
+          },
+          "remaining_credits": {
+            "type": "integer",
+            "example": 0
+          },
+          "required_credits": {
+            "type": "integer",
+            "example": 5
+          },
+          "checkoutUrl": {
+            "type": "string",
+            "description": "Stripe checkout link to top up credits."
+          },
+          "declineReason": {
+            "type": "string",
+            "description": "Card decline reason when auto-recharge was attempted and failed."
+          }
+        },
+        "required": [
+          "error",
+          "remaining_credits",
+          "required_credits",
+          "checkoutUrl"
+        ]
       }
     },
     "responses": {
