@@ -5194,7 +5194,7 @@
         "properties": {
           "isrc": {
             "type": "string",
-            "description": "ISRC of the recording. Only tracks with identifier mappings are returned, so this is always present.",
+            "description": "ISRC of the recording. Tracks are mapped automatically on capture (ISRCs resolved via the Spotify API), so this is always present.",
             "example": "USUYG1069896"
           },
           "spotify_track_id": {
