@@ -124,7 +124,11 @@
               "api-reference/research/track-historic-stats",
               "api-reference/research/track-playcount-deltas",
               "api-reference/research/playcounts",
-              "api-reference/research/snapshots"
+              "api-reference/research/snapshots",
+              "api-reference/research/measurements",
+              "api-reference/research/album-measurements",
+              "api-reference/research/measurement-jobs",
+              "api-reference/research/measurement-job"
             ]
           },
           {

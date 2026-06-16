@@ -2691,7 +2691,7 @@
     },
     "/api/research/track/historic-stats": {
       "get": {
-        "description": "Get historic per-track, per-source stats by ISRC or track id over a date range — a daily time-series of cumulative counters (e.g. `streams_total`). Diff the window endpoints for streams gained over a period.",
+        "description": "**Deprecated (2026-06).** Use `GET /api/research/tracks/{id}/measurements?granularity=daily` instead.\n\nGet historic per-track, per-source stats by ISRC or track id over a date range — a daily time-series of cumulative counters (e.g. `streams_total`). Diff the window endpoints for streams gained over a period.",
         "parameters": [
           {
             "name": "isrc",
@@ -2833,12 +2833,13 @@
               }
             }
           }
-        }
+        },
+        "deprecated": true
       }
     },
     "/api/research/playcounts": {
       "get": {
-        "description": "Latest platform-displayed play counts for all tracks on an album, served from the measurement store (populated by snapshots). Counts are scraped from public pages — not royalty-bearing stream counts.",
+        "description": "**Deprecated (2026-06).** Use `GET /api/research/albums/{id}/measurements?latest=true` instead.\n\nLatest platform-displayed play counts for all tracks on an album, served from the measurement store (populated by snapshots). Counts are scraped from public pages — not royalty-bearing stream counts.",
         "parameters": [
           {
             "name": "spotify_album_id",
@@ -2902,12 +2903,13 @@
               }
             }
           }
-        }
+        },
+        "deprecated": true
       }
     },
     "/api/research/snapshots": {
       "post": {
-        "description": "Capture platform-displayed play counts for a whole catalog, album list, or ISRC list in one server-side snapshot. Executes asynchronously; one album call captures all of its tracks. The cost estimate is returned before any scraper spend. Two snapshots over time yield per-track run-rates via [GET /api/research/track/playcount-deltas](/api-reference/research/track-playcount-deltas).",
+        "description": "**Deprecated (2026-06).** Use `POST /api/research/measurement-jobs` with `source:\"current\"` instead.\n\nCapture platform-displayed play counts for a whole catalog, album list, or ISRC list in one server-side snapshot. Executes asynchronously; one album call captures all of its tracks. The cost estimate is returned before any scraper spend. Two snapshots over time yield per-track run-rates via [GET /api/research/track/playcount-deltas](/api-reference/research/track-playcount-deltas).",
         "requestBody": {
           "required": true,
           "content": {
@@ -2959,12 +2961,13 @@
               }
             }
           }
-        }
+        },
+        "deprecated": true
       }
     },
     "/api/research/track/playcount-deltas": {
       "get": {
-        "description": "Play-count change between [snapshots](/api-reference/research/snapshots) for one recording, with an annualized run-rate. Requires at least two captures in the window; returns an empty `deltas` array (not an error) when history is insufficient — create captures with [POST /api/research/snapshots](/api-reference/research/snapshots).",
+        "description": "**Deprecated (2026-06).** Use `GET /api/research/tracks/{id}/measurements?aggregate=run_rate` instead.\n\nPlay-count change between [snapshots](/api-reference/research/snapshots) for one recording, with an annualized run-rate. Requires at least two captures in the window; returns an empty `deltas` array (not an error) when history is insufficient — create captures with [POST /api/research/snapshots](/api-reference/research/snapshots).",
         "parameters": [
           {
             "name": "isrc",
@@ -3045,6 +3048,338 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchInsufficientCreditsResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/api/research/tracks/{id}/measurements": {
+      "get": {
+        "summary": "Track measurements",
+        "description": "Time-series of a track's measured counts from the measurement store, projected by query params. Replaces `track/historic-stats` (use `granularity=daily`) and `track/playcount-deltas` (use `aggregate=run_rate`). `{id}` is a provider-neutral identifier (ISRC or Spotify track id). Spotify history is served from the store (snapshot captures + Songstats backfill); no vendor quota is spent in the request path.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Provider-neutral track id — ISRC or Spotify track id."
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "spotify"
+            },
+            "description": "Platform to read. Currently `spotify`."
+          },
+          {
+            "name": "metric",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "platform_displayed_play_count"
+            },
+            "description": "Metric to read."
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Inclusive start date (ISO) for the series."
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Inclusive end date (ISO) for the series."
+          },
+          {
+            "name": "granularity",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "daily"
+              ],
+              "default": "daily"
+            },
+            "description": "Series granularity. `daily` returns the per-day cumulative series."
+          },
+          {
+            "name": "aggregate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "run_rate"
+              ]
+            },
+            "description": "Return a derived aggregate instead of the raw series. `run_rate` returns the trailing-window annualized run-rate (a projection of the series)."
+          },
+          {
+            "name": "window",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "365d"
+            },
+            "description": "Trailing window for `aggregate=run_rate` (e.g. `365d`)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The measurement series (or the requested aggregate).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchMeasurementsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error — bad identifier or query param.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient credits.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchInsufficientCreditsResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No measurements for this track yet — create a `historical` measurement-job to backfill it.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/albums/{id}/measurements": {
+      "get": {
+        "summary": "Album measurements",
+        "description": "Latest measured count per track on an album, from the measurement store. Replaces `GET /api/research/playcounts` (`?latest=true`). `{id}` is a Spotify album id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Spotify album id."
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "spotify"
+            },
+            "description": "Platform to read. Currently `spotify`."
+          },
+          {
+            "name": "metric",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "platform_displayed_play_count"
+            },
+            "description": "Metric to read."
+          },
+          {
+            "name": "latest",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            },
+            "description": "Return the latest capture per track (the only supported mode today)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Latest per-track measured counts for the album.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchAlbumMeasurementsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient credits.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchInsufficientCreditsResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No capture exists for this album yet — create a `current` measurement-job.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/measurement-jobs": {
+      "post": {
+        "summary": "Create a measurement job",
+        "description": "One async ingest resource. `source:\"current\"` captures present counts via the snapshot pipeline (replaces `POST /api/research/snapshots`). `source:\"historical\"` enqueues each resolved recording for Songstats deep backfill ranked by all-time streams (idempotent — songs already carrying `songstats` history are skipped; no track is fetched twice). Provide exactly one of `catalog_id` / `album_ids` / `isrcs` in `scope`.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchMeasurementJobRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Job accepted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchMeasurementJobResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error — provide a `source` and exactly one of `scope.catalog_id`, `scope.album_ids`, `scope.isrcs`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Per-organization monthly cap reached (current jobs).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/measurement-jobs/{id}": {
+      "get": {
+        "summary": "Measurement job status",
+        "description": "Poll a `current` measurement job's status. `historical` jobs report their enqueue summary in the create response and drain via the daily worker.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Measurement-job id from the create response."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Job status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchMeasurementJobStatusResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown job id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -5459,6 +5794,275 @@
           "required_credits",
           "checkoutUrl"
         ]
+      },
+      "ResearchMeasurementPoint": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-06-12"
+          },
+          "value": {
+            "type": "number",
+            "description": "Cumulative metric value as of `date`.",
+            "example": 297289495
+          },
+          "data_source": {
+            "type": "string",
+            "example": "songstats"
+          }
+        }
+      },
+      "ResearchMeasurementsResponse": {
+        "type": "object",
+        "description": "A track's measured series, or — when `aggregate` is set — the derived projection.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "id": {
+            "type": "string",
+            "description": "The provider-neutral track id queried.",
+            "example": "USQY51771120"
+          },
+          "platform": {
+            "type": "string",
+            "example": "spotify"
+          },
+          "metric": {
+            "type": "string",
+            "example": "platform_displayed_play_count"
+          },
+          "series": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchMeasurementPoint"
+            },
+            "description": "Present unless `aggregate` is set."
+          },
+          "aggregate": {
+            "type": "object",
+            "nullable": true,
+            "description": "Present when `aggregate=run_rate`.",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "example": "run_rate"
+              },
+              "window_days": {
+                "type": "integer",
+                "example": 365
+              },
+              "delta": {
+                "type": "number",
+                "example": 42000000
+              },
+              "run_rate_annualized": {
+                "type": "number",
+                "example": 42000000
+              }
+            }
+          }
+        }
+      },
+      "ResearchAlbumMeasurementItem": {
+        "type": "object",
+        "properties": {
+          "isrc": {
+            "type": "string",
+            "example": "USQY51771120"
+          },
+          "spotify_track_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "number",
+            "description": "Latest measured count.",
+            "example": 297289495
+          },
+          "captured_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data_source": {
+            "type": "string",
+            "example": "apify_spotify_playcount"
+          }
+        }
+      },
+      "ResearchAlbumMeasurementsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "id": {
+            "type": "string",
+            "description": "Spotify album id.",
+            "example": "70Zkfb99ladZ3q0JVg97co"
+          },
+          "platform": {
+            "type": "string",
+            "example": "spotify"
+          },
+          "metric": {
+            "type": "string",
+            "example": "platform_displayed_play_count"
+          },
+          "measurements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchAlbumMeasurementItem"
+            }
+          }
+        }
+      },
+      "ResearchMeasurementJobScope": {
+        "type": "object",
+        "description": "Provide exactly one of `catalog_id`, `album_ids`, or `isrcs`.",
+        "properties": {
+          "catalog_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "album_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isrcs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ResearchMeasurementJobRequest": {
+        "type": "object",
+        "required": [
+          "scope",
+          "source"
+        ],
+        "properties": {
+          "scope": {
+            "$ref": "#/components/schemas/ResearchMeasurementJobScope"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "current",
+              "historical"
+            ],
+            "description": "`current` = capture present counts (Apify snapshot). `historical` = enqueue Songstats deep backfill."
+          },
+          "platforms": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": [
+              "spotify"
+            ],
+            "example": [
+              "spotify"
+            ]
+          }
+        }
+      },
+      "ResearchMeasurementJobResponse": {
+        "type": "object",
+        "description": "For `current` jobs, `id` is pollable. For `historical` jobs, `enqueued`/`skipped` summarize the backfill enqueue (the queue drains via the daily worker).",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "source": {
+            "type": "string",
+            "example": "historical"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Job id for `current` jobs; null for `historical`."
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "queued"
+            ],
+            "nullable": true,
+            "example": "queued"
+          },
+          "enqueued": {
+            "type": "integer",
+            "nullable": true,
+            "description": "`historical`: recordings enqueued for backfill.",
+            "example": 842
+          },
+          "skipped": {
+            "type": "integer",
+            "nullable": true,
+            "description": "`historical`: recordings already backfilled (skipped).",
+            "example": 3
+          },
+          "album_count": {
+            "type": "integer",
+            "nullable": true,
+            "description": "`current`: albums the job will capture."
+          },
+          "estimated_cost_usd": {
+            "type": "number",
+            "nullable": true,
+            "description": "`current`: scraper cost estimate before spend."
+          }
+        }
+      },
+      "ResearchMeasurementJobStatusResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "source": {
+            "type": "string",
+            "example": "current"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "done",
+              "failed"
+            ],
+            "example": "running"
+          },
+          "album_count": {
+            "type": "integer",
+            "nullable": true
+          },
+          "estimated_cost_usd": {
+            "type": "number",
+            "nullable": true
+          }
+        }
       }
     },
     "responses": {
