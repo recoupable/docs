@@ -1200,6 +1200,78 @@
         }
       }
     },
+    "/api/catalogs": {
+      "post": {
+        "description": "Create a catalog.",
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
+        "requestBody": {
+          "description": "Catalog to create. Provide name, snapshot, or both - at least one is required.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCatalogRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Catalog created, or the existing catalog returned when re-materializing the same snapshot (idempotent)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateCatalogResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - neither name nor snapshot provided, or invalid snapshot",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - the snapshot belongs to a different account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - no snapshot exists for the supplied snapshot",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/catalogs/songs": {
       "get": {
         "description": "Retrieve songs within a specific catalog with pagination support. This endpoint joins catalog_songs with songs, song_artists, and accounts to provide comprehensive song information for a given catalog.",
@@ -2000,6 +2072,46 @@
           "message": {
             "type": "string",
             "description": "Error message (only present if status is error)"
+          }
+        }
+      },
+      "CreateCatalogRequest": {
+        "type": "object",
+        "description": "Request body for creating a catalog. At least one of name or snapshot must be supplied. The owning account is taken from the request credentials, never from this body.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Optional. Display name for the catalog. If omitted when snapshot is supplied, a name is derived from the source run."
+          },
+          "snapshot": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Optional. ID of a completed playcount snapshot (valuation run) owned by the authenticated account. Its measured ISRCs are added to the new catalog as catalog songs. Create one with [Create measurement job](/api-reference/research/measurement-jobs)."
+          }
+        }
+      },
+      "CreateCatalogResponse": {
+        "type": "object",
+        "description": "Response returned after creating, or idempotently re-fetching, a catalog",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "catalog": {
+            "$ref": "#/components/schemas/Catalog"
+          },
+          "songs_added": {
+            "type": "integer",
+            "description": "Number of catalog songs materialized from the source. 0 when no snapshot was supplied, or when the run was already materialized (idempotent re-claim)."
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message (only present if status is 'error')"
           }
         }
       },

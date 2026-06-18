@@ -2915,7 +2915,7 @@
     "/api/research/measurement-jobs": {
       "post": {
         "summary": "Create a measurement job",
-        "description": "One async ingest resource. `source:\"current\"` captures present counts via the snapshot pipeline. `source:\"historical\"` enqueues each resolved recording for Songstats deep backfill ranked by all-time streams (idempotent — songs already carrying `songstats` history are skipped; no track is fetched twice). Provide exactly one of `catalog_id` / `album_ids` / `isrcs` in `scope`.",
+        "description": "One async ingest resource. `source:\"current\"` captures present counts via the snapshot pipeline. `source:\"historical\"` enqueues each resolved recording for Songstats deep backfill ranked by all-time streams (idempotent — songs already carrying `songstats` history are skipped; no track is fetched twice). Provide exactly one of `catalog_id` / `album_ids` / `isrcs` in `scope`. The returned `id` is a snapshot id you can pass to [Create catalog](/api-reference/songs/catalogs-create) to materialize the measured tracks into an account-owned catalog.",
         "requestBody": {
           "required": true,
           "content": {

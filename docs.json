@@ -146,16 +146,22 @@
         ]
       },
       {
-        "tab": "Releases",
+        "tab": "Catalog",
         "groups": [
           {
-            "group": "Songs & Catalogs",
+            "group": "Songs",
             "pages": [
               "api-reference/songs/songs",
               "api-reference/songs/create",
               "api-reference/songs/analyze",
-              "api-reference/songs/analyze-presets",
+              "api-reference/songs/analyze-presets"
+            ]
+          },
+          {
+            "group": "Catalogs",
+            "pages": [
               "api-reference/songs/catalogs",
+              "api-reference/songs/catalogs-create",
               "api-reference/songs/catalog-songs",
               "api-reference/songs/catalog-songs-add",
               "api-reference/songs/catalog-songs-delete"
