@@ -2,7 +2,3 @@
 title: Create Catalog
 openapi: post /api/catalogs
 ---
-
-<Note>
-  The owning account is derived from your credentials (Privy bearer JWT or `x-api-key`), never from the request body. Pass `from.snapshot_id` to materialize the catalog from a completed valuation run - the snapshot's measured ISRCs are added as catalog songs. Re-submitting the same snapshot is idempotent and returns the catalog already created for that run.
-</Note>

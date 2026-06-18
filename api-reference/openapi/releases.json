@@ -1202,7 +1202,7 @@
     },
     "/api/catalogs": {
       "post": {
-        "description": "Create a catalog owned by the authenticated account. The owning account is always derived from the request credentials (Privy bearer JWT or x-api-key) and never from the request body. Optionally materialize the catalog from a completed valuation run by passing `from.snapshot_id`: the snapshot's measured ISRCs are added as catalog songs and the catalog is linked to the account. Materialization is idempotent - re-submitting the same snapshot returns the catalog already created for that run instead of creating a duplicate.",
+        "description": "Create a catalog owned by the authenticated account. Optionally materialize the catalog from a completed valuation run by passing `from.snapshot_id`: the snapshot's measured ISRCs are added as catalog songs and the catalog is linked to the account. Materialization is idempotent - re-submitting the same snapshot returns the catalog already created for that run instead of creating a duplicate.",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
