@@ -578,7 +578,7 @@
     "/api/connectors": {
       "get": {
         "security": [{ "apiKeyAuth": [] }, { "bearerAuth": [] }],
-        "description": "List available connectors and their connection status. Returns all supported third-party integrations (e.g., Google Sheets, TikTok, YouTube) along with whether they are currently connected.",
+        "description": "List available connectors and their connection status. Returns all supported third-party integrations (e.g., Google Sheets, TikTok, YouTube, X (Twitter), LinkedIn) along with whether they are currently connected.",
         "parameters": [
           {
             "name": "account_id",
@@ -1108,7 +1108,7 @@
         "properties": {
           "connector": {
             "type": "string",
-            "description": "The connector slug to authorize (e.g., 'googlesheets', 'tiktok', 'youtube')"
+            "description": "The connector slug to authorize (e.g., 'googlesheets', 'tiktok', 'youtube', 'twitter', 'linkedin')"
           },
           "callback_url": {
             "type": "string",
@@ -1260,7 +1260,7 @@
         "properties": {
           "slug": {
             "type": "string",
-            "description": "Unique identifier for the connector (e.g., 'googlesheets', 'tiktok', 'youtube')"
+            "description": "Unique identifier for the connector (e.g., 'googlesheets', 'tiktok', 'youtube', 'twitter', 'linkedin')"
           },
           "name": {
             "type": "string",
@@ -2238,7 +2238,7 @@
           },
           "connectorSlug": {
             "type": "string",
-            "description": "Slug of the parent connector this action belongs to (e.g. 'googlesheets', 'tiktok', 'youtube'). Matches the `slug` returned by GET /api/connectors."
+            "description": "Slug of the parent connector this action belongs to (e.g. 'googlesheets', 'tiktok', 'youtube', 'twitter', 'linkedin'). Matches the `slug` returned by GET /api/connectors."
           },
           "isConnected": {
             "type": "boolean",
