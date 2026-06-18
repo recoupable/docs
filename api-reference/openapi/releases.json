@@ -1200,6 +1200,78 @@
         }
       }
     },
+    "/api/catalogs": {
+      "post": {
+        "description": "Create a catalog owned by the authenticated account. The owning account is always derived from the request credentials (Privy bearer JWT or x-api-key) and never from the request body. Optionally materialize the catalog from a completed valuation run by passing `from.snapshot_id`: the snapshot's measured ISRCs are added as catalog songs and the catalog is linked to the account. Materialization is idempotent - re-submitting the same snapshot returns the catalog already created for that run instead of creating a duplicate.",
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
+        "requestBody": {
+          "description": "Catalog to create. Provide name, from, or both - at least one is required.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCatalogRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Catalog created, or the existing catalog returned when re-materializing the same snapshot (idempotent)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateCatalogResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - neither name nor from provided, or invalid snapshot_id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - the snapshot belongs to a different account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - no snapshot exists for the supplied snapshot_id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/catalogs/songs": {
       "get": {
         "description": "Retrieve songs within a specific catalog with pagination support. This endpoint joins catalog_songs with songs, song_artists, and accounts to provide comprehensive song information for a given catalog.",
@@ -2000,6 +2072,58 @@
           "message": {
             "type": "string",
             "description": "Error message (only present if status is error)"
+          }
+        }
+      },
+      "CatalogMaterializationSource": {
+        "type": "object",
+        "description": "Source to materialize catalog songs from. Currently a completed valuation run (playcount snapshot). The snapshot must be owned by the authenticated account.",
+        "required": [
+          "snapshot_id"
+        ],
+        "properties": {
+          "snapshot_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of a completed playcount snapshot. Its measured ISRCs are added to the new catalog as catalog songs."
+          }
+        }
+      },
+      "CreateCatalogRequest": {
+        "type": "object",
+        "description": "Request body for creating a catalog. At least one of name or from must be supplied. The owning account is taken from the request credentials, never from this body.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Optional. Display name for the catalog. If omitted when from is supplied, a name is derived from the source run."
+          },
+          "from": {
+            "$ref": "#/components/schemas/CatalogMaterializationSource"
+          }
+        }
+      },
+      "CreateCatalogResponse": {
+        "type": "object",
+        "description": "Response returned after creating, or idempotently re-fetching, a catalog",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "catalog": {
+            "$ref": "#/components/schemas/Catalog"
+          },
+          "songs_added": {
+            "type": "integer",
+            "description": "Number of catalog songs materialized from the source. 0 when no from was supplied, or when the run was already materialized (idempotent re-claim)."
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message (only present if status is 'error')"
           }
         }
       },

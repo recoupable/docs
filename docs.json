@@ -156,6 +156,7 @@
               "api-reference/songs/analyze",
               "api-reference/songs/analyze-presets",
               "api-reference/songs/catalogs",
+              "api-reference/songs/catalogs-create",
               "api-reference/songs/catalog-songs",
               "api-reference/songs/catalog-songs-add",
               "api-reference/songs/catalog-songs-delete"
