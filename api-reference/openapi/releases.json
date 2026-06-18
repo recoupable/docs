@@ -1202,7 +1202,7 @@
     },
     "/api/catalogs": {
       "post": {
-        "description": "Create a catalog owned by the authenticated account. Optionally materialize the catalog from a completed valuation run by passing `snapshot` (the run's snapshot id): the snapshot's measured ISRCs are added as catalog songs and the catalog is linked to the account. Materialization is idempotent - re-submitting the same snapshot returns the catalog already created for that run instead of creating a duplicate.",
+        "description": "Create a catalog.",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
