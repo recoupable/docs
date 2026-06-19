@@ -17,11 +17,15 @@
     "/api/tasks": {
       "get": {
         "description": "Retrieve scheduled tasks. Each task includes `recent_runs` (last 5 runs), `upcoming` (next scheduled run times) sourced directly from the Trigger.dev API, and `owner_email` when an account email exists for the task owner. Supports filtering by id, account_id, or artist_account_id.",
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "query",
-            "description": "Filter by task ID (UUID). Returns a single task matching the provided ID.",
+            "description": "Filter by task ID (UUID). Returns a single task matching the provided ID. Admin callers may retrieve any task by ID regardless of owner; non-admin callers only receive the task if it belongs to their authenticated account.",
             "required": false,
             "schema": {
               "type": "string",
@@ -62,6 +66,36 @@
           },
           "400": {
             "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account_id is outside caller authorization scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error while retrieving tasks.",
             "content": {
               "application/json": {
                 "schema": {
