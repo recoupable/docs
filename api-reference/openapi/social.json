@@ -895,6 +895,72 @@
           }
         }
       }
+    },
+    "/api/connectors/files": {
+      "post": {
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Stage an image into Composio file storage so it can be attached to a connector action that accepts a file_uploadable field (e.g. LINKEDIN_CREATE_LINKED_IN_POST.images[], TWITTER_CREATION_OF_A_POST). Provide a publicly reachable image `url` and the `toolSlug` of the action you intend to post with; the image is fetched server-side, uploaded to Composio storage (deduplicated by content hash), and the returned `{ name, mimetype, s3key }` descriptor is passed straight into that action's file_uploadable array on POST /api/connectors/actions.",
+        "requestBody": {
+          "description": "The image URL to stage and the action it will be attached to.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadConnectorFileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Image staged. Returns the Composio file descriptor to embed in the action's file_uploadable array.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadConnectorFileResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — missing or invalid `url` (must be a reachable URL) or `toolSlug`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Upstream failure staging the file into Composio storage (the image fetch failed or Composio errored).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2307,6 +2373,50 @@
             "type": "string",
             "format": "date-time",
             "description": "ISO 8601 timestamp of when the action was executed server-side."
+          }
+        }
+      },
+      "UploadConnectorFileRequest": {
+        "type": "object",
+        "required": [
+          "url",
+          "toolSlug"
+        ],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Publicly reachable URL of the image to stage. Fetched server-side and uploaded to Composio storage. Required."
+          },
+          "toolSlug": {
+            "type": "string",
+            "description": "The action slug the image will be attached to, UPPERCASE_SNAKE_CASE (e.g. `LINKEDIN_CREATE_LINKED_IN_POST`). Scopes the upload to that tool/toolkit. Required."
+          }
+        }
+      },
+      "UploadConnectorFileResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "name",
+          "mimetype",
+          "s3key"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string",
+            "description": "Stored filename."
+          },
+          "mimetype": {
+            "type": "string",
+            "description": "Detected MIME type of the stored file."
+          },
+          "s3key": {
+            "type": "string",
+            "description": "Composio storage key. Pass this together with `name` and `mimetype` in the action's file_uploadable array, e.g. `parameters.images[]` for LINKEDIN_CREATE_LINKED_IN_POST."
           }
         }
       }
