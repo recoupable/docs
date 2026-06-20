@@ -810,7 +810,7 @@
       },
       "post": {
         "security": [{ "apiKeyAuth": [] }, { "bearerAuth": [] }],
-        "description": "Execute a connector action with the given parameters. The `actionSlug` must come from a prior call to GET /api/connectors/actions, and `parameters` must match the `parameters` JSON Schema returned for that action. The action's parent connector must be currently connected (`isConnected: true` in the catalog) — otherwise this endpoint returns 409. The `result` field passes through whatever the underlying connector returns; its shape is action-specific.",
+        "description": "Execute a connector action with the given parameters. The `actionSlug` must come from a prior call to GET /api/connectors/actions, and `parameters` must match the `parameters` JSON Schema returned for that action. The action's parent connector must be currently connected (`isConnected: true` in the catalog) — otherwise this endpoint returns 409. The `result` field passes through whatever the underlying connector returns; its shape is action-specific. To attach an image to a `file_uploadable` parameter (e.g. `images`), first stage it with [Upload Connector File](/api-reference/connectors/upload-file) and pass the returned descriptor.",
         "requestBody": {
           "description": "Action to execute and the parameters for it",
           "required": true,
@@ -885,6 +885,72 @@
           },
           "502": {
             "description": "Upstream connector failure (the third-party service errored or timed out)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/connectors/files": {
+      "post": {
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Stage an image into Connector file storage so it can be attached to a connector action that accepts a file_uploadable field. The returned descriptor is embedded in a file_uploadable array on [Execute Connector Action](/api-reference/connectors/execute-action).",
+        "requestBody": {
+          "description": "The image URL to stage and the action it will be attached to.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadConnectorFileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Image staged. Returns the Connector file descriptor to embed in the action's file_uploadable array.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadConnectorFileResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — missing or invalid `url` (must be a reachable URL) or `toolSlug`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Upstream failure staging the file into Connector storage (the image fetch failed or Connector errored).",
             "content": {
               "application/json": {
                 "schema": {
@@ -2307,6 +2373,50 @@
             "type": "string",
             "format": "date-time",
             "description": "ISO 8601 timestamp of when the action was executed server-side."
+          }
+        }
+      },
+      "UploadConnectorFileRequest": {
+        "type": "object",
+        "required": [
+          "url",
+          "toolSlug"
+        ],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Publicly reachable URL of the image to stage. Fetched server-side and uploaded to Connector storage. Required."
+          },
+          "toolSlug": {
+            "type": "string",
+            "description": "The action slug the image will be attached to, UPPERCASE_SNAKE_CASE (e.g. `LINKEDIN_CREATE_LINKED_IN_POST`). Scopes the upload to that tool/toolkit. Required."
+          }
+        }
+      },
+      "UploadConnectorFileResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "name",
+          "mimetype",
+          "s3key"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string",
+            "description": "Stored filename."
+          },
+          "mimetype": {
+            "type": "string",
+            "description": "Detected MIME type of the stored file."
+          },
+          "s3key": {
+            "type": "string",
+            "description": "Connector storage key. Pass this together with `name` and `mimetype` in the action's file_uploadable array."
           }
         }
       }
