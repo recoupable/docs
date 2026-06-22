@@ -805,7 +805,7 @@
         }
       },
       "delete": {
-        "description": "Delete an artist accessible to the authenticated account. This removes the caller's direct artist link and, if no owner links remain, deletes the artist account itself.",
+        "description": "Delete an artist accessible to the authenticated account. This removes the caller's direct artist link and, if no owner links remain, deletes the artist account itself. Optionally accepts an account_id override so a caller with access to multiple accounts can delete an artist in another account's context.",
         "parameters": [
           {
             "name": "id",
@@ -818,6 +818,24 @@
             }
           }
         ],
+        "requestBody": {
+          "description": "Optional account context override.",
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "account_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "UUID of the account whose artist should be deleted. Only applicable when the authenticated account has access to multiple accounts via organization membership or Recoup admin access. If not provided, the deletion runs in the API key's own account context."
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Artist deleted successfully",
@@ -825,6 +843,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DeleteArtistResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - account_id is not a valid UUID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteArtistErrorResponse"
                 }
               }
             }
