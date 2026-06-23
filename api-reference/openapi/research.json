@@ -332,7 +332,7 @@
     },
     "/api/chats/{id}/messages": {
       "get": {
-        "description": "Retrieve all messages (memories) for a specific chat room in chronological order. Optionally accepts an account_id query override so a caller with access to multiple accounts can read another account's chat messages.",
+        "description": "Retrieve all messages (memories) for a specific chat room in chronological order.",
         "parameters": [
           {
             "name": "id",
