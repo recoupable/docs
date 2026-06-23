@@ -805,7 +805,7 @@
         }
       },
       "delete": {
-        "description": "Delete an artist accessible to the authenticated account. This removes the caller's direct artist link and, if no owner links remain, deletes the artist account itself. Optionally accepts an account_id override so a caller with access to multiple accounts can delete an artist in another account's context.",
+        "description": "Delete an artist accessible to the authenticated account. This removes the caller's direct artist link and, if no owner links remain, deletes the artist account itself.",
         "parameters": [
           {
             "name": "id",
