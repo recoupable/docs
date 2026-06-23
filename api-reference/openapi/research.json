@@ -347,7 +347,7 @@
           {
             "name": "account_id",
             "in": "query",
-            "description": "Read messages in the context of a specific account. Only applicable when the authenticated account has access to multiple accounts via organization membership or Recoup admin access. The camelCase alias accountId is also accepted. If not provided, access is resolved against the API key's own account.",
+            "description": "Read messages in the context of a specific account. Only applicable when the authenticated account has access to multiple accounts via organization membership or Recoup admin access.",
             "required": false,
             "schema": {
               "type": "string",
