@@ -40,6 +40,7 @@
             "pages": [
               "api-reference/artists/list",
               "api-reference/artists/create",
+              "api-reference/artists/spotify-link",
               "api-reference/artists/update",
               "api-reference/artists/pin",
               "api-reference/artists/unpin",

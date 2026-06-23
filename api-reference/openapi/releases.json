@@ -600,6 +600,64 @@
         }
       }
     },
+    "/api/artists/spotify-link": {
+      "post": {
+        "description": "Resolve-or-create the artist account for a Spotify artist and link it to the authenticated account's roster. Idempotent: if an artist account already exists for the Spotify profile it is reused, and if it is already linked to the account the call is a no-op. The account is derived from the API key or Bearer token. Used by the catalog-valuation flow to attach the looked-up artist to the signed-in visitor's account.",
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
+        "requestBody": {
+          "description": "Spotify artist link parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LinkSpotifyArtistRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Artist resolved/created and linked to the account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkSpotifyArtistResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation error or invalid JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateArtistError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication"
+          },
+          "403": {
+            "description": "Forbidden - account_id is not accessible with the provided credentials"
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/artists/{id}/pin": {
       "post": {
         "description": "Pin an artist. This updates the caller's pinned preference for the artist.",
@@ -2407,6 +2465,61 @@
         "properties": {
           "artist": {
             "$ref": "#/components/schemas/CreatedArtist"
+          }
+        }
+      },
+      "LinkSpotifyArtistRequest": {
+        "type": "object",
+        "required": [
+          "spotify_id"
+        ],
+        "properties": {
+          "spotify_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The Spotify artist ID to resolve-or-create and link to the account."
+          },
+          "name": {
+            "type": "string",
+            "description": "Optional artist display name, used only when a new artist account is created. If omitted, the Spotify artist ID is used as a placeholder name."
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account to link the artist to. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, the artist is linked to the caller's own account."
+          },
+          "organization_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Optional organization ID to link a newly created artist to."
+          }
+        }
+      },
+      "LinkSpotifyArtistResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "artist_id",
+          "created",
+          "linked"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Always true on a 200 response."
+          },
+          "artist_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the resolved or newly created artist account."
+          },
+          "created": {
+            "type": "boolean",
+            "description": "True if a new artist account was created for this Spotify artist; false if an existing one was reused."
+          },
+          "linked": {
+            "type": "boolean",
+            "description": "True if a new account_artist_ids link was created; false if the artist was already on the account's roster."
           }
         }
       },
