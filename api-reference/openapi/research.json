@@ -343,16 +343,6 @@
               "type": "string",
               "format": "uuid"
             }
-          },
-          {
-            "name": "account_id",
-            "in": "query",
-            "description": "Read messages in the context of a specific account. Only applicable when the authenticated account has access to multiple accounts via organization membership or Recoup admin access.",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
           }
         ],
         "responses": {
@@ -367,7 +357,7 @@
             }
           },
           "400": {
-            "description": "Bad request - invalid chat id or account_id",
+            "description": "Bad request - invalid chat id",
             "content": {
               "application/json": {
                 "schema": {
