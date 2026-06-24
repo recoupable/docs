@@ -3123,24 +3123,9 @@
             "description": "The AI model to use for text generation (optional)",
             "example": "openai/gpt-5-mini"
           },
-          "excludeTools": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Array of tool names to exclude from execution",
-            "example": [
-              "create_scheduled_actions"
-            ]
-          },
-          "roomId": {
-            "type": "string",
-            "format": "uuid",
-            "description": "UUID of the chat room. If not provided, one will be generated automatically."
-          },
           "topic": {
             "type": "string",
-            "description": "Topic name for the new chat room (e.g., 'Pulse Feb 2'). Only applies when creating a new room - ignored if room already exists. To edit the topic of an existing room, use [PATCH /api/chats](/api-reference/chat/update)."
+            "description": "Optional session title for the run."
           }
         }
       },
