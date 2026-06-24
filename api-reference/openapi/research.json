@@ -667,7 +667,7 @@
         },
         "responses": {
           "202": {
-            "description": "Run accepted. A durable workflow run was started; `runId` identifies it. `chatId` / `sessionId` identify the persisted output — read the result via `GET /api/chat/{chatId}/stream` (resume the stream) or the chat's persisted messages. Assistant messages are persisted server-side as the run streams.",
+            "description": "Run accepted. A durable workflow run was started; `runId` identifies it. `chatId` / `sessionId` identify the persisted output — read the result via [GET /api/chat/{chatId}/stream](/api-reference/chat/workflow-stream) (resume the stream) or the chat's persisted messages. Poll [GET /api/chat/runs/{runId}](/api-reference/chat/runs-status) for status.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2993,7 +2993,7 @@
             "name": "runId",
             "in": "path",
             "required": true,
-            "description": "The durable workflow run id returned by `POST /api/chat/runs`.",
+            "description": "The durable workflow run id returned by [POST /api/chat/runs](/api-reference/chat/runs).",
             "schema": {
               "type": "string"
             },
@@ -5253,13 +5253,13 @@
         "properties": {
           "runId": {
             "type": "string",
-            "description": "Durable workflow run id for the started generation. Same identifier surfaced as the `x-workflow-run-id` header on interactive `/api/chat`.",
+            "description": "Durable workflow run id for the started generation. Same identifier surfaced as the `x-workflow-run-id` header on interactive [POST /api/chat](/api-reference/chat/workflow).",
             "example": "wrun_01KVWZNM82NA7XKNEWWHG8VPHJ"
           },
           "chatId": {
             "type": "string",
             "format": "uuid",
-            "description": "Chat the run writes its assistant messages to. Use with `GET /api/chat/{chatId}/stream` to resume the stream, or to fetch the persisted messages.",
+            "description": "Chat the run writes its assistant messages to. Use with [GET /api/chat/{chatId}/stream](/api-reference/chat/workflow-stream) to resume the stream, or to fetch the persisted messages.",
             "example": "24830c6c-76d8-43be-ae22-1dfd545421ab"
           },
           "sessionId": {
