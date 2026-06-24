@@ -648,7 +648,7 @@
     },
     "/api/chat/generate": {
       "post": {
-        "description": "Generate AI-powered text responses using the Recoup chat system. This endpoint processes chat requests and returns generated text along with metadata about the generation process.",
+        "description": "Start an asynchronous chat-generation run on the durable agent workflow (the same `runAgentWorkflow` that powers interactive `/api/chat`). The request provisions a session + sandbox and starts the run, then returns immediately with a `runId` (HTTP 202) — generation, message persistence, and any side effects (e.g. email) happen server-side after the response.",
         "security": [
           {
             "apiKeyAuth": []
@@ -666,12 +666,12 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "Chat generated successfully",
+          "202": {
+            "description": "Run accepted. A durable workflow run was started; `runId` identifies it. Assistant messages are persisted server-side as the run streams.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ChatGenerateResponse"
+                  "$ref": "#/components/schemas/ChatGenerateAcceptedResponse"
                 }
               }
             }
@@ -3090,91 +3090,6 @@
           }
         }
       },
-      "ChatGenerateResponse": {
-        "type": "object",
-        "description": "Response from the chat generation endpoint",
-        "properties": {
-          "text": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ContentPart"
-            },
-            "description": "Array of content parts from the AI model response"
-          },
-          "reasoningText": {
-            "type": "string",
-            "nullable": true,
-            "description": "Optional reasoning or explanation for the response"
-          },
-          "sources": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            },
-            "description": "Optional array of sources used for the response"
-          },
-          "finishReason": {
-            "type": "string",
-            "description": "The reason why the generation finished",
-            "example": "stop"
-          },
-          "usage": {
-            "$ref": "#/components/schemas/ChatGenerateUsage",
-            "description": "Token usage information"
-          },
-          "response": {
-            "$ref": "#/components/schemas/ChatGenerateResponseMeta",
-            "description": "Additional response metadata"
-          }
-        }
-      },
-      "ChatGenerateResponseMeta": {
-        "type": "object",
-        "description": "Additional response metadata",
-        "properties": {
-          "messages": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            },
-            "description": "Response messages"
-          },
-          "headers": {
-            "type": "object",
-            "description": "Response headers"
-          },
-          "body": {
-            "type": "object",
-            "description": "Response body"
-          }
-        }
-      },
-      "ChatGenerateUsage": {
-        "type": "object",
-        "description": "Token usage information with detailed breakdown",
-        "properties": {
-          "inputTokens": {
-            "type": "integer",
-            "description": "Number of input tokens processed"
-          },
-          "outputTokens": {
-            "type": "integer",
-            "description": "Number of output tokens generated"
-          },
-          "totalTokens": {
-            "type": "integer",
-            "description": "Total tokens used (input + output)"
-          },
-          "reasoningTokens": {
-            "type": "integer",
-            "description": "Number of reasoning tokens used"
-          },
-          "cachedInputTokens": {
-            "type": "integer",
-            "description": "Number of cached input tokens"
-          }
-        }
-      },
       "ChatMessage": {
         "type": "object",
         "required": [
@@ -3356,25 +3271,6 @@
           "compacted": {
             "type": "string",
             "description": "The compacted summary text of the chat"
-          }
-        }
-      },
-      "ContentPart": {
-        "type": "object",
-        "description": "A part of the response content. See https://ai-sdk.dev/docs/reference/ai-sdk-core/generate-text#content for details.",
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": [
-              "text",
-              "tool-call",
-              "tool-result"
-            ],
-            "description": "The type of content part"
-          },
-          "text": {
-            "type": "string",
-            "description": "The text content (present when type is 'text')"
           }
         }
       },
@@ -5289,6 +5185,20 @@
             "type": "number",
             "nullable": true,
             "description": "`current`: scraper cost estimate before spend."
+          }
+        }
+      },
+      "ChatGenerateAcceptedResponse": {
+        "type": "object",
+        "required": [
+          "runId"
+        ],
+        "description": "Confirmation that an asynchronous chat-generation run has been started on the durable agent workflow.",
+        "properties": {
+          "runId": {
+            "type": "string",
+            "description": "Durable workflow run id for the started generation. Same identifier surfaced as the `x-workflow-run-id` header on interactive `/api/chat`.",
+            "example": "wrun_01KVWZNM82NA7XKNEWWHG8VPHJ"
           }
         }
       }
