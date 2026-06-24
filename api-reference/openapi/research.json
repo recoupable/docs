@@ -667,7 +667,7 @@
         },
         "responses": {
           "202": {
-            "description": "Run accepted. A durable workflow run was started; `runId` identifies it. Assistant messages are persisted server-side as the run streams.",
+            "description": "Run accepted. A durable workflow run was started; `runId` identifies it. `chatId` / `sessionId` identify the persisted output — read the result via `GET /api/chat/{chatId}/stream` (resume the stream) or the chat's persisted messages. Assistant messages are persisted server-side as the run streams.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5191,7 +5191,9 @@
       "ChatGenerateAcceptedResponse": {
         "type": "object",
         "required": [
-          "runId"
+          "runId",
+          "chatId",
+          "sessionId"
         ],
         "description": "Confirmation that an asynchronous chat-generation run has been started on the durable agent workflow.",
         "properties": {
@@ -5199,6 +5201,18 @@
             "type": "string",
             "description": "Durable workflow run id for the started generation. Same identifier surfaced as the `x-workflow-run-id` header on interactive `/api/chat`.",
             "example": "wrun_01KVWZNM82NA7XKNEWWHG8VPHJ"
+          },
+          "chatId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Chat the run writes its assistant messages to. Use with `GET /api/chat/{chatId}/stream` to resume the stream, or to fetch the persisted messages.",
+            "example": "24830c6c-76d8-43be-ae22-1dfd545421ab"
+          },
+          "sessionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Session (workspace + sandbox) provisioned for the run.",
+            "example": "fa9c1516-35f0-4efd-a62c-01af26324e72"
           }
         }
       }
