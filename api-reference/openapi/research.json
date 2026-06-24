@@ -648,7 +648,7 @@
     },
     "/api/chat/runs": {
       "post": {
-        "description": "Start an asynchronous, headless chat-generation run on the durable agent workflow — the same engine as interactive [POST /api/chat](/api-reference/chat/workflow). Provisions a session + sandbox and returns immediately (**202**) with `runId`, `chatId`, and `sessionId`; generation and side effects (e.g. email) finish server-side.\n\n**Related endpoints**\n- [POST /api/chat](/api-reference/chat/workflow) — use that for **interactive, streaming** turns on an existing chat; use this for **headless/programmatic** runs (no browser or pre-provisioned session needed).\n- [GET /api/chat/runs/{runId}](/api-reference/chat/runs-status) — poll to learn **whether** the run finished (and if it succeeded).\n- [GET /api/chat/{chatId}/stream](/api-reference/chat/workflow-stream) — **watch the output live** by passing the returned `chatId`.",
+        "description": "Start an asynchronous, headless chat-generation run on the durable agent workflow — the same engine as interactive [POST /api/chat](/api-reference/chat/workflow).\n\n**Related endpoints**\n- [POST /api/chat](/api-reference/chat/workflow) — use that for **interactive, streaming** turns on an existing chat; use this for **headless/programmatic** runs (no browser or pre-provisioned session needed).\n- [GET /api/chat/runs/{runId}](/api-reference/chat/runs-status) — poll to learn **whether** the run finished (and if it succeeded).\n- [GET /api/chat/{chatId}/stream](/api-reference/chat/workflow-stream) — **watch the output live** by passing the returned `chatId`.",
         "security": [
           {
             "apiKeyAuth": []
@@ -766,7 +766,7 @@
     "/api/chat/{chatId}/stream": {
       "get": {
         "summary": "Resume a chat response stream",
-        "description": "Reconnects to an in-progress chat response — the resume counterpart to [POST /api/chat](/api-reference/chat/workflow), which never resumes. Returns the live Server-Sent Events stream when a response is still being generated, or `204 No Content` when there is nothing to resume. The chat must belong to the authenticated account.\n\n**Related endpoints**\n- [POST /api/chat/runs](/api-reference/chat/runs) — start a **headless** run, then pass the returned `chatId` here to **watch its output live**.\n- [GET /api/chat/runs/{runId}](/api-reference/chat/runs-status) — check **whether** that run finished (status, not content).",
+        "description": "Reconnects to an in-progress chat response — the resume counterpart to [POST /api/chat](/api-reference/chat/workflow), which never resumes. Returns the live Server-Sent Events stream when a response is still being generated, or `204 No Content` when there is nothing to resume. The chat must belong to the authenticated account.\n\n**Related endpoints**\n- [POST /api/chat](/api-reference/chat/workflow) — the interactive turn whose stream this resumes.\n- [POST /api/chat/runs](/api-reference/chat/runs) — start a **headless** run, then pass the returned `chatId` here to **watch its output live**.\n- [GET /api/chat/runs/{runId}](/api-reference/chat/runs-status) — check **whether** that run finished (status, not content).",
         "security": [
           {
             "apiKeyAuth": []
@@ -846,7 +846,7 @@
     "/api/chat": {
       "post": {
         "summary": "Stream sandbox-driven chat (Vercel Workflow)",
-        "description": "Streams an agent loop running as a durable [Vercel Workflow](https://vercel.com/docs/workflow) against the session's sandbox. The agent uses sandbox-only tools (`bash`, `read`, `write`, `grep`, `glob`, `todo`, `task`, `ask_user_question`, `skill`, `fetch`) — no MCP or Composio. Requires a sandbox provisioned via [POST /api/sandbox](/api-reference/sandbox/create).\n\n**Related endpoints**\n- [POST /api/chat/runs](/api-reference/chat/runs) — the **headless** counterpart: it provisions its own session + sandbox and runs without a streaming client. Use that for tasks/cron/programmatic runs; use this for **interactive, streaming** turns on an existing chat.\n- [GET /api/chat/{chatId}/stream](/api-reference/chat/workflow-stream) — reconnect to an in-progress response.",
+        "description": "Streams an agent loop running as a durable [Vercel Workflow](https://vercel.com/docs/workflow) against the session's sandbox. The agent uses sandbox-only tools (`bash`, `read`, `write`, `grep`, `glob`, `todo`, `task`, `ask_user_question`, `skill`, `fetch`) — no MCP or Composio. Requires a sandbox provisioned via [POST /api/sandbox](/api-reference/sandbox/create).\n\n**Related endpoints**\n- [POST /api/chat/runs](/api-reference/chat/runs) — the **headless** counterpart: it provisions its own session + sandbox and runs without a streaming client. Use that for tasks/cron/programmatic runs; use this for **interactive, streaming** turns on an existing chat.\n- [GET /api/chat/{chatId}/stream](/api-reference/chat/workflow-stream) — reconnect to an in-progress response.\n- [GET /api/chat/runs/{runId}](/api-reference/chat/runs-status) — check **whether** a headless run finished (status, not content).",
         "security": [
           {
             "apiKeyAuth": []
@@ -2982,7 +2982,7 @@
     },
     "/api/chat/runs/{runId}": {
       "get": {
-        "description": "Status of an asynchronous run started via [POST /api/chat/runs](/api-reference/chat/runs). Returns a point-in-time snapshot (**is it done?**) — not the generated content.\n\n**Related endpoints**\n- [POST /api/chat/runs](/api-reference/chat/runs) — starts the run this reports on.\n- [GET /api/chat/{chatId}/stream](/api-reference/chat/workflow-stream) — to read the **content**: poll *this* to know **whether** a run finished; use the stream to **watch the output** as it's produced.",
+        "description": "Status of an asynchronous run started via [POST /api/chat/runs](/api-reference/chat/runs). Returns a point-in-time snapshot (**is it done?**) — not the generated content.\n\n**Related endpoints**\n- [POST /api/chat/runs](/api-reference/chat/runs) — starts the run this reports on.\n- [GET /api/chat/{chatId}/stream](/api-reference/chat/workflow-stream) — read the **content**: poll *this* to know **whether** a run finished; use the stream to **watch the output** as it's produced.\n- [POST /api/chat](/api-reference/chat/workflow) — the interactive, streaming counterpart to a headless run.",
         "security": [
           {
             "apiKeyAuth": []
