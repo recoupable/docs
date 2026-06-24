@@ -1084,7 +1084,7 @@
       },
       "Session": {
         "type": "object",
-        "description": "Agent session returned by [POST /api/sessions](/api-reference/sessions/create), [GET /api/sessions/{sessionId}](/api-reference/sessions/get), and [PATCH /api/sessions/{sessionId}](/api-reference/sessions/patch). The api serializes every field listed in `required` on each response, including `isNewBranch` (boolean, from the non-null `sessions.is_new_branch` column) and `artistId` (UUID or null).",
+        "description": "Agent session returned by [POST /api/sessions](/api-reference/sessions/create), [`GET /api/sessions/{sessionId}`](/api-reference/sessions/get), and [`PATCH /api/sessions/{sessionId}`](/api-reference/sessions/patch). The api serializes every field listed in `required` on each response, including `isNewBranch` (boolean, from the non-null `sessions.is_new_branch` column) and `artistId` (UUID or null).",
         "required": [
           "id",
           "userId",
@@ -1238,7 +1238,10 @@
             "format": "date-time"
           },
           "artistId": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "uuid",
             "description": "Artist account id this session was created in the context of, or `null` when no artist was associated. Set via `POST /api/sessions { artistId }`; surfaces here for clients (e.g. the chat sidebar) that filter sessions/chats by artist."
           }
