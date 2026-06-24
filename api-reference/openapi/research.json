@@ -5255,9 +5255,7 @@
         "type": "object",
         "required": [
           "runId",
-          "status",
-          "chatId",
-          "sessionId"
+          "status"
         ],
         "description": "Point-in-time status of an asynchronous chat-generation run.",
         "properties": {
@@ -5275,45 +5273,7 @@
               "failed",
               "cancelled"
             ],
-            "description": "Lifecycle state of the run."
-          },
-          "chatId": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Chat the run writes its assistant messages to.",
-            "example": "24830c6c-76d8-43be-ae22-1dfd545421ab"
-          },
-          "sessionId": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Session (workspace + sandbox) provisioned for the run.",
-            "example": "fa9c1516-35f0-4efd-a62c-01af26324e72"
-          },
-          "startedAt": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "format": "date-time",
-            "description": "When the run started.",
-            "example": "2026-06-24T15:07:40Z"
-          },
-          "completedAt": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "format": "date-time",
-            "description": "When the run reached a terminal state; null while in-flight.",
-            "example": null
-          },
-          "error": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Failure reason when status is `failed`; otherwise null.",
-            "example": null
+            "description": "Lifecycle state of the run. Read the produced content via the chat (`chatId` from the start response)."
           }
         }
       }
