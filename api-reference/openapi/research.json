@@ -646,9 +646,9 @@
         }
       }
     },
-    "/api/chat/generate": {
+    "/api/chat/runs": {
       "post": {
-        "description": "Generate AI-powered text responses using the Recoup chat system. This endpoint processes chat requests and returns generated text along with metadata about the generation process.",
+        "description": "Start an asynchronous, headless chat-generation run on the durable agent workflow — the same engine as interactive [`POST /api/chat`](/api-reference/chat/workflow).\n\n**Related endpoints**\n- [`POST /api/chat`](/api-reference/chat/workflow) — use that for **interactive, streaming** turns on an existing chat; use this for **headless/programmatic** runs (no browser or pre-provisioned session needed).\n- [`GET /api/chat/runs/{runId}`](/api-reference/chat/runs-status) — poll to learn **whether** the run finished (and if it succeeded).\n- [`GET /api/chat/{chatId}/stream`](/api-reference/chat/workflow-stream) — **watch the output live** by passing the returned `chatId`.",
         "security": [
           {
             "apiKeyAuth": []
@@ -666,13 +666,23 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "Chat generated successfully",
+          "202": {
+            "description": "Run accepted. A durable workflow run was started; `runId` identifies it. `chatId` / `sessionId` identify the persisted output — read the result via [`GET /api/chat/{chatId}/stream`](/api-reference/chat/workflow-stream) (resume the stream) or the chat's persisted messages. Poll [`GET /api/chat/runs/{runId}`](/api-reference/chat/runs-status) for status.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ChatGenerateResponse"
+                  "$ref": "#/components/schemas/ChatGenerateAcceptedResponse"
                 }
+              }
+            },
+            "headers": {
+              "Location": {
+                "description": "Relative URL of the run-status resource for the started run.",
+                "schema": {
+                  "type": "string",
+                  "format": "uri-reference"
+                },
+                "example": "/api/chat/runs/wrun_01KVWZNM82NA7XKNEWWHG8VPHJ"
               }
             }
           },
@@ -756,7 +766,7 @@
     "/api/chat/{chatId}/stream": {
       "get": {
         "summary": "Resume a chat response stream",
-        "description": "Reconnects to an in-progress chat response — the resume counterpart to [POST /api/chat](/api-reference/chat/workflow), which never resumes. Returns the live Server-Sent Events stream when a response is still being generated, or `204 No Content` when there is nothing to resume. The chat must belong to the authenticated account.",
+        "description": "Reconnects to an in-progress chat response — the resume counterpart to [`POST /api/chat`](/api-reference/chat/workflow), which never resumes. Returns the live Server-Sent Events stream when a response is still being generated, or `204 No Content` when there is nothing to resume. The chat must belong to the authenticated account.\n\n**Related endpoints**\n- [`POST /api/chat`](/api-reference/chat/workflow) — the interactive turn whose stream this resumes.\n- [`POST /api/chat/runs`](/api-reference/chat/runs) — start a **headless** run, then pass the returned `chatId` here to **watch its output live**.\n- [`GET /api/chat/runs/{runId}`](/api-reference/chat/runs-status) — check **whether** that run finished (status, not content).",
         "security": [
           {
             "apiKeyAuth": []
@@ -836,7 +846,7 @@
     "/api/chat": {
       "post": {
         "summary": "Stream sandbox-driven chat (Vercel Workflow)",
-        "description": "Streams an agent loop running as a durable [Vercel Workflow](https://vercel.com/docs/workflow) against the session's sandbox. The agent uses sandbox-only tools (`bash`, `read`, `write`, `grep`, `glob`, `todo`, `task`, `ask_user_question`, `skill`, `fetch`) — no MCP or Composio. Requires a sandbox provisioned via [POST /api/sandbox](/api-reference/sandbox/create).",
+        "description": "Streams an agent loop running as a durable [Vercel Workflow](https://vercel.com/docs/workflow) against the session's sandbox. The agent uses sandbox-only tools (`bash`, `read`, `write`, `grep`, `glob`, `todo`, `task`, `ask_user_question`, `skill`, `fetch`) — no MCP or Composio. Requires a sandbox provisioned via [`POST /api/sandbox`](/api-reference/sandbox/create).\n\n**Related endpoints**\n- [`POST /api/chat/runs`](/api-reference/chat/runs) — the **headless** counterpart: it provisions its own session + sandbox and runs without a streaming client. Use that for tasks/cron/programmatic runs; use this for **interactive, streaming** turns on an existing chat.\n- [`GET /api/chat/{chatId}/stream`](/api-reference/chat/workflow-stream) — reconnect to an in-progress response.\n- [`GET /api/chat/runs/{runId}`](/api-reference/chat/runs-status) — check **whether** a headless run finished (status, not content).",
         "security": [
           {
             "apiKeyAuth": []
@@ -2969,6 +2979,50 @@
           }
         }
       }
+    },
+    "/api/chat/runs/{runId}": {
+      "get": {
+        "description": "Status of an asynchronous run started via [`POST /api/chat/runs`](/api-reference/chat/runs). Returns a point-in-time snapshot (**is it done?**) — not the generated content.\n\n**Related endpoints**\n- [`POST /api/chat/runs`](/api-reference/chat/runs) — starts the run this reports on.\n- [`GET /api/chat/{chatId}/stream`](/api-reference/chat/workflow-stream) — read the **content**: poll *this* to know **whether** a run finished; use the stream to **watch the output** as it's produced.\n- [`POST /api/chat`](/api-reference/chat/workflow) — the interactive, streaming counterpart to a headless run.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "runId",
+            "in": "path",
+            "required": true,
+            "description": "The durable workflow run id returned by [POST /api/chat/runs](/api-reference/chat/runs).",
+            "schema": {
+              "type": "string"
+            },
+            "example": "wrun_01KVWZNM82NA7XKNEWWHG8VPHJ"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Run status snapshot",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatRunStatusResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No run found for the given runId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatGenerateErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -3068,110 +3122,6 @@
             "type": "string",
             "description": "The AI model to use for text generation (optional)",
             "example": "openai/gpt-5-mini"
-          },
-          "excludeTools": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Array of tool names to exclude from execution",
-            "example": [
-              "create_scheduled_actions"
-            ]
-          },
-          "roomId": {
-            "type": "string",
-            "format": "uuid",
-            "description": "UUID of the chat room. If not provided, one will be generated automatically."
-          },
-          "topic": {
-            "type": "string",
-            "description": "Topic name for the new chat room (e.g., 'Pulse Feb 2'). Only applies when creating a new room - ignored if room already exists. To edit the topic of an existing room, use [PATCH /api/chats](/api-reference/chat/update)."
-          }
-        }
-      },
-      "ChatGenerateResponse": {
-        "type": "object",
-        "description": "Response from the chat generation endpoint",
-        "properties": {
-          "text": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ContentPart"
-            },
-            "description": "Array of content parts from the AI model response"
-          },
-          "reasoningText": {
-            "type": "string",
-            "nullable": true,
-            "description": "Optional reasoning or explanation for the response"
-          },
-          "sources": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            },
-            "description": "Optional array of sources used for the response"
-          },
-          "finishReason": {
-            "type": "string",
-            "description": "The reason why the generation finished",
-            "example": "stop"
-          },
-          "usage": {
-            "$ref": "#/components/schemas/ChatGenerateUsage",
-            "description": "Token usage information"
-          },
-          "response": {
-            "$ref": "#/components/schemas/ChatGenerateResponseMeta",
-            "description": "Additional response metadata"
-          }
-        }
-      },
-      "ChatGenerateResponseMeta": {
-        "type": "object",
-        "description": "Additional response metadata",
-        "properties": {
-          "messages": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            },
-            "description": "Response messages"
-          },
-          "headers": {
-            "type": "object",
-            "description": "Response headers"
-          },
-          "body": {
-            "type": "object",
-            "description": "Response body"
-          }
-        }
-      },
-      "ChatGenerateUsage": {
-        "type": "object",
-        "description": "Token usage information with detailed breakdown",
-        "properties": {
-          "inputTokens": {
-            "type": "integer",
-            "description": "Number of input tokens processed"
-          },
-          "outputTokens": {
-            "type": "integer",
-            "description": "Number of output tokens generated"
-          },
-          "totalTokens": {
-            "type": "integer",
-            "description": "Total tokens used (input + output)"
-          },
-          "reasoningTokens": {
-            "type": "integer",
-            "description": "Number of reasoning tokens used"
-          },
-          "cachedInputTokens": {
-            "type": "integer",
-            "description": "Number of cached input tokens"
           }
         }
       },
@@ -3356,25 +3306,6 @@
           "compacted": {
             "type": "string",
             "description": "The compacted summary text of the chat"
-          }
-        }
-      },
-      "ContentPart": {
-        "type": "object",
-        "description": "A part of the response content. See https://ai-sdk.dev/docs/reference/ai-sdk-core/generate-text#content for details.",
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": [
-              "text",
-              "tool-call",
-              "tool-result"
-            ],
-            "description": "The type of content part"
-          },
-          "text": {
-            "type": "string",
-            "description": "The text content (present when type is 'text')"
           }
         }
       },
@@ -5289,6 +5220,100 @@
             "type": "number",
             "nullable": true,
             "description": "`current`: scraper cost estimate before spend."
+          }
+        }
+      },
+      "ChatGenerateAcceptedResponse": {
+        "type": "object",
+        "required": [
+          "runId",
+          "chatId",
+          "sessionId"
+        ],
+        "description": "Confirmation that an asynchronous chat-generation run has been started on the durable agent workflow.",
+        "properties": {
+          "runId": {
+            "type": "string",
+            "description": "Durable workflow run id for the started generation. Same identifier surfaced as the `x-workflow-run-id` header on interactive [POST /api/chat](/api-reference/chat/workflow).",
+            "example": "wrun_01KVWZNM82NA7XKNEWWHG8VPHJ"
+          },
+          "chatId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Chat the run writes its assistant messages to. Use with [`GET /api/chat/{chatId}/stream`](/api-reference/chat/workflow-stream) to resume the stream, or to fetch the persisted messages.",
+            "example": "24830c6c-76d8-43be-ae22-1dfd545421ab"
+          },
+          "sessionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Session (workspace + sandbox) provisioned for the run.",
+            "example": "fa9c1516-35f0-4efd-a62c-01af26324e72"
+          }
+        }
+      },
+      "ChatRunStatusResponse": {
+        "type": "object",
+        "required": [
+          "runId",
+          "status",
+          "chatId",
+          "sessionId"
+        ],
+        "description": "Point-in-time status of an asynchronous chat-generation run.",
+        "properties": {
+          "runId": {
+            "type": "string",
+            "description": "The durable workflow run id.",
+            "example": "wrun_01KVWZNM82NA7XKNEWWHG8VPHJ"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "completed",
+              "failed",
+              "cancelled"
+            ],
+            "description": "Lifecycle state of the run."
+          },
+          "chatId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Chat the run writes its assistant messages to.",
+            "example": "24830c6c-76d8-43be-ae22-1dfd545421ab"
+          },
+          "sessionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Session (workspace + sandbox) provisioned for the run.",
+            "example": "fa9c1516-35f0-4efd-a62c-01af26324e72"
+          },
+          "startedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "When the run started.",
+            "example": "2026-06-24T15:07:40Z"
+          },
+          "completedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "When the run reached a terminal state; null while in-flight.",
+            "example": null
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Failure reason when status is `failed`; otherwise null.",
+            "example": null
           }
         }
       }
