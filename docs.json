@@ -382,6 +382,12 @@
             "pages": [
               "api-reference/notifications/create"
             ]
+          },
+          {
+            "group": "Emails",
+            "pages": [
+              "api-reference/emails/create"
+            ]
           }
         ]
       },
