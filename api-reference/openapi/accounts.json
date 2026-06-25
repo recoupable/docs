@@ -910,7 +910,7 @@
     },
     "/api/emails": {
       "post": {
-        "description": "Send an email to one or more recipients via the Resend API. Emails are sent from `Agent by Recoup <agent@recoupable.com>`. The request is account-scoped from the API key or Bearer token. Supports plain text (rendered as Markdown) or raw HTML bodies, optional CC recipients, custom headers, and an optional room_id to include a chat link in the email footer.",
+        "description": "Send an email to one or more recipients. Emails are sent from `Agent by Recoup <agent@recoupable.com>`.",
         "requestBody": {
           "description": "Email payload",
           "required": true,
@@ -2801,6 +2801,7 @@
         "properties": {
           "to": {
             "type": "array",
+            "minItems": 1,
             "items": {
               "type": "string",
               "format": "email"
@@ -2843,9 +2844,9 @@
             },
             "description": "Optional custom email headers"
           },
-          "room_id": {
+          "chat_id": {
             "type": "string",
-            "description": "Room ID to include a chat link in the email footer"
+            "description": "Chat ID to include a chat link in the email footer"
           },
           "account_id": {
             "type": "string",
@@ -2856,6 +2857,11 @@
       },
       "EmailResponse": {
         "type": "object",
+        "required": [
+          "success",
+          "message",
+          "id"
+        ],
         "properties": {
           "success": {
             "type": "boolean",
