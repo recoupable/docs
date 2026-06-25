@@ -2806,7 +2806,7 @@
               "type": "string",
               "format": "email"
             },
-            "description": "Recipient email address(es).",
+            "description": "Recipient email address(es). Without a payment method on file, restricted to the account's own email; [add a payment method](/api-reference/credits/sessions-create) to send to any recipient.",
             "example": [
               "recipient@example.com"
             ]
@@ -2817,7 +2817,7 @@
               "type": "string",
               "format": "email"
             },
-            "description": "Optional CC email addresses",
+            "description": "Optional CC email addresses. Without a payment method on file, restricted to the account's own email; [add a payment method](/api-reference/credits/sessions-create) to send to any recipient.",
             "example": [
               "cc@example.com"
             ]
