@@ -2795,7 +2795,6 @@
       "SendEmailRequest": {
         "type": "object",
         "required": [
-          "to",
           "subject"
         ],
         "properties": {
@@ -2806,7 +2805,7 @@
               "type": "string",
               "format": "email"
             },
-            "description": "Recipient email address(es). Without a payment method on file, restricted to the account's own email; [add a payment method](/api-reference/credits/sessions-create) to send to any recipient.",
+            "description": "Recipient email address(es). Optional — when omitted, the email is sent to the authenticated account's own email address. Without a payment method on file, restricted to the account's own email; [add a payment method](/api-reference/credits/sessions-create) to send to any recipient.",
             "example": [
               "recipient@example.com"
             ]
