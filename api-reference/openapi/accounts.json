@@ -908,6 +908,64 @@
         }
       }
     },
+    "/api/emails": {
+      "post": {
+        "description": "Send an email to one or more recipients. Emails are sent from `Agent by Recoup <agent@recoupable.com>`.",
+        "requestBody": {
+          "description": "Email payload",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendEmailRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Email delivery failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/notifications": {
       "post": {
         "description": "Send a notification email to the authenticated account's email address via the Resend API. Emails are sent from `Agent by Recoup <agent@recoupable.com>`. The recipient is automatically resolved from the API key or Bearer token. Supports plain text (rendered as Markdown) or raw HTML bodies, optional CC recipients, custom headers, and an optional room_id to include a chat link in the email footer.",
@@ -2733,6 +2791,94 @@
           }
         },
         "description": "At least one of email or wallet should be provided to identify or create an account."
+      },
+      "SendEmailRequest": {
+        "type": "object",
+        "required": [
+          "to",
+          "subject"
+        ],
+        "properties": {
+          "to": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "format": "email"
+            },
+            "description": "Recipient email address(es). Without a payment method on file, restricted to the account's own email; [add a payment method](/api-reference/credits/sessions-create) to send to any recipient.",
+            "example": [
+              "recipient@example.com"
+            ]
+          },
+          "cc": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "email"
+            },
+            "description": "Optional CC email addresses. Without a payment method on file, restricted to the account's own email; [add a payment method](/api-reference/credits/sessions-create) to send to any recipient.",
+            "example": [
+              "cc@example.com"
+            ]
+          },
+          "subject": {
+            "type": "string",
+            "description": "Email subject line",
+            "example": "Weekly Pulse Report"
+          },
+          "text": {
+            "type": "string",
+            "description": "Plain text or Markdown body. Rendered as HTML via Markdown if no `html` is provided.",
+            "example": "# Pulse Report\n\nHere's your weekly summary."
+          },
+          "html": {
+            "type": "string",
+            "description": "Raw HTML body. Takes precedence over `text` when both are provided.",
+            "example": "<h1>Pulse Report</h1><p>Here's your weekly summary.</p>"
+          },
+          "headers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional custom email headers"
+          },
+          "chat_id": {
+            "type": "string",
+            "description": "Chat ID to include a chat link in the email footer. Use [Create Chat](/api-reference/chat/create) to create one."
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account to send the email for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, sends for the API key's own account."
+          }
+        }
+      },
+      "EmailResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "message",
+          "id"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the email was sent successfully",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable result message",
+            "example": "Email sent successfully from Agent by Recoup <agent@recoupable.com> to recipient@example.com."
+          },
+          "id": {
+            "type": "string",
+            "description": "Resend email ID",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          }
+        }
       },
       "CreateNotificationRequest": {
         "type": "object",
