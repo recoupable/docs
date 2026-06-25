@@ -76,13 +76,13 @@ recoup artists list --org <orgId>
 recoup artists list --account <accountId>
 ```
 
-### notifications
+### emails
 
 Send an email to the authenticated account. See [`POST /api/emails`](/api-reference/emails/create).
 
 ```bash
-recoup notifications --subject "Pulse Report" --text "Here's your weekly summary."
-recoup notifications --subject "Update" --html "<h1>Report</h1><p>Details here.</p>"
+recoup emails --subject "Pulse Report" --text "Here's your weekly summary."
+recoup emails --subject "Update" --html "<h1>Report</h1><p>Details here.</p>"
 ```
 
 | Flag | Required | Description |
