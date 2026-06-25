@@ -2794,9 +2794,6 @@
       },
       "SendEmailRequest": {
         "type": "object",
-        "required": [
-          "subject"
-        ],
         "properties": {
           "to": {
             "type": "array",
@@ -2823,7 +2820,7 @@
           },
           "subject": {
             "type": "string",
-            "description": "Email subject line",
+            "description": "Email subject line. Optional — when omitted, defaults to the first heading or line of the body, falling back to `Message from Recoup` if the body is empty.",
             "example": "Weekly Pulse Report"
           },
           "text": {
