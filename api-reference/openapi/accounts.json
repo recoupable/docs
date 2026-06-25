@@ -2846,7 +2846,7 @@
           },
           "chat_id": {
             "type": "string",
-            "description": "Chat ID to include a chat link in the email footer"
+            "description": "Chat ID to include a chat link in the email footer. Use [Create Chat](/api-reference/chat/create) to create one."
           },
           "account_id": {
             "type": "string",
