@@ -406,7 +406,7 @@
       "anchors": [
         {
           "anchor": "Recoup App",
-          "href": "https://chat.recoupable.com",
+          "href": "https://chat.recoupable.dev",
           "icon": "rocket"
         },
         {
@@ -436,7 +436,7 @@
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://chat.recoupable.com"
+      "href": "https://chat.recoupable.dev"
     }
   },
   "contextual": {
