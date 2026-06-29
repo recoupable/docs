@@ -31,13 +31,13 @@ Pass your own parameters directly to any primitive. Maximum creative control.
 
 ```bash
 # Generate an image with your own prompt
-curl -X POST https://api.recoupable.com/api/content/image \
+curl -X POST https://api.recoupable.dev/api/content/image \
   -H "x-api-key: YOUR_KEY" \
   -H "Content-Type: application/json" \
   -d '{"prompt": "A moody portrait in a dimly lit room, front-facing phone camera"}'
 
 # Generate a video from that image
-curl -X POST https://api.recoupable.com/api/content/video \
+curl -X POST https://api.recoupable.dev/api/content/video \
   -H "x-api-key: YOUR_KEY" \
   -H "Content-Type: application/json" \
   -d '{"image_url": "IMAGE_URL_FROM_ABOVE", "prompt": "subtle breathing motion, nearly still"}'
@@ -49,7 +49,7 @@ Pass a template ID and the primitive fills in prompts, reference images, and sty
 
 ```bash
 # Same image, but the template provides the prompt and reference images
-curl -X POST https://api.recoupable.com/api/content/image \
+curl -X POST https://api.recoupable.dev/api/content/image \
   -H "x-api-key: YOUR_KEY" \
   -H "Content-Type: application/json" \
   -d '{"template": "artist-caption-bedroom", "reference_image_url": "YOUR_FACE_IMAGE"}'
@@ -164,7 +164,7 @@ The **Recoup Content Agent** is a Slack bot that generates social-ready artist v
    - `app_mentions:read` — receive @mention events
 3. Under **Event Subscriptions**:
    - Enable events
-   - Set the request URL to `https://api.recoupable.com/api/content-agent/slack`
+   - Set the request URL to `https://api.recoupable.dev/api/content-agent/slack`
    - Subscribe to `app_mention` bot event
 4. Install the app to your workspace
 
@@ -176,7 +176,7 @@ The **Recoup Content Agent** is a Slack bot that generates social-ready artist v
 | `SLACK_CONTENT_SIGNING_SECRET` | API (Vercel) | Signing secret from Slack app **Basic Information** |
 | `CONTENT_AGENT_CALLBACK_SECRET` | API + Tasks | Shared secret for callback authentication (generate a random string) |
 | `RECOUP_API_KEY` | API + Tasks | Recoup API key for authenticating pipeline requests |
-| `RECOUP_API_BASE_URL` | Tasks (Trigger.dev) | API base URL (e.g., `https://api.recoupable.com`) |
+| `RECOUP_API_BASE_URL` | Tasks (Trigger.dev) | API base URL (e.g., `https://api.recoupable.dev`) |
 
 #### 3. Verify
 

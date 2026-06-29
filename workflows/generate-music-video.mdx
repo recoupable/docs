@@ -11,7 +11,7 @@ The fastest way to use this guide is to point an LLM at it directly — every pa
 
 ```
 Generate a music video for The Weeknd – "Blinding Lights" using
-https://developers.recoupable.com/workflows/generate-music-video.md
+https://docs.recoupable.dev/workflows/generate-music-video.md
 ```
 
 Swap in your own artist and song. The LLM will resolve the artist, kick off the async pipeline, poll until done, and pull back the final video URL.
@@ -24,7 +24,7 @@ Use the async path instead — same five steps, run server-side:
 
 ```bash
 # Trigger
-RUN_IDS=$(curl -sS -X POST "https://api.recoupable.com/api/content/create" \
+RUN_IDS=$(curl -sS -X POST "https://api.recoupable.dev/api/content/create" \
   -H "x-api-key: $RECOUP_API_KEY" -H "Content-Type: application/json" \
   -d "$(jq -n --arg artist "$ARTIST_ACCOUNT_ID" --arg template "$TEMPLATE" \
         '{artist_account_id: $artist, template: $template}')" \
@@ -32,7 +32,7 @@ RUN_IDS=$(curl -sS -X POST "https://api.recoupable.com/api/content/create" \
 
 # Poll (every ~10s) until COMPLETED / FAILED / CANCELED / CRASHED
 RUN_ID=$(echo "$RUN_IDS" | head -1)
-until STATUS=$(curl -sS "https://api.recoupable.com/api/tasks/runs?runId=$RUN_ID" \
+until STATUS=$(curl -sS "https://api.recoupable.dev/api/tasks/runs?runId=$RUN_ID" \
                  -H "x-api-key: $RECOUP_API_KEY" \
                | jq -r '.runs[0].status') && \
       [[ "$STATUS" =~ ^(COMPLETED|FAILED|CANCELED|CRASHED)$ ]]; do
@@ -40,7 +40,7 @@ until STATUS=$(curl -sS "https://api.recoupable.com/api/tasks/runs?runId=$RUN_ID
 done
 
 # Read the output
-curl -sS "https://api.recoupable.com/api/tasks/runs?runId=$RUN_ID" \
+curl -sS "https://api.recoupable.dev/api/tasks/runs?runId=$RUN_ID" \
   -H "x-api-key: $RECOUP_API_KEY" \
   | jq '.runs[0].output'
 # -> { videoSourceUrl, imageUrl, captionText, template, lipsync, audio: {...} }
@@ -53,10 +53,10 @@ Polling fits inside short shell timeouts and survives session restarts. See [Tas
 `POST /api/content/create` needs the artist's `account_id`. Three calls:
 
 ```bash
-ORG_ID=$(curl -sS "https://api.recoupable.com/api/organizations" \
+ORG_ID=$(curl -sS "https://api.recoupable.dev/api/organizations" \
   -H "x-api-key: $RECOUP_API_KEY" | jq -r '.organizations[0].id')
 
-ARTIST_ACCOUNT_ID=$(curl -sS "https://api.recoupable.com/api/artists?org_id=$ORG_ID" \
+ARTIST_ACCOUNT_ID=$(curl -sS "https://api.recoupable.dev/api/artists?org_id=$ORG_ID" \
   -H "x-api-key: $RECOUP_API_KEY" \
   | jq -r --arg name "$ARTIST_NAME" '.artists[] | select(.name == $name) | .account_id')
 ```
@@ -91,7 +91,7 @@ The rest of this page walks the same steps you can run by hand or call individua
 
 ### Prerequisites
 
-- An auth credential for `api.recoupable.com`. Two options — pick one and use it for every call below:
+- An auth credential for `api.recoupable.dev`. Two options — pick one and use it for every call below:
   - **API key** (`recoup_sk_…`, recommended for sandbox / agent use): pass as `-H "x-api-key: $RECOUP_API_KEY"`.
     - One-shot agent: `POST /api/agents/signup` with an `agent+{unique}@recoupable.com` email returns the key immediately.
     - Real-email signup: same endpoint with a real email mails a 6-digit code; complete with `POST /api/agents/verify`. See [Agents](/agents).
@@ -143,13 +143,13 @@ EOF
 Templates carry the prompt, reference images, and styling that drive the rest of the chain — you can't write a good Step 2 prompt without them. List, pick, then fetch detail:
 
 ```bash
-curl -sS "https://api.recoupable.com/api/content/templates" \
+curl -sS "https://api.recoupable.dev/api/content/templates" \
   -H "x-api-key: $RECOUP_API_KEY" \
   | jq -r '.templates[] | "\(.id) — \(.description)"'
 
 TEMPLATE="album-record-store"   # or artist-caption-{bedroom,outside,stage}
 
-TEMPLATE_DETAIL=$(curl -sS "https://api.recoupable.com/api/content/templates/$TEMPLATE" \
+TEMPLATE_DETAIL=$(curl -sS "https://api.recoupable.dev/api/content/templates/$TEMPLATE" \
   -H "x-api-key: $RECOUP_API_KEY")
 ```
 
@@ -168,7 +168,7 @@ PROMPT=$(echo "$TEMPLATE_DETAIL" | jq -r '.image.prompt')
 REFS=$(echo "$TEMPLATE_DETAIL" | jq -c '[.image.reference_images[]?]')
 # $REFS is 5–15 URLs depending on the template — pass all of them via images[]
 
-IMAGE_URL=$(curl -sS -X POST "https://api.recoupable.com/api/content/image" \
+IMAGE_URL=$(curl -sS -X POST "https://api.recoupable.dev/api/content/image" \
   -H "x-api-key: $RECOUP_API_KEY" -H "Content-Type: application/json" \
   -d "$(jq -n --arg prompt "$PROMPT" --argjson refs "$REFS" \
         --arg ref "$REFERENCE_IMAGE_URL" \
@@ -190,7 +190,7 @@ Same endpoint for both, swap `type`. Skip if you don't need the resolution bump.
 
 ```bash
 # Image (after step 2)
-IMAGE_URL=$(curl -sS -X POST "https://api.recoupable.com/api/content/upscale" \
+IMAGE_URL=$(curl -sS -X POST "https://api.recoupable.dev/api/content/upscale" \
   -H "x-api-key: $RECOUP_API_KEY" -H "Content-Type: application/json" \
   -d "$(jq -n --arg url "$IMAGE_URL" '{url: $url, type: "image"}')" \
   | jq -r '.url')
@@ -207,7 +207,7 @@ Pass the image and a short motion prompt. For lipsync, also pass a presigned `au
 ```bash
 MOTION=$(echo "$TEMPLATE_DETAIL" | jq -r '.video.movements[0] // "Slow camera drift, subtle subject motion"')
 
-VIDEO_URL=$(curl -sS --max-time 360 -X POST "https://api.recoupable.com/api/content/video" \
+VIDEO_URL=$(curl -sS --max-time 360 -X POST "https://api.recoupable.dev/api/content/video" \
   -H "x-api-key: $RECOUP_API_KEY" -H "Content-Type: application/json" \
   -d "$(jq -n --arg image "$IMAGE_URL" --arg prompt "$MOTION" \
         '{image_url: $image, prompt: $prompt, aspect_ratio: "9:16"}')" \
@@ -225,7 +225,7 @@ See [Generate Video](/api-reference/content/generate-video).
 ```bash
 TOPIC="Song: \"$SONG_TITLE\". Lyrics: \"$SONG_LYRICS_CLIP\". Artist: $ARTIST_NAME."
 
-CAPTION_RESPONSE=$(curl -sS -X POST "https://api.recoupable.com/api/content/caption" \
+CAPTION_RESPONSE=$(curl -sS -X POST "https://api.recoupable.dev/api/content/caption" \
   -H "x-api-key: $RECOUP_API_KEY" -H "Content-Type: application/json" \
   -d "$(jq -n --arg topic "$TOPIC" --arg template "$TEMPLATE" \
         '{topic: $topic, template: $template, length: "short"}')")

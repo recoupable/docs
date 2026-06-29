@@ -9,7 +9,7 @@ The chain is 8 sequential API calls. Long deterministic chains executed from pro
 
 ## Prerequisites
 
-- `$RECOUP_ACCESS_TOKEN` — Bearer token for `api.recoupable.com`
+- `$RECOUP_ACCESS_TOKEN` — Bearer token for `api.recoupable.dev`
 - `$RECOUP_ORG_ID` — the org the artist should belong to (recommended in sandboxes)
 - An artist name to create (e.g. `ARTIST_NAME="The Weeknd"`)
 
@@ -74,7 +74,7 @@ If every item is checked, the artist is fully set up — confirm with the user b
 ## Step 1: Create the artist
 
 ```bash
-ARTIST_RESPONSE=$(curl -sS -X POST "https://api.recoupable.com/api/artists" \
+ARTIST_RESPONSE=$(curl -sS -X POST "https://api.recoupable.dev/api/artists" \
   -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d "$(jq -n --arg name "$ARTIST_NAME" --arg org "$RECOUP_ORG_ID" \
@@ -92,7 +92,7 @@ See [Create Artist](/api-reference/artists/create) for the full request/response
 ## Step 2: Find the canonical Spotify match
 
 ```bash
-SPOTIFY=$(curl -sS -G "https://api.recoupable.com/api/spotify/search" \
+SPOTIFY=$(curl -sS -G "https://api.recoupable.dev/api/spotify/search" \
   -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
   --data-urlencode "q=$ARTIST_NAME" \
   --data-urlencode "type=artist" \
@@ -126,7 +126,7 @@ See [Spotify Search](/api-reference/spotify/search) for the full query parameter
 One `PATCH` covers the image and the Spotify social URL. Use **uppercase** platform keys in `profileUrls` (the API matches platforms case-sensitively — see the reference table below).
 
 ```bash
-curl -sS -X PATCH "https://api.recoupable.com/api/artists/$ARTIST_ID" \
+curl -sS -X PATCH "https://api.recoupable.dev/api/artists/$ARTIST_ID" \
   -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d "$(jq -n --arg image "$SPOTIFY_IMAGE_URL" --arg url "$SPOTIFY_PROFILE_URL" \
@@ -146,7 +146,7 @@ Don't use `POST /api/research/deep` here — it tends to hang in sandboxes and r
 Most structured research endpoints can take the provider artist ID, not the Spotify ID. Resolve it once and reuse it for the rest of step 4.
 
 ```bash
-LOOKUP=$(curl -sS -G "https://api.recoupable.com/api/research/lookup" \
+LOOKUP=$(curl -sS -G "https://api.recoupable.dev/api/research/lookup" \
   -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
   --data-urlencode "spotifyId=$SPOTIFY_ARTIST_ID")
 
@@ -162,7 +162,7 @@ If the lookup fails, skip 4b–4d and just run 4e (web search). See [Artist Look
 Returns bio, genres, social URLs, label, career stage, and basic metrics — most of what deep research used to paraphrase.
 
 ```bash
-PROFILE=$(curl -sS -G "https://api.recoupable.com/api/research/profile" \
+PROFILE=$(curl -sS -G "https://api.recoupable.dev/api/research/profile" \
   -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
   --data-urlencode "id=$RESEARCH_ARTIST_ID")
 ```
@@ -174,7 +174,7 @@ See [Artist Profile](/api-reference/research/profile) for the response schema.
 Career milestones, trajectory, and career-stage classification — covers the "notable achievements" portion of what deep research returned.
 
 ```bash
-CAREER=$(curl -sS -G "https://api.recoupable.com/api/research/career" \
+CAREER=$(curl -sS -G "https://api.recoupable.dev/api/research/career" \
   -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
   --data-urlencode "id=$RESEARCH_ARTIST_ID")
 ```
@@ -186,7 +186,7 @@ See [Career Timeline](/api-reference/research/career) for the response schema.
 Replaces the "playlists / radio rotations / editorial features" portion of the deep-research Spotify-presence query.
 
 ```bash
-PLAYLISTS=$(curl -sS -G "https://api.recoupable.com/api/research/playlists" \
+PLAYLISTS=$(curl -sS -G "https://api.recoupable.dev/api/research/playlists" \
   -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
   --data-urlencode "id=$RESEARCH_ARTIST_ID")
 ```
@@ -198,7 +198,7 @@ See [Artist Playlists](/api-reference/research/playlists) for the response schem
 Structured endpoints don't cover press coverage, cultural narrative, or recent feature/collab announcements. Fill that gap with a single web search.
 
 ```bash
-RESEARCH_WEB=$(curl -sS -X POST "https://api.recoupable.com/api/research/web" \
+RESEARCH_WEB=$(curl -sS -X POST "https://api.recoupable.dev/api/research/web" \
   -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d "$(jq -n --arg name "$ARTIST_NAME" \
@@ -212,16 +212,16 @@ See [Web Search](/api-reference/research/web) for the request/response schema.
 ## Step 5: Pull the Spotify catalog
 
 ```bash
-TOP_TRACKS=$(curl -sS -G "https://api.recoupable.com/api/spotify/artist/topTracks" \
+TOP_TRACKS=$(curl -sS -G "https://api.recoupable.dev/api/spotify/artist/topTracks" \
   -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
   --data-urlencode "id=$SPOTIFY_ARTIST_ID")
 
-ALBUMS=$(curl -sS -G "https://api.recoupable.com/api/spotify/artist/albums" \
+ALBUMS=$(curl -sS -G "https://api.recoupable.dev/api/spotify/artist/albums" \
   -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
   --data-urlencode "id=$SPOTIFY_ARTIST_ID")
 
 # For each notable album, drill in (ALBUM_ID from $ALBUMS):
-ALBUM_DETAIL=$(curl -sS -G "https://api.recoupable.com/api/spotify/album" \
+ALBUM_DETAIL=$(curl -sS -G "https://api.recoupable.dev/api/spotify/album" \
   -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
   --data-urlencode "id=$ALBUM_ID")
 ```
@@ -235,7 +235,7 @@ See [Spotify Top Tracks](/api-reference/spotify/artist-top-tracks), [Spotify Art
 ## Step 6: Search the web for additional socials
 
 ```bash
-SOCIALS_SEARCH=$(curl -sS -X POST "https://api.recoupable.com/api/research/web" \
+SOCIALS_SEARCH=$(curl -sS -X POST "https://api.recoupable.dev/api/research/web" \
   -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d "$(jq -n --arg name "$ARTIST_NAME" \
@@ -251,7 +251,7 @@ See [Web Search](/api-reference/research/web) for the request/response schema.
 ## Step 7: PATCH the artist with the discovered socials
 
 ```bash
-curl -sS -X PATCH "https://api.recoupable.com/api/artists/$ARTIST_ID" \
+curl -sS -X PATCH "https://api.recoupable.dev/api/artists/$ARTIST_ID" \
   -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{

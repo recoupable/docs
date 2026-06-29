@@ -26,7 +26,7 @@ API keys are the primary way to authenticate programmatic access to the Recoup A
 
 ### Creating an API Key
 
-1. Navigate to [chat.recoupable.com/keys](https://chat.recoupable.com/keys)
+1. Navigate to [chat.recoupable.dev/keys](https://chat.recoupable.dev/keys)
 2. Enter a descriptive name (e.g. `"Production Server"`)
 3. Click **Create API Key**
 
@@ -39,7 +39,7 @@ Copy your API key immediately — it is only shown once. Keys are stored as a se
 Pass your key in the `x-api-key` header:
 
 ```bash
-curl -X GET "https://api.recoupable.com/api/tasks" \
+curl -X GET "https://api.recoupable.dev/api/tasks" \
   -H "x-api-key: YOUR_API_KEY"
 ```
 
@@ -61,7 +61,7 @@ Org membership is determined by the account's [organizations](/api-reference/org
 If you're building a frontend application that authenticates users via [Privy](https://privy.io), you can pass the user's Privy JWT as a Bearer token instead of an API key.
 
 ```bash
-curl -X GET "https://api.recoupable.com/api/tasks" \
+curl -X GET "https://api.recoupable.dev/api/tasks" \
   -H "Authorization: Bearer YOUR_PRIVY_JWT"
 ```
 
@@ -112,4 +112,4 @@ Some endpoints accept an `organization_id` parameter. When provided, the API add
 
 - API keys are **never stored in plaintext** — only an HMAC-SHA256 hash (keyed with your project secret) is persisted in the database
 - **Never include `account_id` in your API key creation request** — the account is always derived from your authenticated credentials
-- Rotate keys immediately if compromised via the [API Keys Management Page](https://chat.recoupable.com/keys)
+- Rotate keys immediately if compromised via the [API Keys Management Page](https://chat.recoupable.dev/keys)

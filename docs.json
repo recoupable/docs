@@ -411,12 +411,12 @@
         },
         {
           "anchor": "Website",
-          "href": "https://recoupable.com",
+          "href": "https://recoupable.dev",
           "icon": "globe"
         },
         {
           "anchor": "Blog",
-          "href": "https://research.recoupable.com/",
+          "href": "https://research.recoupable.dev/",
           "icon": "newspaper"
         }
       ]
