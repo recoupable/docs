@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "https://api.recoupable.com"
+      "url": "https://api.recoupable.dev"
     }
   ],
   "security": [
