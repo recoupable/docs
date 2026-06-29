@@ -6,14 +6,14 @@ description: "Connect AI agents to the Recoup platform using the Model Context P
 The Recoup API exposes an [MCP](https://modelcontextprotocol.io/) server that AI agents can connect to for tool use. The server is available at:
 
 ```
-https://api.recoupable.com/mcp
+https://api.recoupable.dev/mcp
 ```
 
 ## Authentication
 
 All MCP tools require an API key. Pass it as a Bearer token in the `Authorization` header when connecting to the MCP server.
 
-You can get a key from the [API Keys page](https://chat.recoupable.com/keys).
+You can get a key from the [API Keys page](https://chat.recoupable.dev/keys).
 
 ## Tools
 
@@ -46,7 +46,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 
 const transport = new StreamableHTTPClientTransport(
-  new URL("https://api.recoupable.com/mcp"),
+  new URL("https://api.recoupable.dev/mcp"),
   { requestInit: { headers: { Authorization: `Bearer ${RECOUP_API_KEY}` } } },
 );
 

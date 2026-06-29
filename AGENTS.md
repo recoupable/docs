@@ -66,7 +66,7 @@ All site configuration is in `docs.json`:
 Reference `Recoup-Chat` codebase for correct branding values:
 - **Primary color**: `#345A5D` (from `tailwind.config.ts` primaryGreen)
 - **Support email**: `agent@recoupable.com`
-- **App URL**: `https://chat.recoupable.com`
+- **App URL**: `https://chat.recoupable.dev`
 - **Website**: `https://recoupable.com`
 - **Social URLs**:
   - X: `https://x.com/recoupai`

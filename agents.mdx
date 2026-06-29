@@ -8,7 +8,7 @@ description: 'Programmatic agent onboarding — sign up and obtain API keys in o
 Get a working API key in a single unauthenticated request:
 
 ```bash
-curl -X POST "https://api.recoupable.com/api/agents/signup" \
+curl -X POST "https://api.recoupable.dev/api/agents/signup" \
   -H "Content-Type: application/json" \
   -d '{"email": "agent+'$(date +%s)-$RANDOM'@recoupable.com"}'
 ```
@@ -29,7 +29,7 @@ That's it. Store `api_key`, pass it in the `x-api-key` header on every subsequen
 **One-liner — sign up and export the key in one shot.** Drop this into your shell and you'll have `$RECOUP_API_KEY` ready to use on the next line:
 
 ```bash
-export RECOUP_API_KEY=$(curl -s -X POST "https://api.recoupable.com/api/agents/signup" \
+export RECOUP_API_KEY=$(curl -s -X POST "https://api.recoupable.dev/api/agents/signup" \
   -H "Content-Type: application/json" \
   -d '{"email": "agent+'$(date +%s)-$RANDOM'@recoupable.com"}' | jq -r .api_key)
 ```
@@ -37,7 +37,7 @@ export RECOUP_API_KEY=$(curl -s -X POST "https://api.recoupable.com/api/agents/s
 Verify it worked:
 
 ```bash
-curl -H "x-api-key: $RECOUP_API_KEY" https://api.recoupable.com/api/accounts/id
+curl -H "x-api-key: $RECOUP_API_KEY" https://api.recoupable.dev/api/accounts/id
 ```
 </Tip>
 
@@ -61,7 +61,7 @@ If you're building a human-facing integration and want the user to verify their 
 Step 1 — request a verification code:
 
 ```bash
-curl -X POST "https://api.recoupable.com/api/agents/signup" \
+curl -X POST "https://api.recoupable.dev/api/agents/signup" \
   -H "Content-Type: application/json" \
   -d '{"email": "you@example.com"}'
 ```
@@ -69,7 +69,7 @@ curl -X POST "https://api.recoupable.com/api/agents/signup" \
 Step 2 — submit the 6-digit code from the verification email:
 
 ```bash
-curl -X POST "https://api.recoupable.com/api/agents/verify" \
+curl -X POST "https://api.recoupable.dev/api/agents/verify" \
   -H "Content-Type: application/json" \
   -d '{"email": "you@example.com", "code": "123456"}'
 ```
@@ -89,7 +89,7 @@ Response:
 Pass the returned `api_key` in the `x-api-key` header on every authenticated request:
 
 ```bash
-curl -X GET "https://api.recoupable.com/api/tasks" \
+curl -X GET "https://api.recoupable.dev/api/tasks" \
   -H "x-api-key: YOUR_API_KEY"
 ```
 
