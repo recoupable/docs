@@ -910,7 +910,7 @@
     },
     "/api/emails": {
       "post": {
-        "description": "Send an email to one or more recipients. Emails are sent from `Agent by Recoup <agent@recoupable.com>`.",
+        "description": "Send an email to one or more recipients. Emails are sent from `Agent by Recoup <agent@recoupable.dev>`.",
         "requestBody": {
           "description": "Email payload",
           "required": true,
@@ -2809,7 +2809,7 @@
           "message": {
             "type": "string",
             "description": "Human-readable result message",
-            "example": "Email sent successfully from Agent by Recoup <agent@recoupable.com> to recipient@example.com."
+            "example": "Email sent successfully from Agent by Recoup <agent@recoupable.dev> to recipient@example.com."
           },
           "id": {
             "type": "string",
