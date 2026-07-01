@@ -1714,6 +1714,11 @@
       "Artist": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the artist account. Equal to account_id; use this (or account_id) for /api/artists/{id}/* sub-resources."
+          },
           "account_id": {
             "type": "string",
             "format": "uuid",
@@ -1728,16 +1733,38 @@
             "nullable": true,
             "description": "Artist profile image URL"
           },
+          "instruction": {
+            "type": "string",
+            "nullable": true,
+            "description": "Artist-specific agent instruction / system prompt"
+          },
+          "knowledges": {
+            "type": "array",
+            "description": "Artist knowledge-base entries",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "url": { "type": "string" },
+                "type": { "type": "string" }
+              }
+            }
+          },
+          "label": {
+            "type": "string",
+            "nullable": true,
+            "description": "Artist label / category"
+          },
           "pinned": {
             "type": "boolean",
             "description": "Whether the account has pinned this artist"
           },
-          "socials": {
+          "account_socials": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ArtistSocial"
             },
-            "description": "Social media profiles linked to the artist"
+            "description": "Social media profiles linked to the artist (embedded in the /api/artists response)"
           }
         }
       },
@@ -2880,11 +2907,6 @@
       "SocialProfile": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "UUID of the artist's account_socials record"
-          },
           "social_id": {
             "type": "string",
             "format": "uuid",
