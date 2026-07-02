@@ -538,7 +538,7 @@
     },
     "/api/socials/{id}/scrape": {
       "post": {
-        "description": "Trigger a social profile scraping job for a given social profile. Use the [Get Artist Socials](/api-reference/artists/socials) endpoint first to retrieve the social profile id values. The response returns Apify run metadata for polling status and retrieving results via the [Apify Scraper Results API](/api-reference/apify/scraper). Pass `posts` to include recent posts with engagement metrics in the run's dataset (X/Twitter and YouTube; Instagram profile scrapes always include `latestPosts`).",
+        "description": "Trigger a social profile scraping job for a given social profile. Use the [Get Artist Socials](/api-reference/artists/socials) endpoint first to retrieve the social profile id values. The response returns run metadata for polling status and retrieving results via the [Apify Scraper Results API](/api-reference/apify/scraper).",
         "parameters": [
           {
             "name": "id",
@@ -558,9 +558,9 @@
             "schema": {
               "type": "integer",
               "minimum": 1,
-              "maximum": 100,
-              "default": 1
-            }
+              "maximum": 100
+            },
+            "example": 10
           }
         ],
         "responses": {
@@ -1032,7 +1032,7 @@
               "type": "object",
               "additionalProperties": true
             },
-            "description": "Array of dataset items returned by the scraper. The structure of each item varies depending on the scraper type. Instagram profile scrapes return a profile item with a `latestPosts` array; X/Twitter scrapes return one tweet item per post (with engagement metrics including `viewCount`); YouTube scrapes return one video item per post. Use the `posts` parameter on the scrape endpoints to control how many post items are returned.",
+            "description": "Array of dataset items returned by the scraper. The structure of each item varies depending on the scraper type.",
             "example": [
               {
                 "id": "123456789",
