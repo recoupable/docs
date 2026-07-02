@@ -45,7 +45,6 @@
               "api-reference/artists/unpin",
               "api-reference/artists/delete",
               "api-reference/artists/socials",
-              "api-reference/artist/socials-scrape",
               "api-reference/artist/profile"
             ]
           },
@@ -213,7 +212,8 @@
           {
             "group": "Social",
             "pages": [
-              "api-reference/social/scrape"
+              "api-reference/social/scrape",
+              "api-reference/artist/socials-scrape"
             ]
           },
           {

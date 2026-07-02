@@ -924,7 +924,7 @@
     },
     "/api/artist/socials/scrape": {
       "post": {
-        "description": "Trigger scrape jobs for all social profiles linked to an artist. Provide an artist_account_id, and the API will look up the artist's socials and invoke a scraping job for each social profile. Each scrape returns Apify run metadata so you can poll for status and retrieve results.",
+        "description": "Trigger scrape jobs for all social profiles linked to an artist. Returns a runId per social profile that you can poll for status and results via the [Scraper Results API](/api-reference/apify/scraper).",
         "requestBody": {
           "description": "Artist to scrape socials for",
           "required": true,
@@ -2106,6 +2106,13 @@
             "format": "uuid",
             "description": "UUID of the artist account to scrape socials for",
             "example": "1873859c-dd37-4e9a-9bac-80d35a1b2c3d"
+          },
+          "posts": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "example": 10,
+            "description": "Maximum number of recent posts to include in each scrape dataset, with per-post engagement metrics. On X/Twitter this returns the account's latest `posts` timeline items — including retweets and replies — each with like, retweet, reply, quote, bookmark, and view counts. On YouTube the depth applies per content type, so each dataset contains up to `posts` videos plus `posts` Shorts, each with view, like, and comment counts. Other platforms ignore this field. When omitted, each scrape returns the legacy profile snapshot (a single latest item)."
           }
         }
       },
