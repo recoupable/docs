@@ -925,6 +925,10 @@
     "/api/artist/socials/scrape": {
       "post": {
         "description": "Trigger scrape jobs for all social profiles linked to an artist. Returns a runId per social profile that you can poll for status and results via the [Scraper Results API](/api-reference/apify/scraper).",
+        "security": [
+          { "apiKeyAuth": [] },
+          { "bearerAuth": [] }
+        ],
         "requestBody": {
           "description": "Artist to scrape socials for",
           "required": true,
@@ -949,6 +953,36 @@
           },
           "400": {
             "description": "Bad request - missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistSocialsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistSocialsErrorResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient credits — the body includes a `checkoutUrl` to top up.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistSocialsInsufficientCreditsResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller does not have access to this artist",
             "content": {
               "application/json": {
                 "schema": {
@@ -2045,6 +2079,40 @@
             "description": "Error message describing what went wrong"
           }
         }
+      },
+      "ArtistSocialsInsufficientCreditsResponse": {
+        "type": "object",
+        "description": "Returned (402) when the account lacks credits for the scrapes and auto-recharge did not cover the call.",
+        "properties": {
+          "error": {
+            "type": "string",
+            "enum": [
+              "insufficient_credits"
+            ]
+          },
+          "remaining_credits": {
+            "type": "integer",
+            "example": 0
+          },
+          "required_credits": {
+            "type": "integer",
+            "example": 100
+          },
+          "checkoutUrl": {
+            "type": "string",
+            "description": "Stripe checkout link to top up credits."
+          },
+          "declineReason": {
+            "type": "string",
+            "description": "Card decline reason when auto-recharge was attempted and failed."
+          }
+        },
+        "required": [
+          "error",
+          "remaining_credits",
+          "required_credits",
+          "checkoutUrl"
+        ]
       },
       "ArtistSocialsPagination": {
         "type": "object",
