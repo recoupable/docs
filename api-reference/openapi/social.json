@@ -538,7 +538,7 @@
     },
     "/api/socials/{id}/scrape": {
       "post": {
-        "description": "Trigger a social profile scraping job for a given social profile. Use the [Get Artist Socials](/api-reference/artists/socials) endpoint first to retrieve the social profile id values. The response returns run metadata for polling status and retrieving results via the [Apify Scraper Results API](/api-reference/apify/scraper).",
+        "description": "Trigger a social profile scraping job for a given social profile. Use the [Get Artist Socials](/api-reference/artists/socials) endpoint first to retrieve the social profile id values. The response returns run metadata for polling status and retrieving results via the [Scraper Results API](/api-reference/apify/scraper).",
         "parameters": [
           {
             "name": "id",
