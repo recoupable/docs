@@ -538,7 +538,7 @@
     },
     "/api/socials/{id}/scrape": {
       "post": {
-        "description": "Trigger a social profile scraping job for a given social profile. Use the [Get Artist Socials](/api-reference/artists/socials) endpoint first to retrieve the social profile id values. The response returns run metadata for polling status and retrieving results via the [Scraper Results API](/api-reference/apify/scraper).",
+        "description": "Trigger a social profile scraping job for a given social profile. Use the [Get Artist Socials](/api-reference/artists/socials) endpoint first to retrieve the social profile id values. The response returns run metadata for polling status and retrieving results via the [Scraper Results API](/api-reference/apify/scraper). Costs 5 credits, plus 1 credit per post requested via `posts`.",
         "parameters": [
           {
             "name": "id",
@@ -580,6 +580,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SocialErrorResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient credits — the body includes a `checkoutUrl` to top up.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SocialInsufficientCreditsResponse"
                 }
               }
             }
@@ -1548,6 +1558,40 @@
             "description": "Error message"
           }
         }
+      },
+      "SocialInsufficientCreditsResponse": {
+        "type": "object",
+        "description": "Returned (402) when the account lacks credits for the scrape and auto-recharge did not cover the call.",
+        "properties": {
+          "error": {
+            "type": "string",
+            "enum": [
+              "insufficient_credits"
+            ]
+          },
+          "remaining_credits": {
+            "type": "integer",
+            "example": 0
+          },
+          "required_credits": {
+            "type": "integer",
+            "example": 25
+          },
+          "checkoutUrl": {
+            "type": "string",
+            "description": "Stripe checkout link to top up credits."
+          },
+          "declineReason": {
+            "type": "string",
+            "description": "Card decline reason when auto-recharge was attempted and failed."
+          }
+        },
+        "required": [
+          "error",
+          "remaining_credits",
+          "required_credits",
+          "checkoutUrl"
+        ]
       },
       "SocialPost": {
         "type": "object",
