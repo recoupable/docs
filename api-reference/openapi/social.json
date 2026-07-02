@@ -553,7 +553,7 @@
           {
             "name": "posts",
             "in": "query",
-            "description": "Maximum number of recent posts to include in the scrape dataset, with per-post engagement metrics. Applies to X/Twitter (tweets with like, retweet, reply, quote, bookmark, and view counts) and YouTube (videos and Shorts with view, like, and comment counts). Other platforms ignore this parameter. When omitted, the scrape returns the legacy profile snapshot (a single latest item).",
+            "description": "Maximum number of recent posts to include in the scrape dataset, with per-post engagement metrics. On X/Twitter this returns the account's latest `posts` timeline items — including retweets and replies — each with like, retweet, reply, quote, bookmark, and view counts. On YouTube the depth applies per content type, so the dataset contains up to `posts` videos plus `posts` Shorts, each with view, like, and comment counts. Other platforms ignore this parameter. When omitted, the scrape returns the legacy profile snapshot (a single latest item).",
             "required": false,
             "schema": {
               "type": "integer",
