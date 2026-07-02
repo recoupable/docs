@@ -538,7 +538,7 @@
     },
     "/api/socials/{id}/scrape": {
       "post": {
-        "description": "Trigger a social profile scraping job for a given social profile. Use the [Get Artist Socials](/api-reference/artists/socials) endpoint first to retrieve the social profile id values. The response returns Apify run metadata for polling status and retrieving results via the [Apify Scraper Results API](/api-reference/apify/scraper).",
+        "description": "Trigger a social profile scraping job for a given social profile. Use the [Get Artist Socials](/api-reference/artists/socials) endpoint first to retrieve the social profile id values. The response returns Apify run metadata for polling status and retrieving results via the [Apify Scraper Results API](/api-reference/apify/scraper). Pass `posts` to include recent posts with engagement metrics in the run's dataset (X/Twitter and YouTube; Instagram profile scrapes always include `latestPosts`).",
         "parameters": [
           {
             "name": "id",
@@ -548,6 +548,18 @@
             "schema": {
               "type": "string",
               "format": "uuid"
+            }
+          },
+          {
+            "name": "posts",
+            "in": "query",
+            "description": "Maximum number of recent posts to include in the scrape dataset, with per-post engagement metrics. Applies to X/Twitter (tweets with like, retweet, reply, quote, bookmark, and view counts) and YouTube (videos and Shorts with view, like, and comment counts). Other platforms ignore this parameter. When omitted, the scrape returns the legacy profile snapshot (a single latest item).",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 1
             }
           }
         ],
@@ -1020,7 +1032,7 @@
               "type": "object",
               "additionalProperties": true
             },
-            "description": "Array of dataset items returned by the scraper. The structure of each item varies depending on the scraper type (Instagram Profile, Instagram Comments, etc.)",
+            "description": "Array of dataset items returned by the scraper. The structure of each item varies depending on the scraper type. Instagram profile scrapes return a profile item with a `latestPosts` array; X/Twitter scrapes return one tweet item per post (with engagement metrics including `viewCount`); YouTube scrapes return one video item per post. Use the `posts` parameter on the scrape endpoints to control how many post items are returned.",
             "example": [
               {
                 "id": "123456789",
@@ -1029,7 +1041,43 @@
                 "biography": "This is a sample biography",
                 "followersCount": 1000,
                 "followsCount": 500,
-                "profilePicUrl": "https://example.com/profile.jpg"
+                "profilePicUrl": "https://example.com/profile.jpg",
+                "latestPosts": [
+                  {
+                    "shortCode": "AbCdEfGhIjK",
+                    "type": "Video",
+                    "caption": "Example reel caption",
+                    "likesCount": 16,
+                    "commentsCount": 4,
+                    "videoViewCount": 56,
+                    "timestamp": "2026-06-30T00:26:41.000Z"
+                  }
+                ]
+              },
+              {
+                "type": "tweet",
+                "id": "1234567890123456789",
+                "url": "https://x.com/example_user/status/1234567890123456789",
+                "text": "Example tweet text",
+                "createdAt": "Wed Jul 01 17:38:08 +0000 2026",
+                "likeCount": 7,
+                "retweetCount": 2,
+                "replyCount": 1,
+                "quoteCount": 0,
+                "bookmarkCount": 1,
+                "viewCount": 258
+              },
+              {
+                "type": "video",
+                "id": "aBcDeFgHiJk",
+                "title": "Example Short",
+                "url": "https://www.youtube.com/watch?v=aBcDeFgHiJk",
+                "date": "2026-07-01T17:55:00.000Z",
+                "viewCount": 26,
+                "likes": 1,
+                "commentsCount": 0,
+                "duration": "00:00:45",
+                "channelUsername": "examplechannel"
               }
             ]
           }
