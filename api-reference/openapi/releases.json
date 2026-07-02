@@ -924,7 +924,7 @@
     },
     "/api/artist/socials/scrape": {
       "post": {
-        "description": "Trigger scrape jobs for all social profiles linked to an artist. Returns a runId per social profile that you can poll for status and results via the [Scraper Results API](/api-reference/apify/scraper). Costs 5 credits plus 1 credit per post requested via `posts`, for each social profile scraped.",
+        "description": "Trigger scrape jobs for all social profiles linked to an artist. Returns a runId per social profile that you can poll for status and results via the [Scraper Results API](/api-reference/apify/scraper).",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
