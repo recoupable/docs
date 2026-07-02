@@ -924,7 +924,7 @@
     },
     "/api/artist/socials/scrape": {
       "post": {
-        "description": "Trigger scrape jobs for all social profiles linked to an artist. Returns a runId per social profile that you can poll for status and results via the [Apify Scraper Results API](/api-reference/apify/scraper).",
+        "description": "Trigger scrape jobs for all social profiles linked to an artist. Returns a runId per social profile that you can poll for status and results via the [Scraper Results API](/api-reference/apify/scraper).",
         "requestBody": {
           "description": "Artist to scrape socials for",
           "required": true,
