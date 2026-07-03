@@ -354,6 +354,322 @@
         }
       }
     },
+    "/api/organizations/members": {
+      "post": {
+        "description": "Add a member to an organization. Provide accountId for an existing account, or email to resolve (creating the account if it does not exist yet, so members can be added before their first sign-in). The caller must be a member of the organization or a Recoup admin. This endpoint is idempotent - adding an existing member returns the existing membership.",
+        "requestBody": {
+          "description": "Member-organization association parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddOrganizationMemberRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Member added to organization successfully (or already a member)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddOrganizationMemberResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid or missing parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller is not a member of the organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Remove a member from an organization. The caller must be a member of the organization or a Recoup admin. This endpoint is idempotent - removing an account that is not a member succeeds without error.",
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "The account ID of the organization"
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "The account ID of the member to remove"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Member removed from organization (or was not a member)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RemoveOrganizationMemberResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid or missing parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller is not a member of the organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/organizations/domains": {
+      "get": {
+        "description": "List the email domains mapped to an organization. Accounts that sign up with an email at a mapped domain automatically join the organization. The caller must be a member of the organization or a Recoup admin.",
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "The account ID of the organization"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Domains retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetOrganizationDomainsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid or missing parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller is not a member of the organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Map an email domain to an organization for automatic membership. After mapping, any account that signs up (or signs in) with an email at this domain is automatically added to the organization. A domain can belong to at most one organization. The caller must be a member of the organization or a Recoup admin. This endpoint is idempotent - re-adding the same domain to the same organization returns the existing mapping.",
+        "requestBody": {
+          "description": "Domain-organization mapping parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddOrganizationDomainRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Domain mapped to organization successfully (or already mapped)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddOrganizationDomainResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid or missing parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller is not a member of the organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - domain is already mapped to a different organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Remove an email domain mapping from an organization. New signups at this domain will no longer auto-join the organization; existing members are not affected. The caller must be a member of the organization or a Recoup admin. This endpoint is idempotent.",
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "The account ID of the organization"
+          },
+          {
+            "name": "domain",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The email domain to unmap (e.g. \"seekermusic.com\")"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Domain mapping removed (or did not exist)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RemoveOrganizationDomainResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid or missing parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller is not a member of the organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/subscriptions/sessions": {
       "post": {
         "description": "Create a checkout session to start a subscription for the authenticated account. Returns a hosted checkout URL that the client should redirect to. The session is pre-configured with a 30-day trial period.",
@@ -2621,6 +2937,191 @@
             "type": "string",
             "format": "uuid",
             "description": "UUID of the created artist-organization link"
+          }
+        }
+      },
+      "AddOrganizationMemberRequest": {
+        "type": "object",
+        "required": [
+          "organizationId"
+        ],
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The account ID of the organization"
+          },
+          "accountId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The account ID of the member to add. Provide exactly one of accountId or email."
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email of the member to add. The account is created if it does not exist yet. Provide exactly one of accountId or email."
+          }
+        }
+      },
+      "AddOrganizationMemberResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "id",
+          "account_id"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the membership record"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The account ID of the member (resolved from email when email was provided)"
+          }
+        }
+      },
+      "RemoveOrganizationMemberResponse": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          }
+        }
+      },
+      "OrganizationDomain": {
+        "type": "object",
+        "required": [
+          "id",
+          "domain",
+          "organization_id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the domain mapping record"
+          },
+          "domain": {
+            "type": "string",
+            "description": "The email domain (lowercase, no @)",
+            "example": "seekermusic.com"
+          },
+          "organization_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The account ID of the organization"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the mapping was created"
+          }
+        }
+      },
+      "GetOrganizationDomainsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "domains"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "domains": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrganizationDomain"
+            },
+            "description": "Domains mapped to the organization"
+          }
+        }
+      },
+      "AddOrganizationDomainRequest": {
+        "type": "object",
+        "required": [
+          "organizationId",
+          "domain"
+        ],
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The account ID of the organization"
+          },
+          "domain": {
+            "type": "string",
+            "description": "The email domain to map (lowercase, no @)",
+            "example": "seekermusic.com"
+          }
+        }
+      },
+      "AddOrganizationDomainResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "id",
+          "domain",
+          "organization_id"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the domain mapping record"
+          },
+          "domain": {
+            "type": "string",
+            "description": "The mapped email domain",
+            "example": "seekermusic.com"
+          },
+          "organization_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The account ID of the organization"
+          }
+        }
+      },
+      "RemoveOrganizationDomainResponse": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
           }
         }
       },

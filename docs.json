@@ -351,7 +351,12 @@
             "pages": [
               "api-reference/organizations/list",
               "api-reference/organizations/create",
-              "api-reference/organizations/add-artist"
+              "api-reference/organizations/add-artist",
+              "api-reference/organizations/add-member",
+              "api-reference/organizations/remove-member",
+              "api-reference/organizations/list-domains",
+              "api-reference/organizations/add-domain",
+              "api-reference/organizations/remove-domain"
             ]
           },
           {
