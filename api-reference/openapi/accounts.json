@@ -356,7 +356,7 @@
     },
     "/api/organizations/members": {
       "post": {
-        "description": "Add a member to an organization. Provide accountId for an existing account, or email to resolve (creating the account if it does not exist yet, so members can be added before their first sign-in). The caller must be a member of the organization or a Recoup admin. This endpoint is idempotent - adding an existing member returns the existing membership.",
+        "description": "Add a member to an organization. This endpoint is idempotent - Adding an existing member returns the existing membership.",
         "requestBody": {
           "description": "Member-organization association parameters",
           "required": true,
@@ -412,7 +412,7 @@
         }
       },
       "delete": {
-        "description": "Remove a member from an organization. The caller must be a member of the organization or a Recoup admin. This endpoint is idempotent - removing an account that is not a member succeeds without error.",
+        "description": "Remove a member from an organization. This endpoint is idempotent - Removing an account that is not a member succeeds without error.",
         "parameters": [
           {
             "name": "organization_id",
@@ -481,7 +481,7 @@
     },
     "/api/organizations/domains": {
       "get": {
-        "description": "List the email domains mapped to an organization. Accounts that sign up with an email at a mapped domain automatically join the organization. The caller must be a member of the organization or a Recoup admin.",
+        "description": "List the email domains mapped to an organization. Accounts that sign up with an email at a mapped domain automatically join the organization.",
         "parameters": [
           {
             "name": "organization_id",
@@ -538,7 +538,7 @@
         }
       },
       "post": {
-        "description": "Map an email domain to an organization for automatic membership. After mapping, any account that signs up (or signs in) with an email at this domain is automatically added to the organization. A domain can belong to at most one organization. The caller must be a member of the organization or a Recoup admin. This endpoint is idempotent - re-adding the same domain to the same organization returns the existing mapping.",
+        "description": "Map an email domain to an organization for automatic membership. After mapping, any account that signs up (or signs in) with an email at this domain is automatically added to the organization. A domain can belong to at most one organization.  This endpoint is idempotent - re-adding the same domain to the same organization returns the existing mapping.",
         "requestBody": {
           "description": "Domain-organization mapping parameters",
           "required": true,
@@ -604,7 +604,7 @@
         }
       },
       "delete": {
-        "description": "Remove an email domain mapping from an organization. New signups at this domain will no longer auto-join the organization; existing members are not affected. The caller must be a member of the organization or a Recoup admin. This endpoint is idempotent.",
+        "description": "Remove an email domain mapping from an organization. New signups at this domain will no longer auto-join the organization; existing members are not affected. This endpoint is idempotent.",
         "parameters": [
           {
             "name": "organization_id",
@@ -2944,6 +2944,10 @@
         "type": "object",
         "required": [
           "organizationId"
+        ],
+        "oneOf": [
+          { "required": ["accountId"] },
+          { "required": ["email"] }
         ],
         "properties": {
           "organizationId": {
