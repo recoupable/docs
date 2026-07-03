@@ -482,7 +482,7 @@
     },
     "/api/apify/runs/{runId}": {
       "get": {
-        "description": "Check the status and retrieve results from Apify scraper runs. This endpoint uses the Apify API Client to fetch the current status of a scraper run and its results if available. Use the runId returned from endpoints like Instagram Comments, Instagram Profiles, Social Scrape, or Artist Socials Scrape to poll for results.",
+        "description": "Check the status and retrieve results from Apify scraper runs. This endpoint uses the Apify API Client to fetch the current status of a scraper run and its results if available. Use the runId returned from endpoints like Instagram Comments, Instagram Profiles, Social Scrape, or Artist Socials Scrape to poll for results. Authorization is account-scoped: the account that started the run via the [Social Scrape](/api-reference/social/scrape) endpoint (or an admin) can poll it. Runs started by other accounts return 403; run ids with no recorded owner — including runs started before ownership tracking existed and runs started from other endpoints — return 404 for non-admin callers.",
         "parameters": [
           {
             "name": "runId",
@@ -523,6 +523,26 @@
               }
             }
           },
+          "403": {
+            "description": "Forbidden - the run belongs to a different account and the caller is not an admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApifyScraperErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - no recorded owner for this run id (non-admin callers only; admins can poll any run id)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApifyScraperErrorResponse"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Server error - failed to fetch run status from Apify",
             "content": {
@@ -538,7 +558,7 @@
     },
     "/api/socials/{id}/scrape": {
       "post": {
-        "description": "Trigger a social profile scraping job for a given social profile. Use the [Get Artist Socials](/api-reference/artists/socials) endpoint first to retrieve the social profile id values. The response returns run metadata for polling status and retrieving results via the [Scraper Results API](/api-reference/apify/scraper).",
+        "description": "Trigger a social profile scraping job for a given social profile. Use the [Get Artist Socials](/api-reference/artists/socials) endpoint first to retrieve the social profile id values. The response returns run metadata for polling status and retrieving results via the [Scraper Results API](/api-reference/apify/scraper). Completed runs also persist the scraped profile stats (follower/following counts, avatar, bio) to the social row, and on Instagram, TikTok, and X/Twitter the scraped post URLs are saved and appear in [Get Artist Posts](/api-reference/posts/get).",
         "parameters": [
           {
             "name": "id",
