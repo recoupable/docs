@@ -416,7 +416,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                  "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
             }
@@ -426,7 +426,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                  "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
             }
@@ -436,7 +436,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                  "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
             }
@@ -491,7 +491,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                  "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
             }
@@ -501,7 +501,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                  "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
             }
@@ -511,7 +511,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                  "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
             }
@@ -558,7 +558,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                  "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
             }
@@ -568,7 +568,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                  "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
             }
@@ -578,7 +578,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                  "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
             }
@@ -622,7 +622,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                  "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
             }
@@ -632,7 +632,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                  "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
             }
@@ -642,7 +642,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                  "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
             }
@@ -652,7 +652,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                  "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
             }
@@ -706,7 +706,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                  "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
             }
@@ -716,7 +716,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                  "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
             }
@@ -726,7 +726,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                  "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
             }
@@ -3695,6 +3695,26 @@
             "description": "Status of the request"
           },
           "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "ErrorEnvelope": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
             "type": "string",
             "description": "Error message describing what went wrong"
           }
