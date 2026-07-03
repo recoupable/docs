@@ -3009,10 +3009,6 @@
         "required": [
           "organizationId"
         ],
-        "oneOf": [
-          { "required": ["accountId"] },
-          { "required": ["email"] }
-        ],
         "properties": {
           "organizationId": {
             "type": "string",
