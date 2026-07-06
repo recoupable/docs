@@ -44,8 +44,7 @@
               "api-reference/artists/pin",
               "api-reference/artists/unpin",
               "api-reference/artists/delete",
-              "api-reference/artists/socials",
-              "api-reference/artist/profile"
+              "api-reference/artists/socials"
             ]
           },
           {
