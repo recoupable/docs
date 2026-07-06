@@ -1519,6 +1519,73 @@
         }
       }
     },
+    "/api/catalogs/measurements": {
+      "get": {
+        "description": "Get the latest play counts and a derived valuation band for a catalog. Measurements are captured by [Create measurement job](/api-reference/research/measurement-jobs) runs; the band is computed at read time from the latest capture per song.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "catalogId",
+            "in": "query",
+            "description": "The unique identifier of the catalog to read measurements for. The catalog must belong to the authenticated account.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Latest per-song measurements and the derived valuation band",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogMeasurementsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid catalogId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - the catalog does not exist or belongs to a different account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/songs/analyze/presets": {
       "get": {
         "description": "Lists all available music analysis presets. Each preset is a curated prompt with optimized generation parameters for a specific use case (e.g. catalog metadata enrichment, sync licensing analysis, audience profiling). Requires authentication via API key or Bearer token.",
@@ -2448,6 +2515,84 @@
           "error": {
             "type": "string",
             "description": "Error message (only present if status is 'error')"
+          }
+        }
+      },
+      "CatalogMeasurementsResponse": {
+        "type": "object",
+        "description": "Latest per-song play counts for a catalog plus the valuation band derived from them",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "measurements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogTrackMeasurement"
+            },
+            "description": "One entry per catalog song that has at least one measurement: the newest capture per ISRC. Songs never measured are omitted."
+          },
+          "valuation": {
+            "$ref": "#/components/schemas/ValuationBand"
+          },
+          "total_streams": {
+            "type": "integer",
+            "description": "Sum of the latest play counts across all measured songs"
+          },
+          "catalog_age_years": {
+            "type": "integer",
+            "description": "Catalog age in years used for the annual run-rate: from the earliest Spotify release date of the source run's albums, minimum 1; defaults to 5 when no release date is resolvable."
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message (only present if status is 'error')"
+          }
+        }
+      },
+      "CatalogTrackMeasurement": {
+        "type": "object",
+        "description": "The most recent Spotify play-count measurement for one song (ISRC) in the catalog",
+        "properties": {
+          "isrc": {
+            "type": "string",
+            "description": "ISRC of the song"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true,
+            "description": "Song title, when known"
+          },
+          "playcount": {
+            "type": "integer",
+            "description": "Latest Spotify platform-displayed play count"
+          },
+          "measured_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the play count was captured"
+          }
+        }
+      },
+      "ValuationBand": {
+        "type": "object",
+        "description": "Estimated catalog value in USD, derived at read time from the latest measurements - the same model as the recoupable.dev valuation card. Annual run-rate = lifetime streams / catalog age (lifetime-average proxy), converted to net label share (all-DSP gross-up 1.25/1.4/1.6, 15% distribution fee, 25% royalty share, $0.0035 per Spotify stream) and multiplied by a 10x/13x/16x master-catalog market multiple.",
+        "properties": {
+          "low": {
+            "type": "number",
+            "description": "Low estimate in USD (1.25x gross-up, 10x multiple)"
+          },
+          "mid": {
+            "type": "number",
+            "description": "Central estimate in USD (1.4x gross-up, 13x multiple)"
+          },
+          "high": {
+            "type": "number",
+            "description": "High estimate in USD (1.6x gross-up, 16x multiple)"
           }
         }
       },
