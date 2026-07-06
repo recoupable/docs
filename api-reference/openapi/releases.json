@@ -1482,7 +1482,7 @@
     },
     "/api/catalogs/measurements": {
       "get": {
-        "description": "Get the latest play counts and a derived valuation band for a catalog. Measurements are captured by [Create measurement job](/api-reference/research/measurement-jobs) runs; the band is computed at read time from the latest capture per song.",
+        "description": "Get the latest play counts and a derived valuation band for a catalog. Measurements are captured by [Create measurement job](/api-reference/research/measurement-jobs) runs; the band is computed at read time from the latest capture per song. Optionally scope the read to one artist with artist_account_id: measurements and the valuation band then cover only the catalog's songs linked to that artist account. The read is always exhaustive - every matching measured song is returned and counted, with no row cap, regardless of catalog size.",
         "security": [
           {
             "apiKeyAuth": []
@@ -1501,6 +1501,16 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          {
+            "name": "artist_account_id",
+            "in": "query",
+            "description": "Optional artist account to scope the read to. When present, measurements and the valuation band cover only the catalog's songs linked to this artist account (via song_artists); when absent, the whole catalog. A song linked to multiple artists counts for each of them. An artist with no linked measured songs in the catalog yields an empty measurements array. Malformed (non-uuid) values are rejected with 400.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "responses": {
@@ -1515,7 +1525,7 @@
             }
           },
           "400": {
-            "description": "Bad request - missing or invalid catalogId",
+            "description": "Bad request - missing or invalid catalogId, or malformed artist_account_id",
             "content": {
               "application/json": {
                 "schema": {
@@ -2456,14 +2466,20 @@
             "items": {
               "$ref": "#/components/schemas/CatalogTrackMeasurement"
             },
-            "description": "One entry per catalog song that has at least one measurement: the newest capture per ISRC. Songs never measured are omitted."
+            "description": "One entry per catalog song that has at least one measurement: the newest capture per ISRC. Songs never measured are omitted. Covers ALL matching songs with no row cap - a catalog (or artist scope) with 5,000 measured songs returns 5,000 entries."
           },
           "valuation": {
             "$ref": "#/components/schemas/ValuationBand"
           },
           "total_streams": {
             "type": "integer",
-            "description": "Sum of the latest play counts across all measured songs"
+            "description": "Sum of the latest play counts across all measured songs in scope (no row cap)"
+          },
+          "artist_account_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Echoes the applied artist_account_id filter: the uuid when the response was scoped to that artist, null when the response covers the whole catalog. Clients that request an artist scope should verify this echo before treating the numbers as artist-scoped."
           },
           "catalog_age_years": {
             "type": "integer",
