@@ -1480,7 +1480,7 @@
         }
       }
     },
-    "/api/catalogs/measurements": {
+    "/api/catalogs/{catalogId}/measurements": {
       "get": {
         "description": "Get the latest play counts and a derived valuation band for a catalog. Measurements are captured by [Create measurement job](/api-reference/research/measurement-jobs) runs; the band is computed at read time from the latest capture per song.",
         "security": [
@@ -1494,8 +1494,8 @@
         "parameters": [
           {
             "name": "catalogId",
-            "in": "query",
-            "description": "The unique identifier of the catalog to read measurements for. The catalog must belong to the authenticated account.",
+            "in": "path",
+            "description": "The unique identifier of the catalog to read measurements for. The catalog must belong to the authenticated account. Malformed (non-uuid) values are rejected with 400.",
             "required": true,
             "schema": {
               "type": "string",
@@ -1548,7 +1548,7 @@
             }
           },
           "400": {
-            "description": "Bad request - missing or invalid catalogId, malformed artist_account_id, or invalid page/limit",
+            "description": "Bad request - malformed catalogId or artist_account_id, or invalid page/limit",
             "content": {
               "application/json": {
                 "schema": {
