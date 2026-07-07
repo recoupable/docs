@@ -1482,7 +1482,7 @@
     },
     "/api/catalogs/measurements": {
       "get": {
-        "description": "Get the latest play counts and a derived valuation band for a catalog. Measurements are captured by [Create measurement job](/api-reference/research/measurement-jobs) runs; the band is computed at read time from the latest capture per song. Optionally scope the read to one artist with artist_account_id: measurements and the valuation band then cover only the catalog's songs linked to that artist account. The aggregates (measured_song_count, total_streams, valuation) are computed in a single SQL aggregate over the ENTIRE scope - every matching measured song, no row cap, regardless of catalog size. The measurements array itself is paginated with page/limit and returns one page of the latest-per-ISRC rows sorted by play count descending.",
+        "description": "Get the latest play counts and a derived valuation band for a catalog. Measurements are captured by [Create measurement job](/api-reference/research/measurement-jobs) runs; the band is computed at read time from the latest capture per song.",
         "security": [
           {
             "apiKeyAuth": []
