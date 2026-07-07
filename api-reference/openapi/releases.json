@@ -3574,6 +3574,11 @@
             "type": "string",
             "description": "The task type identifier (e.g. 'setup-sandbox', 'run-sandbox-command')"
           },
+          "title": {
+            "type": "string",
+            "nullable": true,
+            "description": "The originating scheduled task's title, when resolvable (from the scheduled task that triggered the run). Only present when listing runs (runId omitted); null when the run cannot be mapped to a scheduled task."
+          },
           "idempotencyKey": {
             "type": "string",
             "nullable": true,
