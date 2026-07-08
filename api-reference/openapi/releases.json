@@ -1259,7 +1259,7 @@
     },
     "/api/catalogs": {
       "post": {
-        "description": "Create a catalog.",
+        "description": "Create a catalog. When materializing from a valuation snapshot, the endpoint also attaches the snapshot's canonical artist to the caller's roster: the measured songs' existing song-artist links are resolved to the dominant artist account, which is added to the caller's roster if not already present. The attach also runs on idempotent re-claims of an already-materialized snapshot.",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
