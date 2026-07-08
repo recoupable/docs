@@ -1000,6 +1000,167 @@
         }
       }
     },
+    "/api/accounts/{id}/auto-recharge": {
+      "get": {
+        "description": "Retrieve whether automatic top-up is enabled for the account. `enabled: true` is the default for every account. `enabled: false` means the account has opted out: no off-session charge is ever attempted, and billed requests that exceed the remaining balance return HTTP 402 with a `checkoutUrl` for an explicit manual top-up instead. The setting lives on the account's Stripe customer record; this endpoint reads it live.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the account. Must be the authenticated account or another accessible via organization membership.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Auto top-up setting returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountAutoRechargeResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountAutoRechargeErrorResponse"
+                },
+                "example": {
+                  "error": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account not accessible to the authenticated account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountAutoRechargeErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountAutoRechargeErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "Enable or disable automatic top-up for the account. Disabling never removes the saved card: manual top-ups via checkout keep working, and re-enabling later requires no card re-entry. While disabled, billed requests that exceed the remaining balance return HTTP 402 with a `checkoutUrl` instead of silently charging the saved card.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the account. Must be the authenticated account or another accessible via organization membership.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountAutoRechargeUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Auto top-up setting returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountAutoRechargeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body - `enabled` must be a boolean",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountAutoRechargeErrorResponse"
+                },
+                "example": {
+                  "error": "enabled must be a boolean"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountAutoRechargeErrorResponse"
+                },
+                "example": {
+                  "error": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account not accessible to the authenticated account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountAutoRechargeErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountAutoRechargeErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/credits/sessions": {
       "post": {
         "description": "Top up credits on the authenticated account.\n\n**One credit equals one US cent (\\$0.01).** The customer is charged `credits` plus a Stripe processing fee (US card pricing: 2.9% + \\$0.30) \u2014 e.g. `credits: 10000` charges \\$103.30 total (\\$100.00 credits + \\$3.30 fee).\n\n**Two outcomes, distinguished by response shape:**\n\n- **Auto-charged** \u2014 if the account has a card on file (from a prior subscription or top-up), the card is charged immediately and the response is `{ paymentIntentId, creditsPurchased, totalCents }`. Credits land in the account's balance asynchronously via Stripe webhook (typically within seconds). No human interaction required.\n\n- **Checkout required** \u2014 if no card is on file, or the saved card requires 3-D Secure authentication, the response is `{ id, url }` with a hosted Stripe Checkout URL. Redirect to that URL; credits land on successful payment.\n\nClients should discriminate on the presence of `url` (Checkout) vs `paymentIntentId` (auto-charged). Cards entered through the Checkout fallback are saved for future top-ups, so a customer's second top-up typically auto-charges.",
@@ -4265,6 +4426,51 @@
         }
       },
       "AccountPaymentMethodErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message.",
+            "example": "Unauthorized"
+          }
+        }
+      },
+      "AccountAutoRechargeResponse": {
+        "type": "object",
+        "required": [
+          "account_id",
+          "enabled"
+        ],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier of the account this setting belongs to.",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Whether automatic top-up is enabled. `false` means the account has opted out and only explicit checkout top-ups can charge it.",
+            "example": true
+          }
+        }
+      },
+      "AccountAutoRechargeUpdateRequest": {
+        "type": "object",
+        "required": [
+          "enabled"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Set `false` to opt out of automatic top-up, `true` to opt back in."
+          }
+        }
+      },
+      "AccountAutoRechargeErrorResponse": {
         "type": "object",
         "required": [
           "error"
