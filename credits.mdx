@@ -150,7 +150,6 @@ curl -sS -X PATCH https://api.recoupable.dev/api/accounts/$ACCOUNT_ID/auto-recha
 
 While opted out, no off-session charge is ever attempted: billed requests that exceed the remaining balance return **HTTP 402** with a `checkoutUrl` (see below), and topping up stays an explicit action. Opting out does **not** remove the saved card — manual top-ups through checkout keep working, and re-enabling later (`{"enabled": true}`) requires no card re-entry. Read the current setting with `GET /api/accounts/$ACCOUNT_ID/auto-recharge`. Full schema at [Get Auto Top-Up Setting](/api-reference/accounts/auto-recharge-get) and [Update Auto Top-Up Setting](/api-reference/accounts/auto-recharge-update).
 
-The setting is stored on the account's Stripe customer record, so it survives card changes and is visible to support without a deploy.
 
 ### Tuning
 
