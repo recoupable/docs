@@ -396,6 +396,12 @@
         "tab": "Connectors",
         "groups": [
           {
+            "group": "Concepts",
+            "pages": [
+              "connectors/ownership"
+            ]
+          },
+          {
             "group": "Connectors",
             "pages": [
               "api-reference/connectors/list",
