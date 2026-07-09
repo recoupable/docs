@@ -1070,7 +1070,7 @@
         }
       },
       "patch": {
-        "description": "Enable or disable automatic top-up for the account. Disabling never removes the saved card: manual top-ups via checkout keep working, and re-enabling later requires no card re-entry. While disabled, billed requests that exceed the remaining balance return HTTP 402 with a `checkoutUrl` instead of silently charging the saved card.",
+        "description": "Enable or disable automatic top-up for the account.",
         "parameters": [
           {
             "name": "id",
