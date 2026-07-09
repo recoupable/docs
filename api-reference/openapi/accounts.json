@@ -1002,7 +1002,7 @@
     },
     "/api/accounts/{id}/auto-recharge": {
       "get": {
-        "description": "Retrieve whether automatic top-up is enabled for the account. `enabled: true` is the default for every account. `enabled: false` means the account has opted out: no off-session charge is ever attempted, and billed requests that exceed the remaining balance return HTTP 402 with a `checkoutUrl` for an explicit manual top-up instead. The setting lives on the account's Stripe customer record; this endpoint reads it live.",
+        "description": "Retrieve whether automatic top-up is enabled for the account.",
         "parameters": [
           {
             "name": "id",
