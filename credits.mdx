@@ -115,7 +115,7 @@ Response shape:
 
 ## Automatic top-up
 
-Every billed API request runs a credit gate before it executes. If `remaining_credits` doesn't cover the request's cost **and** the account has a saved Stripe card **and** the account hasn't opted out (see [Opting out](#opting-out) below), Recoup silently charges **$5 (500 credits)** off-session and lets the request proceed. Most accounts with a working card never see an "insufficient credits" failure — the top-up is invisible.
+Every billed API request runs a credit gate before it executes. If `remaining_credits` doesn't cover the request's cost **and** the account has a saved card **and** the account hasn't opted out (see [Opting out](#opting-out) below), Recoup silently charges **$5 (500 credits)** off-session and lets the request proceed. Most accounts with a working card never see an "insufficient credits" failure — the top-up is invisible.
 
 The decision tree:
 
