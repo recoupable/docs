@@ -3616,6 +3616,12 @@
             "type": "string",
             "description": "Cron expression defining when the task should execute (e.g., '0 10 * * *')"
           },
+          "timezone": {
+            "type": "string",
+            "nullable": true,
+            "description": "IANA time zone the task's cron is interpreted in, read from the Trigger.dev schedule (the source of truth). Null when the task has no schedule or the timezone can't be read.",
+            "example": "America/New_York"
+          },
           "account_id": {
             "type": "string",
             "format": "uuid",
