@@ -920,7 +920,9 @@
             }
           }
         }
-      },
+      }
+    },
+    "/api/artists/{id}/socials/{socialId}": {
       "delete": {
         "description": "Remove a social profile link from an artist. Use this to correct a wrongly auto-matched social. This unlinks the social from the artist account; it does not delete the underlying social record, which may still be linked to other accounts.",
         "parameters": [
