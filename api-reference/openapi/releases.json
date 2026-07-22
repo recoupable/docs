@@ -1329,6 +1329,93 @@
         }
       }
     },
+    "/api/valuation": {
+      "post": {
+        "summary": "Run valuation",
+        "description": "Generate a catalog from a Spotify artist in one call. Resolves the artist's releases, captures current Spotify play counts (spending the account's credits), materializes an account-owned catalog from the resulting snapshot (idempotent - see [Create catalog](/api-reference/songs/catalogs-create)), and returns the catalog with its estimated value band. The owning account is taken from the credentials, never the body. Synchronous: the request waits for the capture to land (typically under two minutes).",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "The Spotify artist to value.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunValuationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Catalog created (or idempotently re-fetched) with its estimated value band.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunValuationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid spotify_artist_id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient credits to measure the catalog",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - no releases found for the Spotify artist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "The measurement did not complete within the wait window - retry shortly",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/catalogs/songs": {
       "get": {
         "description": "Retrieve songs within a specific catalog with pagination support. This endpoint joins catalog_songs with songs, song_artists, and accounts to provide comprehensive song information for a given catalog.",
@@ -2260,7 +2347,47 @@
           }
         }
       },
-      "CreateCatalogRequest": {
+      "RunValuationRequest": {
+      "type": "object",
+      "required": [
+        "spotify_artist_id"
+      ],
+      "properties": {
+        "spotify_artist_id": {
+          "type": "string",
+          "description": "The Spotify artist id to value (e.g. from a Spotify artist search). The endpoint resolves this artist's releases, measures them, and builds the catalog."
+        }
+      }
+    },
+    "RunValuationResponse": {
+      "type": "object",
+      "description": "Result of a valuation run: the materialized catalog and its estimated value band.",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "success",
+            "error"
+          ],
+          "description": "Status of the request"
+        },
+        "catalog": {
+          "$ref": "#/components/schemas/Catalog"
+        },
+        "band": {
+          "$ref": "#/components/schemas/ValuationBand"
+        },
+        "songs_measured": {
+          "type": "integer",
+          "description": "Number of tracks with a captured play count that were materialized into the catalog."
+        },
+        "error": {
+          "type": "string",
+          "description": "Error message (only present if status is 'error')"
+        }
+      }
+    },
+    "CreateCatalogRequest": {
         "type": "object",
         "description": "Request body for creating a catalog. At least one of name or snapshot must be supplied. The owning account is taken from the request credentials, never from this body.",
         "properties": {
