@@ -920,6 +920,76 @@
             }
           }
         }
+      },
+      "delete": {
+        "description": "Remove a social profile link from an artist. Use this to correct a wrongly auto-matched social. This unlinks the social from the artist account; it does not delete the underlying social record, which may still be linked to other accounts.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier of the artist account the social is linked to",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "socialId",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the social profile to unlink from the artist",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Social profile unlinked successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteArtistSocialResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - id or socialId is not a valid UUID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteArtistErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication"
+          },
+          "403": {
+            "description": "Forbidden - the authenticated account cannot access this artist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteArtistErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Artist not found or the social is not linked to this artist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteArtistErrorResponse"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/artist/socials/scrape": {
@@ -2808,6 +2878,24 @@
             "type": "string",
             "format": "uuid",
             "description": "UUID of the artist account that was deleted or unlinked"
+          }
+        }
+      },
+      "DeleteArtistSocialResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "socialId"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the social profile was unlinked successfully"
+          },
+          "socialId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the social profile that was unlinked from the artist"
           }
         }
       },
