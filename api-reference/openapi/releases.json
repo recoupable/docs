@@ -1332,7 +1332,7 @@
     "/api/valuation": {
       "post": {
         "summary": "Run valuation",
-        "description": "Generate a catalog from a Spotify artist in one call. Resolves the artist's releases, captures current Spotify play counts (spending the account's credits), materializes an account-owned catalog from the resulting snapshot (idempotent - see [Create catalog](/api-reference/songs/catalogs-create)), and returns the catalog with its estimated value band. The owning account is taken from the credentials, never the body. Synchronous: the request waits for the capture to land (typically under two minutes).",
+        "description": "Generate a catalog from a Spotify artist in one call. Resolves the artist's releases, captures current Spotify play counts (spending the account's credits), materializes an account-owned catalog from the resulting snapshot (idempotent - see [Create catalog](/api-reference/songs/catalogs-create)), and returns the catalog with its estimated value band. The owning account is taken from the credentials, never the body. The searched artist is also linked to the caller's roster (so a funnel signup lands with a populated `GET /api/artists` it can confirm); when the catalog's songs already resolve a canonical artist that one is used, otherwise the searched Spotify artist is linked directly. Synchronous: the request waits for the capture to land (typically under two minutes).",
         "security": [
           {
             "apiKeyAuth": []
