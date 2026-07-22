@@ -3060,6 +3060,7 @@
           },
           "timezone": {
             "type": "string",
+            "default": "UTC",
             "description": "Optional IANA time zone (e.g. America/New_York) the cron schedule is interpreted in, DST-aware. Defaults to UTC. Applied to the Trigger.dev schedule (the source of truth); not stored separately.",
             "example": "America/New_York"
           },
