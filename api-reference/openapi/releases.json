@@ -3058,6 +3058,12 @@
             "description": "Cron expression defining when the task runs (e.g., '0 9 * * 4' for Thursdays at 9 AM)",
             "example": "0 9 * * 4"
           },
+          "timezone": {
+            "type": "string",
+            "default": "UTC",
+            "description": "Optional IANA time zone (e.g. America/New_York) the cron schedule is interpreted in, DST-aware. Defaults to UTC. Applied to the Trigger.dev schedule (the source of truth); not stored separately.",
+            "example": "America/New_York"
+          },
           "account_id": {
             "type": "string",
             "format": "uuid",
@@ -4113,6 +4119,11 @@
             "minLength": 1,
             "description": "New cron expression. If sent, must be non-empty and valid for your environment.",
             "example": "0 10 * * 4"
+          },
+          "timezone": {
+            "type": "string",
+            "description": "Optional IANA time zone the cron is interpreted in (DST-aware). If sent, updates the Trigger.dev schedule; a timezone-only change re-syncs the schedule. A cron-only update preserves the existing time zone.",
+            "example": "America/New_York"
           },
           "account_id": {
             "type": "string",
