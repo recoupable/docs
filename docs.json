@@ -161,6 +161,7 @@
             "pages": [
               "api-reference/songs/catalogs",
               "api-reference/songs/catalogs-create",
+              "api-reference/songs/valuation-run",
               "api-reference/songs/catalog-measurements",
               "api-reference/songs/catalog-songs",
               "api-reference/songs/catalog-songs-add",
