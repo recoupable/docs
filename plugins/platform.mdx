@@ -1,0 +1,139 @@
+---
+title: "Platform Plugin"
+description: "Account setup, API keys, artist creation, workspace management, and sandbox initialization. The foundation every other Recoup plugin builds on."
+---
+
+## Overview
+
+The Platform Plugin is your starting point. It handles everything an agent needs to begin working with Recoup: account creation, API key management, artist onboarding, and workspace conventions. Install this before any other plugin.
+
+```bash
+claude plugin install https://github.com/recoupable/recoup-platform-plugin
+```
+
+<Note>
+After installing, say **"Set up Recoup"** to run the `getting-started` skill. It walks through email verification, API key issuance, and persists credentials so every future session can reach the Recoup API automatically.
+</Note>
+
+## Skills
+
+### getting-started
+
+**First-run onboarding.** Run once per account to set up your Recoup credentials.
+
+The skill handles:
+1. Email + PIN verification (or instant `agent+` signup)
+2. API key issuance and storage
+3. Organization lookup
+4. Memory block generation for Claude's Global instructions
+
+After running, your agent has `RECOUP_API_KEY` available in every session.
+
+> **Trigger:** "Set up Recoup", "Get started with Recoup", "I need a Recoup API key"
+
+---
+
+### recoup-api
+
+**API reference and connector actions.** The agent's handbook for calling any Recoup endpoint.
+
+Covers:
+- Artist endpoints (list, create, update, socials)
+- Research endpoints (search, metrics, audience, playlists, tracks)
+- Content endpoints (create, generate, transcribe)
+- Connector actions (Google Docs, Drive, Sheets, Gmail, TikTok, Instagram)
+- OAuth and authentication handling
+
+> **Trigger:** "Call the Recoup API", "Connect Google Drive", "List my connectors"
+
+---
+
+### create-artist
+
+**End-to-end artist creation.** An 8-step chain that goes from an artist name to a fully-populated profile:
+
+1. Create artist record via API
+2. Spotify match and verification
+3. Profile enrichment (bio, genres, images)
+4. Chartmetric research (streaming history, audience data)
+5. Catalog pull (discography, top tracks)
+6. Social discovery (Instagram, TikTok, YouTube, X)
+7. PATCH social accounts to the artist record
+8. Synthesize a knowledge base document
+
+The workflow is driven from a checklist file, so it's resumable if interrupted.
+
+> **Trigger:** "Create an artist for [name]", "Add [artist] to my account", "Set up [artist]"
+
+---
+
+### artist-workspace
+
+**Workspace conventions.** How to create, navigate, and organize artist directories in a sandbox or local filesystem.
+
+Scaffolds the canonical `RECOUP.md` checklist for each artist and manages:
+- Context files (artist profile, audience data)
+- Songs and releases
+- Research outputs
+- Content assets
+
+> **Trigger:** "Set up workspace for [artist]", "How should I organize artist files?"
+
+---
+
+### setup-sandbox
+
+**Sandbox initialization.** Provisions a fresh Recoup sandbox environment:
+- Fetches organizations and their artist rosters
+- Scaffolds the directory structure
+- Configures API credentials
+
+Run once when a new sandbox is provisioned.
+
+> **Trigger:** "Set up my sandbox", "Initialize workspace"
+
+## Install
+
+<CodeGroup>
+
+```bash Claude Code
+claude plugin install https://github.com/recoupable/recoup-platform-plugin
+```
+
+```text Claude Cowork
+Add custom plugin → https://github.com/recoupable/recoup-platform-plugin
+```
+
+```bash Codex
+codex plugin install https://github.com/recoupable/recoup-platform-plugin
+```
+
+```text Cursor
+Settings → Plugins → Add custom plugin → paste the GitHub URL
+```
+
+```bash Via Marketplace
+/plugin install recoup-platform-plugin@recoup-marketplace
+```
+
+</CodeGroup>
+
+## Required environment
+
+| Variable | How to get it |
+|---|---|
+| `RECOUP_API_KEY` | Run the `getting-started` skill, or call [`POST /api/agents/signup`](/api-reference/agents/signup) |
+
+## Related plugins
+
+After setting up the platform, add domain-specific capabilities:
+
+- [Research Plugin](/plugins/research) — Artist analytics, audience insights, competitive analysis
+- [Content Plugin](/plugins/content) — Video and image generation
+- [Catalogs Plugin](/plugins/catalogs) — Catalog acquisition and deal analysis
+
+## Source
+
+<Card title="GitHub" icon="github" href="https://github.com/recoupable/recoup-platform-plugin">
+  View source, report issues, or contribute.
+</Card>

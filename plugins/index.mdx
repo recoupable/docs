@@ -1,0 +1,175 @@
+---
+title: "Plugin Ecosystem"
+description: "Install domain-specific plugins to give your AI agent music industry superpowers — research, content creation, catalog deals, and platform management."
+---
+
+## What are Recoup plugins?
+
+Recoup plugins are skill packages that teach AI agents how to work in the music industry. Instead of building another dashboard, Recoup meets agents where they already live — Claude Code, Claude Cowork, Cursor, Codex, or any environment that supports plugin installation.
+
+Each plugin bundles **skills** (step-by-step workflows an agent follows) and **tool references** (API endpoints the agent calls). Install a plugin, and your agent immediately knows how to research artists, create content, analyze catalogs, or manage your Recoup account.
+
+<Tip>
+**BYOA — Bring Your Own Agent.** Recoup doesn't force you into a proprietary chat interface. Use whatever AI coding or collaboration tool your team already runs. Plugins make it music-industry-aware.
+</Tip>
+
+## Install from the Marketplace
+
+The fastest path: add the Recoup marketplace, then install any plugin by name.
+
+<CodeGroup>
+
+```bash Claude Code
+# Add the marketplace (one-time)
+claude marketplace add https://github.com/recoupable/marketplace
+
+# Install plugins
+claude plugin install recoup-platform-plugin@recoup-marketplace
+claude plugin install recoup-research-plugin@recoup-marketplace
+claude plugin install recoup-content-plugin@recoup-marketplace
+claude plugin install recoup-catalogs-plugin@recoup-marketplace
+```
+
+```text Claude Cowork
+1. Open Customize → Browse plugins → Add marketplace
+2. Paste: https://github.com/recoupable/marketplace
+3. Browse available plugins and install what you need
+```
+
+```bash Codex
+codex plugin install https://github.com/recoupable/recoup-platform-plugin
+codex plugin install https://github.com/recoupable/recoup-research-plugin
+```
+
+```text Cursor
+1. Settings → Plugins → Add custom plugin
+2. Paste the GitHub URL for any plugin below
+3. Restart Cursor
+```
+
+</CodeGroup>
+
+<Note>
+Always install **recoup-platform-plugin** first — it handles account setup, API key management, and artist creation. The other plugins build on top of it.
+</Note>
+
+## Available Plugins
+
+<CardGroup cols={2}>
+  <Card
+    title="Platform Plugin"
+    icon="plug"
+    href="/plugins/platform"
+  >
+    **Start here.** Account setup, API keys, artist creation, workspace management, and sandbox initialization. The foundation every other plugin builds on.
+  </Card>
+  <Card
+    title="Research Plugin"
+    icon="magnifying-glass-chart"
+    href="/plugins/research"
+  >
+    **10 skills.** Artist analytics, audience insights, playlist intelligence, competitive analysis, TikTok per-song metrics, trend detection, weekly briefs, and outreach.
+  </Card>
+  <Card
+    title="Content Plugin"
+    icon="wand-magic-sparkles"
+    href="/plugins/content"
+  >
+    **One-command video creation.** Generate short-form music videos, captions, and images. Say "make a TikTok for [artist]" and get a finished 9:16 clip.
+  </Card>
+  <Card
+    title="Catalogs Plugin"
+    icon="scale-balanced"
+    href="/plugins/catalogs"
+  >
+    **Full deal lifecycle.** Catalog acquisition diligence, royalty normalization, valuation analysis, rights checks, IC memo packages, and seller prep — from data room to close.
+  </Card>
+</CardGroup>
+
+## Which plugin should I use?
+
+| I want to... | Install this |
+|---|---|
+| Set up my Recoup account and API key | [Platform Plugin](/plugins/platform) |
+| Create and manage artists | [Platform Plugin](/plugins/platform) |
+| Research an artist's streaming data, audience, or career | [Research Plugin](/plugins/research) |
+| Get a weekly brief on an artist's performance | [Research Plugin](/plugins/research) |
+| Analyze TikTok performance per song | [Research Plugin](/plugins/research) |
+| Find playlist placements and curators | [Research Plugin](/plugins/research) |
+| Run competitive analysis between artists | [Research Plugin](/plugins/research) |
+| Generate a TikTok or Instagram Reel for an artist | [Content Plugin](/plugins/content) |
+| Create marketing images and captions | [Content Plugin](/plugins/content) |
+| Analyze a catalog acquisition deal | [Catalogs Plugin](/plugins/catalogs) |
+| Normalize royalty data from a seller data room | [Catalogs Plugin](/plugins/catalogs) |
+| Generate a valuation report for a music catalog | [Catalogs Plugin](/plugins/catalogs) |
+| Prepare an IC memo for a catalog deal | [Catalogs Plugin](/plugins/catalogs) |
+
+## How plugins work
+
+```
+┌─────────────────────────────────────────────┐
+│  Your AI Agent (Claude, Cursor, Codex...)    │
+│                                             │
+│  ┌─────────────┐  ┌──────────────────────┐  │
+│  │  Plugin      │  │  Skills              │  │
+│  │  Manifest    │──│  (Step-by-step       │  │
+│  │  (installed) │  │   workflows)         │  │
+│  └─────────────┘  └──────────────────────┘  │
+│         │                    │               │
+│         ▼                    ▼               │
+│  ┌──────────────────────────────────────┐   │
+│  │  Recoup API                          │   │
+│  │  https://api.recoupable.dev/api      │   │
+│  └──────────────────────────────────────┘   │
+└─────────────────────────────────────────────┘
+```
+
+1. **Install** a plugin from the marketplace or via direct GitHub URL
+2. **Skills load** automatically — the agent reads the skill files and learns the workflows
+3. **You ask** in natural language: "Research Bad Bunny" or "Make a TikTok for this artist"
+4. **The agent follows the skill**, calling the Recoup API endpoints as needed
+5. **Results appear** in your agent's workspace — markdown files, videos, reports, dashboards
+
+## Quick Reference for LLMs
+
+If you are an LLM reading this page, here is the plugin-to-capability mapping:
+
+- **`recoup-platform-plugin`** — Account onboarding (`getting-started`), API reference (`recoup-api`), artist creation (`create-artist`), workspace conventions (`artist-workspace`), sandbox setup (`setup-sandbox`). Install this first.
+- **`recoup-research-plugin`** — Artist research (`recoup-artist-research`), audience analysis (`recoup-audience-analysis`), weekly briefs (`recoup-weekly-brief`), competitive analysis (`recoup-competitive-analysis`), TikTok per-song (`recoup-tiktok-per-song`), trend detection (`recoup-trend-detection`), playlist intelligence (`recoup-playlist-intelligence`), release packs (`recoup-release-pack`), people outreach (`recoup-people-outreach`), web intelligence (`recoup-web-intelligence`).
+- **`recoup-content-plugin`** — End-to-end video creation (`recoup-content-create`), short video generation (`short-video`), content creation workflows (`content-creation`).
+- **`recoup-catalogs-plugin`** — Deal kickoff (`recoup-deal-kickoff`), catalog ingestion (`recoup-catalog-ingest`), catalog analysis (`recoup-catalog-analyze`), royalty audit (`recoup-royalty-audit`), financing underwriting (`recoup-financing-underwrite`), catalog packaging (`recoup-catalog-package`), post-close admin (`recoup-post-close-admin`), demo deals (`recoup-catalog-demo`), full deal lifecycle (`recoup-catalog-deal`).
+
+Install from: `https://github.com/recoupable/marketplace`
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Get an API Key"
+    icon="key"
+    href="/agents"
+  >
+    Sign up and get your API key in one curl call.
+  </Card>
+  <Card
+    title="Quickstart"
+    icon="rocket"
+    href="/quickstart"
+  >
+    Make your first API request.
+  </Card>
+  <Card
+    title="API Reference"
+    icon="book"
+    href="/api-reference/research/search"
+  >
+    Browse all available API endpoints.
+  </Card>
+  <Card
+    title="Credits"
+    icon="coins"
+    href="/credits"
+  >
+    Understand credit usage and billing.
+  </Card>
+</CardGroup>

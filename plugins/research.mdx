@@ -1,0 +1,182 @@
+---
+title: "Research Plugin"
+description: "10 skills for artist analytics, audience insights, playlist intelligence, competitive analysis, TikTok per-song metrics, trend detection, and weekly briefs."
+---
+
+## Overview
+
+The Research Plugin is the most capability-rich plugin in the Recoup ecosystem. It gives agents access to 10 specialized skills covering every aspect of music industry intelligence — from deep artist profiles to competitive landscape analysis to automated weekly performance briefs.
+
+```bash
+claude plugin install https://github.com/recoupable/recoup-research-plugin
+```
+
+<Tip>
+**Most common first command:** "Research [artist name]" — the agent picks up the `recoup-artist-research` skill and generates a comprehensive profile with streaming data, audience demographics, social presence, playlist placements, and career trajectory.
+</Tip>
+
+## Skills
+
+### recoup-artist-research
+
+**Deep artist profile.** Comprehensive research combining streaming metrics, audience demographics, social presence, career history, and competitive positioning into a single structured report.
+
+Pulls from multiple API endpoints in parallel: profile, metrics (Spotify + TikTok), audience demographics, career history, milestones, insights, similar artists, and web presence.
+
+> **Trigger:** "Research [artist]", "Tell me about [artist]", "Artist profile for [artist]"
+
+---
+
+### recoup-weekly-brief
+
+**Recurring performance brief.** Generates a dated, delta-focused weekly update for an artist. Reads the previous brief, fetches current data, and highlights what changed — listener growth, new playlist adds, TikTok momentum shifts, rank changes.
+
+Outputs a markdown file at `artists/{slug}/research/brief-YYYY-MM-DD.md`. Re-running on the same day is a no-op (idempotent). Designed to be scheduled as a recurring task.
+
+> **Trigger:** "Weekly brief for [artist]", "What's new with [artist]", "How is [artist] doing this week"
+
+---
+
+### recoup-audience-analysis
+
+**Audience demographics and geography.** Breaks down an artist's listener base by age, gender, geography (country and city level), and platform. Identifies where fans are concentrated and where growth opportunities exist.
+
+> **Trigger:** "Audience analysis for [artist]", "Who listens to [artist]", "Where are [artist]'s fans"
+
+---
+
+### recoup-competitive-analysis
+
+**Head-to-head artist comparison.** Compares two or more artists across streaming metrics, audience overlap, playlist positioning, social following, and content strategy. Identifies competitive advantages and gaps.
+
+> **Trigger:** "Compare [artist A] vs [artist B]", "Competitive analysis for [artist]", "How does [artist] stack up against [competitor]"
+
+---
+
+### recoup-tiktok-per-song
+
+**TikTok performance by track.** Analyzes how individual songs perform on TikTok — video creates, views, trending status, and sound adoption. Critical for understanding which catalog tracks have viral potential.
+
+> **Trigger:** "TikTok analytics for [artist]'s songs", "Which songs are trending on TikTok", "TikTok performance for [song]"
+
+---
+
+### recoup-trend-detection
+
+**Trending signals.** Monitors emerging trends across platforms — rising artists, viral sounds, genre movements, and cultural moments. Helps teams spot opportunities before they peak.
+
+> **Trigger:** "What's trending in [genre]", "Emerging artists in [market]", "Trend report"
+
+---
+
+### recoup-playlist-intelligence
+
+**Playlist discovery and analysis.** Finds playlist placements for an artist, identifies curator contacts, analyzes playlist demographics, and surfaces new placement opportunities.
+
+> **Trigger:** "Playlist analysis for [artist]", "Find playlists for [artist]", "Who curates [playlist]"
+
+---
+
+### recoup-release-pack
+
+**Release preparation package.** Assembles everything needed for a release campaign: streaming benchmarks, audience targeting data, playlist pitch materials, social content angles, and competitive context.
+
+> **Trigger:** "Release pack for [artist]'s new single", "Prepare for [artist]'s release", "Release strategy for [song]"
+
+---
+
+### recoup-people-outreach
+
+**Industry contact discovery.** Finds relevant people in the music industry — A&R, playlist curators, managers, publicists — and generates personalized outreach drafts based on the artist's profile and goals.
+
+> **Trigger:** "Find contacts for [artist]", "Who should I pitch [artist] to", "Outreach list for [genre]"
+
+---
+
+### recoup-web-intelligence
+
+**Web presence analysis.** Scans an artist's web footprint — press coverage, blog mentions, forum discussions, Wikipedia presence — and synthesizes findings into an intelligence brief.
+
+> **Trigger:** "Web intelligence for [artist]", "What's being said about [artist] online", "Press coverage for [artist]"
+
+## Example workflow
+
+A typical research session might flow like this:
+
+```text
+You:    Research Bad Bunny
+Agent:  [runs recoup-artist-research — generates comprehensive profile]
+
+You:    Compare him to Peso Pluma
+Agent:  [runs recoup-competitive-analysis — head-to-head comparison]
+
+You:    Which of his songs are trending on TikTok?
+Agent:  [runs recoup-tiktok-per-song — per-track TikTok analytics]
+
+You:    Set up a weekly brief
+Agent:  [runs recoup-weekly-brief — creates first brief, can be scheduled]
+```
+
+## API endpoints used
+
+The Research Plugin calls these API endpoint groups. See the [Research API reference](/api-reference/research/search) for full documentation.
+
+| Endpoint group | What it provides |
+|---|---|
+| `/research?type=artists` | Artist search and discovery |
+| `/research/lookup` | Direct artist lookup by platform ID |
+| `/research/profile` | Full artist profile |
+| `/research/metrics` | Streaming and social metrics (Spotify, TikTok) |
+| `/research/audience` | Audience demographics |
+| `/research/insights` | AI-generated insights |
+| `/research/career` | Career timeline and history |
+| `/research/milestones` | Key career milestones |
+| `/research/similar` | Similar/related artists |
+| `/research/playlists` | Playlist placements |
+| `/research/track-playlists` | Per-track playlist data |
+| `/research/albums` | Discography |
+| `/research/tracks` | Track catalog |
+| `/research/track-stats` | Per-track streaming stats |
+| `/research/web` | Web presence |
+| `/research/deep` | Deep web research |
+| `/research/people` | Industry contacts |
+| `/research/extract` | Entity extraction |
+| `/research/enrich` | Data enrichment |
+
+## Install
+
+<CodeGroup>
+
+```bash Claude Code
+claude plugin install https://github.com/recoupable/recoup-research-plugin
+```
+
+```text Claude Cowork
+Add custom plugin → https://github.com/recoupable/recoup-research-plugin
+```
+
+```bash Codex
+codex plugin install https://github.com/recoupable/recoup-research-plugin
+```
+
+```text Cursor
+Settings → Plugins → Add custom plugin → paste the GitHub URL
+```
+
+```bash Via Marketplace
+/plugin install recoup-research-plugin@recoup-marketplace
+```
+
+</CodeGroup>
+
+## Required environment
+
+| Variable | How to get it |
+|---|---|
+| `RECOUP_API_KEY` | Run `getting-started` in [Platform Plugin](/plugins/platform), or call [`POST /api/agents/signup`](/api-reference/agents/signup) |
+
+## Source
+
+<Card title="GitHub" icon="github" href="https://github.com/recoupable/recoup-research-plugin">
+  View source, report issues, or contribute.
+</Card>

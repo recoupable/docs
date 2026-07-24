@@ -27,6 +27,26 @@
         ]
       },
       {
+        "tab": "Plugins",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "plugins/index"
+            ]
+          },
+          {
+            "group": "Available Plugins",
+            "pages": [
+              "plugins/platform",
+              "plugins/research",
+              "plugins/content",
+              "plugins/catalogs"
+            ]
+          }
+        ]
+      },
+      {
         "tab": "Artists",
         "groups": [
           {
