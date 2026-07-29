@@ -792,7 +792,7 @@
     },
     "/api/subscriptions/card-on-file": {
       "post": {
-        "description": "Create a $0 card-on-file checkout session for the authenticated account. The session runs in Stripe `setup` mode: it saves a payment method against the account's Stripe customer without charging anything today and without starting a subscription. Use it so an account that later runs out of credits can be auto-recharged instead of dead-ending. The account is always resolved from the credentials; `accountId` is never accepted from the caller. Returns a hosted checkout URL that the client should redirect to.",
+        "description": "Create a $0 card-on-file checkout session for the authenticated account. Stripe `setup` mode saves a payment method without charging anything or starting a subscription, so an account that later runs out of credits can be auto-recharged instead of dead-ending. Returns a hosted checkout URL that the client should redirect to.",
         "security": [
           {
             "apiKeyAuth": []
@@ -829,6 +829,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
+                },
+                "example": {
+                  "error": "successUrl must be a valid URL"
                 }
               }
             }
@@ -839,6 +842,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
+                },
+                "example": {
+                  "error": "Exactly one of x-api-key or Authorization must be provided"
                 }
               }
             }
@@ -849,6 +855,9 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
+                },
+                "example": {
+                  "error": "Internal server error"
                 }
               }
             }
