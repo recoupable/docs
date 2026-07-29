@@ -790,6 +790,72 @@
         }
       }
     },
+    "/api/subscriptions/card-on-file": {
+      "post": {
+        "description": "Create a $0 card-on-file checkout session for the authenticated account. The session runs in Stripe `setup` mode: it saves a payment method against the account's Stripe customer without charging anything today and without starting a subscription. Use it so an account that later runs out of credits can be auto-recharged instead of dead-ending. The account is always resolved from the credentials; `accountId` is never accepted from the caller. Returns a hosted checkout URL that the client should redirect to.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Card-on-file session parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCardOnFileSessionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Card-on-file session created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateSubscriptionSessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/accounts/{id}/subscription": {
       "get": {
         "description": "Retrieve the subscription for an account, directly or via an organization.",
@@ -4218,6 +4284,20 @@
             "format": "uuid",
             "description": "UUID of the account to create the session for. Only applicable when the authenticated account has admin access to multiple accounts. If not provided, creates a session for the API key's own account.",
             "example": "123e4567-e89b-12d3-a456-426614174000"
+          }
+        }
+      },
+      "CreateCardOnFileSessionRequest": {
+        "type": "object",
+        "required": [
+          "successUrl"
+        ],
+        "properties": {
+          "successUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "The URL Stripe redirects to after the card is saved.",
+            "example": "https://chat.recoupable.dev?card=saved"
           }
         }
       },
