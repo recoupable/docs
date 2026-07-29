@@ -1414,7 +1414,7 @@
     "/api/valuation": {
       "post": {
         "summary": "Run valuation",
-        "description": "Generate a catalog from a Spotify artist in one call. Resolves the artist's releases, captures current Spotify play counts (spending the account's credits), materializes an account-owned catalog from the resulting snapshot (idempotent - see [Create catalog](/api-reference/songs/catalogs-create)), and returns the catalog with its estimated value band. The owning account is taken from the credentials, never the body. The searched artist is also linked to the caller's roster (so a funnel signup lands with a populated `GET /api/artists` it can confirm); when the catalog's songs already resolve a canonical artist that one is used, otherwise the searched Spotify artist is linked directly. Synchronous: the request waits for the capture to land (typically under two minutes).",
+        "description": "Generate a catalog from a Spotify artist in one call. Resolves the artist's releases, captures current Spotify play counts (spending the account's credits), materializes an account-owned catalog from the resulting snapshot (idempotent - see [Create catalog](/api-reference/songs/catalogs-create)), and returns the catalog with its estimated value band. The owning account is taken from the credentials, never the body. The searched artist is also linked to the caller's roster (so a funnel signup lands with a populated `GET /api/artists` it can confirm); when the catalog's songs already resolve a canonical artist that one is used, otherwise the searched Spotify artist is linked directly. Synchronous: the request waits for the capture to land (typically under two minutes). Each run also persists a row in the catalog's valuation history, readable via [Get Catalog Valuations](/api-reference/songs/catalog-valuations).",
         "security": [
           {
             "apiKeyAuth": []
@@ -1642,6 +1642,85 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/catalogs/{catalogId}/valuations": {
+      "get": {
+        "description": "Get the persisted valuation history for a catalog, latest first. A row is written each time a valuation band is computed for the whole catalog (valuation runs and measurement reads persist at most one row per catalog per day). Use limit=1 for the current value. History is what makes week-over-week deltas possible.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "catalogId",
+            "in": "path",
+            "description": "The unique identifier of the catalog. The catalog must belong to the authenticated account. Malformed (non-uuid) values are rejected with 400.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of valuation rows to return, latest first (default 30, max 100). limit=1 returns the current value. Invalid values are rejected with 400.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 30
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The catalog's persisted valuation rows, latest first. Empty when no valuation has been persisted yet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogValuationsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed catalogId or limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Catalog not found or not owned by the authenticated account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -2818,6 +2897,61 @@
           "message": {
             "type": "string",
             "description": "Error message (for invalid JSON or other errors)"
+          }
+        }
+      },
+      "CatalogValuationsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "valuations"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "valuations": {
+            "type": "array",
+            "description": "Persisted valuation rows, latest first.",
+            "items": {
+              "type": "object",
+              "required": [
+                "low",
+                "mid",
+                "high",
+                "measured_song_count",
+                "total_streams",
+                "measured_at"
+              ],
+              "properties": {
+                "low": {
+                  "type": "number",
+                  "description": "Low end of the estimated catalog value band, USD."
+                },
+                "mid": {
+                  "type": "number",
+                  "description": "Midpoint of the estimated catalog value band, USD."
+                },
+                "high": {
+                  "type": "number",
+                  "description": "High end of the estimated catalog value band, USD."
+                },
+                "measured_song_count": {
+                  "type": "integer",
+                  "description": "Songs measured in the capture this valuation was computed from."
+                },
+                "total_streams": {
+                  "type": "integer",
+                  "description": "Whole-catalog lifetime stream total at measurement time."
+                },
+                "measured_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "When the underlying measurement was taken."
+                }
+              }
+            }
           }
         }
       },
