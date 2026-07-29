@@ -554,7 +554,7 @@
         }
       },
       "post": {
-        "description": "Create a new artist account. The artist can optionally be linked to an organization.",
+        "description": "Create a new artist account, or — when spotify_artist_id is provided and a canonical artist already exists for it — link that existing artist to the account instead of creating a duplicate. The artist can optionally be linked to an organization.",
         "requestBody": {
           "description": "Artist creation parameters",
           "required": true,
@@ -567,6 +567,16 @@
           }
         },
         "responses": {
+          "200": {
+            "description": "Existing canonical artist for the given spotify_artist_id linked to the account (no new artist created)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateArtistResponse"
+                }
+              }
+            }
+          },
           "201": {
             "description": "Artist created successfully",
             "content": {
@@ -2821,6 +2831,10 @@
             "type": "string",
             "minLength": 1,
             "description": "The name of the artist to create"
+          },
+          "spotify_artist_id": {
+            "type": "string",
+            "description": "Optional Spotify artist id. When provided, the endpoint resolves-or-creates the canonical artist for that id: if an artist already carries it, that artist is linked to the account and returned (200) instead of creating a duplicate; otherwise the artist is created with its Spotify profile attached (201)."
           },
           "account_id": {
             "type": "string",
