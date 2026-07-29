@@ -334,6 +334,7 @@
             "group": "Billing",
             "pages": [
               "api-reference/subscriptions/sessions-create",
+              "api-reference/subscriptions/card-on-file-create",
               "api-reference/subscriptions/portal-create",
               "api-reference/accounts/subscription-get",
               "api-reference/credits/sessions-create",
