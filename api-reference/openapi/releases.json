@@ -1500,6 +1500,14 @@
     },
     "/api/catalogs/songs": {
       "get": {
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
         "description": "Retrieve songs within a specific catalog with pagination support. This endpoint joins catalog_songs with songs, song_artists, and accounts to provide comprehensive song information for a given catalog.",
         "parameters": [
           {
@@ -1564,6 +1572,26 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - the catalog does not belong to the authenticated account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Catalog not found or no songs in catalog",
             "content": {
@@ -1577,6 +1605,14 @@
         }
       },
       "post": {
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
         "description": "Batch add songs to a catalog by ISRC. For each song, the API attempts to look up metadata via internal search. If no data is found, optional fallback fields (name, album, notes, artists) are used.",
         "requestBody": {
           "description": "Array of songs to add to catalog",
@@ -1609,10 +1645,38 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - the catalog does not belong to the authenticated account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
           }
         }
       },
       "delete": {
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
         "description": "Batch remove songs from a catalog by ISRC. Deletes the relationship in catalog_songs for each catalog_id and ISRC pair.",
         "requestBody": {
           "description": "Array of songs to remove from catalog",
@@ -1638,6 +1702,26 @@
           },
           "400": {
             "description": "Bad request - missing catalog_id or isrc",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - the catalog does not belong to the authenticated account",
             "content": {
               "application/json": {
                 "schema": {
