@@ -3479,6 +3479,12 @@
             "format": "uuid",
             "description": "UUID of the task to delete",
             "example": "aade2bce-55c7-468e-a606-c4e76fb2ea2a"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account to delete the task for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, the task is deleted for the API key's own account.",
+            "example": "848cd58d-700f-4b38-ab4c-d9f52a1b2c3d"
           }
         }
       },
