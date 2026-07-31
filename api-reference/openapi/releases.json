@@ -3893,7 +3893,12 @@
               "type": "string",
               "format": "date-time"
             },
-            "description": "Next scheduled run times, sourced from the latest Trigger.dev run payload."
+            "description": "Next scheduled run times, sourced from the latest Trigger.dev run payload. Empty when the task has no schedule, when the schedule has genuinely produced no runs yet, or when `trigger_lookup_failed` is true — check that flag before concluding a schedule is dead."
+          },
+          "trigger_lookup_failed": {
+            "type": "boolean",
+            "description": "True when the Trigger.dev lookup for this task errored, so `recent_runs`, `upcoming` and `timezone` could not be read and are not authoritative. False when the lookup succeeded (including when it legitimately returned nothing) or when the task has no `trigger_schedule_id` to look up.",
+            "example": false
           },
           "owner_email": {
             "type": "string",
