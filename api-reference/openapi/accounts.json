@@ -3587,6 +3587,12 @@
             "type": "string",
             "description": "Chat ID to include a chat link in the email footer. Use [Create Chat](/api-reference/chat/create) to create one."
           },
+          "idempotency_key": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "Optional key that makes this send exactly-once. Two requests carrying the same key deliver a single email; the duplicate returns the original send's id instead of delivering again. Intended for retried or replayed callers — scheduled task runs re-execute on crash or redeploy, and without a key each re-execution delivers another copy of the same report. Use a value that is stable across retries of the same logical send and unique between different sends.",
+            "example": "chat_9f2c1e04-6b7a-4c3d-9a1e-2f5b8c7d0e11:msg_IVjxAcIRghYu"
+          },
           "account_id": {
             "type": "string",
             "format": "uuid",
