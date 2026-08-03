@@ -787,6 +787,16 @@
             }
           },
           {
+            "name": "account_id",
+            "in": "query",
+            "required": false,
+            "description": "Act on a chat belonging to another account. Only honoured for a key that is authorised for that account — an organization key may pass a member account's id; a personal key passing anyone else's is rejected with `403 Access denied to specified account_id`. Omit it to act as the authenticated account.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
             "name": "startIndex",
             "in": "query",
             "required": false,
@@ -805,6 +815,12 @@
                 "description": "Durable workflow run ID of the resumed run.",
                 "schema": {
                   "type": "string"
+                }
+              },
+              "x-workflow-stream-tail-index": {
+                "description": "Zero-based index of the last chunk known to the stream **at the moment this read was opened**. Because headers are sent before the body, a read that stays open past that point will deliver chunks beyond it — so this is a base for computing absolute positions, not a record of where the response ended. A client resuming precisely should count the chunks it receives on top of this value. Omitted if the runtime cannot report it.",
+                "schema": {
+                  "type": "integer"
                 }
               }
             },
@@ -3221,7 +3237,7 @@
         "type": "object",
         "required": [
           "status",
-          "message"
+          "error"
         ],
         "properties": {
           "status": {
@@ -3231,9 +3247,16 @@
             ],
             "description": "Status of the request"
           },
-          "message": {
+          "error": {
             "type": "string",
             "description": "Error message describing what went wrong"
+          },
+          "missing_fields": {
+            "type": "array",
+            "description": "Present on validation failures (400): the path of the field that failed. Empty for a malformed path parameter.",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
