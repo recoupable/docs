@@ -785,6 +785,16 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          {
+            "name": "startIndex",
+            "in": "query",
+            "required": false,
+            "description": "Zero-based index of the first stream chunk to return, so a client that was already receiving this response resumes where it left off instead of replaying the whole turn.\n\nPass the number of chunks already received. Omit it to receive the response from the beginning — the right choice for a fresh reader such as a page load, or a client watching a headless [`POST /api/chat/runs`](/api-reference/chat/runs) run for the first time.\n\nA long turn's stream can end before the run does; reconnecting with `startIndex` is how a client keeps rendering without duplicating or skipping chunks.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
           }
         ],
         "responses": {
@@ -809,6 +819,16 @@
           },
           "204": {
             "description": "No active stream to resume for this chat."
+          },
+          "400": {
+            "description": "`startIndex` was provided but is not a non-negative integer.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatStreamErrorResponse"
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing or invalid credentials.",
