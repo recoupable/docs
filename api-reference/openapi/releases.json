@@ -1414,7 +1414,7 @@
     "/api/valuation": {
       "post": {
         "summary": "Run valuation",
-        "description": "Generate a catalog from a Spotify artist in one call. Resolves the artist's releases, captures current Spotify play counts (spending the account's credits), materializes an account-owned catalog from the resulting snapshot (idempotent - see [Create catalog](/api-reference/songs/catalogs-create)), and returns the catalog with its estimated value band. The owning account is taken from the credentials, never the body. The searched artist is also linked to the caller's roster (so a funnel signup lands with a populated `GET /api/artists` it can confirm); when the catalog's songs already resolve a canonical artist that one is used, otherwise the searched Spotify artist is linked directly. Synchronous: the request waits for the capture to land (typically under two minutes). Each run also persists a row in the catalog's valuation history, readable via [Get Catalog Valuations](/api-reference/songs/catalog-valuations).",
+        "description": "Generate a catalog from a Spotify artist in one call. Resolves the artist's releases, captures current Spotify play counts (spending the account's credits), materializes a catalog from the resulting snapshot (idempotent - see [Create catalog](/api-reference/songs/catalogs-create)), and returns the catalog with its estimated value band. The catalog is owned by the calling account unless organization_id names one of the caller's organizations to own it instead, in which case every member of that organization sees it. The calling account is always taken from the credentials, never the body, and it is the account whose credits are spent. The searched artist is also linked to the caller's roster (so a funnel signup lands with a populated `GET /api/artists` it can confirm); when the catalog's songs already resolve a canonical artist that one is used, otherwise the searched Spotify artist is linked directly. Synchronous: the request waits for the capture to land (typically under two minutes). Each run also persists a row in the catalog's valuation history, readable via [Get Catalog Valuations](/api-reference/songs/catalog-valuations).",
         "security": [
           {
             "apiKeyAuth": []
@@ -1467,6 +1467,16 @@
           },
           "402": {
             "description": "Insufficient credits to measure the catalog",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - the caller is not a member of the organization named by organization_id",
             "content": {
               "application/json": {
                 "schema": {
@@ -2601,6 +2611,11 @@
         "spotify_artist_id": {
           "type": "string",
           "description": "The Spotify artist id to value (e.g. from a Spotify artist search). The endpoint resolves this artist's releases, measures them, and builds the catalog."
+        },
+        "organization_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Optional. ID of an organization to own the resulting catalog instead of the calling account. Every member of that organization then sees it in their own [Get Catalogs](/api-reference/songs/catalogs) response. The caller must be a member of the organization; otherwise the request is rejected with 403. Credits are still spent by the calling account, and the searched artist is still linked to the caller's roster. Omit to own the catalog personally, which is the default."
         }
       }
     },
