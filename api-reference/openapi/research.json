@@ -809,7 +809,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Server-Sent Events stream of UI message parts for the in-progress response, compatible with the Vercel AI SDK. The `x-workflow-run-id` response header carries the run ID for this response.",
+            "description": "Server-Sent Events stream of UI message parts for the in-progress response, compatible with the Vercel AI SDK. The `x-workflow-run-id` response header carries the run ID for this response, and `x-workflow-stream-tail-index` carries the index of the last chunk known when this read was opened — a base for computing absolute positions, not a record of where the response ended.",
             "headers": {
               "x-workflow-run-id": {
                 "description": "Durable workflow run ID of the resumed run.",
