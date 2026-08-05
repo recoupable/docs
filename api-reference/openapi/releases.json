@@ -1262,12 +1262,12 @@
     },
     "/api/accounts/{id}/catalogs": {
       "get": {
-        "description": "Retrieve catalogs associated with a specific account. The endpoint joins account_catalogs with catalogs to return catalog metadata for the specified account.",
+        "description": "Retrieve the catalogs visible to a specific account. Returns the catalogs the account owns directly, plus the catalogs owned by any organization the account belongs to - so every member of an organization sees that organization's catalogs without passing the organization's id. A catalog owned both directly and through an organization is returned once. An account that belongs to no organization receives only its own catalogs. Create an organization-owned catalog with [Create catalog](/api-reference/songs/catalogs-create) or [Run valuation](/api-reference/songs/valuation-run).",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "The unique identifier of the account to query",
+            "description": "The unique identifier of the account to query. The catalogs of every organization this account belongs to are included in the response.",
             "required": true,
             "schema": {
               "type": "string",
