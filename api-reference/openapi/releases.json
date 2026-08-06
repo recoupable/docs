@@ -2892,6 +2892,11 @@
       "DeleteCatalogResponse": {
         "type": "object",
         "description": "Response returned after deleting a catalog",
+        "required": [
+          "status",
+          "catalog_id",
+          "released_snapshot_ids"
+        ],
         "properties": {
           "status": {
             "type": "string",
