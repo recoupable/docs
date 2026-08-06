@@ -2945,29 +2945,6 @@
           }
         }
       },
-      "CatalogValuation": {
-        "type": "object",
-        "description": "Estimated value band for a catalog, derived at read time from the latest Spotify play counts with the same model as [Get catalog measurements](/api-reference/songs/catalog-measurements) - annual run-rate from lifetime streams over the catalog's age, converted to net label share and multiplied by a 10-16x master-catalog multiple. Null when the catalog has no measured songs.",
-        "required": [
-          "low",
-          "mid",
-          "high"
-        ],
-        "properties": {
-          "low": {
-            "type": "number",
-            "description": "Low end of the band, USD"
-          },
-          "mid": {
-            "type": "number",
-            "description": "Midpoint of the band, USD - the central estimate"
-          },
-          "high": {
-            "type": "number",
-            "description": "High end of the band, USD"
-          }
-        }
-      },
       "CatalogOwner": {
         "type": "object",
         "description": "The account a catalog belongs to. A catalog owned both directly and through an organization reports the organization - that is the ownership worth surfacing to a member.",
@@ -3002,6 +2979,15 @@
       "CatalogListItem": {
         "type": "object",
         "description": "A catalog as returned by [Get catalogs](/api-reference/songs/catalogs): the catalog plus its estimated value and its owner. Only this list carries those two fields - the create and rename responses return the bare catalog.",
+        "required": [
+          "id",
+          "name",
+          "created_at",
+          "updated_at",
+          "measured_song_count",
+          "valuation",
+          "owner"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -3029,13 +3015,13 @@
           "valuation": {
             "oneOf": [
               {
-                "$ref": "#/components/schemas/CatalogValuation"
+                "$ref": "#/components/schemas/ValuationBand"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Estimated value band, or null when nothing in the catalog has been measured"
+            "description": "Estimated value band - the same schema and model as [Get catalog measurements](/api-reference/songs/catalog-measurements) returns, so a list and the report it opens cannot disagree. Null when nothing in the catalog has been measured; clients should say so rather than render $0."
           },
           "owner": {
             "$ref": "#/components/schemas/CatalogOwner"
