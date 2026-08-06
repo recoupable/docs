@@ -1,0 +1,19 @@
+---
+title: 'Delete Catalog'
+description: 'Delete a catalog without destroying the measurement that produced it.'
+openapi: "/api-reference/openapi/releases.json DELETE /api/catalogs/{catalogId}"
+---
+
+<Warning>
+  Deleting a catalog removes its songs, its ownership links and its stored valuation history.
+  If you only want to fix the catalog's name, use
+  [Rename catalog](/api-reference/songs/catalog-rename) — it keeps all of that intact.
+</Warning>
+
+<Note>
+  **The measurement survives.** The playcount snapshot behind the catalog is a metered capture that
+  spent credits and cannot be re-taken for a past date, so deleting a catalog only clears the
+  snapshot's reference to it. The response returns those `released_snapshot_ids`; pass one back to
+  [Create catalog](/api-reference/songs/catalogs-create) as `snapshot`, with the `name` you wanted,
+  to rebuild the catalog from the same measurement.
+</Note>
