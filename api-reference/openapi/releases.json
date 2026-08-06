@@ -1745,7 +1745,7 @@
     },
     "/api/catalogs/{catalogId}": {
       "patch": {
-        "description": "Rename a catalog. The only mutable field is the display name — catalog membership is managed through [Add catalog songs](/api-reference/songs/catalog-songs-add) and [Remove catalog songs](/api-reference/songs/catalog-songs-delete). Renaming is how a catalog created by a valuation run before it named itself after the measured artist gets a human-readable name.",
+        "description": "Rename a catalog. The only mutable field is the display name — catalog membership is managed through [Add catalog songs](/api-reference/songs/catalog-songs-add) and [Remove catalog songs](/api-reference/songs/catalog-songs-delete).\n\nCatalogs created by [Run valuation](/api-reference/songs/valuation-run) are named after the measured artist. Catalogs created before that shipped are all named `Valuation Catalog` — this endpoint is how you give them real names.",
         "security": [
           {
             "apiKeyAuth": []
@@ -2797,6 +2797,10 @@
       "UpdateCatalogResponse": {
         "type": "object",
         "description": "Response returned after renaming a catalog",
+        "required": [
+          "status",
+          "catalog"
+        ],
         "properties": {
           "status": {
             "type": "string",
