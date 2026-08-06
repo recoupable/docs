@@ -1262,7 +1262,7 @@
     },
     "/api/accounts/{id}/catalogs": {
       "get": {
-        "description": "Retrieve the catalogs visible to a specific account. Returns the catalogs the account owns directly, plus the catalogs owned by any organization the account belongs to - so every member of an organization sees that organization's catalogs without passing the organization's id. A catalog owned both directly and through an organization is returned once. An account that belongs to no organization receives only its own catalogs. Create an organization-owned catalog with [Create catalog](/api-reference/songs/catalogs-create) or [Run valuation](/api-reference/songs/valuation-run).",
+        "description": "Retrieve the catalogs visible to a specific account. Returns the catalogs the account owns directly, plus the catalogs owned by any organization the account belongs to - so every member of an organization sees that organization's catalogs without passing the organization's id. A catalog owned both directly and through an organization is returned once. An account that belongs to no organization receives only its own catalogs. Create an organization-owned catalog with [Create catalog](/api-reference/songs/catalogs-create) or [Run valuation](/api-reference/songs/valuation-run).\n\nEach catalog carries its estimated value band and its owner, so a list of catalogs can be ranked by worth and a member can tell an organization's catalog from their own. `valuation` is null for a catalog with no measured songs; `owner.image` is null when the owner account has no avatar.",
         "parameters": [
           {
             "name": "id",
@@ -2945,6 +2945,89 @@
           }
         }
       },
+      "CatalogOwner": {
+        "type": "object",
+        "description": "The account a catalog belongs to. A catalog owned both directly and through an organization reports the organization - that is the ownership worth surfacing to a member.",
+        "required": [
+          "id",
+          "name",
+          "image",
+          "is_organization"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Owner account id"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true,
+            "description": "Owner display name, null when the account has none"
+          },
+          "image": {
+            "type": "string",
+            "nullable": true,
+            "description": "Owner avatar URL from account_info, null when the account has no image. Clients should fall back to initials rather than render a broken image."
+          },
+          "is_organization": {
+            "type": "boolean",
+            "description": "True when the owner is an organization the caller belongs to, false when it is a personal account"
+          }
+        }
+      },
+      "CatalogListItem": {
+        "type": "object",
+        "description": "A catalog as returned by [Get catalogs](/api-reference/songs/catalogs): the catalog plus its estimated value and its owner. Only this list carries those two fields - the create and rename responses return the bare catalog.",
+        "required": [
+          "id",
+          "name",
+          "created_at",
+          "updated_at",
+          "measured_song_count",
+          "valuation",
+          "owner"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the catalog"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the catalog"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the catalog was created"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the catalog was last updated"
+          },
+          "measured_song_count": {
+            "type": "integer",
+            "description": "Songs in the catalog with at least one play-count measurement. 0 for a catalog that was never measured, in which case valuation is null."
+          },
+          "valuation": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ValuationBand"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Estimated value band - the same schema and model as [Get catalog measurements](/api-reference/songs/catalog-measurements) returns, so a list and the report it opens cannot disagree. Null when nothing in the catalog has been measured; clients should say so rather than render $0."
+          },
+          "owner": {
+            "$ref": "#/components/schemas/CatalogOwner"
+          }
+        }
+      },
       "CatalogSong": {
         "type": "object",
         "description": "A song within a catalog with its metadata and associated artists",
@@ -3082,9 +3165,9 @@
           "catalogs": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Catalog"
+              "$ref": "#/components/schemas/CatalogListItem"
             },
-            "description": "Array of catalog objects"
+            "description": "Array of catalog objects, each with its estimated value and its owner"
           },
           "error": {
             "type": "string",
