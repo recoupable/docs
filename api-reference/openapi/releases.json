@@ -1262,12 +1262,12 @@
     },
     "/api/accounts/{id}/catalogs": {
       "get": {
-        "description": "Retrieve catalogs associated with a specific account. The endpoint joins account_catalogs with catalogs to return catalog metadata for the specified account.",
+        "description": "Retrieve the catalogs visible to a specific account. Returns the catalogs the account owns directly, plus the catalogs owned by any organization the account belongs to - so every member of an organization sees that organization's catalogs without passing the organization's id. A catalog owned both directly and through an organization is returned once. An account that belongs to no organization receives only its own catalogs. Create an organization-owned catalog with [Create catalog](/api-reference/songs/catalogs-create) or [Run valuation](/api-reference/songs/valuation-run).",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "The unique identifier of the account to query",
+            "description": "The unique identifier of the account to query. The catalogs of every organization this account belongs to are included in the response.",
             "required": true,
             "schema": {
               "type": "string",
@@ -1341,7 +1341,7 @@
     },
     "/api/catalogs": {
       "post": {
-        "description": "Create a catalog. When materializing from a valuation snapshot, the endpoint also attaches the snapshot's canonical artist to the caller's roster: the measured songs' existing song-artist links are resolved to the dominant artist account, which is added to the caller's roster if not already present. The attach also runs on idempotent re-claims of an already-materialized snapshot.",
+        "description": "Create a catalog, owned by the calling account or - with organization_id - by one of the caller's organizations, in which case every member of that organization sees it via [Get Catalogs](/api-reference/songs/catalogs). When materializing from a valuation snapshot, the endpoint also attaches the snapshot's canonical artist to the caller's roster: the measured songs' existing song-artist links are resolved to the dominant artist account, which is added to the caller's roster if not already present. The attach also runs on idempotent re-claims of an already-materialized snapshot. The roster attach always targets the calling account, even when the catalog is owned by an organization.",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
@@ -1389,7 +1389,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - the snapshot belongs to a different account",
+            "description": "Forbidden - the snapshot belongs to a different account, or the caller is not a member of the organization named by organization_id",
             "content": {
               "application/json": {
                 "schema": {
@@ -2649,7 +2649,7 @@
     },
     "CreateCatalogRequest": {
         "type": "object",
-        "description": "Request body for creating a catalog. At least one of name or snapshot must be supplied. The owning account is taken from the request credentials, never from this body.",
+        "description": "Request body for creating a catalog. At least one of name or snapshot must be supplied. The catalog is owned by the authenticated account unless organization_id names an organization to own it instead.",
         "properties": {
           "name": {
             "type": "string",
@@ -2659,6 +2659,11 @@
             "type": "string",
             "format": "uuid",
             "description": "Optional. ID of a completed playcount snapshot (valuation run) owned by the authenticated account. Its measured ISRCs are added to the new catalog as catalog songs. Create one with [Create measurement job](/api-reference/research/measurement-jobs)."
+          },
+          "organization_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Optional. ID of an organization to own the catalog instead of the calling account. Every member of that organization then sees the catalog in their own [Get Catalogs](/api-reference/songs/catalogs) response, without passing the organization's id. The caller must be a member of the organization; otherwise the request is rejected with 403. Omit to own the catalog personally, which is the default."
           }
         }
       },
