@@ -1,0 +1,11 @@
+---
+title: 'Rename Catalog'
+description: 'Rename a catalog owned by the authenticated account or one of its organizations.'
+openapi: "/api-reference/openapi/releases.json PATCH /api/catalogs/{catalogId}"
+---
+
+<Note>
+  Catalogs created by [Run valuation](/api-reference/songs/valuation-run) are named after the
+  measured artist. Catalogs created before that shipped are all named `Valuation Catalog` — this
+  endpoint is how you give them real names.
+</Note>
