@@ -1829,6 +1829,81 @@
             }
           }
         }
+      },
+      "delete": {
+        "description": "Delete a catalog. Removes the catalog, its song membership (catalog_songs), its ownership links (account_catalogs) and its stored valuation history (catalog_valuations).\n\nThe measurement that produced the catalog is **not** deleted. A playcount snapshot is a metered capture that spent credits and cannot be reproduced for a past date, while a catalog is a label over songs that can be rebuilt from it in one call — so deleting a catalog only clears the snapshot's reference to it. The snapshot then reads as unclaimed, and [Create catalog](/api-reference/songs/catalogs-create) can re-materialize it under a correct name. The released snapshot IDs are returned so that recovery does not require hunting for them.\n\nUse this for genuine duplicates. To fix a catalog's name, use [Rename catalog](/api-reference/songs/catalog-rename) instead — it keeps the catalog's measurements and valuation history intact.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "catalogId",
+            "in": "path",
+            "description": "ID of the catalog to delete.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Catalog deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteCatalogResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - catalogId is not a valid UUID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Catalog not found - no catalog with this ID is visible to the caller. A catalog that exists but belongs to neither the authenticated account nor one of its organizations returns 404, not 403: the same visibility rule the catalog read paths use, so a catalog you cannot see is indistinguishable from one that does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsErrorResponse"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/catalogs/{catalogId}/valuations": {
@@ -2811,6 +2886,37 @@
           },
           "catalog": {
             "$ref": "#/components/schemas/Catalog"
+          }
+        }
+      },
+      "DeleteCatalogResponse": {
+        "type": "object",
+        "description": "Response returned after deleting a catalog",
+        "required": [
+          "status",
+          "catalog_id",
+          "released_snapshot_ids"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "catalog_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the deleted catalog"
+          },
+          "released_snapshot_ids": {
+            "type": "array",
+            "description": "IDs of the playcount snapshots that pointed at this catalog. Those snapshots still exist - only their catalog reference was cleared - so each can be re-materialized into a new, correctly named catalog with Create catalog. Empty when the catalog was not created from a measurement run.",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         }
       },
