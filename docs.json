@@ -387,7 +387,8 @@
               "api-reference/admins/agent-signups",
               "api-reference/admins/artists-pro",
               "api-reference/admins/credits-rollup",
-              "api-reference/admins/credits-events"
+              "api-reference/admins/credits-events",
+              "api-reference/admins/credits-grant"
             ]
           },
           {
