@@ -208,6 +208,12 @@
               "api-reference/posts/get",
               "api-reference/comments/get"
             ]
+          },
+          {
+            "group": "Upload",
+            "pages": [
+              "api-reference/upload/file"
+            ]
           }
         ]
       },
