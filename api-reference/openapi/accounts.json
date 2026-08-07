@@ -3855,6 +3855,11 @@
             "type": "string",
             "description": "Chat ID to include a chat link in the email footer. Use [Create Chat](/api-reference/chat/create) to create one."
           },
+          "catalog_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Optional catalog to lead the email with. When present, the subject is prefixed with the catalog's current estimated value and its signed change since the previous measurement, and a valuation hero block is prepended to the body. A catalog with a single measurement shows the value with a baseline note instead of a change; a catalog the account does not own, or one with no measurements, leaves the email unchanged. Read the underlying series with [Get Catalog Valuations](/api-reference/songs/catalog-valuations)."
+          },
           "account_id": {
             "type": "string",
             "format": "uuid",
