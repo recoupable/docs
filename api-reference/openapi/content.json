@@ -994,7 +994,7 @@
     },
     "/api/content-agent/{platform}": {
       "post": {
-        "description": "Webhook endpoint for the Recoup Content Agent Slack bot. Receives @mention events from Slack and triggers content generation for the mentioned artist. The bot parses the mention text for `<artist_account_id> [template] [batch=N] [lipsync]`, validates the artist, calls POST /api/content/create, and starts a background polling task that reports results back to the Slack thread.\n\nFor Slack, also handles `url_verification` challenges during app setup.",
+        "description": "Webhook endpoint for the Recoup Content Agent Slack bot. Receives @mention events from Slack and triggers content generation for the mentioned artist. The bot parses the mention text for `<artist_account_id> [template] [batch=N] [lipsync] [dsp=spotify|apple]`, validates the artist, calls POST /api/content/create, and starts a background polling task that reports results back to the Slack thread.\n\nFor Slack, also handles `url_verification` challenges during app setup.",
         "parameters": [
           {
             "name": "platform",
@@ -2513,6 +2513,17 @@
             "description": "Controls the length of the generated caption text. `none` skips caption generation. `short` produces 1-2 lines (punchy, minimal). `medium` produces 1-2 sentences. `long` produces a paragraph (stream of consciousness style). Defaults to `none`.",
             "default": "none",
             "example": "none"
+          },
+          "dsp": {
+            "type": "string",
+            "enum": [
+              "none",
+              "spotify",
+              "apple"
+            ],
+            "description": "Which DSP (digital streaming platform) logo to overlay on the output video. `none` (default) omits the logo. `spotify` overlays the Spotify logo. `apple` overlays the Apple Music logo.",
+            "default": "none",
+            "example": "spotify"
           },
           "upscale": {
             "type": "boolean",

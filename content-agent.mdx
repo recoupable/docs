@@ -109,7 +109,7 @@ The **Recoup Content Agent** is a Slack bot that generates social-ready artist v
 ### @Mention Syntax
 
 ```
-@RecoupContentAgent <artist_account_id> [template] [batch=N] [lipsync]
+@RecoupContentAgent <artist_account_id> [template] [batch=N] [lipsync] [dsp=spotify|apple]
 ```
 
 | Parameter | Required | Description |
@@ -118,6 +118,7 @@ The **Recoup Content Agent** is a Slack bot that generates social-ready artist v
 | `template` | No | Content template name. Optional — when omitted, the pipeline runs with default settings. See [GET /api/content/templates](/api-reference/content/templates) for options. |
 | `batch=N` | No | Number of videos to generate (1-30, default 1) |
 | `lipsync` | No | Enable lipsync mode (audio baked into video) |
+| `dsp` | No | DSP logo to overlay on the video: `spotify` or `apple`. Omit for no DSP logo. |
 
 ### Examples
 
@@ -134,6 +135,11 @@ The **Recoup Content Agent** is a Slack bot that generates social-ready artist v
 **Batch with lipsync:**
 ```
 @RecoupContentAgent abc-123-uuid batch=3 lipsync
+```
+
+**Editorial with Spotify DSP logo:**
+```
+@RecoupContentAgent abc-123-uuid artist-release-editorial for Spotify
 ```
 
 ### Architecture
