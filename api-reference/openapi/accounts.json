@@ -2971,7 +2971,7 @@
           "expires_at": {
             "type": "string",
             "format": "date-time",
-            "description": "When the monthly reset becomes eligible to overwrite this balance — one month after `granted_at`. The overwrite is lazy, not scheduled: it happens on the first read of the account's balance at or after this time, so the granted balance can outlive `expires_at` indefinitely if nothing reads it. Treat it as the point after which the balance is no longer guaranteed."
+            "description": "When the monthly reset becomes eligible to overwrite this balance — one month after `granted_at`, clamped to the last day of the target month when that month is shorter (a grant on Jan 31 expires Feb 28, not Mar 3). The overwrite is lazy, not scheduled: it happens on the first read of the account's balance at or after this time, so the granted balance can outlive `expires_at` indefinitely if nothing reads it. Treat it as the point after which the balance is no longer guaranteed — it is deliberately never later than the moment the reset actually becomes eligible, so it can under-promise by up to a day but never over-promise."
           }
         }
       },
@@ -3185,6 +3185,7 @@
               "type": "object",
               "required": [
                 "id",
+                "account_id",
                 "created_at",
                 "granted_by",
                 "reason",
@@ -3196,6 +3197,11 @@
                   "type": "string",
                   "format": "uuid",
                   "description": "UUID of the grant row — the `grant_id` returned by `POST /api/admins/credits`"
+                },
+                "account_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "UUID of the account the grant was made against. Always equal to the top-level `account_id`, since the endpoint reports on one account at a time; present because each entry is the full stored grant row."
                 },
                 "created_at": {
                   "type": "string",
