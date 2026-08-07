@@ -1,0 +1,534 @@
+# Recoup — Full API Reference for LLMs
+
+> AI infrastructure for the music business. 161 endpoints across research, content creation, artist management, and more.
+
+## Authentication
+
+All requests require an `x-api-key` header.
+
+### Get an API key programmatically (no human needed):
+```
+POST https://api.recoupable.com/api/agents/signup
+Content-Type: application/json
+Body: {"email": "agent+unique-id@recoupable.com"}
+Response: {"api_key": "recoup_sk_..."}
+```
+
+Then verify (check email for code):
+```
+POST https://api.recoupable.com/api/agents/verify
+Body: {"email": "...", "code": "123456"}
+```
+
+### Get an API key manually:
+Visit https://chat.recoupable.com/keys
+
+### Use in requests:
+```
+curl -H "x-api-key: recoup_sk_..." https://api.recoupable.com/api/artists
+```
+
+## Base URL
+
+`https://api.recoupable.com`
+
+All paths below are relative to this base URL.
+
+## Plugins
+
+For AI coding tools (Claude Code, Cowork, Cursor, Codex), install plugins instead of calling the API directly:
+
+### recoup-research-plugin
+Install: `claude plugin install https://github.com/recoupable/recoup-research-plugin`
+Commands: `/recoup-research [artist]`, `/recoup-scout [genre]`, `/recoup-pitch [artist]`, `/recoup-compare [A] vs [B]`
+Skills: artist-research, audience-analysis, playlist-intelligence, competitive-analysis, trend-detection, people-outreach, web-intelligence
+
+### recoup-content-plugin
+Install: `claude plugin install https://github.com/recoupable/recoup-content-plugin`
+Commands: `/recoup-content-create`
+Skills: short-video (end-to-end 9:16 music video), content-creation (atomic primitives)
+
+### recoup-catalogs-plugin
+Install: `claude plugin install https://github.com/recoupable/recoup-catalogs-plugin`
+Commands: `/recoup-catalog-deal`, `/recoup-catalog-demo`, `/recoup-catalog-report`
+Skills: deal-kickoff, catalog-ingest, catalog-analysis, catalog-dashboard, rights-review, royalty-audit, seller-prep, financing-underwrite, ic-memo-package, post-close-admin
+
+### recoup-platform-plugin
+Install: `claude plugin install https://github.com/recoupable/recoup-platform-plugin`
+Cross-cutting platform utilities.
+
+## Common Workflows
+
+### Research an artist
+1. `GET /api/research?q=artist+name` → get Chartmetric artist_id
+2. `GET /api/research/profile?id={cm_id}` → full profile
+3. `GET /api/research/audience?id={cm_id}&platform=spotify` → demographics
+4. `GET /api/research/similar?id={cm_id}` → similar artists
+5. `GET /api/research/playlists?id={cm_id}` → playlist placements
+Or just install recoup-research-plugin and run `/recoup-research Drake`
+
+### Create content for an artist
+1. `POST /api/artists` → create artist (if new)
+2. `GET /api/content/templates` → browse templates
+3. `GET /api/content/validate?artist_account_id={id}` → check readiness
+4. `POST /api/content/create` → trigger async pipeline
+5. Poll the callback or check sandbox for output
+Or install recoup-content-plugin and say "Make a TikTok for [artist]"
+
+### Analyze a catalog deal
+Install recoup-catalogs-plugin, drop your data room files, and run `/recoup-catalog-deal`
+
+### Set up scheduled automation
+```
+POST /api/tasks
+Body: {
+  "title": "Daily fan report",
+  "prompt": "Generate a fan engagement report for this artist",
+  "schedule": "0 9 * * *",
+  "account_id": "...",
+  "artist_account_id": "..."
+}
+```
+
+## API Endpoints
+
+### Accounts
+
+- `POST   /api/accounts`
+  Create a new account or retrieve an existing account by email or wallet address.  If an account with the provided email or wallet already exists, returns that account.
+- `PATCH  /api/accounts`
+  Update an existing account's profile information including name, organization, image, instruction, job title, role type, company name, and knowledges.  Requires authentication via x-api-key or Authorization Bearer token.
+- `POST   /api/accounts/artists`
+  Add an artist to an account's list of associated artists.  If the artist is already associated with the account, returns success without modification.
+- `GET    /api/accounts/id`
+  Retrieve the ID of the authenticated account associated with the provided credentials.  This is useful when you have an API key or access token but do not yet know the corresponding accountId.
+- `GET    /api/accounts/{id}`
+  Retrieve detailed account information by ID.  Returns the account with associated profile info, emails, and wallet addresses.
+- `GET    /api/accounts/{id}/catalogs`
+  Retrieve catalogs associated with a specific account.  The endpoint joins account_catalogs with catalogs to return catalog metadata for the specified account.
+- `GET    /api/accounts/{id}/credits`
+  Retrieve the current credit balance for an account.  Returns the remaining credits along with the plan-derived monthly total and used count, plus a flag indicating whether the account is on a pro plan (directly or via an organization).
+- `GET    /api/accounts/{id}/payment-method`
+  Retrieve the default payment method on file for an account.  Returns `card: null` when no payment method has been saved yet — the top-up dialog uses this to decide whether to show a pre-charge confirmation (card present) or route to a checkout session to collect one (`card: null`).
+- `GET    /api/accounts/{id}/subscription`
+  Retrieve the subscription for an account, directly or via an organization.
+
+### Admins
+
+- `GET    /api/admins`
+  Check if the authenticated account is a Recoup admin.  An account is considered an admin if it is a member of the Recoup organization.
+- `GET    /api/admins/agent/signups`
+  Returns API key sign-up records created by AI agents.  Agent sign-ups are identified by the agent+ email prefix in the associated account email.
+- `GET    /api/admins/artists/pro`
+  Retrieve the deduplicated list of artist IDs owned by pro accounts.  An account is "pro" when its email belongs to an enterprise domain or it has an active Stripe subscription.
+- `GET    /api/admins/coding/pr`
+  Returns the status (open, closed, or merged) for each provided GitHub pull request URL.  Accepts one or more `pull_requests` query parameters containing GitHub PR URLs.
+- `GET    /api/admins/coding/slack`
+  Returns a list of Slack mentions of the Recoup Coding Agent bot, pulled directly from the Slack API as the source of truth.  Each entry includes the tagger's information, the prompt they sent, the timestamp, the channel, and any GitHub pull request URLs opened in response.
+- `GET    /api/admins/content/slack`
+  Returns a list of Slack mentions of the Recoup Content Agent bot, pulled directly from the Slack API as the source of truth.  Each entry includes the tagger's information, the prompt they sent, the timestamp, the channel, and any video link responses.
+- `GET    /api/admins/credits/events`
+  Returns the raw `usage_events` rows for a single account over the selected period, sorted by `created_at` descending.  Powers the drilldown view that expands when a row in the [`/api/admins/credits/rollup`](/api-reference/admins/credits-rollup) table is opened.
+- `GET    /api/admins/credits/rollup`
+  Returns the per-account rollup of credit usage over the selected period, sorted by total credits deducted descending.  Each row carries the account identity (UUID + display name + primary email) and the aggregated spend so the admin dashboard can render a top-spenders table without joining client-side.
+- `GET    /api/admins/emails`
+  Returns Resend emails including HTML content.  Provide either account_id (returns all emails for an account) or email_id (returns a single email by Resend ID).
+- `GET    /api/admins/privy`
+  Returns Privy login statistics for a given time period.  Results include counts for new accounts (created_at), active accounts (latest_verified_at), total Privy accounts across all time, and the full, unmodified Privy account objects.
+- `GET    /api/admins/sandboxes`
+  Returns a list of all accounts and their sandbox usage statistics.  Each item includes the account email, total number of sandboxes created, and the timestamp of the most recently created sandbox.
+- `GET    /api/admins/sandboxes/orgs`
+  Returns commit statistics for each repository in the recoupable GitHub organization.  Each item includes the repo name, URL, total commit count, latest 5 commit messages, earliest and latest commit timestamps, and the list of account repo URLs that include this org repo as a submodule.
+
+### Agents
+
+- `POST   /api/agents/signup`
+  Register an agent.  For new agent+ emails, returns an API key immediately.
+- `GET    /api/agents/templates`
+  Retrieve every template visible to the authenticated account.  The response combines templates the account owns, public templates created by other accounts, and private templates that have been shared with the authenticated account's email.
+- `POST   /api/agents/templates`
+  Create a new template owned by the authenticated account.  When `is_private` is true, the optional `share_emails` array grants explicit read access to the listed accounts; for public templates the field is ignored.
+- `PATCH  /api/agents/templates/{id}`
+  Update fields on an existing template owned by the authenticated account.  All body fields are optional and only the supplied fields are modified.
+- `DELETE /api/agents/templates/{id}`
+  Permanently delete an template.  Only the owner of the template may perform this action.
+- `PUT    /api/agents/templates/{id}/favorite`
+  Mark or unmark an template as a favorite for the authenticated account.  The endpoint is idempotent - calling it repeatedly with the same `is_favourite` value has no additional effect.
+- `POST   /api/agents/verify`
+  Verify an agent's email with the code sent during signup.  Returns an API key on success.
+
+### Ai
+
+- `GET    /api/ai/models`
+  Returns the catalog of language models available through the Vercel AI Gateway.  Embedding models are filtered out.
+
+### Apify
+
+- `GET    /api/apify/runs/{runId}`
+  Check the status and retrieve results from Apify scraper runs.  This endpoint uses the Apify API Client to fetch the current status of a scraper run and its results if available.
+
+### Artist Profile
+
+- `GET    /api/artist-profile`
+  Retrieve comprehensive profile information for an artist across all connected social media platforms, including profile details and post metrics.
+
+### Artist
+
+- `POST   /api/artist/socials/scrape`
+  Trigger scrape jobs for all social profiles linked to an artist.  Provide an artist_account_id, and the API will look up the artist's socials and invoke a scraping job for each social profile.
+
+### Artists
+
+- `GET    /api/artists`
+  Retrieve artists accessible to the authenticated account.  The account is derived from the API key or Bearer token.
+- `POST   /api/artists`
+  Create a new artist account.  The artist can optionally be linked to an organization.
+- `PATCH  /api/artists/{id}`
+  Update an artist.  All body fields are optional, but at least one must be provided.
+- `DELETE /api/artists/{id}`
+  Delete an artist accessible to the authenticated account.  This removes the caller's direct artist link and, if no owner links remain, deletes the artist account itself.
+- `GET    /api/artists/{id}/fans`
+  Retrieve all social profiles from fans of an artist across all platforms.  This endpoint aggregates fan data from all connected social media platforms.
+- `POST   /api/artists/{id}/pin`
+  Pin an artist.  This updates the caller's pinned preference for the artist.
+- `DELETE /api/artists/{id}/pin`
+  Unpin an artist.  This updates the caller's pinned preference for the artist.
+- `GET    /api/artists/{id}/posts`
+  Retrieve all social media posts from an artist across all platforms.  This endpoint aggregates posts from all connected social media profiles for the specified artist.
+- `GET    /api/artists/{id}/socials`
+  Retrieve all social media profiles associated with an artist.  This endpoint should be called before using the Social Posts endpoint to obtain the necessary social IDs.
+
+### Catalogs
+
+- `GET    /api/catalogs/songs`
+  Retrieve songs within a specific catalog with pagination support.  This endpoint joins catalog_songs with songs, song_artists, and accounts to provide comprehensive song information for a given catalog.
+- `POST   /api/catalogs/songs`
+  Batch add songs to a catalog by ISRC.  For each song, the API attempts to look up metadata via internal search.
+- `DELETE /api/catalogs/songs`
+  Batch remove songs from a catalog by ISRC.  Deletes the relationship in catalog_songs for each catalog_id and ISRC pair.
+
+### Chat
+
+- `POST   /api/chat`
+  Stream AI-powered chat responses using the Recoup chat system.  This endpoint mirrors the request payload of the Chat Generate API but returns a streaming response compatible with the Vercel AI SDK `createUIMessageStreamResponse`.
+- `POST   /api/chat/generate`
+  Generate AI-powered text responses using the Recoup chat system.  This endpoint processes chat requests and returns generated text along with metadata about the generation process.
+- `POST   /api/chat/workflow`
+  Streams an agent loop running as a durable [Vercel Workflow](https://vercel. com/docs/workflow) against the session's sandbox.
+- `POST   /api/chat/{chatId}/stop`
+  Stop the response currently being generated for a chat, freeing it to accept a new message.  Idempotent — returns `stopped: false` when nothing is in progress.
+
+### Chats
+
+- `GET    /api/chats`
+  Returns chats for the authenticated account.  Personal Bearer tokens see only the caller's chats; org keys see chats across the org's member accounts; admin keys see all chats.
+- `POST   /api/chats`
+  Create a new chat room.  Optionally associate it with an artist and/or provide a client-generated chat ID.
+- `PATCH  /api/chats`
+  Update a chat room's topic (display name).  The chatId is required; the topic field will be updated.
+- `DELETE /api/chats`
+  Delete a chat room by ID.  This operation also removes related room records (memory emails, memories) before deleting the room itself.
+- `POST   /api/chats/compact`
+  Compact one or more chat conversations into summarized versions.  This reduces the size of chat history while preserving key information.
+- `GET    /api/chats/{id}/artist`
+  Retrieve the artist associated with a specific chat room.  Returns 404 if the chat does not exist or is not accessible by the authenticated caller.
+- `GET    /api/chats/{id}/messages`
+  Retrieve all messages (memories) for a specific chat room in chronological order.
+- `POST   /api/chats/{id}/messages/copy`
+  Copy all messages from the source chat (`id` path param) to a target chat (`targetChatId` in request body).  By default, existing target messages are cleared before copy.
+- `DELETE /api/chats/{id}/messages/trailing`
+  Delete all messages in a chat from a given message onward (inclusive), identified by `from_message_id`.
+
+### Comments
+
+- `GET    /api/comments`
+  Retrieve comments associated with an artist or a specific post, with support for pagination.  This endpoint returns raw comment data including the comment text, associated post, and commenter's social profile reference.
+
+### Connectors
+
+- `GET    /api/connectors`
+  List available connectors and their connection status.  Returns all supported third-party integrations (e.
+- `DELETE /api/connectors`
+  Disconnect a connected account from a third-party service.  This revokes the OAuth connection and removes stored credentials.
+- `POST   /api/connectors`
+  Generate an OAuth authorization URL for connecting a third-party service.  Redirect to the returned URL to complete the OAuth flow.
+- `GET    /api/connectors/actions`
+  List the executable actions available across the authenticated account's connectors.  Each action is a single tool that can be invoked via POST /api/connectors/actions — for example, the `googlesheets` connector exposes actions like `GOOGLESHEETS_WRITE_SPREADSHEET`.
+- `POST   /api/connectors/actions`
+  Execute a connector action with the given parameters.  The `actionSlug` must come from a prior call to GET /api/connectors/actions, and `parameters` must match the `parameters` JSON Schema returned for that action.
+
+### Content
+
+- `PATCH  /api/content`
+  Apply ffmpeg edits to a video — trim, crop, resize, or overlay text.  Pass a `template` for a preset edit pipeline, or build your own with an `operations` array.
+- `POST   /api/content/analyze`
+  Analyze a video and answer questions about it.  Pass a video URL and a text prompt — for example, "Describe what happens" or "Rate the visual quality 1-10.
+- `POST   /api/content/caption`
+  Generate a short caption from a topic.  Returns the text content and default styling (font, color, size).
+- `POST   /api/content/create`
+  Trigger the content creation pipeline for an artist.  Provide `artist_account_id` to identify the target artist.
+- `GET    /api/content/estimate`
+  Estimate the cost of running the content creation pipeline.  Calculates per-step and per-video costs based on current pricing.
+- `POST   /api/content/image`
+  Generate an image from a text prompt.  Pass a `reference_image_url` to guide the output toward a specific look or subject.
+- `GET    /api/content/templates`
+  List all available content creation templates.  Templates are optional — every content primitive works without one.
+- `GET    /api/content/templates/{id}`
+  Get the full configuration for a specific content creation template.  Returns the complete creative recipe including image prompts, video motion config, caption style rules, and edit operations.
+- `POST   /api/content/transcribe`
+  Transcribe audio into text with word-level timestamps.  Pass one or more audio file URLs in `audio_urls`.
+- `POST   /api/content/upscale`
+  Upscale an image or video to higher resolution.  Pass the URL and specify the type.
+- `GET    /api/content/validate`
+  Check whether an artist has all the required files to run the content creation pipeline.  Returns a structured report of each required and recommended file with its status.
+- `POST   /api/content/video`
+  Generate a video.  Set `mode` to control what kind of video you get:
+
+- `prompt` — create a video from a text description
+- `animate` — animate a still image
+- `reference` — use an image as a style/subject reference (not the first frame)
+- `extend` — continue an existing video
+- `first-last` — generate a video that transitions between two images
+- `lipsync` — sync face movement to an audio clip
+
+If `mode` is omitted, it's inferred from the inputs you provide.
+
+### Content Agent
+
+- `POST   /api/content-agent/callback`
+  Internal callback endpoint for the `poll-content-run` Trigger. dev task.
+- `POST   /api/content-agent/{platform}`
+  Webhook endpoint for the Recoup Content Agent Slack bot.  Receives @mention events from Slack and triggers content generation for the mentioned artist.
+
+### Credits
+
+- `POST   /api/credits/sessions`
+  Top up credits on the authenticated account. 
+
+**One credit equals one US cent (\$0.
+
+### Image
+
+- `GET    /api/image/generate`
+  Generate high-quality images using AI models.  Images are automatically stored on Arweave and include In Process moment metadata for provenance and ownership tracking.
+
+### Music
+
+- `POST   /api/music/compose`
+  Generate a song from a text prompt or a composition plan.  The prompt can describe mood, genre, instruments, lyrics, and structure.
+- `POST   /api/music/compose/detailed`
+  Generate a song with metadata and optional word-level timestamps.  Returns a multipart/mixed response: the first part is JSON metadata (song ID, duration, seed, etc.
+- `POST   /api/music/plan`
+  Create a composition plan from a text prompt.  A composition plan is a structured representation of a song — sections, styles, lyrics, and durations — that you can review and tweak before passing to the compose endpoint.
+- `POST   /api/music/stem-separation`
+  Separate an audio file into individual stems (vocals, drums, bass, etc. ).
+- `POST   /api/music/stream`
+  Generate a song and stream audio chunks in real time.  Use this endpoint when you want to begin playback before the full song is generated.
+- `POST   /api/music/video-to-music`
+  Generate background music from video files.  Upload 1–10 video files via multipart/form-data (max 200 MB total).
+
+### Notifications
+
+- `POST   /api/notifications`
+  Send a notification email to the authenticated account's email address via the Resend API.  Emails are sent from `Agent by Recoup <agent@recoupable.
+
+### Organizations
+
+- `GET    /api/organizations`
+  Retrieve all organizations that the authenticated account belongs to.  Pass account_id to retrieve organizations for a specific account the API key has access to.
+- `POST   /api/organizations`
+  Create a new organization.  The creator is automatically added as a member of the organization.
+- `POST   /api/organizations/artists`
+  Add an artist to an organization.  This allows organization members to access and manage the artist.
+
+### Pulses
+
+- `GET    /api/pulses`
+  Retrieve pulse information for the authenticated account.  If the account has access to organizations, pass account_id to filter to a specific account within those organizations.
+- `PATCH  /api/pulses`
+  Update the pulse settings for an account.  Use this to enable or disable the pulse.
+
+### Research
+
+- `GET    /api/research`
+  Unified Chartmetric search.  This is the discovery primitive for the detail-lookup endpoints — use `type=artists` to find an `id` for [GET /api/research/albums](/api-reference/research/albums), `type=tracks` for [GET /api/research/track](/api-reference/research/track), `type=playlists` for [GET /api/research/playlist](/api-reference/research/playlist), etc.
+- `GET    /api/research/albums`
+  Get the album discography — albums, EPs, and singles with release dates — for a Chartmetric `artist_id`. 
+
+Thin proxy over Chartmetric's `/artist/:id/albums`.
+- `GET    /api/research/audience`
+  Get audience demographics for an artist on a specific platform — age, gender, and country breakdown.
+- `GET    /api/research/career`
+  Get an artist's career timeline — key milestones, trajectory, and career stage.
+- `GET    /api/research/charts`
+  Get global chart positions for a platform — Spotify, Apple Music, TikTok, YouTube, iTunes, Shazam, etc.  NOT artist-scoped.
+- `GET    /api/research/cities`
+  Get the top cities where an artist's fans listen, ranked by listener concentration.
+- `GET    /api/research/curator`
+  Get curator profile — name, image, follower counts across platforms, tag-based genre info, and Chartmetric playlist reach statistics.  Requires a numeric Chartmetric curator ID (e.
+- `POST   /api/research/deep`
+  Perform deep, comprehensive research on a topic.  Browses multiple sources extensively and returns a cited report.
+- `GET    /api/research/discover`
+  Discover artists by criteria — filter by country, genre, Spotify monthly listener range, and sort by growth metrics.
+- `POST   /api/research/enrich`
+  Enrich an entity with structured data from web research.  Provide a description of who or what to research and a JSON schema defining the fields to extract.
+- `POST   /api/research/extract`
+  Extract clean markdown content from one or more public URLs.  Handles JavaScript-heavy pages and PDFs.
+- `GET    /api/research/festivals`
+  List music festivals.
+- `GET    /api/research/genres`
+  List all available genre IDs and names.  Use these IDs with the discover endpoint at GET /api/research/discover.
+- `GET    /api/research/insights`
+  Get AI-generated insights about an artist — automatically surfaced trends, milestones, and observations.
+- `GET    /api/research/instagram-posts`
+  Get an artist's top Instagram posts and reels, sorted by engagement.
+- `GET    /api/research/lookup`
+  Look up an artist by a platform URL or ID — Spotify URL, Spotify ID, Apple Music URL, etc.
+- `GET    /api/research/metrics`
+  Get platform-specific metrics for an artist over time — followers, listeners, views, engagement.  Supports 14 platforms.
+- `GET    /api/research/milestones`
+  Get an artist's activity feed — playlist adds, chart entries, and other notable events.  Each milestone includes a date, summary, platform, track name, and star rating.
+- `POST   /api/research/people`
+  Search for people in the music industry — artists, managers, A&R reps, producers.  Returns multi-source profiles including LinkedIn data.
+- `GET    /api/research/playlist`
+  Get playlist metadata — name, description, follower count, track count, and curator info. 
+
+Thin proxy over Chartmetric's `/playlist/:platform/:id` detail lookup.
+- `GET    /api/research/playlists`
+  Get an artist's playlist placements — editorial, algorithmic, and indie playlists across platforms.
+- `GET    /api/research/profile`
+  Get a full artist profile — bio, genres, social URLs, label, career stage, and basic metrics.
+- `GET    /api/research/radio`
+  List radio stations tracked by Chartmetric.  NOT artist-scoped.
+- `GET    /api/research/rank`
+  Get an artist's global Chartmetric ranking as a single integer value.
+- `GET    /api/research/similar`
+  Find similar artists based on audience overlap, genre, mood, and musicality.  Use for competitive analysis and collaboration discovery.
+- `GET    /api/research/track`
+  Get full Chartmetric track metadata by numeric track `id` — title, artists, albums, release date, genres, popularity, and platform IDs. 
+
+This endpoint is a thin proxy over Chartmetric's `/track/:id` detail lookup.
+- `GET    /api/research/track/playlists`
+  Returns playlists featuring a specific track.  Accepts a Chartmetric track ID (`id`) or a track name + optional artist (`q`, `artist`) for a Spotify-powered lookup.
+- `GET    /api/research/tracks`
+  Get all tracks by an artist with popularity data.
+- `GET    /api/research/urls`
+  Get all social and streaming URLs for an artist — Spotify, Instagram, TikTok, YouTube, Twitter, SoundCloud, and more.
+- `GET    /api/research/venues`
+  Get venues an artist has performed at, including capacity and location data.
+- `POST   /api/research/web`
+  Search the web for real-time information.  Returns ranked results with titles, URLs, and content snippets.
+
+### Sandbox
+
+- `POST   /api/sandbox`
+  Provisions a Sandbox for the given session.  If a per-org base snapshot exists, the sandbox boots from it (skipping the full repo clone, ~75s saved).
+- `GET    /api/sandbox/reconnect`
+  Live runtime probe for the sandbox bound to a session.  Unlike `GET /api/sandbox/status` (DB-only read), this endpoint actually runs a quick command inside the sandbox to verify it is reachable.
+- `GET    /api/sandbox/status`
+  Returns the current lifecycle and runtime state for the sandbox bound to a session.  The chat UI polls this endpoint while showing the "loading sandbox…" state and flips to "ready" when `status` becomes `active`.
+
+### Sandboxes
+
+- `GET    /api/sandboxes`
+  List all sandboxes associated with the authenticated account and their current statuses.  Returns sandbox details including lifecycle state, timeout remaining, and creation timestamp.
+- `POST   /api/sandboxes`
+  Create a new ephemeral sandbox environment.  Optionally executes a command or an OpenCode prompt if provided.
+- `PATCH  /api/sandboxes`
+  Set a custom snapshot ID for an account.  By default, updates the key owner's account.
+- `DELETE /api/sandboxes`
+  Delete a sandbox environment for the authenticated account.  This permanently deletes the associated GitHub repository and removes the account's snapshot record from the database.
+- `GET    /api/sandboxes/file`
+  Retrieve the contents of a file from the authenticated account's sandbox GitHub repository.  Resolves the github_repo from the [account's snapshot](/api-reference/sandboxes/list), then fetches the file at the specified path from the repository's main branch.
+- `POST   /api/sandboxes/files`
+  Upload one or more files to the authenticated account's sandbox GitHub repository.  Accepts an array of file URLs and commits each file to the specified directory path within the repository.
+- `POST   /api/sandboxes/setup`
+  Triggers the setup-sandbox background task to create a personal sandbox, provision a GitHub repo, take a snapshot, and shut down.  By default, sets up the sandbox for the key owner's account.
+- `POST   /api/sandboxes/staged-file`
+  Issue a presigned upload token so the browser can upload a file directly to Vercel Blob, then call `POST /api/sandboxes/files` with the resulting blob URL to commit it to the sandbox repo.  Use `upload()` from `@vercel/blob/client` rather than calling this route by hand.
+
+### Sessions
+
+- `POST   /api/sessions`
+  Creates a new agent session and an initial empty chat in a single transaction.  The session is created in the `provisioning` lifecycle state — a separate orchestration step claims it and starts the sandbox.
+- `GET    /api/sessions/{sessionId}`
+  Returns a single agent session by its id.
+- `PATCH  /api/sessions/{sessionId}`
+  Renames a session or changes its status (e. g.
+- `GET    /api/sessions/{sessionId}/chats`
+  Lists every chat in the given session as a `ChatSummary` (chat row plus per-account `hasUnread` and `isStreaming` flags), along with the caller's default model id.  Chats are sorted by `createdAt` ascending.
+- `POST   /api/sessions/{sessionId}/chats`
+  Creates a new chat inside the given session.  Callers may pass `{ id }` to claim a deterministic chat id — useful for optimistic UI flows where the client generates the id locally and then persists it.
+- `GET    /api/sessions/{sessionId}/chats/{chatId}`
+  Returns the chat's persisted UI message stream plus its current streaming state so callers can hydrate or refresh a chat view.  `messages` is an array of `parts` payloads — one per `chat_messages` row — ordered by `created_at` ascending (ties broken by id).
+- `PATCH  /api/sessions/{sessionId}/chats/{chatId}`
+  Applies a partial update to the chat.  Body must include at least one of `title` or `modelId` and any provided value must be a non-empty string (whitespace is trimmed for `title`).
+- `DELETE /api/sessions/{sessionId}/chats/{chatId}`
+  Removes the chat (cascade clears `chat_messages` and `chat_reads`).  Refuses with 400 if this is the only chat in the session — sessions must always retain at least one chat.
+- `POST   /api/sessions/{sessionId}/chats/{chatId}/read`
+  Records that the authenticated account has read this chat up to the current timestamp.  This upserts a row in `chat_reads` setting `last_read_at = now()`.
+
+### Socials
+
+- `POST   /api/socials/{id}/scrape`
+  Trigger a social profile scraping job for a given social profile.  Use the [Get Artist Socials](/api-reference/artists/socials) endpoint first to retrieve the social profile id values.
+
+### Songs
+
+- `GET    /api/songs`
+  Retrieve songs from the database with optional filtering by ISRC (International Standard Recording Code) or artist account.  This endpoint joins the songs table with song_artists and accounts tables to provide comprehensive song information.
+- `POST   /api/songs`
+  Bulk create or fetch songs by ISRC.  For each song, the API attempts to look up metadata via internal search.
+- `POST   /api/songs/analyze`
+  Analyze music using a state-of-the-art Audio Language Model that listens directly to the audio waveform.  Unlike text-based AI, this model processes the actual sound — identifying harmony, structure, timbre, lyrics, and cultural context through deep music understanding.
+- `GET    /api/songs/analyze/presets`
+  Lists all available music analysis presets.  Each preset is a curated prompt with optimized generation parameters for a specific use case (e.
+
+### Spotify
+
+- `GET    /api/spotify/album`
+  Get Spotify catalog information for a single album.
+- `GET    /api/spotify/artist/`
+  Get Spotify catalog information for a single artist identified by their unique Spotify ID.
+- `GET    /api/spotify/artist/albums`
+  Get Spotify catalog information about an artist's albums.
+- `GET    /api/spotify/artist/topTracks`
+  Get an artist's top tracks by country.
+- `GET    /api/spotify/search`
+  Search for artists, albums, tracks, and playlists using the Spotify API.  This endpoint is a proxy to the official Spotify Search API.
+
+### Subscriptions
+
+- `POST   /api/subscriptions/portal`
+  Create a subscription management session for the authenticated account.  Returns a hosted URL where the customer can update payment method, view invoices, or cancel.
+- `POST   /api/subscriptions/sessions`
+  Create a checkout session to start a subscription for the authenticated account.  Returns a hosted checkout URL that the client should redirect to.
+
+### Tasks
+
+- `GET    /api/tasks`
+  Retrieve scheduled tasks.  Each task includes `recent_runs` (last 5 runs), `upcoming` (next scheduled run times) sourced directly from the Trigger.
+- `POST   /api/tasks`
+  Create a new scheduled task that runs a prompt against an artist on a recurring cron schedule.  The response matches the [GET endpoint](/api-reference/tasks/get) (a `TasksResponse` with the created task in the `tasks` array).
+- `PATCH  /api/tasks`
+  Update an existing scheduled task.  Only the id field is required; any additional fields you include will be updated on the task.
+- `DELETE /api/tasks`
+  Delete an existing scheduled task by `id`.  Returns only the delete operation status.
+- `GET    /api/tasks/runs`
+  Returns task runs for the authenticated account.  When `runId` is provided, the response contains that single run (`runs` length 1) or 404 if not found.
+
+### Transcribe
+
+- `POST   /api/transcribe`
+  Transcribe audio files using OpenAI Whisper.  The API saves both the original audio file and the generated markdown transcript to the customer's files in Supabase Storage.
+
+### Workspaces
+
+- `POST   /api/workspaces`
+  Create a new workspace account.  Workspaces can optionally be linked to an organization.
+
+---
+
+Total: 161 endpoints
+Docs: https://developers.recoupable.com
+Support: agent@recoupable.com
