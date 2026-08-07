@@ -1,0 +1,157 @@
+# Recoup API
+
+> Music business infrastructure for AI agents. Research, content creation, catalog deals, and platform management — all via REST API or agent plugins.
+
+Base URL: https://api.recoupable.dev/api
+Docs: https://developers.recoupable.dev
+MCP Server: https://api.recoupable.dev/mcp
+
+## Authentication
+
+Pass your API key in the `x-api-key` header on every request.
+
+Get a key instantly (no browser, no dashboard):
+```
+POST /api/agents/signup
+{"email": "agent+{unique}@recoupable.com"}
+→ {"api_key": "recoup_sk_..."}
+```
+
+## Agent Plugins (Claude Code, Cowork, Codex, Cursor)
+
+Install plugins for structured workflows:
+
+- **Platform** (start here): `claude plugin install https://github.com/recoupable/recoup-platform-plugin`
+- **Research** (7 skills): `claude plugin install https://github.com/recoupable/recoup-research-plugin`
+- **Content** (3 skills): `claude plugin install https://github.com/recoupable/recoup-content-plugin`
+- **Catalog Deals** (17 skills): `claude plugin install https://github.com/recoupable/recoup-catalogs-plugin`
+- **Marketplace** (all plugins): Add `https://github.com/recoupable/marketplace`
+
+## API Sections
+
+### Research (20+ endpoints)
+Artist analytics, audience insights, playlist intelligence, competitive analysis, trend detection.
+- `GET /api/research/search?q={query}` — Find artists
+- `GET /api/research/profile?artistId={id}` — Artist profile
+- `GET /api/research/metrics?artistId={id}` — Streaming metrics
+- `GET /api/research/audience?artistId={id}` — Audience demographics
+- `GET /api/research/similar?artistId={id}` — Similar artists
+- `GET /api/research/playlists?artistId={id}` — Playlist placements
+- `GET /api/research/tracks?artistId={id}` — Track catalog
+- `GET /api/research/albums?artistId={id}` — Album catalog
+- `GET /api/research/career?artistId={id}` — Career timeline
+- `GET /api/research/insights?artistId={id}` — AI-generated insights
+- `GET /api/research/deep?artistId={id}` — Deep research report
+- `GET /api/research/people?q={query}` — Industry people search
+- `GET /api/research/web?q={query}` — Web intelligence
+- `GET /api/research/extract?url={url}` — URL content extraction
+- `POST /api/research/enrich` — Entity enrichment
+- `GET /api/research/lookup?name={name}` — Artist name → ID resolution
+- `GET /api/research/milestones?artistId={id}` — Career milestones
+
+### Content Creation (11 endpoints)
+Generate images, videos, captions. Edit, upscale, analyze media.
+- `POST /api/content/create` — Full pipeline (artist → finished video)
+- `POST /api/content/image` — Generate image from prompt
+- `POST /api/content/video` — Generate video (6 modes: prompt, animate, reference, extend, first-last, lipsync)
+- `POST /api/content/caption` — Generate social caption
+- `POST /api/content/transcribe` — Transcribe audio
+- `PATCH /api/content` — Edit (trim, crop, overlay, add audio)
+- `POST /api/content/upscale` — Upscale image/video (up to 4x)
+- `POST /api/content/analyze` — AI video analysis
+- `GET /api/content/templates` — List content templates
+- `GET /api/content/validate?artistAccountId={id}` — Check artist readiness
+- `POST /api/content/estimate` — Estimate cost/duration
+
+### Artists (8 endpoints)
+- `GET /api/artists?accountId={id}` — List artists
+- `POST /api/artists` — Create artist
+- `PATCH /api/artists` — Update artist
+- `DELETE /api/artists` — Delete artist
+- `POST /api/artists/pin` — Pin artist
+- `POST /api/artists/unpin` — Unpin artist
+- `GET /api/artists/socials?artistId={id}` — Artist social links
+- `GET /api/artist/profile?artistId={id}` — Full artist profile
+
+### Chat (12 endpoints)
+Conversations with artist context, streaming support.
+- `POST /api/chat/workflow` — Send message (non-streaming)
+- `POST /api/chat/workflow/stream` — Send message (streaming)
+- `GET /api/chat/runs?chatId={id}` — List runs
+- `GET /api/chat/runs/status?runId={id}` — Run status
+- `POST /api/chat/stop` — Stop a run
+- `POST /api/chats` — Create chat
+- `GET /api/chats` — List chats
+- `GET /api/chats/artist?artistId={id}` — Chats by artist
+- `PATCH /api/chats` — Update chat
+- `DELETE /api/chats` — Delete chat
+- `POST /api/chats/compact` — Compact chat history
+
+### Songs & Catalogs (10 endpoints)
+- `GET /api/songs` — List songs
+- `POST /api/songs` — Create song
+- `POST /api/songs/analyze` — AI music analysis
+- `GET /api/songs/analyze/presets` — Analysis presets
+- `GET /api/songs/catalogs` — List catalogs
+- `POST /api/songs/catalogs` — Create catalog
+- `GET /api/songs/catalog-songs?catalogId={id}` — Songs in catalog
+- `POST /api/songs/catalog-songs` — Add songs to catalog
+- `DELETE /api/songs/catalog-songs` — Remove songs from catalog
+
+### Tasks (5 endpoints)
+Scheduled/recurring automation.
+- `GET /api/tasks` — List tasks
+- `POST /api/tasks` — Create task
+- `PATCH /api/tasks` — Update task
+- `DELETE /api/tasks` — Delete task
+- `GET /api/tasks/runs?taskId={id}` — Task run history
+
+### Social Connectors (6 endpoints)
+OAuth-based social media connections.
+- `GET /api/connectors` — List connected platforms
+- `POST /api/connectors/authorize` — Start OAuth flow
+- `POST /api/connectors/disconnect` — Disconnect platform
+- `GET /api/connectors/actions` — List available actions
+- `POST /api/connectors/execute` — Execute social action (post, etc.)
+- `POST /api/connectors/upload` — Upload file for social post
+
+### Spotify (5 endpoints)
+- `GET /api/spotify/search?q={query}` — Search Spotify
+- `GET /api/spotify/artist?artistId={id}` — Artist details
+- `GET /api/spotify/artist/albums?artistId={id}` — Artist albums
+- `GET /api/spotify/artist/top-tracks?artistId={id}` — Top tracks
+- `GET /api/spotify/album?albumId={id}` — Album details
+
+### Accounts & Organizations
+- `GET /api/accounts/id` — Current account
+- `POST /api/agents/signup` — Agent signup (no auth)
+- `POST /api/agents/verify` — Verify email code (no auth)
+- `GET /api/organizations` — List orgs
+- `POST /api/organizations` — Create org
+
+### Sandboxes
+Managed cloud environments for agent execution.
+- `GET /api/sandboxes` — List sandboxes
+- `POST /api/sandboxes` — Create sandbox
+- `POST /api/sandboxes/snapshot` — Snapshot sandbox
+- `DELETE /api/sandboxes` — Delete sandbox
+
+## CLI
+
+```bash
+npm install -g @recoupable/cli
+export RECOUP_API_KEY=your-key
+recoup whoami
+```
+
+## MCP Server
+
+Connect at `https://api.recoupable.dev/mcp` with Bearer auth. Tools: `prompt_sandbox`, `run_sandbox_command`.
+
+## Links
+
+- [Full docs](https://developers.recoupable.dev)
+- [Full API reference (llms-full.txt)](https://developers.recoupable.dev/llms-full.txt)
+- [OpenAPI spec](https://github.com/sweetmantech/docs/blob/main/api-reference/openapi.json)
+- [Agent plugins marketplace](https://github.com/recoupable/marketplace)
+- Support: agent@recoupable.dev
