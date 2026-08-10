@@ -4780,7 +4780,7 @@
           },
           "profileUrls": {
             "type": "object",
-            "description": "Map of uppercase platform identifier to social profile URL. Each entry replaces the existing social for that platform; platforms not included are preserved. Recognized keys: SPOTIFY, INSTAGRAM, TIKTOK, TWITTER, YOUTUBE, APPLE, FACEBOOK, THREADS, BANDSINTOWN. A BANDSINTOWN URL takes the form `bandsintown.com/a/{id}-{slug}` and is what `POST /api/research/events` resolves an artist's live shows through. Keys are matched case-sensitively — lowercase keys will create duplicate socials instead of replacing the existing entry.",
+            "description": "Map of uppercase platform identifier to social profile URL. Each entry replaces the existing social for that platform; platforms not included are preserved. Recognized keys: SPOTIFY, INSTAGRAM, TIKTOK, TWITTER, YOUTUBE, APPLE, FACEBOOK, THREADS, BANDSINTOWN. A BANDSINTOWN URL takes the form `bandsintown.com/a/{id}-{slug}` and is what `POST /api/research/events` resolves an artist's live shows through. Keys are matched case-sensitively, so lowercase keys will create duplicate socials instead of replacing the existing entry.",
             "additionalProperties": {
               "type": "string"
             },
