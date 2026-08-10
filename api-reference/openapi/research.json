@@ -2358,6 +2358,10 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "error": "Error: no bandsintown ID connected to this artist. Please connect the bandsintown ID in this format: bandsintown.com/a/{id}-{slug} Docs here: https://docs.recoupable.dev/api-reference/artists/update#body-profile-urls"
                 }
               }
             }
