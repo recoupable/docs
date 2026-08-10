@@ -2298,6 +2298,77 @@
         }
       }
     },
+    "/api/research/events": {
+      "post": {
+        "description": "List an artist's live shows. Returns one row per event with venue, city, country, ticket link, and lineup.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchEventsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Events for the artist. An artist with no matching events returns an empty `events` array, not an error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchEventsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient research credits — the body includes a `checkoutUrl` to top up.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchInsufficientCreditsResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The artist has no live-events profile connected, so no events can be looked up. Distinct from a 200 with an empty `events` array, which means the artist is connected but has no matching events.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "error": "Error: no bandsintown ID connected to this artist. Please connect the bandsintown ID in this format: bandsintown.com/a/{id}-{slug} Docs here: https://docs.recoupable.dev/api-reference/artists/update#body-profile-urls"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/research/track/playlists": {
       "get": {
         "description": "Returns playlists featuring a specific track. Accepts a provider track ID (`id`) or a track name + optional artist (`q`, `artist`) for a Spotify-powered lookup. When no filter flag is passed, defaults to editorial + indie + majorCurator + popularIndie = `true`. Costs 5 credits per request.\n\nDiscover a provider track `id` via [GET /api/research](/api-reference/research/search) with `type=tracks` — then pass the resulting `id` here for the most reliable match (avoids the ambiguity of name-based lookup).",
@@ -4574,6 +4645,95 @@
           "chat": {
             "$ref": "#/components/schemas/ChatRoom",
             "description": "The updated chat room object"
+          }
+        }
+      },
+      "ResearchEventsRequest": {
+        "type": "object",
+        "required": [
+          "artist_id"
+        ],
+        "description": "Request body for artist event lookup.",
+        "properties": {
+          "artist_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Recoup artist id. Events are resolved through the live-events profile connected to this artist, so the lookup is exact and cannot drift to a same-named performer. Returns 404 if no live-events profile is connected.",
+            "example": "123694f2-1dab-40b4-8a75-84d39571c0bc"
+          },
+          "date": {
+            "type": "string",
+            "enum": [
+              "upcoming",
+              "past",
+              "all"
+            ],
+            "default": "upcoming",
+            "description": "Which events to return."
+          }
+        }
+      },
+      "ResearchEventsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "events"
+        ],
+        "description": "Live events for one artist.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "events": {
+            "type": "array",
+            "description": "Matching events, ascending by date. Empty when the artist has none.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string",
+                  "description": "Event date as ISO 8601 (YYYY-MM-DD).",
+                  "example": "2026-09-26"
+                },
+                "venue": {
+                  "type": "string",
+                  "description": "Venue name.",
+                  "example": "O2 Academy Brixton"
+                },
+                "city": {
+                  "type": "string",
+                  "example": "London"
+                },
+                "region": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "State or region where the source provides one. US venues carry a state code such as \"TN\"; most non-US venues return an empty string, as in the example below.",
+                  "example": ""
+                },
+                "country": {
+                  "type": "string",
+                  "description": "Country name. Pair with `city` before filtering by market, since city names such as London and Paris are not unique across countries.",
+                  "example": "United Kingdom"
+                },
+                "ticket_url": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Ticket link where one is published."
+                },
+                "sold_out": {
+                  "type": "boolean",
+                  "description": "Whether the source marks the event sold out."
+                },
+                "lineup": {
+                  "type": "array",
+                  "description": "Billed artists, the queried artist first. More than one entry means a shared bill.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
         }
       },

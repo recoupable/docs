@@ -110,6 +110,7 @@
               "api-reference/research/insights",
               "api-reference/research/career",
               "api-reference/research/milestones",
+              "api-reference/research/events",
               "api-reference/research/similar",
               "api-reference/research/urls"
             ]
