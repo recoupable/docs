@@ -2300,7 +2300,7 @@
     },
     "/api/research/events": {
       "post": {
-        "description": "List an artist's live shows, keyed on a stable Bandsintown artist id rather than a name. Returns one row per event with venue, city, country, ticket link, and lineup. Because the lookup is id-based, it cannot return a different performer who happens to share the artist's name — use this instead of web search when you need shows for a specific artist.",
+        "description": "List a Recoup artist's live shows. Returns one row per event with venue, city, country, ticket link, and lineup. The artist is identified by their Recoup `artist_id` and resolved through the live-events profile connected to that artist, so the lookup cannot return a different performer who happens to share the artist's name — use this instead of web search when you need shows for a specific artist. Returns 404 when the artist has no live-events profile connected.",
         "requestBody": {
           "required": true,
           "content": {
@@ -2348,6 +2348,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResearchInsufficientCreditsResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The artist has no live-events profile connected, so no events can be looked up. Distinct from a 200 with an empty `events` array, which means the artist is connected but has no matching events.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchErrorResponse"
                 }
               }
             }
@@ -4637,14 +4647,15 @@
       "ResearchEventsRequest": {
         "type": "object",
         "required": [
-          "bandsintown_id"
+          "artist_id"
         ],
         "description": "Request body for artist event lookup.",
         "properties": {
-          "bandsintown_id": {
+          "artist_id": {
             "type": "string",
-            "description": "Bandsintown numeric artist id — the digits in a Bandsintown artist URL (`bandsintown.com/a/{id}-{slug}`). Identifies the artist exactly, so results cannot drift to a same-named performer.",
-            "example": "1590132"
+            "format": "uuid",
+            "description": "Recoup artist id. Events are resolved through the live-events profile connected to this artist, so the lookup is exact and cannot drift to a same-named performer. Returns 404 if no live-events profile is connected.",
+            "example": "123694f2-1dab-40b4-8a75-84d39571c0bc"
           },
           "date": {
             "type": "string",
