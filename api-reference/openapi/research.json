@@ -4675,6 +4675,10 @@
       },
       "ResearchEventsResponse": {
         "type": "object",
+        "required": [
+          "status",
+          "events"
+        ],
         "description": "Live events for one artist.",
         "properties": {
           "status": {
