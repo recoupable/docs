@@ -2300,7 +2300,7 @@
     },
     "/api/research/events": {
       "post": {
-        "description": "List a Recoup artist's live shows. Returns one row per event with venue, city, country, ticket link, and lineup. The artist is identified by their Recoup `artist_id` and resolved through the live-events profile connected to that artist, so the lookup cannot return a different performer who happens to share the artist's name. Use this instead of web search when you need shows for a specific artist. Returns 404 when the artist has no live-events profile connected.",
+        "description": "List an artist's live shows. Returns one row per event with venue, city, country, ticket link, and lineup.",
         "requestBody": {
           "required": true,
           "content": {
