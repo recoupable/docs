@@ -4689,8 +4689,8 @@
                 "region": {
                   "type": "string",
                   "nullable": true,
-                  "description": "State or region where the source provides one; empty for many non-US venues.",
-                  "example": "TN"
+                  "description": "State or region where the source provides one. US venues carry a state code such as \"TN\"; most non-US venues return an empty string, as in the example below.",
+                  "example": ""
                 },
                 "country": {
                   "type": "string",
