@@ -3806,6 +3806,11 @@
       "SendEmailRequest": {
         "type": "object",
         "properties": {
+          "trigger_run_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional Trigger.dev run id (`run_\u2026`) of the scheduled task that produced this email. Persisted to the send log so task runs can be named by the subject of the email they sent (GET /api/tasks/runs `email_subject`). Omit for sends not originated by a task run."
+          },
           "to": {
             "type": "array",
             "minItems": 1,

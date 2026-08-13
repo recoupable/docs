@@ -4371,6 +4371,11 @@
             "nullable": true,
             "description": "The originating scheduled task's title, when resolvable (from the scheduled task that triggered the run). Only present when listing runs (runId omitted); null when the run cannot be mapped to a scheduled task."
           },
+          "email_subject": {
+            "type": "string",
+            "nullable": true,
+            "description": "Subject of the most recent email this run sent, when the send was linked to the run via `trigger_run_id` (see POST /api/emails). Only present when listing runs; null for runs that sent no linked email \u2014 fall back to `title`, then a generic label. A run that sends multiple emails reports the newest subject."
+          },
           "idempotencyKey": {
             "type": "string",
             "nullable": true,
