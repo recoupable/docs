@@ -44,7 +44,8 @@
               "api-reference/artists/pin",
               "api-reference/artists/unpin",
               "api-reference/artists/delete",
-              "api-reference/artists/socials"
+              "api-reference/artists/socials",
+              "api-reference/artists/socials-delete"
             ]
           },
           {
@@ -109,6 +110,7 @@
               "api-reference/research/insights",
               "api-reference/research/career",
               "api-reference/research/milestones",
+              "api-reference/research/events",
               "api-reference/research/similar",
               "api-reference/research/urls"
             ]
@@ -161,7 +163,11 @@
             "pages": [
               "api-reference/songs/catalogs",
               "api-reference/songs/catalogs-create",
+              "api-reference/songs/catalog-rename",
+              "api-reference/songs/catalog-delete",
+              "api-reference/songs/valuation-run",
               "api-reference/songs/catalog-measurements",
+              "api-reference/songs/catalog-valuations",
               "api-reference/songs/catalog-songs",
               "api-reference/songs/catalog-songs-add",
               "api-reference/songs/catalog-songs-delete"
@@ -332,11 +338,14 @@
             "group": "Billing",
             "pages": [
               "api-reference/subscriptions/sessions-create",
+              "api-reference/subscriptions/card-on-file-create",
               "api-reference/subscriptions/portal-create",
               "api-reference/accounts/subscription-get",
               "api-reference/credits/sessions-create",
               "api-reference/accounts/credits-get",
-              "api-reference/accounts/payment-method-get"
+              "api-reference/accounts/payment-method-get",
+              "api-reference/accounts/auto-recharge-get",
+              "api-reference/accounts/auto-recharge-update"
             ]
           },
           {
@@ -379,7 +388,8 @@
               "api-reference/admins/agent-signups",
               "api-reference/admins/artists-pro",
               "api-reference/admins/credits-rollup",
-              "api-reference/admins/credits-events"
+              "api-reference/admins/credits-events",
+              "api-reference/admins/credits-grant"
             ]
           },
           {
@@ -393,6 +403,12 @@
       {
         "tab": "Connectors",
         "groups": [
+          {
+            "group": "Concepts",
+            "pages": [
+              "connectors/ownership"
+            ]
+          },
           {
             "group": "Connectors",
             "pages": [

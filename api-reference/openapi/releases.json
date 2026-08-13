@@ -554,7 +554,7 @@
         }
       },
       "post": {
-        "description": "Create a new artist account. The artist can optionally be linked to an organization.",
+        "description": "Create a new artist account. When spotify_artist_id is provided and a canonical artist already exists for it, the existing artist is linked to the account instead of creating a duplicate. The artist can optionally be linked to an organization.",
         "requestBody": {
           "description": "Artist creation parameters",
           "required": true,
@@ -567,6 +567,16 @@
           }
         },
         "responses": {
+          "200": {
+            "description": "Existing canonical artist for the given spotify_artist_id linked to the account (no new artist created)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateArtistResponse"
+                }
+              }
+            }
+          },
           "201": {
             "description": "Artist created successfully",
             "content": {
@@ -922,6 +932,78 @@
         }
       }
     },
+    "/api/artists/{id}/socials/{socialId}": {
+      "delete": {
+        "description": "Remove a social profile link from an artist. Use this to correct a wrongly auto-matched social. This unlinks the social from the artist account; it does not delete the underlying social record, which may still be linked to other accounts.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier of the artist account the social is linked to",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "socialId",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the social profile to unlink from the artist",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Social profile unlinked successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteArtistSocialResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - id or socialId is not a valid UUID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteArtistErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication"
+          },
+          "403": {
+            "description": "Forbidden - the authenticated account cannot access this artist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteArtistErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Artist not found or the social is not linked to this artist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteArtistErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/artist/socials/scrape": {
       "post": {
         "description": "Trigger scrape jobs for all social profiles linked to an artist. Returns a runId per social profile that you can poll for status and results via the [Scraper Results API](/api-reference/apify/scraper).",
@@ -1180,12 +1262,12 @@
     },
     "/api/accounts/{id}/catalogs": {
       "get": {
-        "description": "Retrieve catalogs associated with a specific account. The endpoint joins account_catalogs with catalogs to return catalog metadata for the specified account.",
+        "description": "Retrieve the catalogs visible to a specific account. Returns the catalogs the account owns directly, plus the catalogs owned by any organization the account belongs to - so every member of an organization sees that organization's catalogs without passing the organization's id. A catalog owned both directly and through an organization is returned once. An account that belongs to no organization receives only its own catalogs. Create an organization-owned catalog with [Create catalog](/api-reference/songs/catalogs-create) or [Run valuation](/api-reference/songs/valuation-run).\n\nEach catalog carries its estimated value band and its owner, so a list of catalogs can be ranked by worth and a member can tell an organization's catalog from their own. `valuation` is null for a catalog with no measured songs; `owner.image` is null when the owner account has no avatar.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "The unique identifier of the account to query",
+            "description": "The unique identifier of the account to query. The catalogs of every organization this account belongs to are included in the response.",
             "required": true,
             "schema": {
               "type": "string",
@@ -1259,7 +1341,7 @@
     },
     "/api/catalogs": {
       "post": {
-        "description": "Create a catalog.",
+        "description": "Create a catalog, owned by the calling account or - with organization_id - by one of the caller's organizations, in which case every member of that organization sees it via [Get Catalogs](/api-reference/songs/catalogs). When materializing from a valuation snapshot, the endpoint also attaches the snapshot's canonical artist to the caller's roster: the measured songs' existing song-artist links are resolved to the dominant artist account, which is added to the caller's roster if not already present. The attach also runs on idempotent re-claims of an already-materialized snapshot. The roster attach always targets the calling account, even when the catalog is owned by an organization.",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
@@ -1307,7 +1389,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - the snapshot belongs to a different account",
+            "description": "Forbidden - the snapshot belongs to a different account, or the caller is not a member of the organization named by organization_id",
             "content": {
               "application/json": {
                 "schema": {
@@ -1329,8 +1411,113 @@
         }
       }
     },
+    "/api/valuation": {
+      "post": {
+        "summary": "Run valuation",
+        "description": "Generate a catalog from a Spotify artist in one call. Resolves the artist's releases, captures current Spotify play counts (spending the account's credits), materializes a catalog from the resulting snapshot (idempotent - see [Create catalog](/api-reference/songs/catalogs-create)), and returns the catalog with its estimated value band. The catalog is owned by the calling account unless organization_id names one of the caller's organizations to own it instead, in which case every member of that organization sees it. The calling account is always taken from the credentials, never the body, and it is the account whose credits are spent. The searched artist is also linked to the caller's roster (so a funnel signup lands with a populated `GET /api/artists` it can confirm); when the catalog's songs already resolve a canonical artist that one is used, otherwise the searched Spotify artist is linked directly. Synchronous: the request waits for the capture to land (typically under two minutes). Each run also persists a row in the catalog's valuation history, readable via [Get Catalog Valuations](/api-reference/songs/catalog-valuations).",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "The Spotify artist to value.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunValuationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Catalog created (or idempotently re-fetched) with its estimated value band.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunValuationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid spotify_artist_id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient credits to measure the catalog",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - the caller is not a member of the organization named by organization_id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - no releases found for the Spotify artist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "The measurement did not complete within the wait window - retry shortly",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/catalogs/songs": {
       "get": {
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
         "description": "Retrieve songs within a specific catalog with pagination support. This endpoint joins catalog_songs with songs, song_artists, and accounts to provide comprehensive song information for a given catalog.",
         "parameters": [
           {
@@ -1395,6 +1582,26 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - the catalog does not belong to the authenticated account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Catalog not found or no songs in catalog",
             "content": {
@@ -1408,6 +1615,14 @@
         }
       },
       "post": {
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
         "description": "Batch add songs to a catalog by ISRC. For each song, the API attempts to look up metadata via internal search. If no data is found, optional fallback fields (name, album, notes, artists) are used.",
         "requestBody": {
           "description": "Array of songs to add to catalog",
@@ -1440,10 +1655,38 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - the catalog does not belong to the authenticated account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
           }
         }
       },
       "delete": {
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
         "description": "Batch remove songs from a catalog by ISRC. Deletes the relationship in catalog_songs for each catalog_id and ISRC pair.",
         "requestBody": {
           "description": "Array of songs to remove from catalog",
@@ -1473,6 +1716,268 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - the catalog does not belong to the authenticated account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/catalogs/{catalogId}": {
+      "patch": {
+        "description": "Rename a catalog. The only mutable field is the display name — catalog membership is managed through [Add catalog songs](/api-reference/songs/catalog-songs-add) and [Remove catalog songs](/api-reference/songs/catalog-songs-delete).\n\nCatalogs created by [Run valuation](/api-reference/songs/valuation-run) are named after the measured artist. Catalogs created before that shipped are all named `Valuation Catalog` — this endpoint is how you give them real names.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "catalogId",
+            "in": "path",
+            "description": "ID of the catalog to rename.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The new catalog name.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCatalogRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Catalog renamed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateCatalogResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - catalogId is not a valid UUID, or name is missing or empty",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Catalog not found - no catalog with this ID is visible to the caller. A catalog that exists but belongs to neither the authenticated account nor one of its organizations returns 404, not 403: the same visibility rule the catalog read paths use, so a catalog you cannot see is indistinguishable from one that does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a catalog. Removes the catalog, its song membership (catalog_songs), its ownership links (account_catalogs) and its stored valuation history (catalog_valuations).\n\nThe measurement that produced the catalog is **not** deleted. A playcount snapshot is a metered capture that spent credits and cannot be reproduced for a past date, while a catalog is a label over songs that can be rebuilt from it in one call — so deleting a catalog only clears the snapshot's reference to it. The snapshot then reads as unclaimed, and [Create catalog](/api-reference/songs/catalogs-create) can re-materialize it under a correct name. The released snapshot IDs are returned so that recovery does not require hunting for them.\n\nUse this for genuine duplicates. To fix a catalog's name, use [Rename catalog](/api-reference/songs/catalog-rename) instead — it keeps the catalog's measurements and valuation history intact.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "catalogId",
+            "in": "path",
+            "description": "ID of the catalog to delete.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Catalog deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteCatalogResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - catalogId is not a valid UUID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Catalog not found - no catalog with this ID is visible to the caller. A catalog that exists but belongs to neither the authenticated account nor one of its organizations returns 404, not 403: the same visibility rule the catalog read paths use, so a catalog you cannot see is indistinguishable from one that does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/catalogs/{catalogId}/valuations": {
+      "get": {
+        "description": "Get the persisted valuation history for a catalog, latest first. A row is written each time a valuation band is computed for the whole catalog (valuation runs and measurement reads persist at most one row per catalog per day). Use limit=1 for the current value. History is what makes week-over-week deltas possible.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "catalogId",
+            "in": "path",
+            "description": "The unique identifier of the catalog. The catalog must belong to the authenticated account. Malformed (non-uuid) values are rejected with 400.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of valuation rows to return, latest first (default 30, max 100). limit=1 returns the current value. Invalid values are rejected with 400.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 30
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The catalog's persisted valuation rows, latest first. Empty when no valuation has been persisted yet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogValuationsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed catalogId or limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Catalog not found or not owned by the authenticated account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -2260,9 +2765,54 @@
           }
         }
       },
-      "CreateCatalogRequest": {
+      "RunValuationRequest": {
+      "type": "object",
+      "required": [
+        "spotify_artist_id"
+      ],
+      "properties": {
+        "spotify_artist_id": {
+          "type": "string",
+          "description": "The Spotify artist id to value (e.g. from a Spotify artist search). The endpoint resolves this artist's releases, measures them, and builds the catalog."
+        },
+        "organization_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Optional. ID of an organization to own the resulting catalog instead of the calling account. Every member of that organization then sees it in their own [Get Catalogs](/api-reference/songs/catalogs) response. The caller must be a member of the organization; otherwise the request is rejected with 403. Credits are still spent by the calling account, and the searched artist is still linked to the caller's roster. Omit to own the catalog personally, which is the default."
+        }
+      }
+    },
+    "RunValuationResponse": {
+      "type": "object",
+      "description": "Result of a valuation run: the materialized catalog and its estimated value band.",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "success",
+            "error"
+          ],
+          "description": "Status of the request"
+        },
+        "catalog": {
+          "$ref": "#/components/schemas/Catalog"
+        },
+        "band": {
+          "$ref": "#/components/schemas/ValuationBand"
+        },
+        "songs_measured": {
+          "type": "integer",
+          "description": "Number of tracks with a captured play count that were materialized into the catalog."
+        },
+        "error": {
+          "type": "string",
+          "description": "Error message (only present if status is 'error')"
+        }
+      }
+    },
+    "CreateCatalogRequest": {
         "type": "object",
-        "description": "Request body for creating a catalog. At least one of name or snapshot must be supplied. The owning account is taken from the request credentials, never from this body.",
+        "description": "Request body for creating a catalog. At least one of name or snapshot must be supplied. The catalog is owned by the authenticated account unless organization_id names an organization to own it instead.",
         "properties": {
           "name": {
             "type": "string",
@@ -2272,6 +2822,11 @@
             "type": "string",
             "format": "uuid",
             "description": "Optional. ID of a completed playcount snapshot (valuation run) owned by the authenticated account. Its measured ISRCs are added to the new catalog as catalog songs. Create one with [Create measurement job](/api-reference/research/measurement-jobs)."
+          },
+          "organization_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Optional. ID of an organization to own the catalog instead of the calling account. Every member of that organization then sees the catalog in their own [Get Catalogs](/api-reference/songs/catalogs) response, without passing the organization's id. The caller must be a member of the organization; otherwise the request is rejected with 403. Omit to own the catalog personally, which is the default."
           }
         }
       },
@@ -2300,6 +2855,71 @@
           }
         }
       },
+      "UpdateCatalogRequest": {
+        "type": "object",
+        "description": "Request body for renaming a catalog.",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "New display name for the catalog. Must not be empty."
+          }
+        }
+      },
+      "UpdateCatalogResponse": {
+        "type": "object",
+        "description": "Response returned after renaming a catalog",
+        "required": [
+          "status",
+          "catalog"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "catalog": {
+            "$ref": "#/components/schemas/Catalog"
+          }
+        }
+      },
+      "DeleteCatalogResponse": {
+        "type": "object",
+        "description": "Response returned after deleting a catalog",
+        "required": [
+          "status",
+          "catalog_id",
+          "released_snapshot_ids"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "catalog_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the deleted catalog"
+          },
+          "released_snapshot_ids": {
+            "type": "array",
+            "description": "IDs of the playcount snapshots that pointed at this catalog. Those snapshots still exist - only their catalog reference was cleared - so each can be re-materialized into a new, correctly named catalog with Create catalog. Empty when the catalog was not created from a measurement run.",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
       "Catalog": {
         "type": "object",
         "description": "A catalog with its metadata",
@@ -2322,6 +2942,89 @@
             "type": "string",
             "format": "date-time",
             "description": "ISO timestamp of when the catalog was last updated"
+          }
+        }
+      },
+      "CatalogOwner": {
+        "type": "object",
+        "description": "The account a catalog belongs to. A catalog owned both directly and through an organization reports the organization - that is the ownership worth surfacing to a member.",
+        "required": [
+          "id",
+          "name",
+          "image",
+          "is_organization"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Owner account id"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true,
+            "description": "Owner display name, null when the account has none"
+          },
+          "image": {
+            "type": "string",
+            "nullable": true,
+            "description": "Owner avatar URL from account_info, null when the account has no image. Clients should fall back to initials rather than render a broken image."
+          },
+          "is_organization": {
+            "type": "boolean",
+            "description": "True when the owner is an organization the caller belongs to, false when it is a personal account"
+          }
+        }
+      },
+      "CatalogListItem": {
+        "type": "object",
+        "description": "A catalog as returned by [Get catalogs](/api-reference/songs/catalogs): the catalog plus its estimated value and its owner. Only this list carries those two fields - the create and rename responses return the bare catalog.",
+        "required": [
+          "id",
+          "name",
+          "created_at",
+          "updated_at",
+          "measured_song_count",
+          "valuation",
+          "owner"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the catalog"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the catalog"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the catalog was created"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO timestamp of when the catalog was last updated"
+          },
+          "measured_song_count": {
+            "type": "integer",
+            "description": "Songs in the catalog with at least one play-count measurement. 0 for a catalog that was never measured, in which case valuation is null."
+          },
+          "valuation": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ValuationBand"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Estimated value band - the same schema and model as [Get catalog measurements](/api-reference/songs/catalog-measurements) returns, so a list and the report it opens cannot disagree. Null when nothing in the catalog has been measured; clients should say so rather than render $0."
+          },
+          "owner": {
+            "$ref": "#/components/schemas/CatalogOwner"
           }
         }
       },
@@ -2462,9 +3165,9 @@
           "catalogs": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Catalog"
+              "$ref": "#/components/schemas/CatalogListItem"
             },
-            "description": "Array of catalog objects"
+            "description": "Array of catalog objects, each with its estimated value and its owner"
           },
           "error": {
             "type": "string",
@@ -2612,6 +3315,61 @@
           }
         }
       },
+      "CatalogValuationsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "valuations"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "valuations": {
+            "type": "array",
+            "description": "Persisted valuation rows, latest first.",
+            "items": {
+              "type": "object",
+              "required": [
+                "low",
+                "mid",
+                "high",
+                "measured_song_count",
+                "total_streams",
+                "measured_at"
+              ],
+              "properties": {
+                "low": {
+                  "type": "number",
+                  "description": "Low end of the estimated catalog value band, USD."
+                },
+                "mid": {
+                  "type": "number",
+                  "description": "Midpoint of the estimated catalog value band, USD."
+                },
+                "high": {
+                  "type": "number",
+                  "description": "High end of the estimated catalog value band, USD."
+                },
+                "measured_song_count": {
+                  "type": "integer",
+                  "description": "Songs measured in the capture this valuation was computed from."
+                },
+                "total_streams": {
+                  "type": "integer",
+                  "description": "Whole-catalog lifetime stream total at measurement time."
+                },
+                "measured_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "When the underlying measurement was taken."
+                }
+              }
+            }
+          }
+        }
+      },
       "CreateArtistRequest": {
         "type": "object",
         "required": [
@@ -2622,6 +3380,10 @@
             "type": "string",
             "minLength": 1,
             "description": "The name of the artist to create"
+          },
+          "spotify_artist_id": {
+            "type": "string",
+            "description": "Optional Spotify artist id. When provided, the endpoint resolves-or-creates the canonical artist for that id: if an artist already carries it, that artist is linked to the account and returned (200) instead of creating a duplicate; otherwise the artist is created with its Spotify profile attached (201)."
           },
           "account_id": {
             "type": "string",
@@ -2681,6 +3443,24 @@
             "type": "string",
             "format": "uuid",
             "description": "UUID of the artist account that was deleted or unlinked"
+          }
+        }
+      },
+      "DeleteArtistSocialResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "socialId"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the social profile was unlinked successfully"
+          },
+          "socialId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the social profile that was unlinked from the artist"
           }
         }
       },
@@ -2840,6 +3620,12 @@
             "type": "string",
             "description": "Cron expression defining when the task runs (e.g., '0 9 * * 4' for Thursdays at 9 AM)",
             "example": "0 9 * * 4"
+          },
+          "timezone": {
+            "type": "string",
+            "default": "UTC",
+            "description": "Optional IANA time zone (e.g. America/New_York) the cron schedule is interpreted in, DST-aware. Defaults to UTC. Applied to the Trigger.dev schedule (the source of truth); not stored separately.",
+            "example": "America/New_York"
           },
           "account_id": {
             "type": "string",
@@ -3399,6 +4185,12 @@
             "type": "string",
             "description": "Cron expression defining when the task should execute (e.g., '0 10 * * *')"
           },
+          "timezone": {
+            "type": "string",
+            "nullable": true,
+            "description": "IANA time zone the task's cron is interpreted in, read from the Trigger.dev schedule (the source of truth). Null when the task has no schedule or the timezone can't be read.",
+            "example": "America/New_York"
+          },
           "account_id": {
             "type": "string",
             "format": "uuid",
@@ -3902,6 +4694,11 @@
             "description": "New cron expression. If sent, must be non-empty and valid for your environment.",
             "example": "0 10 * * 4"
           },
+          "timezone": {
+            "type": "string",
+            "description": "Optional IANA time zone the cron is interpreted in (DST-aware). If sent, updates the Trigger.dev schedule; a timezone-only change re-syncs the schedule. A cron-only update preserves the existing time zone.",
+            "example": "America/New_York"
+          },
           "account_id": {
             "type": "string",
             "format": "uuid",
@@ -3988,13 +4785,20 @@
           },
           "profileUrls": {
             "type": "object",
-            "description": "Map of uppercase platform identifier to social profile URL. Each entry replaces the existing social for that platform; platforms not included are preserved. Recognized keys: SPOTIFY, INSTAGRAM, TIKTOK, TWITTER, YOUTUBE, APPLE, FACEBOOK, THREADS. Keys are matched case-sensitively — lowercase keys will create duplicate socials instead of replacing the existing entry.",
+            "description": "Map of uppercase platform identifier to social profile URL. Each entry replaces the existing social for that platform; platforms not included are preserved. Recognized keys: SPOTIFY, INSTAGRAM, TIKTOK, TWITTER, YOUTUBE, APPLE, FACEBOOK, THREADS, BANDSINTOWN. Keys are matched case-sensitively, so lowercase keys will create duplicate socials instead of replacing the existing entry.",
             "additionalProperties": {
               "type": "string"
             },
             "example": {
               "SPOTIFY": "https://open.spotify.com/artist/1Xyo4u8uXC1ZmMpatF05PJ",
-              "INSTAGRAM": "https://instagram.com/theweeknd"
+              "INSTAGRAM": "https://instagram.com/theweeknd",
+              "TIKTOK": "https://tiktok.com/@theweeknd",
+              "TWITTER": "https://x.com/theweeknd",
+              "YOUTUBE": "https://youtube.com/@theweeknd",
+              "APPLE": "https://music.apple.com/us/artist/the-weeknd/479756766",
+              "FACEBOOK": "https://facebook.com/theweeknd",
+              "THREADS": "https://threads.net/@theweeknd",
+              "BANDSINTOWN": "https://www.bandsintown.com/a/1371750-the-weeknd"
             }
           },
           "pinned": {

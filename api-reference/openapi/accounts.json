@@ -374,6 +374,26 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Caller is not a member of the organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -790,6 +810,81 @@
         }
       }
     },
+    "/api/subscriptions/card-on-file": {
+      "post": {
+        "description": "Create a $0 card-on-file checkout session for the authenticated account. Stripe `setup` mode saves a payment method without charging anything or starting a subscription, so an account that later runs out of credits can be auto-recharged instead of dead-ending. Returns a hosted checkout URL that the client should redirect to.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Card-on-file session parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCardOnFileSessionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Card-on-file session created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateSubscriptionSessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
+                },
+                "example": {
+                  "error": "successUrl must be a valid URL"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
+                },
+                "example": {
+                  "error": "Exactly one of x-api-key or Authorization must be provided"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
+                },
+                "example": {
+                  "error": "Internal server error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/accounts/{id}/subscription": {
       "get": {
         "description": "Retrieve the subscription for an account, directly or via an organization.",
@@ -993,6 +1088,167 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AccountPaymentMethodErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/accounts/{id}/auto-recharge": {
+      "get": {
+        "description": "Retrieve whether automatic top-up is enabled for the account.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the account. Must be the authenticated account or another accessible via organization membership.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Auto top-up setting returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountAutoRechargeResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountAutoRechargeErrorResponse"
+                },
+                "example": {
+                  "error": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account not accessible to the authenticated account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountAutoRechargeErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountAutoRechargeErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "Enable or disable automatic top-up for the account.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the account. Must be the authenticated account or another accessible via organization membership.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountAutoRechargeUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Auto top-up setting returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountAutoRechargeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body - `enabled` must be a boolean",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountAutoRechargeErrorResponse"
+                },
+                "example": {
+                  "error": "enabled must be a boolean"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountAutoRechargeErrorResponse"
+                },
+                "example": {
+                  "error": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account not accessible to the authenticated account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountAutoRechargeErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountAutoRechargeErrorResponse"
                 }
               }
             }
@@ -2315,6 +2571,92 @@
         }
       }
     },
+    "/api/admins/credits": {
+      "post": {
+        "description": "Sets an account's credit balance, and records who set it and why. Requires the authenticated account to be a Recoup admin.\n\n**Absolute, not a delta.** `remaining_credits` is the balance the account is left holding, whatever it held before — the outcome never depends on the balance at the moment the request lands. The prior balance comes back as `previous_credits` for the record. There is deliberately no add/subtract variant.\n\n**Every grant is audited.** `reason` is required and must be non-empty. The grant is stored against the acting admin's account ID and is readable afterwards in the `grants` array of [`GET /api/admins/credits/events`](/api-reference/admins/credits-events).\n\n**A grant expires after one month — plan for it.** Credit balances are refilled to the plan total by a monthly reset that runs lazily on the next read of [`GET /api/accounts/{id}/credits`](/api-reference/accounts/credits-get), once the underlying row is more than a month old. Setting a balance here restarts that clock, so the balance holds until `expires_at` (one month after `granted_at`) and is then silently overwritten on the first balance read after it — with 9,999 for an account carrying an active Stripe subscription, and 333 for every other account, including one with no Stripe customer at all. Nothing warns the account holder, and nothing warns you. If the headroom needs to outlive a month, grant it again; if the account should stay funded indefinitely, put it on a pro subscription rather than granting.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "The account to set, the balance to leave it at, and why",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminGrantCreditsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Balance set and the grant recorded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminGrantCreditsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed JSON body, or a missing/invalid `account_id`, `remaining_credits`, or `reason`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminGrantCreditsValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - authenticated account is not a Recoup admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No account exists with the supplied `account_id`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error while setting the balance or recording the grant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admins/credits/rollup": {
       "get": {
         "description": "Returns the per-account rollup of credit usage over the selected period, sorted by total credits deducted descending. Each row carries the account identity (UUID + display name + primary email) and the aggregated spend so the admin dashboard can render a top-spenders table without joining client-side. Pair with [`GET /api/admins/credits/events?account_id=…&period=…`](/api-reference/admins/credits-events) to drill into the individual `usage_events` rows for a single account. Requires the authenticated account to be a Recoup admin.",
@@ -2386,7 +2728,7 @@
     },
     "/api/admins/credits/events": {
       "get": {
-        "description": "Returns the raw `usage_events` rows for a single account over the selected period, sorted by `created_at` descending. Powers the drilldown view that expands when a row in the [`/api/admins/credits/rollup`](/api-reference/admins/credits-rollup) table is opened. Each event represents one debit (main agent turn, subagent step, chat completion, or research call), with token counts and `credits_deducted_cents` matching the wallet drop on `credits_usage` for that account. Requires the authenticated account to be a Recoup admin.",
+        "description": "Returns the raw `usage_events` rows for a single account over the selected period, sorted by `created_at` descending. Powers the drilldown view that expands when a row in the [`/api/admins/credits/rollup`](/api-reference/admins/credits-rollup) table is opened. Each event represents one debit (main agent turn, subagent step, chat completion, or research call), with token counts and `credits_deducted_cents` matching the wallet drop on `credits_usage` for that account.\n\nThe response also carries a `grants` array covering the same account and period: the admin credit grants made through [`POST /api/admins/credits`](/api-reference/admins/credits-grant). The two arrays answer different questions — `events` is what the system spent, `grants` is what a person set by hand, and only a grant carries an actor and a reason. Requires the authenticated account to be a Recoup admin.",
         "parameters": [
           {
             "name": "account_id",
@@ -2553,6 +2895,108 @@
       }
     },
     "schemas": {
+      "AdminGrantCreditsRequest": {
+        "type": "object",
+        "required": ["account_id", "remaining_credits", "reason"],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account whose balance is being set. Must be an existing account — an unknown UUID is a 404, not a silent no-op."
+          },
+          "remaining_credits": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "The balance to leave the account holding, in credits (1 credit = 1 US cent). Absolute, not a delta. Zero is allowed — it is how an account is deliberately zeroed out. Negative values are rejected with a 400, even though ordinary usage can overdraw a balance below zero on its own."
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Why the grant was made, in plain language — e.g. `Trial headroom for the Aug 12 label demo`. Required and non-empty (a whitespace-only string is rejected): this is the field that makes a grant distinguishable from a Stripe top-up or a monthly reset when someone asks months later. Stored verbatim and returned by the events endpoint."
+          }
+        }
+      },
+      "AdminGrantCreditsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "grant_id",
+          "account_id",
+          "remaining_credits",
+          "previous_credits",
+          "reason",
+          "granted_by",
+          "granted_at",
+          "expires_at"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success"],
+            "description": "Status of the request"
+          },
+          "grant_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the recorded grant row. Matches the `id` of the corresponding entry in the `grants` array of `GET /api/admins/credits/events`."
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the account whose balance was set (echoes the request)"
+          },
+          "remaining_credits": {
+            "type": "integer",
+            "description": "The balance the account now holds — the value supplied in the request"
+          },
+          "previous_credits": {
+            "type": "integer",
+            "nullable": true,
+            "description": "The balance immediately before the grant. Null when the account had no credits row at all and one was created by this request."
+          },
+          "reason": {
+            "type": "string",
+            "description": "The reason recorded with the grant (echoes the request)"
+          },
+          "granted_by": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the admin account that made the grant, resolved from the credentials on the request. Never taken from the body."
+          },
+          "granted_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the grant was recorded"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the monthly reset becomes eligible to overwrite this balance — one month after `granted_at`, clamped to the last day of the target month when that month is shorter (a grant on Jan 31 expires Feb 28, not Mar 3). The overwrite is lazy, not scheduled: it happens on the first read of the account's balance at or after this time, so the granted balance can outlive `expires_at` indefinitely if nothing reads it. Treat it as the point after which the balance is no longer guaranteed — it is deliberately never later than the moment the reset actually becomes eligible, so it can under-promise by up to a day but never over-promise."
+          }
+        }
+      },
+      "AdminGrantCreditsValidationError": {
+        "type": "object",
+        "required": ["status", "error"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["error"],
+            "description": "Status of the request"
+          },
+          "missing_fields": {
+            "type": "array",
+            "description": "JSON path segments of the first field that failed validation, e.g. `[\"reason\"]`. Absent when the body was not valid JSON at all.",
+            "items": {
+              "oneOf": [{ "type": "string" }, { "type": "integer" }]
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
       "AdminCreditsRollupResponse": {
         "type": "object",
         "required": ["status", "period", "page", "limit", "total_count", "rows"],
@@ -2624,7 +3068,16 @@
       },
       "AdminCreditsEventsResponse": {
         "type": "object",
-        "required": ["status", "account_id", "period", "page", "limit", "total_count", "events"],
+        "required": [
+          "status",
+          "account_id",
+          "period",
+          "page",
+          "limit",
+          "total_count",
+          "events",
+          "grants"
+        ],
         "properties": {
           "status": {
             "type": "string",
@@ -2721,6 +3174,57 @@
                 "credits_deducted_cents": {
                   "type": "integer",
                   "description": "The amount debited from `credits_usage.remaining_credits` for this event. Same value the wallet dropped by on this turn."
+                }
+              }
+            }
+          },
+          "grants": {
+            "type": "array",
+            "description": "Admin credit grants made against this account in the selected period, sorted by `created_at` descending — the write-side counterpart to `events`. A grant is a staff member setting the balance through [`POST /api/admins/credits`](/api-reference/admins/credits-grant), so unlike an event it carries an actor and a reason. Not paginated by `page`/`limit` and not counted in `total_count`, which describe `usage_events` only; capped at the 500 most recent grants in the period. Empty for the overwhelming majority of accounts, which have never been granted anything.",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "account_id",
+                "created_at",
+                "granted_by",
+                "reason",
+                "previous_credits",
+                "remaining_credits"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "UUID of the grant row — the `grant_id` returned by `POST /api/admins/credits`"
+                },
+                "account_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "UUID of the account the grant was made against. Always equal to the top-level `account_id`, since the endpoint reports on one account at a time; present because each entry is the full stored grant row."
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "When the grant was made"
+                },
+                "granted_by": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "UUID of the admin account that made the grant"
+                },
+                "reason": {
+                  "type": "string",
+                  "description": "The reason the admin recorded for the grant, verbatim"
+                },
+                "previous_credits": {
+                  "type": "integer",
+                  "nullable": true,
+                  "description": "Balance immediately before the grant. Null when the account had no credits row and the grant created one."
+                },
+                "remaining_credits": {
+                  "type": "integer",
+                  "description": "Balance the account was left holding by the grant"
                 }
               }
             }
@@ -4060,6 +4564,20 @@
           }
         }
       },
+      "CreateCardOnFileSessionRequest": {
+        "type": "object",
+        "required": [
+          "successUrl"
+        ],
+        "properties": {
+          "successUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "The URL Stripe redirects to after the card is saved.",
+            "example": "https://chat.recoupable.dev?card=saved"
+          }
+        }
+      },
       "CreateSubscriptionSessionResponse": {
         "type": "object",
         "required": [
@@ -4075,7 +4593,7 @@
           "url": {
             "type": "string",
             "format": "uri",
-            "description": "The hosted checkout URL. Redirect to this URL to complete the payment.",
+            "description": "The hosted checkout URL. Redirect to this URL to complete Checkout.",
             "example": "https://checkout.stripe.com/pay/cs_test_a1b2c3d4e5f6g7h8i9j0"
           }
         }
@@ -4265,6 +4783,51 @@
         }
       },
       "AccountPaymentMethodErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message.",
+            "example": "Unauthorized"
+          }
+        }
+      },
+      "AccountAutoRechargeResponse": {
+        "type": "object",
+        "required": [
+          "account_id",
+          "enabled"
+        ],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier of the account this setting belongs to.",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Whether automatic top-up is enabled. `false` means the account has opted out and only explicit checkout top-ups can charge it.",
+            "example": true
+          }
+        }
+      },
+      "AccountAutoRechargeUpdateRequest": {
+        "type": "object",
+        "required": [
+          "enabled"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Set `false` to opt out of automatic top-up, `true` to opt back in."
+          }
+        }
+      },
+      "AccountAutoRechargeErrorResponse": {
         "type": "object",
         "required": [
           "error"

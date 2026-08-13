@@ -526,7 +526,15 @@
     },
     "/api/transcribe": {
       "post": {
-        "description": "Transcribe audio files using OpenAI Whisper. The API saves both the original audio file and the generated markdown transcript to the customer's files in Supabase Storage.",
+        "description": "Transcribe audio files using OpenAI Whisper. The API saves both the original audio file and the generated markdown transcript to the customer's files in Supabase Storage. The owner account is derived from your credentials; you must have access to the specified artist_account_id.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "description": "Audio transcription request",
           "required": true,
@@ -551,6 +559,26 @@
           },
           "400": {
             "description": "Bad request - missing required fields or invalid audio URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranscribeAudioErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranscribeAudioErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Caller has no access to the specified artist_account_id",
             "content": {
               "application/json": {
                 "schema": {
@@ -3923,7 +3951,6 @@
         "type": "object",
         "required": [
           "audio_url",
-          "account_id",
           "artist_account_id"
         ],
         "properties": {
@@ -3935,7 +3962,8 @@
           "account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "Owner account ID for file storage",
+            "deprecated": true,
+            "description": "Deprecated and ignored. The owner account is derived from your credentials. Sending this field is harmless but no longer affects attribution.",
             "example": "550e8400-e29b-41d4-a716-446655440000"
           },
           "artist_account_id": {
