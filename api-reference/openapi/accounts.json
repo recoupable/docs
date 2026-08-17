@@ -2412,7 +2412,7 @@
     },
     "/api/admins/credits": {
       "post": {
-        "description": "Sets an account's credit balance, and records who set it and why. Requires the authenticated account to be a Recoup admin.\n\n**Absolute, not a delta.** `remaining_credits` is the balance the account is left holding, whatever it held before — the outcome never depends on the balance at the moment the request lands. The prior balance comes back as `previous_credits` for the record. There is deliberately no add/subtract variant.\n\n**Every grant is audited.** `reason` is required and must be non-empty. The grant is stored against the acting admin's account ID and is readable afterwards in the `grants` array of [`GET /api/admins/credits/events`](/api-reference/admins/credits-events).\n\n**A grant expires after one month — plan for it.** Credit balances are refilled to the plan total by a monthly reset that runs lazily on the next read of [`GET /api/accounts/{id}/credits`](/api-reference/accounts/credits-get), once the underlying row is more than a month old. Setting a balance here restarts that clock, so the balance holds until `expires_at` (one month after `granted_at`) and is then silently overwritten on the first balance read after it — with 9,999 for an account carrying an active Stripe subscription, and 333 for every other account, including one with no Stripe customer at all. Nothing warns the account holder, and nothing warns you. If the headroom needs to outlive a month, grant it again; if the account should stay funded indefinitely, put it on a pro subscription rather than granting.",
+        "description": "Sets an account's credit balance, and records who set it and why. Requires the authenticated account to be a Recoup admin.\n\n**Absolute, not a delta.** `remaining_credits` is the balance the account is left holding, whatever it held before — the outcome never depends on the balance at the moment the request lands. The prior balance comes back as `previous_credits` for the record. There is deliberately no add/subtract variant.\n\n**Every grant is audited.** `reason` is required and must be non-empty. The grant is stored against the acting admin's account ID and is readable afterwards in the `grants` array of [`GET /api/admins/credits/events`](/api-reference/admins/credits-events).\n\n**A grant is never reduced by the monthly refill.** Credit balances are topped up to the plan total by a monthly refill that runs lazily on the next read of [`GET /api/accounts/{id}/credits`](/api-reference/accounts/credits-get), once the underlying row is more than a month old. That refill is a floor, not an assignment: it raises a balance up to the plan total and never lowers one. A grant above the plan total therefore survives every refill and holds until it is spent, so headroom granted once stays granted and does not need re-granting on a schedule.",
         "security": [
           {
             "apiKeyAuth": []
@@ -2765,8 +2765,7 @@
           "previous_credits",
           "reason",
           "granted_by",
-          "granted_at",
-          "expires_at"
+          "granted_at"
         ],
         "properties": {
           "status": {
@@ -2806,11 +2805,6 @@
             "type": "string",
             "format": "date-time",
             "description": "When the grant was recorded"
-          },
-          "expires_at": {
-            "type": "string",
-            "format": "date-time",
-            "description": "When the monthly reset becomes eligible to overwrite this balance — one month after `granted_at`, clamped to the last day of the target month when that month is shorter (a grant on Jan 31 expires Feb 28, not Mar 3). The overwrite is lazy, not scheduled: it happens on the first read of the account's balance at or after this time, so the granted balance can outlive `expires_at` indefinitely if nothing reads it. Treat it as the point after which the balance is no longer guaranteed — it is deliberately never later than the moment the reset actually becomes eligible, so it can under-promise by up to a day but never over-promise."
           }
         }
       },

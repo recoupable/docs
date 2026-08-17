@@ -54,6 +54,12 @@ Recoup has two tiers. Both refill on a monthly cycle.
 | **Free** | Default for every new account | Monthly allowance refills automatically |
 | **Pro** | Stripe subscription via the chat dashboard | Substantially higher monthly allowance |
 
+### Monthly refill
+
+The refill is a **floor, not an assignment.** It raises `remaining_credits` up to your plan's monthly total and never lowers it. A balance already above the plan total, whether from a [top-up](#one-time-top-ups) or an admin grant, is left exactly as it is, so credits you bought or were granted are never taken away by the calendar.
+
+The refill is lazy rather than scheduled: it applies on the next read of [`GET /api/accounts/{id}/credits`](/api-reference/accounts/credits-get) once your credits row is more than a month old. The balance you read is always the refilled one.
+
 ### Upgrade to Pro
 
 1. Sign in at [sandbox.recoupable.com](https://sandbox.recoupable.com)
