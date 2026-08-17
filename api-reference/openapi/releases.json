@@ -1054,7 +1054,7 @@
             }
           },
           "402": {
-            "description": "Insufficient credits — the body includes a `checkoutUrl` to top up.",
+            "description": "Insufficient credits — the body includes a static `billingUrl`. No Stripe object is created.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2608,7 +2608,7 @@
       },
       "ArtistSocialsInsufficientCreditsResponse": {
         "type": "object",
-        "description": "Returned (402) when the account lacks credits for the scrapes and auto-recharge did not cover the call.",
+        "description": "Returned (402) when the account lacks credits for the scrapes. Nothing is charged and no Stripe object is created. Credits must be bought explicitly via [`POST /api/credits/sessions`](/api-reference/credits/sessions-create).",
         "properties": {
           "error": {
             "type": "string",
@@ -2624,20 +2624,17 @@
             "type": "integer",
             "example": 100
           },
-          "checkoutUrl": {
+          "billingUrl": {
             "type": "string",
-            "description": "Stripe checkout link to top up credits."
-          },
-          "declineReason": {
-            "type": "string",
-            "description": "Card decline reason when auto-recharge was attempted and failed."
+            "description": "Static link to the Recoup app, where a human can save a card and buy credits. It is a constant, not a freshly minted Stripe Checkout Session, so a credit-gated endpoint that keeps returning 402 creates nothing. Replaces the removed `checkoutUrl`. To buy credits programmatically, call [`POST /api/credits/sessions`](/api-reference/credits/sessions-create).",
+            "example": "https://chat.recoupable.dev"
           }
         },
         "required": [
           "error",
           "remaining_credits",
           "required_credits",
-          "checkoutUrl"
+          "billingUrl"
         ]
       },
       "ArtistSocialsPagination": {
