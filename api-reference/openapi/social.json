@@ -531,6 +531,10 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AppleErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "error": "isrc must be a valid ISRC: NOTANISRC"
                 }
               }
             }
@@ -541,6 +545,10 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AppleErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "error": "Exactly one of x-api-key or Authorization must be provided"
                 }
               }
             }
@@ -551,6 +559,10 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AppleErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "error": "Failed to reach the Apple Music API"
                 }
               }
             }
@@ -1226,18 +1238,7 @@
           },
           "error": {
             "type": "string",
-            "description": "Error message",
-            "example": "isrc must be a valid ISRC: NOTANISRC"
-          },
-          "missing_fields": {
-            "type": "array",
-            "description": "Path to the offending field. Present only on schema validation failures.",
-            "items": {
-              "type": "string"
-            },
-            "example": [
-              "isrc"
-            ]
+            "description": "Human-readable error message"
           }
         }
       },
