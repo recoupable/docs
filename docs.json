@@ -349,9 +349,7 @@
               "api-reference/accounts/subscription-get",
               "api-reference/credits/sessions-create",
               "api-reference/accounts/credits-get",
-              "api-reference/accounts/payment-method-get",
-              "api-reference/accounts/auto-recharge-get",
-              "api-reference/accounts/auto-recharge-update"
+              "api-reference/accounts/payment-method-get"
             ]
           },
           {
