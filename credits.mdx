@@ -124,12 +124,6 @@ The decision tree:
 
 A card on the account is never charged on its own. Charging happens only when the account asks to buy credits, through [`POST /api/credits/sessions`](/api-reference/credits/sessions-create). Saving a card ahead of time via [card-on-file](/api-reference/subscriptions/card-on-file-create) makes that purchase a single call instead of a browser round-trip; it does not authorize a charge by itself.
 
-<Note>
-**Automatic top-up was removed in August 2026.** A credit-gated request used to charge a saved card $5 off-session unless the account had opted out, and it minted a Stripe Checkout Session on every 402. Both are gone. Removed with it: `GET` and `PATCH /api/accounts/{id}/auto-recharge`, and the `checkoutUrl` and `declineReason` fields on the 402 body.
-
-If you read `checkoutUrl`, read [`billingUrl`](#402-payment-required) instead for a link to send a human to, or call [`POST /api/credits/sessions`](/api-reference/credits/sessions-create) to mint a real Checkout URL on demand. If you read `declineReason`, it is still returned by `POST /api/credits/sessions` on the consented top-up path.
-</Note>
-
 ---
 
 ## 402 Payment Required

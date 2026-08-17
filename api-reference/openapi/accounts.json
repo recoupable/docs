@@ -812,7 +812,7 @@
     },
     "/api/subscriptions/card-on-file": {
       "post": {
-        "description": "Create a $0 card-on-file checkout session for the authenticated account. Stripe `setup` mode saves a payment method without charging anything or starting a subscription, so a later top-up through [`POST /api/credits/sessions`](/api-reference/credits/sessions-create) can charge the saved card instead of collecting one again. Returns a hosted checkout URL that the client should redirect to.\n\nSaving a card here never authorizes an automatic charge. A card is only charged when the account explicitly asks to buy credits.",
+        "description": "Create a $0 card-on-file checkout session for the authenticated account. Stripe `setup` mode saves a payment method without charging anything or starting a subscription, so a later top-up through [`POST /api/credits/sessions`](/api-reference/credits/sessions-create) can charge the saved card instead of collecting one again. Returns a hosted checkout URL that the client should redirect to.",
         "security": [
           {
             "apiKeyAuth": []

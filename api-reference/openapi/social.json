@@ -1579,7 +1579,7 @@
           },
           "billingUrl": {
             "type": "string",
-            "description": "Static link to the Recoup app, where a human can save a card and buy credits. It is a constant, not a freshly minted Stripe Checkout Session, so a credit-gated endpoint that keeps returning 402 creates nothing. Replaces the removed `checkoutUrl`. To buy credits programmatically, call [`POST /api/credits/sessions`](/api-reference/credits/sessions-create).",
+            "description": "Static link to the Recoup app, where a human can save a card and buy credits. It is a constant, not a freshly minted Stripe Checkout Session, so a credit-gated endpoint that keeps returning 402 creates nothing. To buy credits programmatically, call [`POST /api/credits/sessions`](/api-reference/credits/sessions-create).",
             "example": "https://chat.recoupable.dev"
           }
         },
