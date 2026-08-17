@@ -233,6 +233,12 @@
             ]
           },
           {
+            "group": "Apple Music",
+            "pages": [
+              "api-reference/apple/songs"
+            ]
+          },
+          {
             "group": "Apify",
             "pages": [
               "api-reference/apify/scraper"

@@ -480,6 +480,84 @@
         }
       }
     },
+    "/api/apple/songs": {
+      "get": {
+        "description": "Look up recordings in the Apple Music catalog by ISRC. Accepts up to 25 comma-separated ISRCs per request and returns one row per **requested** ISRC, so a recording that Apple does not carry comes back explicitly as `found: false` rather than being omitted. Complements `GET /api/spotify/search`, which reaches ISRCs only through a fuzzy `isrc:` search query; Apple matches the identifier exactly and additionally returns release-level rights metadata (`upc`, `record_label`, `copyright`) that Spotify does not expose.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "isrc",
+            "in": "query",
+            "description": "One or more ISRCs, comma-separated. Case-insensitive; each must match the 12-character ISRC format (two-letter country code, three-character registrant code, two-digit year, five-digit designation). Maximum 25 per request.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "DEH742611917,TCAEC1931080"
+            }
+          },
+          {
+            "name": "storefront",
+            "in": "query",
+            "description": "Apple Music storefront to search, as a two-letter country code. Availability is territory-specific, so a recording present in one storefront may be absent from another.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "us",
+              "example": "gb"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lookup completed. One entry per requested ISRC, in the order requested.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppleSongsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - `isrc` missing, malformed, or over the 25-ISRC limit, or an unknown `storefront`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppleErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppleErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error, including a failure to reach the Apple Music API",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppleErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/apify/runs/{runId}": {
       "get": {
         "description": "Check the status and retrieve results from Apify scraper runs. This endpoint uses the Apify API Client to fetch the current status of a scraper run and its results if available. Use the runId returned from endpoints like Instagram Comments, Instagram Profiles, Social Scrape, or Artist Socials Scrape to poll for results.",
@@ -1133,6 +1211,240 @@
             "description": "ID of the dataset that will contain the results when the run completes",
             "example": "def456uvw",
             "nullable": true
+          }
+        }
+      },
+      "AppleErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message",
+            "example": "isrc must be a valid ISRC: NOTANISRC"
+          },
+          "missing_fields": {
+            "type": "array",
+            "description": "Path to the offending field. Present only on schema validation failures.",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "isrc"
+            ]
+          }
+        }
+      },
+      "AppleSongsResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "storefront": {
+            "type": "string",
+            "description": "The storefront the lookup ran against",
+            "example": "us"
+          },
+          "results": {
+            "type": "array",
+            "description": "One entry per requested ISRC, in the order requested",
+            "items": {
+              "$ref": "#/components/schemas/AppleIsrcResult"
+            }
+          }
+        }
+      },
+      "AppleIsrcResult": {
+        "type": "object",
+        "properties": {
+          "isrc": {
+            "type": "string",
+            "description": "The requested ISRC, uppercased",
+            "example": "DEH742611917"
+          },
+          "found": {
+            "type": "boolean",
+            "description": "Whether Apple Music carries at least one recording with this ISRC in the requested storefront",
+            "example": true
+          },
+          "songs": {
+            "type": "array",
+            "description": "Every recording Apple returns for this ISRC. Usually one, but the same recording can appear on several releases (compilations, anniversary editions), each with its own song id.",
+            "items": {
+              "$ref": "#/components/schemas/AppleSong"
+            }
+          }
+        }
+      },
+      "AppleSong": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Apple Music catalog song id",
+            "example": "1894880802"
+          },
+          "isrc": {
+            "type": "string",
+            "example": "DEH742611917"
+          },
+          "name": {
+            "type": "string",
+            "example": "Steady Box Fan White Noise (Extended Mix)"
+          },
+          "artist_name": {
+            "type": "string",
+            "description": "Display credit as Apple renders it, which may combine several artists",
+            "example": "Sleep Sounds & Sleepy Buddy"
+          },
+          "composer_name": {
+            "type": "string",
+            "nullable": true,
+            "example": "Zachary Kubilus"
+          },
+          "album_name": {
+            "type": "string",
+            "example": "Box Fan All Night"
+          },
+          "release_date": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "example": "2026-05-01"
+          },
+          "duration_ms": {
+            "type": "integer",
+            "example": 124001
+          },
+          "track_number": {
+            "type": "integer",
+            "nullable": true,
+            "example": 6
+          },
+          "disc_number": {
+            "type": "integer",
+            "nullable": true,
+            "example": 1
+          },
+          "genre_names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "New Age",
+              "Music",
+              "Worldwide"
+            ]
+          },
+          "has_lyrics": {
+            "type": "boolean",
+            "example": false
+          },
+          "is_apple_digital_master": {
+            "type": "boolean",
+            "example": false
+          },
+          "audio_variants": {
+            "type": "array",
+            "description": "Delivery formats available, for example `lossless`, `lossy-stereo`, `dolby-atmos`",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "lossless",
+              "lossy-stereo"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "description": "Public Apple Music page for the recording",
+            "example": "https://music.apple.com/us/album/steady-box-fan-white-noise-extended-mix/1894880796?i=1894880802"
+          },
+          "artwork_url": {
+            "type": "string",
+            "nullable": true,
+            "description": "Artwork template URL. Substitute `{w}` and `{h}` with the pixel dimensions you want.",
+            "example": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/d5/d1/12/d5d112cd-19f8-6cf7-b048-b2f94c75fefd/4065328882161.png/{w}x{h}bb.jpg"
+          },
+          "preview_url": {
+            "type": "string",
+            "nullable": true,
+            "description": "30-second AAC preview",
+            "example": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/56/64/02/56640222-1893-38a9-e25f-9869aa117282/mzaf_15389777242743919344.plus.aac.p.m4a"
+          },
+          "album": {
+            "$ref": "#/components/schemas/AppleSongAlbum"
+          }
+        }
+      },
+      "AppleSongAlbum": {
+        "type": "object",
+        "nullable": true,
+        "description": "The release this recording appears on. Carries the rights metadata Apple exposes and Spotify does not.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "1894880796"
+          },
+          "name": {
+            "type": "string",
+            "example": "Box Fan All Night"
+          },
+          "upc": {
+            "type": "string",
+            "nullable": true,
+            "example": "4065328882161"
+          },
+          "record_label": {
+            "type": "string",
+            "nullable": true,
+            "example": "Sleep Sounds"
+          },
+          "copyright": {
+            "type": "string",
+            "nullable": true,
+            "description": "The phonographic copyright line",
+            "example": "℗ 2026 Sleep Sounds"
+          },
+          "release_date": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "example": "2026-05-01"
+          },
+          "track_count": {
+            "type": "integer",
+            "nullable": true,
+            "example": 20
+          },
+          "is_single": {
+            "type": "boolean",
+            "example": false
+          },
+          "is_compilation": {
+            "type": "boolean",
+            "example": false
+          },
+          "is_complete": {
+            "type": "boolean",
+            "description": "Whether every track on the release is available in this storefront",
+            "example": true
+          },
+          "url": {
+            "type": "string",
+            "example": "https://music.apple.com/us/album/box-fan-all-night/1894880796"
           }
         }
       },
