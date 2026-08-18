@@ -893,6 +893,49 @@
         }
       }
     },
+    "/api/artists/{id}/profile": {
+      "get": {
+        "description": "Public artist profile: the artist's name, image, connected social profiles, and linked catalogs in one call.\n\n**No authentication.** This endpoint is deliberately public and unbilled \u2014 it backs the shareable artist page at `chat.recoupable.dev/artists/{id}` and can be called without an API key. Only public fields are returned; account settings, instructions, and valuation data are never included.\n\nResponses are cacheable (`Cache-Control: public, s-maxage=300, stale-while-revalidate=600`), so a value may be up to a few minutes stale.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the artist account.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artist profile retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistPublicProfileResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No artist with this id. Returned for unknown ids and for accounts that are not artists \u2014 the two cases are deliberately indistinguishable, so the endpoint cannot be used to probe which account ids exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistSocialsErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "Artist not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/artists/{id}/socials": {
       "get": {
         "description": "Retrieve all social media profiles associated with an artist. This endpoint should be called before using the Social Posts endpoint to obtain the necessary social IDs.",
@@ -2583,6 +2626,99 @@
           "profile_url": {
             "type": "string",
             "description": "Full URL to the social media profile"
+          }
+        }
+      },
+      "ArtistPublicProfileResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "image",
+          "socials",
+          "catalogs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The artist's account id."
+          },
+          "name": {
+            "type": "string",
+            "description": "The artist's display name."
+          },
+          "image": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL of the artist's profile image, or null when none is set."
+          },
+          "socials": {
+            "type": "array",
+            "description": "Connected social profiles, empty when none are linked.",
+            "items": {
+              "$ref": "#/components/schemas/ArtistPublicProfileSocial"
+            }
+          },
+          "catalogs": {
+            "type": "array",
+            "description": "Catalogs linked to the artist, newest first; empty when none are linked.",
+            "items": {
+              "$ref": "#/components/schemas/ArtistPublicProfileCatalog"
+            }
+          }
+        }
+      },
+      "ArtistPublicProfileSocial": {
+        "type": "object",
+        "required": [
+          "type",
+          "username",
+          "profile_url"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Platform name derived from the profile URL, e.g. SPOTIFY, INSTAGRAM, TIKTOK, YOUTUBE.",
+            "example": "SPOTIFY"
+          },
+          "username": {
+            "type": "string",
+            "nullable": true,
+            "description": "The artist's handle on the platform, when known."
+          },
+          "profile_url": {
+            "type": "string",
+            "description": "Public URL of the profile on the platform."
+          }
+        }
+      },
+      "ArtistPublicProfileCatalog": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "song_count",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The catalog id."
+          },
+          "name": {
+            "type": "string",
+            "description": "The catalog's display name."
+          },
+          "song_count": {
+            "type": "integer",
+            "description": "Number of songs currently in the catalog."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the catalog last changed."
           }
         }
       },
