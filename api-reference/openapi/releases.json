@@ -924,11 +924,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ArtistSocialsErrorResponse"
+                  "$ref": "#/components/schemas/ArtistPublicProfileErrorResponse"
                 },
                 "example": {
                   "status": "error",
-                  "message": "Artist not found"
+                  "error": "Artist not found"
                 }
               }
             }
@@ -2626,6 +2626,27 @@
           "profile_url": {
             "type": "string",
             "description": "Full URL to the social media profile"
+          }
+        }
+      },
+      "ArtistPublicProfileErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Always `error`."
+          },
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message.",
+            "example": "Artist not found"
           }
         }
       },
