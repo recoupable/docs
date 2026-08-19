@@ -2657,7 +2657,8 @@
           "name",
           "image",
           "socials",
-          "catalogs"
+          "catalogs",
+          "valuation"
         ],
         "properties": {
           "id": {
@@ -2687,6 +2688,11 @@
             "items": {
               "$ref": "#/components/schemas/ArtistPublicProfileCatalog"
             }
+          },
+          "valuation": {
+            "$ref": "#/components/schemas/ArtistPublicProfileValuation",
+            "description": "Estimated value band for the artist's catalog(s), from the published Recoup valuation model over all credited songs' latest play counts. Null when the artist has no measured songs.",
+            "nullable": true
           }
         }
       },
@@ -2720,7 +2726,8 @@
           "id",
           "name",
           "song_count",
-          "updated_at"
+          "updated_at",
+          "songs"
         ],
         "properties": {
           "id": {
@@ -2740,6 +2747,75 @@
             "type": "string",
             "format": "date-time",
             "description": "When the catalog last changed."
+          },
+          "songs": {
+            "type": "array",
+            "description": "The catalog's songs crediting this artist, sorted by plays descending and capped at the top 50 \u2014 `song_count` reflects the full catalog and may exceed `songs.length`.",
+            "items": {
+              "$ref": "#/components/schemas/ArtistPublicProfileSong"
+            }
+          }
+        }
+      },
+      "ArtistPublicProfileSong": {
+        "type": "object",
+        "required": [
+          "isrc",
+          "name",
+          "album",
+          "artwork_url",
+          "plays",
+          "est_value_usd"
+        ],
+        "properties": {
+          "isrc": {
+            "type": "string",
+            "description": "The song's ISRC.",
+            "example": "QZTPX2553097"
+          },
+          "name": {
+            "type": "string",
+            "description": "The song's title."
+          },
+          "album": {
+            "type": "string",
+            "nullable": true,
+            "description": "The album or release the song belongs to, when known."
+          },
+          "artwork_url": {
+            "type": "string",
+            "nullable": true,
+            "description": "Apple Music artwork URL for the song's release, or null when artwork has not been resolved yet."
+          },
+          "plays": {
+            "type": "integer",
+            "description": "The song's latest captured Spotify play count. Captures are periodic, so this can lag the live number."
+          },
+          "est_value_usd": {
+            "type": "number",
+            "description": "Estimated value of the song in USD \u2014 the mid point of the published Recoup valuation model applied to this song's plays."
+          }
+        }
+      },
+      "ArtistPublicProfileValuation": {
+        "type": "object",
+        "required": [
+          "low",
+          "mid",
+          "high"
+        ],
+        "properties": {
+          "low": {
+            "type": "number",
+            "description": "Low end of the estimated catalog value band, USD."
+          },
+          "mid": {
+            "type": "number",
+            "description": "Mid estimate of the catalog value, USD."
+          },
+          "high": {
+            "type": "number",
+            "description": "High end of the estimated catalog value band, USD."
           }
         }
       },
