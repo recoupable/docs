@@ -1454,6 +1454,78 @@
         }
       }
     },
+    "/api/runs": {
+      "get": {
+        "summary": "Get runs",
+        "description": "Get background runs, newest first. A run is the generic status resource for long-running work.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "valuation"
+              ]
+            },
+            "description": "Required. The run type to list. Unknown kinds are rejected with 400."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20,
+              "default": 1
+            },
+            "description": "Optional. Maximum runs to return, newest first. Defaults to 1 (the latest run)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The calling account's runs of the requested kind, newest first. Empty when the account has never run one.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetRunsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or unknown kind, or invalid limit.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSongsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/valuation": {
       "post": {
         "summary": "Run valuation",
@@ -3021,6 +3093,80 @@
           "type": "string",
           "format": "uuid",
           "description": "Optional. Act on behalf of this account (UUID). Only applicable when the authenticated account has access to the target account, for example an organization key acting for a member account. Every side effect of the run - the playcount snapshot, the catalog claim, the roster attach, and the report email - is scoped to this account instead of the caller. Omit to run for the caller's own account, which is the default."
+        }
+      }
+    },
+    "ValuationRun": {
+      "type": "object",
+      "description": "One background run. `id` is opaque; `state` is a domain phase, not a storage value: `queued` (capture accepted, not yet scraping), `measuring` (capture in flight, or finished moments ago and being claimed), `claimed` (catalog materialized - `result.catalog_id` is set), `failed` (the capture finished but no catalog was claimed, or the capture itself failed).",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Opaque run id. Do not infer anything from its format; it is stable for polling a single run across requests."
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "valuation"
+          ],
+          "description": "The run type."
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "queued",
+            "measuring",
+            "claimed",
+            "failed"
+          ],
+          "description": "Domain phase of the run."
+        },
+        "album_count": {
+          "type": "integer",
+          "description": "Number of releases in the run's capture scope."
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the run was created."
+        },
+        "result": {
+          "type": "object",
+          "nullable": true,
+          "description": "Set once the run is claimed; null before that.",
+          "properties": {
+            "catalog_id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The materialized catalog. Read its value band via [Get Catalog Measurements](/api-reference/songs/catalog-measurements)."
+            }
+          }
+        }
+      }
+    },
+    "GetRunsResponse": {
+      "type": "object",
+      "description": "The calling account's runs of the requested kind, newest first.",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "success",
+            "error"
+          ],
+          "description": "Status of the request"
+        },
+        "runs": {
+          "type": "array",
+          "description": "Runs, newest first. Empty when the account has never run one of this kind.",
+          "items": {
+            "$ref": "#/components/schemas/ValuationRun"
+          }
+        },
+        "error": {
+          "type": "string",
+          "description": "Error message (only present if status is 'error')"
         }
       }
     },
