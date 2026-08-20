@@ -1457,7 +1457,7 @@
     "/api/runs": {
       "get": {
         "summary": "Get runs",
-        "description": "The calling account's background runs, newest first. A run is the generic status resource for long-running work: `kind` selects the run type (only `valuation` exists today; future kinds are new enum values, not new endpoints), `state` reports the domain phase, and `id` is opaque - clients must not infer anything from its format. Valuation runs are created by [Run valuation](/api-reference/songs/valuation-run); a run reaches `claimed` when its catalog is materialized (the `result.catalog_id` to link to), and `failed` when the capture finished but no catalog was ever claimed. Use this to show an in-flight valuation's status and to disable duplicate run buttons.",
+        "description": "Get background runs, newest first. A run is the generic status resource for long-running work.",
         "security": [
           {
             "apiKeyAuth": []
