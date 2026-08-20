@@ -2051,6 +2051,13 @@
             }
           },
           {
+            "name": "account_id",
+            "in": "query",
+            "description": "Act on behalf of this account (UUID). Only applicable when the authenticated account has access to the target account, for example an organization key acting for a member account. The catalog ownership check then runs against this account instead of the caller. Omitted: the caller's own account.",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
             "name": "artist_account_id",
             "in": "query",
             "description": "Optional artist account to scope the read to. When present, measurements and the valuation band cover only the catalog's songs linked to this artist account (via song_artists); when absent, the whole catalog. A song linked to multiple artists counts for each of them. An artist with no linked measured songs in the catalog yields measured_song_count 0 and an empty measurements array. Malformed (non-uuid) values are rejected with 400.",
@@ -3009,6 +3016,11 @@
           "type": "string",
           "format": "uuid",
           "description": "Optional. ID of an organization to own the resulting catalog instead of the calling account. Every member of that organization then sees it in their own [Get Catalogs](/api-reference/songs/catalogs) response. The caller must be a member of the organization; otherwise the request is rejected with 403. Credits are still spent by the calling account, and the searched artist is still linked to the caller's roster. Omit to own the catalog personally, which is the default."
+        },
+        "account_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Optional. Act on behalf of this account (UUID). Only applicable when the authenticated account has access to the target account, for example an organization key acting for a member account. Every side effect of the run - the playcount snapshot, the catalog claim, the roster attach, and the report email - is scoped to this account instead of the caller. Omit to run for the caller's own account, which is the default."
         }
       }
     },
