@@ -2556,7 +2556,6 @@
       },
       "MusicGenerationListResponse": {
         "type": "object",
-        "description": "Generations in the requested context, newest first.",
         "properties": {
           "status": {
             "type": "string",

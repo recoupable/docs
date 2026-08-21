@@ -3213,9 +3213,11 @@
           "items": {
             "oneOf": [
               {
+                "title": "Valuation run",
                 "$ref": "#/components/schemas/ValuationRun"
               },
               {
+                "title": "Music run",
                 "$ref": "#/components/schemas/MusicRun"
               }
             ]
