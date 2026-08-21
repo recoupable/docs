@@ -1457,7 +1457,7 @@
     "/api/runs": {
       "get": {
         "summary": "Get runs",
-        "description": "Get background runs, newest first. A run is the generic status resource for long-running work.",
+        "description": "Get background runs, newest first. A run is the generic status resource for long-running work. `kind` selects the run type (`valuation` and `music` today); future kinds are new enum values here, never new endpoints.",
         "security": [
           {
             "apiKeyAuth": []
@@ -1474,7 +1474,8 @@
             "schema": {
               "type": "string",
               "enum": [
-                "valuation"
+                "valuation",
+                "music"
               ]
             },
             "description": "Required. The run type to list. Unknown kinds are rejected with 400."
@@ -3096,6 +3097,55 @@
         }
       }
     },
+    "MusicRun": {
+      "type": "object",
+      "description": "One music generation, surfaced as a run. `id` is the generation's id: read the full record, including its logs, with [Get Music Generation](/api-reference/music/get).",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "The generation's id."
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "music"
+          ],
+          "description": "The run type."
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "queued",
+            "generating",
+            "complete",
+            "failed"
+          ],
+          "description": "Domain phase of the run: `queued` before the workflow picks it up, `generating` while the model renders, then `complete` or `failed`."
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the generation was created."
+        },
+        "result": {
+          "type": "object",
+          "nullable": true,
+          "description": "Set once the generation completes; null before that.",
+          "properties": {
+            "generation_id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The completed generation."
+            },
+            "audio_url": {
+              "type": "string",
+              "description": "Playable audio URL."
+            }
+          }
+        }
+      }
+    },
     "ValuationRun": {
       "type": "object",
       "description": "One background run. `id` is opaque; `state` is a domain phase, not a storage value: `queued` (capture accepted, not yet scraping), `measuring` (capture in flight, or finished moments ago and being claimed), `claimed` (catalog materialized - `result.catalog_id` is set), `failed` (the capture finished but no catalog was claimed, or the capture itself failed).",
@@ -3159,9 +3209,16 @@
         },
         "runs": {
           "type": "array",
-          "description": "Runs, newest first. Empty when the account has never run one of this kind.",
+          "description": "Runs, newest first. Empty when the account has never run one of this kind. The item shape follows the requested `kind`.",
           "items": {
-            "$ref": "#/components/schemas/ValuationRun"
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ValuationRun"
+              },
+              {
+                "$ref": "#/components/schemas/MusicRun"
+              }
+            ]
           }
         },
         "error": {
