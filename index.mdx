@@ -83,11 +83,11 @@ Keep your API key secure. Do not share it publicly or commit it to version contr
     Get your API key and make your first request in minutes.
   </Card>
   <Card
-    title="CLI"
-    icon="terminal"
-    href="/cli"
+    title="Plugin Ecosystem"
+    icon="puzzle-piece"
+    href="/plugins/index"
   >
-    Install and use the Recoup CLI to interact with the platform from your terminal.
+    Install music industry plugins for Claude, Cursor, Codex, and more. Research, content, catalog deals.
   </Card>
   <Card
     title="MCP Server"
@@ -168,7 +168,11 @@ The API is organized into six main sections. Use these links to jump to the righ
 
 ## Quick Reference for LLMs
 
-If you are an LLM navigating these docs, here is a summary of the endpoint structure:
+If you are an LLM navigating these docs, here is what you need to know:
+
+**Plugins (recommended for most tasks):** Install pre-built skill packages from `https://github.com/recoupable/marketplace`. See the [Plugin Ecosystem](/plugins/index) for the full catalog. Key plugins: `recoup-platform-plugin` (account setup, artist creation), `recoup-research-plugin` (10 research skills), `recoup-content-plugin` (video/image generation), `recoup-catalogs-plugin` (catalog deal lifecycle).
+
+**API endpoints (for direct integration):** Here is a summary of the endpoint structure:
 
 - **`/api/artists/*`** — Artist management (list, create, socials, socials-scrape, profile)
 - **`/api/research/*`** — Artist research (search, lookup, profile, metrics, audience, cities, similar, urls, instagram-posts, playlists, albums, track, tracks, career, insights, genres, festivals, web, deep, people, extract, enrich, milestones, venues, rank, charts, radio, discover, curator, playlist)

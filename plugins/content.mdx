@@ -1,0 +1,126 @@
+---
+title: "Content Plugin"
+description: "One-command video creation for music artists. Generate short-form videos, captions, and images — say 'make a TikTok' and get a finished 9:16 clip."
+---
+
+## Overview
+
+The Content Plugin turns your AI agent into a content production machine. Its flagship skill — `recoup-content-create` — takes an artist name and produces a finished, social-ready short-form video with a single command. No manual template selection, no render configuration, no file management.
+
+```bash
+claude plugin install https://github.com/recoupable/recoup-content-plugin
+```
+
+<Tip>
+**Try it now:** After installing, just say "Make a TikTok for [artist name]" — the agent handles everything from artist resolution to final render.
+</Tip>
+
+## Skills
+
+### recoup-content-create
+
+**End-to-end video creation.** The front door for content generation. Takes an artist name and produces a finished 9:16 social-ready clip with caption.
+
+The workflow:
+1. Resolves the artist's `account_id` via the Recoup API
+2. Selects an appropriate template based on available assets
+3. Fires the async content pipeline
+4. Polls until the render completes
+5. Returns the final video URL + generated caption
+
+Supports customization: medium override, long captions, template selection, audio and image overrides.
+
+> **Trigger:** "Make a TikTok for [artist]", "Create content for [artist]", "Generate a video for [artist]'s new single"
+
+---
+
+### short-video
+
+**Short-form video generation.** Lower-level skill that handles the video rendering pipeline directly. Used internally by `recoup-content-create` but can be invoked independently for more control over the generation parameters.
+
+> **Trigger:** "Generate a short video", "Create a visualizer"
+
+---
+
+### content-creation
+
+**General content workflows.** Broader content creation skill covering images, captions, and multi-format content. Coordinates across multiple content API endpoints for complex production tasks.
+
+> **Trigger:** "Create marketing materials for [artist]", "Generate images for this release"
+
+## Example workflow
+
+```text
+You:    Make a TikTok for Mari Vega
+Agent:  Resolving artist... found Mari Vega (account_id: abc123)
+        Selecting template: editorial-press-photo
+        Generating video...
+        ✅ Video ready!
+        URL: https://content.recoupable.dev/renders/xyz...
+        Caption: "New vibes from Mari Vega 🎵✨ #MariVega #NewMusic"
+
+You:    Make another one but use a different template
+Agent:  Available templates: editorial-press-photo, playlist-overlay, lyric-video...
+        Which template would you like?
+
+You:    Use playlist-overlay
+Agent:  Generating with playlist-overlay template...
+        ✅ Video ready!
+```
+
+## API endpoints used
+
+| Endpoint | What it does |
+|---|---|
+| `POST /content/create` | Start an async content creation job |
+| `GET /content/templates` | List available content templates |
+| `GET /content/template/:id` | Get template details |
+| `POST /content/generate-image` | Generate a standalone image |
+| `POST /content/generate-video` | Generate a standalone video |
+| `POST /content/generate-caption` | Generate a caption for content |
+| `POST /content/transcribe-audio` | Transcribe audio from a track |
+| `POST /content/edit` | Edit existing content |
+| `POST /content/upscale` | Upscale media resolution |
+| `POST /content/analyze-video` | Analyze video content |
+| `POST /content/validate` | Validate content parameters |
+| `POST /content/estimate` | Estimate credit cost |
+
+See the [Content API reference](/api-reference/content/create) for full documentation.
+
+## Install
+
+<CodeGroup>
+
+```bash Claude Code
+claude plugin install https://github.com/recoupable/recoup-content-plugin
+```
+
+```text Claude Cowork
+Add custom plugin → https://github.com/recoupable/recoup-content-plugin
+```
+
+```bash Codex
+codex plugin install https://github.com/recoupable/recoup-content-plugin
+```
+
+```text Cursor
+Settings → Plugins → Add custom plugin → paste the GitHub URL
+```
+
+```bash Via Marketplace
+/plugin install recoup-content-plugin@recoup-marketplace
+```
+
+</CodeGroup>
+
+## Required environment
+
+| Variable | How to get it |
+|---|---|
+| `RECOUP_API_KEY` | Run `getting-started` in [Platform Plugin](/plugins/platform), or call [`POST /api/agents/signup`](/api-reference/agents/signup) |
+
+## Source
+
+<Card title="GitHub" icon="github" href="https://github.com/recoupable/recoup-content-plugin">
+  View source, report issues, or contribute.
+</Card>
