@@ -1639,7 +1639,7 @@
       },
       "get": {
         "summary": "List music generations",
-        "description": "The calling account's music generations, newest first. Scope follows the standard account override: with no `account_id` you get your own personal and organization generations; pass `account_id` to read another account you can access. `logs` is omitted here to keep the response small, and comes back on the single-generation read.",
+        "description": "The calling account's music generations, newest first. Scope follows the standard account override: with no `account_id` you get your own personal and organization generations; pass `account_id` to read another account you can access.",
         "security": [
           {
             "apiKeyAuth": []
@@ -1755,7 +1755,7 @@
     "/api/music/{generationId}": {
       "get": {
         "summary": "Get music generation",
-        "description": "One generation, including its `logs` timeline. This is the polling target while a generation is in flight: call it until `status` is `completed` or `failed`. Responses are never cached.",
+        "description": "One generation, including the `seed` the model used and its `logs` progress, both read live from the provider rather than stored. This is the polling target while a generation is in flight: call it until `status` is `completed` or `failed`. Responses are never cached.",
         "security": [
           {
             "apiKeyAuth": []
@@ -1788,7 +1788,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The generation, with its workflow timeline.",
+            "description": "The generation, with the seed it used and its render progress.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2400,12 +2400,7 @@
           "account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "Optional. Generate on behalf of another account you can access (self, shared organization, or admin). Defaults to the calling account."
-          },
-          "organization_id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Optional. Organization to scope the generation to. Omit for a personal generation."
+            "description": "Optional. Generate on behalf of another account you can access (self, shared organization, or admin). Defaults to the calling account. Organizations are accounts, so this is also how an organization generation is scoped: send the organization's account id."
           }
         }
       },
@@ -2436,59 +2431,21 @@
             "type": "string",
             "description": "The lyrics the song was generated from."
           },
-          "title": {
-            "type": "string",
-            "nullable": true,
-            "description": "Display title. Null until the generation completes."
-          },
           "model": {
             "type": "string",
             "description": "The generating model.",
             "example": "minimax/music-3"
           },
           "duration_seconds": {
-            "type": "number",
-            "nullable": true,
+            "type": ["number", "null"],
             "description": "Actual length of the generated audio. Null until completed; may be shorter than requested."
           },
-          "seed": {
-            "type": "integer",
-            "nullable": true,
-            "description": "Seed actually used. Null until completed. Pass it back to reproduce a generation."
-          },
-          "num_inference_steps": {
-            "type": "integer",
-            "description": "Flow-matching steps used."
-          },
-          "guidance_scale": {
-            "type": "number",
-            "description": "Guidance scale used."
-          },
           "audio_url": {
-            "type": "string",
-            "nullable": true,
+            "type": ["string", "null"],
             "description": "Playable audio URL. Null until the generation completes."
           },
-          "mime_type": {
-            "type": "string",
-            "nullable": true,
-            "description": "Media type of the audio.",
-            "example": "audio/wav"
-          },
-          "file_size_bytes": {
-            "type": "integer",
-            "nullable": true,
-            "description": "Size of the generated audio in bytes."
-          },
-          "organization_id": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true,
-            "description": "Organization the generation belongs to. Null for a personal generation."
-          },
           "error_message": {
-            "type": "string",
-            "nullable": true,
+            "type": ["string", "null"],
             "description": "Why the generation failed. Null unless `status` is `failed`."
           },
           "created_at": {
@@ -2505,17 +2462,17 @@
       },
       "MusicGenerationLogEntry": {
         "type": "object",
-        "description": "One line of the generation's workflow timeline.",
+        "description": "One line of the model's render progress.",
         "properties": {
           "at": {
             "type": "string",
             "format": "date-time",
-            "description": "When the step ran."
+            "description": "When the line was emitted."
           },
           "message": {
             "type": "string",
-            "description": "What the step did.",
-            "example": "Queued, request id req_7f3a9c"
+            "description": "What the model reported.",
+            "example": "20/180"
           }
         }
       },
@@ -2527,9 +2484,13 @@
           {
             "type": "object",
             "properties": {
+              "seed": {
+                "type": ["integer", "null"],
+                "description": "The seed the model actually used, read live from the provider rather than stored. Null until the generation completes, and null if the provider cannot be reached. Pass it back as `seed` to reproduce a generation. It is the only generation parameter recoverable after the fact: `num_inference_steps` and `guidance_scale` are consumed when the request is submitted and are never reported back."
+              },
               "logs": {
                 "type": "array",
-                "description": "Ordered workflow timeline, oldest first. Returned only on the single-generation read.",
+                "description": "The model's own render progress, oldest first, read live from the provider rather than stored. Empty if the provider cannot be reached. Returned only on the single-generation read.",
                 "items": {
                   "$ref": "#/components/schemas/MusicGenerationLogEntry"
                 }
