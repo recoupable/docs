@@ -21,6 +21,24 @@ Failed calls (4xx / 5xx) do **not** deduct credits. Deduction happens only after
 
 ---
 
+## What a credit is worth
+
+**1 credit = $0.01.** Credit amounts returned by the API are integers, so a `remaining_credits` of `9244` is $92.44.
+
+Endpoint pricing is quoted in credits throughout these docs. Where an endpoint passes a provider's cost through — [music generation](/api-reference/music/generate) is the clearest case — the credit figure is that cost, not a marked-up one.
+
+<Note>
+**A change to this unit is planned.** A credit will become **$0.000001** — a micro-dollar, six decimal places — so that per-call pricing can match provider pricing exactly rather than rounding to the nearest cent. At the current unit the smallest chargeable amount is a cent, which for a provider billing $0.002 per second means one credit buys five seconds and anything cheaper cannot be priced honestly.
+
+**What changes:** every credit figure the API returns is multiplied by 10,000. A $92.44 balance reads `9244` today and `92,440,000` afterwards.
+
+**What does not change:** the dollar value of your balance, what anything costs, and every field name in every response.
+
+If you display credit counts to your own users, format them as currency rather than printing the integer — a raw count is only readable while a credit happens to be worth a cent. Divide by the unit above.
+</Note>
+
+---
+
 ## Check your balance
 
 ```bash
