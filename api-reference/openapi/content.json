@@ -1788,7 +1788,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The generation, with its workflow timeline.",
+            "description": "The generation, with the seed it used and its render progress.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2437,18 +2437,15 @@
             "example": "minimax/music-3"
           },
           "duration_seconds": {
-            "type": "number",
-            "nullable": true,
+            "type": ["number", "null"],
             "description": "Actual length of the generated audio. Null until completed; may be shorter than requested."
           },
           "audio_url": {
-            "type": "string",
-            "nullable": true,
+            "type": ["string", "null"],
             "description": "Playable audio URL. Null until the generation completes."
           },
           "error_message": {
-            "type": "string",
-            "nullable": true,
+            "type": ["string", "null"],
             "description": "Why the generation failed. Null unless `status` is `failed`."
           },
           "created_at": {
@@ -2488,8 +2485,7 @@
             "type": "object",
             "properties": {
               "seed": {
-                "type": "integer",
-                "nullable": true,
+                "type": ["integer", "null"],
                 "description": "The seed the model actually used, read live from the provider rather than stored. Null until the generation completes, and null if the provider cannot be reached. Pass it back as `seed` to reproduce a generation. It is the only generation parameter recoverable after the fact: `num_inference_steps` and `guidance_scale` are consumed when the request is submitted and are never reported back."
               },
               "logs": {
