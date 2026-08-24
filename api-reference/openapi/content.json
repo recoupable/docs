@@ -1639,7 +1639,7 @@
       },
       "get": {
         "summary": "List music generations",
-        "description": "The calling account's music generations, newest first. Scope follows the standard account override: with no `account_id` you get your own personal and organization generations; pass `account_id` to read another account you can access. `seed` and `logs` are omitted here, where each would cost a provider call per row, and come back on the single-generation read.",
+        "description": "The calling account's music generations, newest first. Scope follows the standard account override: with no `account_id` you get your own personal and organization generations; pass `account_id` to read another account you can access.",
         "security": [
           {
             "apiKeyAuth": []
