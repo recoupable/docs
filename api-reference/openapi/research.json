@@ -3229,6 +3229,11 @@
             "type": "string",
             "description": "The AI model to use for text generation (optional)",
             "example": "openai/gpt-5-mini"
+          },
+          "trigger_run_id": {
+            "type": "string",
+            "description": "Optional. When the run is kicked off by a Trigger.dev scheduled task, the Trigger run id (`run_...`). The started workflow's `{ sessionId, chatId, workflowRunId }` are written to that Trigger run's metadata so the scheduled run can be traced to the chat that did the work.",
+            "example": "run_06g3i0e3logru439uh9e1m8801"
           }
         }
       },
@@ -5474,6 +5479,32 @@
               "cancelled"
             ],
             "description": "Lifecycle state of the run. Read the produced content via the chat (`chatId` from the start response)."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the workflow run was created.",
+            "example": "2026-08-25T19:33:56.000Z"
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "When the workflow run started executing; null while queued.",
+            "example": "2026-08-25T19:34:16.386Z"
+          },
+          "completedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "When the workflow run reached a terminal state; null while queued or running.",
+            "example": "2026-08-25T20:15:55.000Z"
+          },
+          "durationMs": {
+            "type": "integer",
+            "nullable": true,
+            "description": "`completedAt - startedAt` in milliseconds; null until the run is terminal.",
+            "example": 2498614
           }
         }
       }

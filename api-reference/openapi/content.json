@@ -1544,6 +1544,312 @@
         }
       }
     },
+    "/api/music": {
+      "post": {
+        "summary": "Generate music",
+        "description": "Start a song generation with MiniMax Music 3. Generation runs in the background and takes roughly one to two minutes, so this returns **202** immediately with a `pending` generation. Poll [Get Music Generation](/api-reference/music/get) until `status` is `completed` or `failed`; `audio_url` is populated on completion. Credits are checked before the model is called and deducted only when a generation completes, so a failed generation is never charged.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MusicGenerationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Generation accepted and queued.",
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "URL of the created generation."
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicGenerationCreateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed. `missing_fields` names the first offending field.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicGenerationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Provide exactly one of `x-api-key` or `Authorization: Bearer`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicGenerationErrorResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient credits. No generation is created and the model is not called.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicGenerationErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied to the specified `account_id` or `organization_id`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicGenerationErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicGenerationErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "List music generations",
+        "description": "The calling account's music generations, newest first. Scope follows the standard account override: with no `account_id` you get your own personal and organization generations; pass `account_id` to read another account you can access.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional. Read another account you can access. Defaults to the calling account."
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "processing",
+                "completed",
+                "failed"
+              ]
+            },
+            "description": "Optional. Return only generations in this state."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20
+            },
+            "description": "Optional. Maximum generations to return, newest first."
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            },
+            "description": "Optional. Number of generations to skip, for paging."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Generations in the requested context, newest first.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicGenerationListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicGenerationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicGenerationErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied to the specified `account_id`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicGenerationErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicGenerationErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/music/{generationId}": {
+      "get": {
+        "summary": "Get music generation",
+        "description": "One generation, including the `seed` the model used and its `logs` progress, both read live from the provider rather than stored. This is the polling target while a generation is in flight: call it until `status` is `completed` or `failed`. Responses are never cached.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "generationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "The generation's id, from [Generate Music](/api-reference/music/generate)."
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional. Read on behalf of another account you can access."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The generation, with the seed it used and its render progress.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicGenerationDetailResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`generationId` is not a valid uuid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicGenerationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicGenerationErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied to this generation's account.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicGenerationErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No generation with that id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicGenerationErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MusicGenerationErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/music/compose": {
       "post": {
         "description": "Generate a song from a text prompt or a composition plan. The prompt can describe mood, genre, instruments, lyrics, and structure. Alternatively, pass a full composition_plan for fine-grained control over sections, styles, and lyrics. Returns binary audio in the requested format (default MP3).",
@@ -2049,6 +2355,234 @@
       }
     },
     "schemas": {
+      "MusicGenerationRequest": {
+        "type": "object",
+        "required": [
+          "prompt",
+          "lyrics"
+        ],
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "Music description: style, mood, vocals, instrumentation and arrangement.",
+            "example": "Genre: acoustic pop. BPM: 96. Key: C major. Warm and intimate, building gently into the chorus."
+          },
+          "lyrics": {
+            "type": "string",
+            "description": "The lyrics to sing. Structure tags such as `[intro]`, `[verse]`, `[chorus]` and `[outro]` must each be on their own line; text on the same line as a leading tag is dropped by the model.",
+            "example": "[verse]\nMorning light filtering through the pine\n[chorus]\nSoftly the world begins to breathe"
+          },
+          "duration": {
+            "type": "number",
+            "minimum": 10,
+            "maximum": 300,
+            "default": 60,
+            "description": "Upper bound on the generated audio length in seconds. The model may stop earlier; the actual length comes back as `duration_seconds`."
+          },
+          "seed": {
+            "type": "integer",
+            "description": "Seed for reproducibility. Omit for a random seed."
+          },
+          "num_inference_steps": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 30,
+            "description": "Flow-matching steps per denoising chunk. More steps improve quality at the cost of speed."
+          },
+          "guidance_scale": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 20,
+            "default": 1.7,
+            "description": "Classifier-free guidance scale of the flow-matching stage."
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Optional. Generate on behalf of another account you can access (self, shared organization, or admin). Defaults to the calling account. Organizations are accounts, so this is also how an organization generation is scoped: send the organization's account id."
+          }
+        }
+      },
+      "MusicGeneration": {
+        "type": "object",
+        "description": "One music generation.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The generation's id. Poll [Get Music Generation](/api-reference/music/get) with this."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "processing",
+              "completed",
+              "failed"
+            ],
+            "description": "Lifecycle phase. `pending` until the workflow picks it up, `processing` while fal is rendering, then `completed` or `failed`."
+          },
+          "prompt": {
+            "type": "string",
+            "description": "The music description the song was generated from."
+          },
+          "lyrics": {
+            "type": "string",
+            "description": "The lyrics the song was generated from."
+          },
+          "model": {
+            "type": "string",
+            "description": "The generating model.",
+            "example": "minimax/music-3"
+          },
+          "duration_seconds": {
+            "type": ["number", "null"],
+            "description": "Actual length of the generated audio. Null until completed; may be shorter than requested."
+          },
+          "audio_url": {
+            "type": ["string", "null"],
+            "description": "Playable audio URL. Null until the generation completes."
+          },
+          "error_message": {
+            "type": ["string", "null"],
+            "description": "Why the generation failed. Null unless `status` is `failed`."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the generation was created."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the generation last changed."
+          }
+        }
+      },
+      "MusicGenerationLogEntry": {
+        "type": "object",
+        "description": "One line of the model's render progress.",
+        "properties": {
+          "at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the line was emitted."
+          },
+          "message": {
+            "type": "string",
+            "description": "What the model reported.",
+            "example": "20/180"
+          }
+        }
+      },
+      "MusicGenerationDetail": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MusicGeneration"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "seed": {
+                "type": ["integer", "null"],
+                "description": "The seed the model actually used, read live from the provider rather than stored. Null until the generation completes, and null if the provider cannot be reached. Pass it back as `seed` to reproduce a generation. It is the only generation parameter recoverable after the fact: `num_inference_steps` and `guidance_scale` are consumed when the request is submitted and are never reported back."
+              },
+              "logs": {
+                "type": "array",
+                "description": "The model's own render progress, oldest first, read live from the provider rather than stored. Empty if the provider cannot be reached. Returned only on the single-generation read.",
+                "items": {
+                  "$ref": "#/components/schemas/MusicGenerationLogEntry"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "MusicGenerationCreateResponse": {
+        "type": "object",
+        "description": "The accepted generation. Poll it until `status` is terminal.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "generation": {
+            "$ref": "#/components/schemas/MusicGeneration"
+          }
+        }
+      },
+      "MusicGenerationListResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "generations": {
+            "type": "array",
+            "description": "Generations, newest first. Empty when the context has none.",
+            "items": {
+              "$ref": "#/components/schemas/MusicGeneration"
+            }
+          }
+        }
+      },
+      "MusicGenerationDetailResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Status of the request"
+          },
+          "generation": {
+            "$ref": "#/components/schemas/MusicGenerationDetail"
+          }
+        }
+      },
+      "MusicGenerationErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Always `error`"
+          },
+          "missing_fields": {
+            "type": "array",
+            "description": "JSON path segments to the first field that failed validation, e.g. `[\"lyrics\"]`",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message"
+          }
+        }
+      },
       "ArweaveTransaction": {
         "type": "object",
         "description": "Arweave transaction object for the stored image",

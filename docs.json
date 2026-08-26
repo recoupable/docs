@@ -206,6 +206,14 @@
             ]
           },
           {
+            "group": "Music",
+            "pages": [
+              "api-reference/music/generate",
+              "api-reference/music/list",
+              "api-reference/music/get"
+            ]
+          },
+          {
             "group": "Posts & Comments",
             "pages": [
               "api-reference/posts/get",
