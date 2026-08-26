@@ -4671,12 +4671,18 @@
               "type": "string",
               "format": "date-time"
             },
-            "description": "Next scheduled run times, sourced from the latest Trigger.dev run payload."
+            "description": "Next scheduled run times."
           },
           "owner_email": {
             "type": "string",
             "nullable": true,
             "description": "Primary email address for the task owner account when one exists."
+          },
+          "artist_name": {
+            "type": "string",
+            "nullable": true,
+            "description": "Display name of the artist account the task runs for (`artist_account_id`), so a task list can label rows without a roster lookup. Null when the artist account no longer exists.",
+            "example": "Braden Bales"
           },
           "model": {
             "type": "string",
