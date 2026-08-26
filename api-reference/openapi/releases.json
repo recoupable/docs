@@ -4671,7 +4671,7 @@
               "type": "string",
               "format": "date-time"
             },
-            "description": "Next scheduled run times, sourced from the latest Trigger.dev run payload. For a task that has never run, the Trigger.dev schedule's next fire time (one entry), so a fresh task still reports when it will first run."
+            "description": "Next scheduled run times."
           },
           "owner_email": {
             "type": "string",
