@@ -383,12 +383,6 @@
             ]
           },
           {
-            "group": "Workspaces",
-            "pages": [
-              "api-reference/workspaces/create"
-            ]
-          },
-          {
             "group": "Admins",
             "pages": [
               "api-reference/admins/check",

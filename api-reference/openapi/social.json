@@ -695,7 +695,7 @@
           {
             "name": "account_id",
             "in": "query",
-            "description": "Optional account ID to get connectors for a different account (e.g., an artist, workspace, or organization). The authenticated account must have access to the specified account. Omit to get your own account's connectors.",
+            "description": "Optional account ID to get connectors for a different account (e.g., an artist or organization). The authenticated account must have access to the specified account. Omit to get your own account's connectors.",
             "required": false,
             "schema": {
               "type": "string",
@@ -869,7 +869,7 @@
           {
             "name": "account_id",
             "in": "query",
-            "description": "Optional account ID to list actions for a different account (e.g., an artist, workspace, or organization). The authenticated account must have access. Omit to list actions for your own account.",
+            "description": "Optional account ID to list actions for a different account (e.g., an artist or organization). The authenticated account must have access. Omit to list actions for your own account.",
             "required": false,
             "schema": {
               "type": "string",
@@ -1555,7 +1555,7 @@
           "account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "Optional account ID to connect a service for a different account (e.g., an artist, workspace, or organization). Use this when connecting an artist's TikTok or other service. The authenticated account must have access. Omit to connect for your own account."
+            "description": "Optional account ID to connect a service for a different account (e.g., an artist or organization). Use this when connecting an artist's TikTok or other service. The authenticated account must have access. Omit to connect for your own account."
           }
         }
       },
@@ -2752,7 +2752,7 @@
           "account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "Optional account ID to execute the action on a different account (e.g., an artist or workspace). The authenticated account must have access. Omit to execute on your own account."
+            "description": "Optional account ID to execute the action on a different account (e.g., an artist). The authenticated account must have access. Omit to execute on your own account."
           }
         }
       },
