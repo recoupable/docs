@@ -23,7 +23,7 @@ Failed calls (4xx / 5xx) do **not** deduct credits. Deduction happens only after
 
 ## What a credit is worth
 
-**Balances and prices are US dollars.** The ledger stores amounts as integer micro-dollars, the same 6-decimal unit as USDC: `1,000,000 = \$1.00`, so it can carry sub-cent charges (a \$0.002/s provider rate prices exactly). Every credit field the API returns is that integer; divide by 1,000,000 to display it as currency. Example: [`GET /api/accounts/{id}/credits`](/api-reference/accounts/credits-get).
+**Balances and prices are US dollars.** The ledger stores amounts as integer micro-dollars, the same 6-decimal unit as USDC: `1,000,000 = $1.00`, so it can carry sub-cent charges (a \$0.002/s provider rate prices exactly). Every credit field the API returns is that integer; divide by 1,000,000 to display it as currency. Example: [`GET /api/accounts/{id}/credits`](/api-reference/accounts/credits-get).
 
 ---
 
