@@ -49,6 +49,8 @@ Response shape:
 
 `total_credits` is your plan-derived monthly allotment. `remaining_credits` can exceed `total_credits` after a top-up or an admin grant, and `used_credits` clamps to 0 in that case. Full schema at [Get Account Credits](/api-reference/accounts/credits-get).
 
+To see what consumed the balance, list the charges line by line with [`GET /api/accounts/{id}/usage`](/api-reference/accounts/usage-get): one item per deduction, newest first, each with the amount in micro-dollars and as a dollar string, plus the total for the period.
+
 ---
 
 ## Subscription

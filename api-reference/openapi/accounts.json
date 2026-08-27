@@ -1025,6 +1025,121 @@
         }
       }
     },
+    "/api/accounts/{id}/usage": {
+      "get": {
+        "description": "List the charges that consumed an account's credits: one line item per deduction from `usage_events`, newest first, over a period. Each item carries the amount as the raw ledger integer (`credits_deducted`, micro-dollars: 1,000,000 = $1.00) and the same amount formatted as a dollar string (`usd`), and the response carries the total for the whole period, not just the page. Access is the same as [`GET /api/accounts/{id}/credits`](/api-reference/accounts/credits-get): the authenticated account itself, or another account reachable through organization membership.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The unique identifier (UUID) of the account. Must be the authenticated account or another accessible via organization membership.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Maximum number of line items to return per page.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "The `next_cursor` value from the previous page (the `created_at` of its last item). Returns items strictly older than it.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "description": "Start of the period (inclusive), ISO 8601. Defaults to the start of the current UTC month.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "description": "End of the period (exclusive), ISO 8601. Defaults to now.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usage line items retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountUsageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid query parameter (for example `limit` above 100 or a `cursor` that is not a timestamp)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountCreditsErrorResponse"
+                },
+                "example": {
+                  "error": "limit must be between 1 and 100"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountCreditsErrorResponse"
+                },
+                "example": {
+                  "error": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account not accessible to the authenticated account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountCreditsErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/accounts/{id}/payment-method": {
       "get": {
         "description": "Retrieve the default payment method on file for an account. Returns `card: null` when no payment method has been saved yet \u2014 the top-up dialog uses this to decide whether to show a pre-charge confirmation (card present) or route to a checkout session to collect one (`card: null`). Cards are returned even when expired; callers should compare `exp_month` / `exp_year` against the current date and warn the customer, since an off-session charge against an expired card will decline.",
@@ -4429,6 +4544,151 @@
             "nullable": true,
             "description": "ISO 8601 timestamp of the last balance update or monthly refill. Null when the account has never spent or refilled credits.",
             "example": "2026-05-01T12:34:56.000Z"
+          }
+        }
+      },
+      "AccountUsageEvent": {
+        "type": "object",
+        "required": [
+          "id",
+          "created_at",
+          "source",
+          "agent_type",
+          "provider",
+          "model_id",
+          "input_tokens",
+          "cached_input_tokens",
+          "output_tokens",
+          "tool_call_count",
+          "credits_deducted",
+          "usd"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifier of the `usage_events` row.",
+            "example": "3AANn3Ij9uF-zZIlW_zlP"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the charge was recorded.",
+            "example": "2026-08-27T11:56:58.000Z"
+          },
+          "source": {
+            "type": "string",
+            "description": "Which surface originated the charge: `api` for a request to the API, `web` for the chat app.",
+            "example": "api"
+          },
+          "agent_type": {
+            "type": "string",
+            "description": "`main` for a top-level request or any non-agent charge; `subagent` for a nested task step.",
+            "example": "main"
+          },
+          "provider": {
+            "type": "string",
+            "nullable": true,
+            "description": "Provider slug when the charge is a model or generation call (for example `anthropic`, `fal`). Null for research and other fixed-price endpoints.",
+            "example": "fal"
+          },
+          "model_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Model slug when the charge is a model or generation call. Null for fixed-price endpoints.",
+            "example": "minimax/music-3"
+          },
+          "input_tokens": {
+            "type": "integer",
+            "description": "Input tokens for the call, including cached. 0 for non-LLM charges.",
+            "example": 0
+          },
+          "cached_input_tokens": {
+            "type": "integer",
+            "description": "Subset of `input_tokens` served from the provider cache.",
+            "example": 0
+          },
+          "output_tokens": {
+            "type": "integer",
+            "description": "Output tokens for the call. 0 for non-LLM charges.",
+            "example": 0
+          },
+          "tool_call_count": {
+            "type": "integer",
+            "description": "Number of tool calls in this step.",
+            "example": 0
+          },
+          "credits_deducted": {
+            "type": "integer",
+            "description": "Amount charged, as the raw ledger integer in micro-dollars (1,000,000 = $1.00). Divide by 1,000,000 for dollars.",
+            "example": 20000
+          },
+          "usd": {
+            "type": "string",
+            "description": "`credits_deducted` formatted as US dollars with two decimals.",
+            "example": "$0.02"
+          }
+        }
+      },
+      "AccountUsageResponse": {
+        "type": "object",
+        "required": [
+          "account_id",
+          "period",
+          "total_credits_deducted",
+          "total_usd",
+          "events",
+          "next_cursor"
+        ],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The account whose charges are listed.",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "period": {
+            "type": "object",
+            "required": [
+              "from",
+              "to"
+            ],
+            "description": "The period the totals cover.",
+            "properties": {
+              "from": {
+                "type": "string",
+                "format": "date-time",
+                "example": "2026-08-01T00:00:00.000Z"
+              },
+              "to": {
+                "type": "string",
+                "format": "date-time",
+                "example": "2026-08-27T12:00:00.000Z"
+              }
+            }
+          },
+          "total_credits_deducted": {
+            "type": "integer",
+            "description": "Sum of `credits_deducted` over every charge in the period, in micro-dollars. Covers the whole period, not only this page.",
+            "example": 70000
+          },
+          "total_usd": {
+            "type": "string",
+            "description": "`total_credits_deducted` formatted as US dollars.",
+            "example": "$0.07"
+          },
+          "events": {
+            "type": "array",
+            "description": "Charges in the period, newest first.",
+            "items": {
+              "$ref": "#/components/schemas/AccountUsageEvent"
+            }
+          },
+          "next_cursor": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Pass as `cursor` to fetch the next page. Null when there are no older charges in the period.",
+            "example": "2026-08-27T11:56:58.000Z"
           }
         }
       },
