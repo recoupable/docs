@@ -1097,7 +1097,7 @@
     },
     "/api/credits/sessions": {
       "post": {
-        "description": "Top up credits on the authenticated account.\n\n**One credit equals one US cent (\\$0.01).** The customer is charged `credits` plus a Stripe processing fee (US card pricing: 2.9% + \\$0.30) \u2014 e.g. `credits: 10000` charges \\$103.30 total (\\$100.00 credits + \\$3.30 fee).\n\n**Two outcomes, distinguished by response shape:**\n\n- **Auto-charged** \u2014 if the account has a card on file (from a prior subscription or top-up), the card is charged immediately and the response is `{ paymentIntentId, creditsPurchased, totalCents }`. Credits land in the account's balance asynchronously via Stripe webhook (typically within seconds). No human interaction required.\n\n- **Checkout required** \u2014 if no card is on file, or the saved card requires 3-D Secure authentication, the response is `{ id, url }` with a hosted Stripe Checkout URL. Redirect to that URL; credits land on successful payment.\n\nClients should discriminate on the presence of `url` (Checkout) vs `paymentIntentId` (auto-charged). Cards entered through the Checkout fallback are saved for future top-ups, so a customer's second top-up typically auto-charges.",
+        "description": "Top up credits on the authenticated account.\n\n**Credits are integer micro-dollars (1,000,000 = \\$1.00, the same 6-decimal unit as USDC).** The customer is charged the USD value of `credits` plus a Stripe processing fee (US card pricing: 2.9% + \\$0.30) \u2014 e.g. `credits: 100000000` charges \\$103.30 total (\\$100.00 credits + \\$3.30 fee).\n\n**Two outcomes, distinguished by response shape:**\n\n- **Auto-charged** \u2014 if the account has a card on file (from a prior subscription or top-up), the card is charged immediately and the response is `{ paymentIntentId, creditsPurchased, totalCents }`. Credits land in the account's balance asynchronously via Stripe webhook (typically within seconds). No human interaction required.\n\n- **Checkout required** \u2014 if no card is on file, or the saved card requires 3-D Secure authentication, the response is `{ id, url }` with a hosted Stripe Checkout URL. Redirect to that URL; credits land on successful payment.\n\nClients should discriminate on the presence of `url` (Checkout) vs `paymentIntentId` (auto-charged). Cards entered through the Checkout fallback are saved for future top-ups, so a customer's second top-up typically auto-charges.",
         "security": [
           {
             "apiKeyAuth": []
@@ -4539,7 +4539,7 @@
           "credits": {
             "type": "integer",
             "minimum": 1,
-            "description": "The number of credits to purchase. One credit equals one US cent (\\$0.01), so the value of the credits in USD is `credits / 100`. Example: `250` is \\$2.50 worth of credits (the customer is also charged a Stripe processing fee on top).",
+            "description": "The number of credits to purchase, in integer micro-dollars (1,000,000 = \\$1.00), so the value in USD is `credits / 1000000`. Example: `2500000` is \\$2.50 worth of credits (the customer is also charged a Stripe processing fee on top).",
             "example": 250
           },
           "accountId": {

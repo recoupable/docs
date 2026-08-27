@@ -14,10 +14,16 @@ Some Recoup endpoints are billed in **credits** — primarily endpoints that hit
 | **Research** ([`/api/research/*`](/api-reference/research/search)) | Yes | Each successful call deducts credits. Costs vary by endpoint and parameters (e.g. [`enrich`](/api-reference/research/enrich) charges by processor tier; [`extract`](/api-reference/research/extract) charges by URL count). |
 | **Content generation** ([`/api/image/generate`](/api-reference/image/generation)) | Yes | Image generation is priced per call. |
 | **AI Chat — streaming** ([`POST /api/chat`](/api-reference/chat/workflow)) | Yes | Variable cost based on model token usage, with a per-request minimum. |
-| **Social scrape** ([`/api/socials/{id}/scrape`](/api-reference/social/scrape), [`/api/artist/socials/scrape`](/api-reference/artist/socials-scrape)) | Yes | 5 credits, plus 1 credit per post requested via `posts` — per social profile scraped. |
+| **Social scrape** ([`/api/socials/{id}/scrape`](/api-reference/social/scrape), [`/api/artist/socials/scrape`](/api-reference/artist/socials-scrape)) | Yes | \$0.05, plus \$0.01 per post requested via `posts` — per social profile scraped. |
 | **Everything else** | Free at the API layer | [Artist CRUD](/api-reference/artists/list), [sandboxes](/api-reference/sandboxes/list), [sessions](/api-reference/sessions/get), [scheduled tasks](/api-reference/tasks/get), [account/org management](/api-reference/accounts/id), [agent signup](/api-reference/agents/signup), [Spotify proxies](/api-reference/spotify/search), etc. Subscription gating may still apply. |
 
 Failed calls (4xx / 5xx) do **not** deduct credits. Deduction happens only after the upstream call succeeds.
+
+---
+
+## What a credit is worth
+
+**Balances and prices are US dollars.** The ledger stores amounts as integer micro-dollars, the same 6-decimal unit as USDC: `1,000,000 = $1.00`, so it can carry sub-cent charges (a \$0.002/s provider rate prices exactly). Every credit field the API returns is that integer; divide by 1,000,000 to display it as currency. Example: [`GET /api/accounts/{id}/credits`](/api-reference/accounts/credits-get).
 
 ---
 
@@ -33,9 +39,9 @@ Response shape:
 ```json
 {
   "account_id": "acc_…",
-  "remaining_credits": 9244,
-  "total_credits": 9999,
-  "used_credits": 755,
+  "remaining_credits": 92440000,
+  "total_credits": 99990000,
+  "used_credits": 7550000,
   "is_pro": true,
   "timestamp": "2026-04-24T17:50:43.475"
 }
@@ -49,7 +55,7 @@ Response shape:
 
 Recoup has two tiers. Both refill on a monthly cycle.
 
-| Tier | How you get it | Monthly credits |
+| Tier | How you get it | Monthly allowance |
 |------|---------------|----------------|
 | **Free** | Default for every new account | Monthly allowance refills automatically |
 | **Pro** | Stripe subscription via the chat dashboard | Substantially higher monthly allowance |
@@ -86,7 +92,7 @@ You can purchase credits any time via [`POST /api/credits/sessions`](/api-refere
 curl -sS -X POST https://api.recoupable.dev/api/credits/sessions \
   -H "x-api-key: $RECOUP_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"credits": 100, "successUrl": "https://chat.recoupable.dev/credits/success"}'
+  -d '{"credits": 1000000, "successUrl": "https://chat.recoupable.dev/credits/success"}'
 ```
 
 Full request/response schema at [Create Credits Top-Up Session](/api-reference/credits/sessions-create).
@@ -139,8 +145,8 @@ When the gate comes up short, billed endpoints return **HTTP 402** with a unifie
 ```json
 {
   "error": "insufficient_credits",
-  "remaining_credits": 12,
-  "required_credits": 100,
+  "remaining_credits": 120000,
+  "required_credits": 1000000,
   "billingUrl": "https://app.recoupable.dev"
 }
 ```
@@ -167,11 +173,11 @@ Current as of this revision of the page. The authoritative source is the per-end
 
 | Endpoint | Cost |
 |----------|------|
-| [`POST /api/chat`](/api-reference/chat/workflow) (streaming) | ≥1 credit per turn — variable based on model token usage |
-| [`GET /api/research/*`](/api-reference/research/search) (artist & non-artist research) | 5 credits per call |
-| [`POST /api/research/people`](/api-reference/research/people) | 5 credits per call |
-| [`POST /api/research/web`](/api-reference/research/web) | 1 credit per call |
-| [`POST /api/research/extract`](/api-reference/research/extract) | 5 credits × number of URLs |
-| [`POST /api/research/enrich`](/api-reference/research/enrich) | 5 / 10 / 25 credits (base / core / ultra processor) |
-| [`POST /api/research/deep`](/api-reference/research/deep) | 25 credits per call |
+| [`POST /api/chat`](/api-reference/chat/workflow) (streaming) | Variable, priced from the model's token usage; see `required_credits` on a 402 |
+| [`GET /api/research/*`](/api-reference/research/search) (artist & non-artist research) | \$0.05 per call |
+| [`POST /api/research/people`](/api-reference/research/people) | \$0.05 per call |
+| [`POST /api/research/web`](/api-reference/research/web) | \$0.01 per call |
+| [`POST /api/research/extract`](/api-reference/research/extract) | \$0.05 × number of URLs |
+| [`POST /api/research/enrich`](/api-reference/research/enrich) | \$0.05 / \$0.10 / \$0.25 (base / core / ultra processor) |
+| [`POST /api/research/deep`](/api-reference/research/deep) | \$0.25 per call |
 | [`POST /api/image/generate`](/api-reference/image/generation) | Per-call price; see endpoint reference |
