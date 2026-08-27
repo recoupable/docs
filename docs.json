@@ -360,6 +360,7 @@
               "api-reference/accounts/subscription-get",
               "api-reference/credits/sessions-create",
               "api-reference/accounts/credits-get",
+              "api-reference/accounts/usage-get",
               "api-reference/accounts/payment-method-get"
             ]
           },
