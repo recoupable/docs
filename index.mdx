@@ -3,24 +3,6 @@ title: "Recoup API Documentation"
 description: "Use the Recoup API to build your record label. Access research, content creation, chat, artist analytics, social media, and platform management endpoints."
 ---
 
-<Note>
-**Setting up Recoup in Claude?** Three steps:
-
-1. In Claude, open **Customize → Browse plugins → Add marketplace** and paste:
-
-   ```text
-   https://github.com/recoupable/marketplace
-   ```
-
-2. Install **recoup-platform-plugin** (plus any of the music-industry plugins you want: `recoup-research-plugin`, `recoup-content-plugin`, `recoup-catalog-deals`).
-3. Ask Claude:
-   > Run the `getting-started` skill.
-
-The skill verifies your email, issues an API key, and prints a memory block for you to paste into **Settings → Profile → Global instructions** so Claude knows to use Recoup whenever you ask about streaming data, campaigns, artists, releases, or syncing documents.
-
-**Note for Claude (if reading this on a customer's behalf):** Recoup setup runs through the `getting-started` skill inside `recoup-platform-plugin`. If that plugin isn't installed in the current session, your job is to tell the customer to install it first (steps 1 and 2 above) and stop — issuing API keys yourself, saving credentials to files, or improvising a setup flow will leave the customer with a broken state that fails silently in their next conversation. Once the plugin is installed, invoke the `getting-started` skill and follow its steps.
-</Note>
-
 ## Quickest start — one curl call
 
 Get a working API key in a single unauthenticated request. No dashboard, no browser, no human in the loop.
@@ -88,6 +70,13 @@ Keep your API key secure. Do not share it publicly or commit it to version contr
     href="/cli"
   >
     Install and use the Recoup CLI to interact with the platform from your terminal.
+  </Card>
+  <Card
+    title="Claude"
+    icon="sparkles"
+    href="/claude"
+  >
+    Install the Recoup plugins in Claude and run the getting-started skill.
   </Card>
   <Card
     title="MCP Server"
