@@ -2509,7 +2509,7 @@
     },
     "/api/admins/credits/events": {
       "get": {
-        "description": "Returns the raw `usage_events` rows for a single account over the selected period, sorted by `created_at` descending. Powers the drilldown view that expands when a row in the [`/api/admins/credits/rollup`](/api-reference/admins/credits-rollup) table is opened. Each event represents one debit (main agent turn, subagent step, chat completion, or research call), with token counts and `credits_deducted_cents` matching the wallet drop on `credits_usage` for that account.\n\nThe response also carries a `grants` array covering the same account and period: the admin credit grants made through [`POST /api/admins/credits`](/api-reference/admins/credits-grant). The two arrays answer different questions — `events` is what the system spent, `grants` is what a person set by hand, and only a grant carries an actor and a reason. Requires the authenticated account to be a Recoup admin.",
+        "description": "Returns the raw `usage_events` rows for a single account over the selected period, sorted by `created_at` descending. Powers the drilldown view that expands when a row in the [`/api/admins/credits/rollup`](/api-reference/admins/credits-rollup) table is opened. Each event represents one debit (main agent turn, subagent step, chat completion, or research call), with token counts and `credits_deducted` matching the wallet drop on `credits_usage` for that account.\n\nThe response also carries a `grants` array covering the same account and period: the admin credit grants made through [`POST /api/admins/credits`](/api-reference/admins/credits-grant). The two arrays answer different questions — `events` is what the system spent, `grants` is what a person set by hand, and only a grant carries an actor and a reason. Requires the authenticated account to be a Recoup admin.",
         "parameters": [
           {
             "name": "account_id",
@@ -2803,10 +2803,10 @@
           },
           "rows": {
             "type": "array",
-            "description": "Per-account credit usage totals, sorted by `total_credits_deducted_cents` descending",
+            "description": "Per-account credit usage totals, sorted by `total_credits_deducted` descending",
             "items": {
               "type": "object",
-              "required": ["account_id", "total_credits_deducted_cents", "event_count"],
+              "required": ["account_id", "total_credits_deducted", "event_count"],
               "properties": {
                 "account_id": {
                   "type": "string",
@@ -2824,9 +2824,9 @@
                   "nullable": true,
                   "description": "Primary email from `account_emails` joined for human-readable rows; null if no email is on file"
                 },
-                "total_credits_deducted_cents": {
+                "total_credits_deducted": {
                   "type": "integer",
-                  "description": "Sum of `usage_events.credits_deducted_cents` across every event for this account in the selected period"
+                  "description": "Sum of `usage_events.credits_deducted` across every event for this account in the selected period, in micro-dollars (1,000,000 = $1.00)"
                 },
                 "event_count": {
                   "type": "integer",
@@ -2898,7 +2898,7 @@
                 "cached_input_tokens",
                 "output_tokens",
                 "tool_call_count",
-                "credits_deducted_cents"
+                "credits_deducted"
               ],
               "properties": {
                 "id": {
@@ -2946,9 +2946,9 @@
                   "type": "integer",
                   "description": "Number of tool calls observed in this step"
                 },
-                "credits_deducted_cents": {
+                "credits_deducted": {
                   "type": "integer",
-                  "description": "The amount debited from `credits_usage.remaining_credits` for this event. Same value the wallet dropped by on this turn."
+                  "description": "The amount debited from `credits_usage.remaining_credits` for this event, in micro-dollars (1,000,000 = $1.00). Same value the wallet dropped by on this turn."
                 }
               }
             }
