@@ -3053,7 +3053,7 @@
                 "model_id": {
                   "type": "string",
                   "nullable": true,
-                  "description": "Gateway model slug (e.g. `anthropic/claude-opus-4.6`). Null for research/x402-style debits."
+                  "description": "The model for LLM-backed debits (e.g. `anthropic/claude-opus-4.6`), otherwise the billed API endpoint as `METHOD /route/pattern` (e.g. `POST /api/research/web`). Null on rows written before 2026-08-27."
                 },
                 "input_tokens": {
                   "type": "integer",
@@ -4604,8 +4604,8 @@
           "model_id": {
             "type": "string",
             "nullable": true,
-            "description": "Model slug when the charge is a model or generation call. Null for fixed-price endpoints.",
-            "example": "minimax/music-3"
+            "description": "The model for LLM-backed charges (a chat turn, a song generation), otherwise the API endpoint that was billed, as `METHOD /route/pattern` (for example `POST /api/artist/socials/scrape`). Null on rows written before 2026-08-27.",
+            "example": "POST /api/artist/socials/scrape"
           },
           "input_tokens": {
             "type": "integer",
