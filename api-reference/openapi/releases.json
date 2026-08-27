@@ -174,7 +174,7 @@
       },
       "patch": {
         "summary": "Update scheduled task",
-        "description": "Update an existing scheduled task. Only the id field is required; any additional fields you include will be updated on the task. The response shape matches the GET endpoint (an array containing the updated task).",
+        "description": "Update an existing scheduled task. Only the id field is required; any additional fields you include will be updated on the task. The task must belong to the caller's account or to an account the caller can access through a shared organization (Recoup admins can update any task); `account_id` is not needed for that. The response shape matches the GET endpoint (an array containing the updated task).",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
@@ -246,7 +246,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - account_id is outside caller authorization scope",
+            "description": "Forbidden - the task belongs to an account the caller cannot access (not the caller's own, no shared organization, not a Recoup admin), or `account_id` is outside the caller's scope",
             "content": {
               "application/json": {
                 "schema": {
@@ -288,7 +288,7 @@
       },
       "delete": {
         "summary": "Delete scheduled task",
-        "description": "Delete an existing scheduled task by `id`. Returns only the delete operation status.",
+        "description": "Delete an existing scheduled task by `id`. The task must belong to the caller's account or to an account the caller can access through a shared organization (Recoup admins can delete any task); nothing else is needed to act on another account's task. Also removes the task's Trigger.dev schedule. Returns only the delete operation status.",
         "security": [
           { "apiKeyAuth": [] },
           { "bearerAuth": [] }
@@ -344,7 +344,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - account_id is outside caller authorization scope",
+            "description": "Forbidden - the task belongs to an account the caller cannot access (not the caller's own, no shared organization, not a Recoup admin), or `account_id` is outside the caller's scope",
             "content": {
               "application/json": {
                 "schema": {
