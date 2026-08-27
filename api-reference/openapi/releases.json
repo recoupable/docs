@@ -938,7 +938,7 @@
     },
     "/api/artists/{id}/socials": {
       "get": {
-        "description": "Retrieve all social media profiles associated with an artist. This endpoint should be called before using the Social Posts endpoint to obtain the necessary social IDs.",
+        "description": "Retrieve all social media profiles associated with an artist, with the latest follower counts from the most recent scrape. Call this before the Social Posts or Social Scrape endpoints to obtain the social IDs. Pass `history` to also get each profile's follower snapshots, so week-over-week movement is a read instead of something the caller has to remember.",
         "parameters": [
           {
             "name": "id",
@@ -949,6 +949,39 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number to retrieve (default: 1)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The number of records per page (default: 20, max: 100)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "history",
+            "in": "query",
+            "description": "Number of days of follower snapshots to include per profile as `history`, newest first. Snapshots are written by every scrape that reports a follower count, one point per social per day (the latest scrape that day wins), so a profile has one point after its first scrape and a second only after a scrape on a later day. Omitted: no `history` field on the profiles.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 90
+            },
+            "example": 14
           }
         ],
         "responses": {
@@ -963,7 +996,37 @@
             }
           },
           "400": {
-            "description": "Bad request - missing required parameters",
+            "description": "Bad request - invalid `id`, `page`, `limit` or `history`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistSocialsErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistSocialsErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - caller does not have access to this artist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistSocialsErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Artist not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1121,7 +1184,7 @@
     },
     "/api/artists/{id}/fans": {
       "get": {
-        "description": "Retrieve all social profiles from fans of an artist across all platforms. This endpoint aggregates fan data from all connected social media platforms. Supports pagination for large fan lists.",
+        "description": "Retrieve the social profiles of an artist's fans: the accounts that commented on the artist's scraped posts (Instagram today). Every Instagram scrape is followed by one batched profile run over the new commenters, which fills `avatar`, `bio`, `follower_count` and `following_count` on each fan; `region` is null unless the platform reports one. Supports pagination for large fan lists.",
         "parameters": [
           {
             "name": "id",
@@ -3016,7 +3079,7 @@
             "minimum": 1,
             "maximum": 100,
             "example": 10,
-            "description": "Maximum number of recent posts to include in each scrape dataset, with per-post engagement metrics. On X/Twitter this returns the account's latest `posts` timeline items — including retweets and replies — each with like, retweet, reply, quote, bookmark, and view counts. On YouTube the depth applies per content type, so each dataset contains up to `posts` videos plus `posts` Shorts, each with view, like, and comment counts. On LinkedIn it returns the profile's latest `posts` posts, each with like, comment, and share counts and a reaction-type breakdown. Other platforms ignore this field. When omitted, each scrape returns the legacy profile snapshot (a single latest item)."
+            "description": "Recent-post depth applied to every profile in the batch. Honored on TikTok, YouTube (per content type), X and LinkedIn; ignored on Instagram (always the profile's latest posts, up to 12), Threads and Facebook. Without it TikTok, YouTube and X return a single latest item. Every returned post is stored with its engagement counts; see the per-platform table on [Social Scrape](/api-reference/social/scrape). Credits: `5 + posts` per profile."
           }
         }
       },
@@ -4391,6 +4454,41 @@
             "type": "string",
             "format": "date-time",
             "description": "ISO timestamp of when the profile was last updated"
+          },
+          "history": {
+            "type": "array",
+            "description": "Follower snapshots for the last `history` days, newest first. Present only when the `history` query parameter is passed.",
+            "items": {
+              "$ref": "#/components/schemas/SocialSnapshot"
+            }
+          }
+        }
+      },
+      "SocialSnapshot": {
+        "type": "object",
+        "required": [
+          "captured_at",
+          "follower_count"
+        ],
+        "properties": {
+          "captured_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the scrape that produced this point completed"
+          },
+          "follower_count": {
+            "type": "integer",
+            "description": "Followers (subscribers on YouTube) at capture time"
+          },
+          "following_count": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Accounts followed at capture time; null where the platform does not report it"
+          },
+          "post_count": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Lifetime post count at capture time (Instagram, TikTok, YouTube, X); null where the platform does not report it"
           }
         }
       },
