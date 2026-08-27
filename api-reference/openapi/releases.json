@@ -5248,7 +5248,7 @@
           "account_id": {
             "type": "string",
             "format": "uuid",
-            "description": "UUID of the account to update the task for. Only applicable when the authenticated account has access to multiple accounts via organization membership. If not provided, the task is updated for the API key's own account.",
+            "description": "Optional, kept for compatibility. Authorization comes from the task's own account (the caller's, one sharing an organization, or any for a Recoup admin), so this is not needed to update another account's task. If sent, it must be an account the caller can access.",
             "example": "848cd58d-700f-4b38-ab4c-d9f52a1b2c3d"
           },
           "artist_account_id": {
