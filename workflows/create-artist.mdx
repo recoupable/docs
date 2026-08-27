@@ -16,7 +16,7 @@ The chain is 8 sequential API calls. Long deterministic chains executed from pro
 The flow has three phases, run from a single checklist file:
 
 1. **Create + identify** — `POST /api/artists`, then find the canonical Spotify match
-2. **Enrich** — `PATCH` the artist with image/label/socials, then run structured research (profile/career/playlists) plus a web search for narrative context and additional socials
+2. **Enrich** — `PATCH` the artist with image/label/socials, then run a web search for narrative context and additional socials
 3. **Synthesize + persist** — generate a knowledge-base report, save it (RECOUP.md tree or hosted URL), then optionally `PATCH` the `knowledges` array
 
 ## Step 0: Scaffold the workspace BEFORE any API call
@@ -36,7 +36,6 @@ artistId:
 spotifyArtistId:
 spotifyProfileUrl:
 imageUrl:
-researchArtistId:
 ---
 
 # $ARTIST_NAME
@@ -46,7 +45,7 @@ researchArtistId:
 - [ ] 1. Create the artist (\`POST /api/artists\`) — capture \`account_id\` → \`artistId\`
 - [ ] 2. Find canonical Spotify match (\`GET /api/spotify/search\`) — capture \`id\`, \`external_urls.spotify\`, \`images[0].url\`
 - [ ] 3. PATCH artist with image + Spotify profile URL
-- [ ] 4. Structured research — \`/research/lookup\` (capture \`researchArtistId\`) → \`/research/profile\` + \`/research/career\` + \`/research/playlists\` + \`/research/web\`. Save responses under \`## Research\` in this file.
+- [ ] 4. Web research — \`POST /research/web\` for biography, press and collaborations. Save the response under \`## Research\` in this file.
 - [ ] 5. Pull Spotify catalog → write \`releases/{album-slug}/RELEASE.md\` per album + \`releases/top-tracks.md\`
 - [ ] 6. Web search for additional socials (instagram / tiktok / twitter / youtube)
 - [ ] 7. PATCH artist with discovered socials
@@ -133,69 +132,13 @@ curl -sS -X PATCH "https://api.recoupable.dev/api/artists/$ARTIST_ID" \
         '{image: $image, profileUrls: {SPOTIFY: $url}}')"
 ```
 
-This single endpoint replaces what the chat tool chain runs as four separate MCP calls (`update_account_info` ×2, `update_artist_socials` ×2). Add `label` to the body once you discover one in the structured research (step 4 — comes back from `/api/research/profile`). See [Update Artist](/api-reference/artists/update) for the full body schema.
+This single endpoint replaces what the chat tool chain runs as four separate MCP calls (`update_account_info` ×2, `update_artist_socials` ×2). Add `label` to the body once you discover one in the web research (step 4). See [Update Artist](/api-reference/artists/update) for the full body schema.
 
 **After this step:** tick `- [ ] 3.` → `- [x] 3.`.
 
-## Step 4: Run structured research
+## Step 4: Run web research
 
-Don't use `POST /api/research/deep` here — it tends to hang in sandboxes and returns paraphrased prose. Instead, fan out across four bounded structured endpoints (one prerequisite lookup + three structured pulls + one web search). The outputs are typed JSON the agent can use directly without paraphrasing.
-
-### 4a: Look up the research artist ID
-
-Most structured research endpoints can take the provider artist ID, not the Spotify ID. Resolve it once and reuse it for the rest of step 4.
-
-```bash
-LOOKUP=$(curl -sS -G "https://api.recoupable.dev/api/research/lookup" \
-  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
-  --data-urlencode "spotifyId=$SPOTIFY_ARTIST_ID")
-
-RESEARCH_ARTIST_ID=$(echo "$LOOKUP" | jq -r '.id // .artist.id // .data.id // empty')
-
-[ -n "$RESEARCH_ARTIST_ID" ] || { echo "No structured research match for Spotify ID $SPOTIFY_ARTIST_ID — skipping structured research"; }
-```
-
-If the lookup fails, skip 4b–4d and just run 4e (web search). See [Artist Lookup](/api-reference/research/lookup) for the request/response schema.
-
-### 4b: Pull the artist profile
-
-Returns bio, genres, social URLs, label, career stage, and basic metrics — most of what deep research used to paraphrase.
-
-```bash
-PROFILE=$(curl -sS -G "https://api.recoupable.dev/api/research/profile" \
-  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
-  --data-urlencode "id=$RESEARCH_ARTIST_ID")
-```
-
-See [Artist Profile](/api-reference/research/profile) for the response schema.
-
-### 4c: Pull the career timeline
-
-Career milestones, trajectory, and career-stage classification — covers the "notable achievements" portion of what deep research returned.
-
-```bash
-CAREER=$(curl -sS -G "https://api.recoupable.dev/api/research/career" \
-  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
-  --data-urlencode "id=$RESEARCH_ARTIST_ID")
-```
-
-See [Career Timeline](/api-reference/research/career) for the response schema.
-
-### 4d: Pull editorial + algorithmic playlist placements
-
-Replaces the "playlists / radio rotations / editorial features" portion of the deep-research Spotify-presence query.
-
-```bash
-PLAYLISTS=$(curl -sS -G "https://api.recoupable.dev/api/research/playlists" \
-  -H "Authorization: Bearer $RECOUP_ACCESS_TOKEN" \
-  --data-urlencode "id=$RESEARCH_ARTIST_ID")
-```
-
-See [Artist Playlists](/api-reference/research/playlists) for the response schema.
-
-### 4e: Web search for narrative / press / collaborations
-
-Structured endpoints don't cover press coverage, cultural narrative, or recent feature/collab announcements. Fill that gap with a single web search.
+Don't use `POST /api/research/deep` here — it tends to hang in sandboxes and returns paraphrased prose. One bounded web search covers biography, press coverage, cultural narrative, and recent feature/collab announcements.
 
 ```bash
 RESEARCH_WEB=$(curl -sS -X POST "https://api.recoupable.dev/api/research/web" \
@@ -207,7 +150,7 @@ RESEARCH_WEB=$(curl -sS -X POST "https://api.recoupable.dev/api/research/web" \
 
 See [Web Search](/api-reference/research/web) for the request/response schema.
 
-**After this step:** persist `researchArtistId: $RESEARCH_ARTIST_ID` into the frontmatter, save the four response payloads (profile, career, playlists, web) into a new `## Research` section of `RECOUP.md` — one subsection per endpoint, each with the raw JSON or a tight markdown summary so step 8 can compose from it. Tick `- [ ] 4.` → `- [x] 4.`.
+**After this step:** save the response payload into a new `## Research` section of `RECOUP.md` — the raw JSON or a tight markdown summary so step 8 can compose from it. Tick `- [ ] 4.` → `- [x] 4.`.
 
 ## Step 5: Pull the Spotify catalog
 
@@ -272,7 +215,7 @@ See [Update Artist](/api-reference/artists/update) for the full body schema.
 
 ## Step 8: Synthesize the knowledge base
 
-Combine the structured research outputs (`## Research` section — profile, career, playlists, web), the Spotify catalog (`releases/`), and the discovered socials into a comprehensive markdown report. Recommended sections:
+Combine the web research (`## Research` section), the Spotify catalog (`releases/`), and the discovered socials into a comprehensive markdown report. Recommended sections:
 
 - Artist biography and origin
 - Discography highlights (top tracks + key albums)
