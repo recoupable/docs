@@ -1052,13 +1052,23 @@
             }
           },
           {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Order of the line items, both descending: `created_at` (newest first, the default) or `cost` (largest `credits_deducted` first, ties by newest).",
+            "schema": {
+              "type": "string",
+              "enum": ["created_at", "cost"],
+              "default": "created_at"
+            }
+          },
+          {
             "name": "cursor",
             "in": "query",
             "required": false,
-            "description": "The `next_cursor` value from the previous page (the `created_at` of its last item). Returns items strictly older than it.",
+            "description": "Opaque paging token: pass the `next_cursor` value from the previous page, with the same `sort`, `from` and `to`. With `sort=created_at` it is the last item's `created_at`; with `sort=cost` it encodes the last item's amount and id. Returns the items that follow it.",
             "schema": {
-              "type": "string",
-              "format": "date-time"
+              "type": "string"
             }
           },
           {
@@ -4678,16 +4688,15 @@
           },
           "events": {
             "type": "array",
-            "description": "Charges in the period, newest first.",
+            "description": "Charges in the period in the requested `sort` order (newest first by default).",
             "items": {
               "$ref": "#/components/schemas/AccountUsageEvent"
             }
           },
           "next_cursor": {
             "type": "string",
-            "format": "date-time",
             "nullable": true,
-            "description": "Pass as `cursor` to fetch the next page. Null when there are no older charges in the period.",
+            "description": "Opaque; pass as `cursor` (with the same `sort`, `from` and `to`) to fetch the next page. Null when the page was the last one in the period.",
             "example": "2026-08-27T11:56:58.000Z"
           }
         }
