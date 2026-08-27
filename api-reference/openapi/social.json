@@ -16,7 +16,7 @@
   "paths": {
     "/api/artists/{id}/posts": {
       "get": {
-        "description": "Retrieve all social media posts from an artist across all platforms. This endpoint aggregates posts from all connected social media profiles for the specified artist. Supports pagination for large post collections.",
+        "description": "Retrieve all social media posts from an artist across all platforms. This endpoint aggregates posts from all connected social media profiles for the specified artist, newest first. Engagement counts (`views`, `likes`, `comments`, `reposts`) are the values captured by the most recent scrape of that profile; they are null on platforms that do not report them and on posts stored before engagement capture. Supports pagination for large post collections.",
         "security": [
           {
             "apiKeyAuth": []
@@ -628,7 +628,7 @@
     },
     "/api/socials/{id}/scrape": {
       "post": {
-        "description": "Trigger a social profile scraping job for a given social profile. Use the [Get Artist Socials](/api-reference/artists/socials) endpoint first to retrieve the social profile id values. The response returns run metadata for polling status and retrieving results via the [Scraper Results API](/api-reference/apify/scraper).",
+        "description": "Trigger a scrape of one social profile. Use [Get Artist Socials](/api-reference/artists/socials) first to get the social `id`. The response is the Apify run metadata; poll it with the [Scraper Results API](/api-reference/apify/scraper).\n\n**Credits:** `5 + posts` per scrape (5 when `posts` is omitted).\n\n**What `posts` does per platform**\n\n| Platform | `posts` honored | Actor parameter | When `posts` is omitted |\n|---|---|---|---|\n| Instagram | no | none | the profile's latest posts (up to 12), always |\n| TikTok | yes | `resultsPerPage` | 1 video |\n| YouTube | yes, per content type | `maxResults`, `maxResultsShorts`, `maxResultStreams` | 1 video, 0 Shorts, 0 streams |\n| X / Twitter | yes | timeline items; retweets and replies are fetched but not stored | 1 item |\n| LinkedIn | yes | `maxPosts` (the posts actor runs instead of the profile actor) | profile only, no posts |\n| Threads | no | none | profile only |\n| Facebook | no | none | profile only |\n\n**What gets stored.** Once the run succeeds, the webhook handler persists every item in the dataset; nothing is discarded after the response is read:\n\n- The profile: username, avatar, bio, follower and following counts, region. Served by [Get Artist Socials](/api-reference/artists/socials).\n- One follower snapshot per social per day (follower, following and post counts) whenever the run reports a follower count. Served by the `history` parameter of Get Artist Socials.\n- Every returned post with its engagement (`views`, `likes`, `comments`, `reposts`, where the platform reports them). Served by [Get Artist Posts](/api-reference/posts/get).\n- Instagram only: the comments on the returned posts (one follow-up comments run), then one batched profile run over the distinct commenters that fills avatar, bio and follower count on every commenter. Served by [Get Artist Fans](/api-reference/fans/get).\n\n**Fan discovery is one hop deep.** The commenter profile run is terminal: it never schedules comments or profile runs of its own. One Instagram scrape therefore produces at most three runs (profile, comments, commenter profiles).",
         "parameters": [
           {
             "name": "id",
@@ -643,7 +643,7 @@
           {
             "name": "posts",
             "in": "query",
-            "description": "Maximum number of recent posts to include in the scrape dataset, with per-post engagement metrics. On X/Twitter this returns the account's latest `posts` timeline items — including retweets and replies — each with like, retweet, reply, quote, bookmark, and view counts. On YouTube the depth applies per content type, so the dataset contains up to `posts` videos plus `posts` Shorts, each with view, like, and comment counts. On LinkedIn it returns the profile's latest `posts` posts, each with like, comment, and share counts and a reaction-type breakdown. Other platforms ignore this parameter. When omitted, the scrape returns the legacy profile snapshot (a single latest item).",
+            "description": "Recent-post depth. Honored on TikTok, YouTube (per content type), X and LinkedIn; ignored on Instagram (always the profile's latest posts, up to 12), Threads and Facebook. Without it TikTok, YouTube and X return a single latest item, so pass it whenever you need post history. Every returned post is stored with its engagement counts. See the per-platform table above.",
             "required": false,
             "schema": {
               "type": "integer",
@@ -1464,7 +1464,27 @@
           "updated_at": {
             "type": "string",
             "format": "date-time",
-            "description": "ISO timestamp of when the post was last updated"
+            "description": "ISO timestamp of when the post was published on the platform"
+          },
+          "views": {
+            "type": "integer",
+            "nullable": true,
+            "description": "View or play count at the last scrape. YouTube `viewCount`, TikTok `playCount`, X `viewCount`. Null on Instagram, LinkedIn, Threads and Facebook."
+          },
+          "likes": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Like count at the last scrape. Instagram `likesCount`, TikTok `diggCount`, YouTube `likes`, X `likeCount`, LinkedIn `likes`. Null on Threads and Facebook."
+          },
+          "comments": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Comment count at the last scrape. Instagram `commentsCount`, TikTok `commentCount`, YouTube `commentsCount`, X `replyCount`, LinkedIn `comments`. Null on Threads and Facebook."
+          },
+          "reposts": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Share, repost or retweet count at the last scrape. TikTok `shareCount`, X `retweetCount`, LinkedIn `shares`. Null on Instagram, YouTube, Threads and Facebook."
           }
         }
       },
