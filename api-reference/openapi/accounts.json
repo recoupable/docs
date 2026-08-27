@@ -3074,6 +3074,11 @@
                 "credits_deducted": {
                   "type": "integer",
                   "description": "The amount debited from `credits_usage.remaining_credits` for this event, in micro-dollars (1,000,000 = $1.00). Same value the wallet dropped by on this turn."
+                },
+                "resource_url": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "App-relative path of what produced the debit (`/chat?roomId=<roomId>`, `/music/<generationId>`, `/tasks/<taskId>/runs/<runId>`). Null for plain API calls and for rows written before the field existed."
                 }
               }
             }
@@ -4571,7 +4576,8 @@
           "output_tokens",
           "tool_call_count",
           "credits_deducted",
-          "usd"
+          "usd",
+          "resource_url"
         ],
         "properties": {
           "id": {
@@ -4636,6 +4642,12 @@
             "type": "string",
             "description": "`credits_deducted` formatted as US dollars with two decimals.",
             "example": "$0.02"
+          },
+          "resource_url": {
+            "type": "string",
+            "nullable": true,
+            "description": "App-relative path of what produced the charge, when there is something to open: `/chat?roomId=<roomId>` for a chat turn, `/music/<generationId>` for a song, `/tasks/<taskId>/runs/<runId>` for a scheduled task run. Null for plain API calls and for rows written before the field existed.",
+            "example": "/music/0c35429f-deb8-48f0-b0f2-fd5145de2583"
           }
         }
       },
