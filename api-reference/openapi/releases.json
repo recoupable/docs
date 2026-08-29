@@ -294,7 +294,7 @@
                 },
                 "examples": {
                   "taskCount": {
-                    "summary": "Free account creating a second task",
+                    "summary": "Free account re-enabling a disabled task while another is enabled",
                     "value": {
                       "status": "error",
                       "error": "plan_limit",
@@ -308,7 +308,7 @@
                     }
                   },
                   "minCadence": {
-                    "summary": "Free account scheduling a daily task",
+                    "summary": "Free account changing a task to a daily schedule",
                     "value": {
                       "status": "error",
                       "error": "plan_limit",

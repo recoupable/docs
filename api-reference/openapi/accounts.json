@@ -756,7 +756,7 @@
     },
     "/api/subscriptions/sessions": {
       "post": {
-        "description": "Create a checkout session to start a subscription for the authenticated account. Returns a hosted checkout URL that the client should redirect to. The session is pre-configured with a 30-day trial period.",
+        "description": "Create a checkout session to start a subscription for the authenticated account. Returns a hosted checkout URL that the client should redirect to. `plan` picks the price: `pro` (default) is pre-configured with a 30-day trial period; `starter` is charged at checkout with no trial.",
         "security": [
           {
             "apiKeyAuth": []
