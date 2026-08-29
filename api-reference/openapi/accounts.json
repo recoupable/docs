@@ -788,11 +788,25 @@
             }
           },
           "400": {
-            "description": "Bad request - missing or invalid parameters",
+            "description": "Bad request - missing or invalid parameters, or `plan` is `starter` while the Starter price is not configured (`error` is literally `starter_unavailable`).",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
+                },
+                "examples": {
+                  "invalidBody": {
+                    "summary": "Missing successUrl",
+                    "value": {
+                      "error": "successUrl is required"
+                    }
+                  },
+                  "starterUnavailable": {
+                    "summary": "Starter price not configured",
+                    "value": {
+                      "error": "starter_unavailable"
+                    }
+                  }
                 }
               }
             }
@@ -4415,6 +4429,16 @@
             "description": "The URL to redirect to after a successful payment.",
             "example": "https://chat.recoupable.com?subscription=success"
           },
+          "plan": {
+            "type": "string",
+            "enum": [
+              "starter",
+              "pro"
+            ],
+            "default": "pro",
+            "description": "Which plan to check out. `pro` ($99/mo) starts with a 30-day trial. `starter` ($19/mo) is charged at checkout with no trial. Returns 400 `starter_unavailable` when the Starter price is not configured.",
+            "example": "starter"
+          },
           "accountId": {
             "type": "string",
             "format": "uuid",
@@ -4521,6 +4545,9 @@
           "total_credits",
           "used_credits",
           "is_pro",
+          "plan",
+          "task_limit",
+          "min_cadence_minutes",
           "timestamp"
         ],
         "properties": {
@@ -4550,8 +4577,31 @@
           },
           "is_pro": {
             "type": "boolean",
-            "description": "True when the account is on a pro plan, directly via an account subscription or via an organization subscription.",
+            "description": "True when the account is on the Pro plan, directly via an account subscription, via an organization subscription, or via an enterprise email domain. Starter accounts are not pro.",
             "example": false
+          },
+          "plan": {
+            "type": "string",
+            "enum": [
+              "free",
+              "starter",
+              "pro"
+            ],
+            "description": "The account's plan, resolved from its active Stripe subscription's price: `starter` for the Starter price, `pro` for any other active subscription, organization subscription, or enterprise domain, otherwise `free`. Drives `total_credits`, `task_limit`, and `min_cadence_minutes`.",
+            "example": "free"
+          },
+          "task_limit": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 1,
+            "description": "Maximum enabled scheduled tasks on this plan (Free 1, Starter 3). Null on Pro, which is uncapped. Exceeding it returns a 402 `plan_limit` from [`POST /api/tasks`](/api-reference/tasks/create).",
+            "example": 1
+          },
+          "min_cadence_minutes": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Shortest allowed gap between two runs of a scheduled task on this plan, in minutes: Free 10080 (weekly), Starter 1440 (daily), Pro 60 (hourly). A denser cron returns a 402 `plan_limit`.",
+            "example": 10080
           },
           "timestamp": {
             "type": "string",

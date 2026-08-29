@@ -43,11 +43,14 @@ Response shape:
   "total_credits": 99990000,
   "used_credits": 7550000,
   "is_pro": true,
+  "plan": "pro",
+  "task_limit": null,
+  "min_cadence_minutes": 60,
   "timestamp": "2026-04-24T17:50:43.475"
 }
 ```
 
-`total_credits` is your plan-derived monthly allotment. `remaining_credits` can exceed `total_credits` after a top-up or an admin grant, and `used_credits` clamps to 0 in that case. Full schema at [Get Account Credits](/api-reference/accounts/credits-get).
+`plan`, `task_limit`, and `min_cadence_minutes` describe the [plan](#subscription) the balance belongs to. `total_credits` is your plan-derived monthly allotment. `remaining_credits` can exceed `total_credits` after a top-up or an admin grant, and `used_credits` clamps to 0 in that case. Full schema at [Get Account Credits](/api-reference/accounts/credits-get).
 
 To see what consumed the balance, list the charges line by line with [`GET /api/accounts/{id}/usage`](/api-reference/accounts/usage-get): one item per deduction, newest first, each with the amount in micro-dollars and as a dollar string, plus the total for the period. API charges name the endpoint that billed them in `model_id` (for example `POST /api/artist/socials/scrape`), so a list of charges reads as a list of calls.
 
@@ -55,12 +58,35 @@ To see what consumed the balance, list the charges line by line with [`GET /api/
 
 ## Subscription
 
-Recoup has two tiers. Both refill on a monthly cycle.
+Recoup has three plans. All three refill credits on a monthly cycle, and the plan also sets how many scheduled tasks an account can run and how often they can fire.
 
-| Tier | How you get it | Monthly allowance |
-|------|---------------|----------------|
-| **Free** | Default for every new account | Monthly allowance refills automatically |
-| **Pro** | Stripe subscription via the chat dashboard | Substantially higher monthly allowance |
+| Plan | Price | Monthly credits | Scheduled tasks | Shortest cadence | `plan` value |
+|------|-------|-----------------|-----------------|------------------|--------------|
+| **Free** | $0 | $3.33 | 1 | Weekly (10080 minutes) | `free` |
+| **Starter** | $19/mo | $20 | 3 | Daily (1440 minutes) | `starter` |
+| **Pro** | $99/mo, 30-day trial | $300 | Unlimited | Hourly (60 minutes) | `pro` |
+
+The plan is resolved from the account's active Stripe subscription price, never stored: the Starter price maps to `starter`; any other active subscription, an organization subscription, or an enterprise email domain maps to `pro`; no subscription is `free`. Roster-wide social monitoring, emailing reports to recipients other than yourself, and API keys stay Pro-only, so `is_pro` is false on Starter.
+
+### Task limits
+
+[`POST /api/tasks`](/api-reference/tasks/create) and [`PATCH /api/tasks`](/api-reference/tasks/update) check the plan before writing. Creating a task past `task_limit`, re-enabling a disabled task past it, or saving a cron whose consecutive runs are closer together than `min_cadence_minutes` returns **HTTP 402** with `error: "plan_limit"`:
+
+```json
+{
+  "status": "error",
+  "error": "plan_limit",
+  "limit": "task_count",
+  "message": "Free includes 1 task. Starter includes 3, Pro is unlimited.",
+  "plan": "free",
+  "task_limit": 1,
+  "min_cadence_minutes": 10080,
+  "current_task_count": 1,
+  "billingUrl": "https://app.recoupable.dev"
+}
+```
+
+`limit` is `task_count` or `min_cadence`; `current_task_count` excludes the task being created or updated. Edits that only touch `title`, `prompt`, or `model` never hit the gate. Tasks that existed before task limits shipped keep running until 2026-10-01 so their owners can pick a plan; after that date a task outside its plan's limits is skipped instead of run.
 
 ### Monthly refill
 
@@ -68,11 +94,11 @@ The refill is a **floor, not an assignment.** It raises `remaining_credits` up t
 
 The refill is lazy rather than scheduled: it applies on the next read of [`GET /api/accounts/{id}/credits`](/api-reference/accounts/credits-get) once your credits row is more than a month old. The balance you read is always the refilled one.
 
-### Upgrade to Pro
+### Upgrade to Starter or Pro
 
-1. Sign in at [sandbox.recoupable.com](https://sandbox.recoupable.com)
-2. Open Settings → Billing → **Start Free Trial**
-3. Stripe checkout creates a subscription tied to the account your API key authenticates against. New subscriptions include a **30-day trial**
+1. Sign in at [app.recoupable.dev](https://app.recoupable.dev)
+2. Open the account menu and pick a plan, or call [`POST /api/subscriptions/sessions`](/api-reference/subscriptions/sessions-create) with `plan` set to `starter` or `pro` and open the returned checkout `url`
+3. Stripe checkout creates a subscription tied to the account your API key authenticates against. Pro subscriptions include a **30-day trial**; Starter is charged at checkout
 
 ### Check your tier
 
