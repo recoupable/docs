@@ -756,15 +756,7 @@
     },
     "/api/subscriptions/sessions": {
       "post": {
-        "description": "Create a checkout session to start a subscription for the authenticated account. Returns a hosted checkout URL that the client should redirect to. The session is pre-configured with a 30-day trial period.",
-        "security": [
-          {
-            "apiKeyAuth": []
-          },
-          {
-            "bearerAuth": []
-          }
-        ],
+        "description": "Create a Stripe Checkout session for Starter or Pro. Authentication is optional: omit auth for the pricing-page path (visitor pays first, signs in afterwards); send a valid `x-api-key` or `Authorization: Bearer` to attach the session to an existing account.\n\nUnauthenticated sessions are linked by the `checkout.session.completed` webhook: the API looks up `customer_details.email` among account emails, creates a new account (with the welcome email) when none exists, and stamps `accountId` on the Stripe subscription and customer. If the buyer later signs in with a different email, the client calls [Claim Subscription](/api-reference/subscriptions/claim-create) with the `session_id` Stripe appends to `successUrl`.\n\n`plan` defaults to `pro` when omitted (back-compat for authenticated callers). Pro sessions carry the 30-day trial; Starter charges on completion. Starter returns 400 `starter_unavailable` until `STRIPE_STARTER_PRICE_ID` is configured. An auth header that is present but invalid returns 401; omit the header entirely for an anonymous session.",
         "requestBody": {
           "description": "Session creation parameters",
           "required": true,
@@ -788,7 +780,20 @@
             }
           },
           "400": {
-            "description": "Bad request - missing or invalid parameters",
+            "description": "Bad request - invalid body, or `starter_unavailable` when the Starter price is not configured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
+                },
+                "example": {
+                  "error": "starter_unavailable"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - an auth header was supplied but is invalid (omit it entirely for an anonymous session)",
             "content": {
               "application/json": {
                 "schema": {
@@ -797,8 +802,8 @@
               }
             }
           },
-          "401": {
-            "description": "Unauthorized - invalid or missing authentication",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -1276,70 +1281,9 @@
         }
       }
     },
-    "/api/subscriptions/checkout": {
-      "post": {
-        "description": "Start a Stripe Checkout for a plan without an account. This is the pricing-page path: the visitor picks Starter or Pro, is sent straight to the Stripe-hosted page, and signs in afterwards. No authentication is required. When a valid `x-api-key` or `Authorization: Bearer` header is present, the session is attached to that account exactly as [Create Subscription Session](/api-reference/subscriptions/sessions-create) does.\n\nFor an unauthenticated session, the account is created or linked by the `checkout.session.completed` webhook: the API looks up `customer_details.email` among account emails, creates a new account (with the welcome email) when none exists, and stamps `accountId` on the Stripe subscription and customer. The buyer therefore already holds the plan before their first sign-in. If they later sign in with a different email, the client calls [Claim Subscription](/api-reference/subscriptions/claim-create) with the `session_id` Stripe appends to `successUrl`.\n\nPro sessions carry the 30-day trial. Starter sessions charge on completion (no trial). Starter is only available once the `STRIPE_STARTER_PRICE_ID` environment variable is configured; until then a Starter request returns 400 `starter_unavailable`.",
-        "requestBody": {
-          "description": "Checkout parameters",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCheckoutRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Checkout session created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateSubscriptionSessionResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - invalid body, or `starter_unavailable` when the Starter price is not configured",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
-                },
-                "example": {
-                  "error": "starter_unavailable"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - an auth header was supplied but is invalid (omit it entirely for an anonymous checkout)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/subscriptions/claim": {
       "post": {
-        "description": "Attach a subscription bought through [Create Checkout](/api-reference/subscriptions/checkout-create) to the authenticated account. Needed only when the signed-in email differs from the email typed into Stripe Checkout; when they match, the webhook already linked the subscription and this call is a no-op that returns 200.\n\nThe session is identified by the `session_id` Stripe substitutes into `successUrl` (`{CHECKOUT_SESSION_ID}`). The subscription is re-stamped to the caller when it is unowned or still owned by the placeholder account the webhook created for the billing email (an account that has never signed in). A subscription owned by any other account returns 409. Idempotent: claiming a subscription the caller already owns returns 200.",
+        "description": "Attach a subscription bought through [Create Subscription Session](/api-reference/subscriptions/sessions-create) (anonymous path) to the authenticated account. Needed only when the signed-in email differs from the email typed into Stripe Checkout; when they match, the webhook already linked the subscription and this call is a no-op that returns 200.\n\nThe session is identified by the `session_id` Stripe substitutes into `successUrl` (`{CHECKOUT_SESSION_ID}`). The subscription is re-stamped to the caller when it is unowned or still owned by the placeholder account the webhook created for the billing email (an account that has never signed in). A subscription owned by any other account returns 409. Idempotent: claiming a subscription the caller already owns returns 200.",
         "security": [
           {
             "apiKeyAuth": []
@@ -4564,17 +4508,26 @@
           "successUrl"
         ],
         "properties": {
+          "plan": {
+            "type": "string",
+            "enum": [
+              "starter",
+              "pro"
+            ],
+            "description": "The plan to buy. Defaults to `pro` when omitted (back-compat for authenticated callers). `pro` carries the 30-day trial; `starter` charges on completion.",
+            "example": "pro"
+          },
           "successUrl": {
             "type": "string",
             "format": "uri",
-            "description": "The URL to redirect to after a successful payment.",
-            "example": "https://chat.recoupable.com?subscription=success"
+            "description": "Where Stripe sends the buyer after payment. For anonymous checkout include the literal `{CHECKOUT_SESSION_ID}` placeholder so the client can call Claim Subscription if the sign-in email differs.",
+            "example": "https://chat.recoupable.dev?checkout=success&session_id={CHECKOUT_SESSION_ID}"
           },
-          "accountId": {
+          "cancelUrl": {
             "type": "string",
-            "format": "uuid",
-            "description": "UUID of the account to create the session for. Only applicable when the authenticated account has admin access to multiple accounts. If not provided, creates a session for the API key's own account.",
-            "example": "123e4567-e89b-12d3-a456-426614174000"
+            "format": "uri",
+            "description": "Where Stripe sends the buyer if they leave Checkout without paying.",
+            "example": "https://recoupable.dev/pricing"
           }
         }
       },
@@ -5085,36 +5038,6 @@
             "type": "string",
             "description": "Human-readable error message.",
             "example": "successUrl is required"
-          }
-        }
-      },
-      "CreateCheckoutRequest": {
-        "type": "object",
-        "required": [
-          "plan",
-          "successUrl"
-        ],
-        "properties": {
-          "plan": {
-            "type": "string",
-            "enum": [
-              "starter",
-              "pro"
-            ],
-            "description": "The plan to buy. `pro` carries the 30-day trial; `starter` charges on completion.",
-            "example": "pro"
-          },
-          "successUrl": {
-            "type": "string",
-            "format": "uri",
-            "description": "Where Stripe sends the buyer after payment. Include the literal `{CHECKOUT_SESSION_ID}` placeholder so the client can call Claim Subscription if the sign-in email differs.",
-            "example": "https://chat.recoupable.dev?checkout=success&session_id={CHECKOUT_SESSION_ID}"
-          },
-          "cancelUrl": {
-            "type": "string",
-            "format": "uri",
-            "description": "Where Stripe sends the buyer if they leave Checkout without paying.",
-            "example": "https://recoupable.dev/pricing"
           }
         }
       },
