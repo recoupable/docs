@@ -330,7 +330,6 @@
             "group": "Billing",
             "pages": [
               "api-reference/subscriptions/sessions-create",
-              "api-reference/subscriptions/checkout-create",
               "api-reference/subscriptions/claim-create",
               "api-reference/subscriptions/card-on-file-create",
               "api-reference/subscriptions/portal-create",
