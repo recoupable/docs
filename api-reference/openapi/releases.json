@@ -150,6 +150,46 @@
               }
             }
           },
+          "402": {
+            "description": "Payment required - the account's plan does not allow this task. `limit` is `task_count` when the account already has `task_limit` enabled tasks, or `min_cadence` when the cron schedule fires more often than `min_cadence_minutes` allows. Nothing is written; upgrade at `billingUrl`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanLimitError"
+                },
+                "examples": {
+                  "taskCount": {
+                    "summary": "Free account creating a second task",
+                    "value": {
+                      "status": "error",
+                      "error": "plan_limit",
+                      "limit": "task_count",
+                      "message": "Free includes 1 task. Starter includes 3, Pro is unlimited.",
+                      "plan": "free",
+                      "task_limit": 1,
+                      "min_cadence_minutes": 10080,
+                      "current_task_count": 1,
+                      "billingUrl": "https://app.recoupable.dev/plan"
+                    }
+                  },
+                  "minCadence": {
+                    "summary": "Free account scheduling a daily task",
+                    "value": {
+                      "status": "error",
+                      "error": "plan_limit",
+                      "limit": "min_cadence",
+                      "message": "Free runs tasks weekly at most. Starter runs daily, Pro runs hourly.",
+                      "plan": "free",
+                      "task_limit": 1,
+                      "min_cadence_minutes": 10080,
+                      "current_task_count": 0,
+                      "billingUrl": "https://app.recoupable.dev/plan"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "403": {
             "description": "Forbidden - account_id is outside caller authorization scope",
             "content": {
@@ -241,6 +281,46 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment required - the account's plan does not allow this task. `limit` is `task_count` when the account already has `task_limit` enabled tasks, or `min_cadence` when the cron schedule fires more often than `min_cadence_minutes` allows. Nothing is written; upgrade at `billingUrl`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanLimitError"
+                },
+                "examples": {
+                  "taskCount": {
+                    "summary": "Free account re-enabling a disabled task while another is enabled",
+                    "value": {
+                      "status": "error",
+                      "error": "plan_limit",
+                      "limit": "task_count",
+                      "message": "Free includes 1 task. Starter includes 3, Pro is unlimited.",
+                      "plan": "free",
+                      "task_limit": 1,
+                      "min_cadence_minutes": 10080,
+                      "current_task_count": 1,
+                      "billingUrl": "https://app.recoupable.dev/plan"
+                    }
+                  },
+                  "minCadence": {
+                    "summary": "Free account changing a task to a daily schedule",
+                    "value": {
+                      "status": "error",
+                      "error": "plan_limit",
+                      "limit": "min_cadence",
+                      "message": "Free runs tasks weekly at most. Starter runs daily, Pro runs hourly.",
+                      "plan": "free",
+                      "task_limit": 1,
+                      "min_cadence_minutes": 10080,
+                      "current_task_count": 0,
+                      "billingUrl": "https://app.recoupable.dev/plan"
+                    }
+                  }
                 }
               }
             }
@@ -5152,6 +5232,83 @@
           "error": {
             "type": "string",
             "description": "Error message (only present if status is error)"
+          }
+        }
+      },
+      "PlanLimitError": {
+        "type": "object",
+        "required": [
+          "status",
+          "error",
+          "limit",
+          "message",
+          "plan",
+          "task_limit",
+          "min_cadence_minutes",
+          "current_task_count",
+          "billingUrl"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Always `error` for this response shape"
+          },
+          "error": {
+            "type": "string",
+            "enum": [
+              "plan_limit"
+            ],
+            "description": "Machine-readable code. Literally `plan_limit`."
+          },
+          "limit": {
+            "type": "string",
+            "enum": [
+              "task_count",
+              "min_cadence"
+            ],
+            "description": "Which entitlement blocked the request: `task_count` (the plan's enabled-task cap is reached) or `min_cadence` (the cron fires more often than the plan allows)."
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable explanation naming the plan and the limit, suitable to show to a user.",
+            "example": "Free includes 1 task. Starter includes 3, Pro is unlimited."
+          },
+          "plan": {
+            "type": "string",
+            "enum": [
+              "free",
+              "starter",
+              "pro"
+            ],
+            "description": "The account's current plan, resolved from its subscription."
+          },
+          "task_limit": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 1,
+            "description": "Maximum enabled tasks on the current plan. Null means uncapped.",
+            "example": 1
+          },
+          "min_cadence_minutes": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Shortest allowed gap between two consecutive runs of a task on the current plan, in minutes (Free 10080, Starter 1440, Pro 60).",
+            "example": 10080
+          },
+          "current_task_count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Enabled tasks the account has right now, excluding the one being created or updated.",
+            "example": 1
+          },
+          "billingUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Static link to `/plan` in the Recoup app, where a human can upgrade. Constant; retrying creates nothing.",
+            "example": "https://app.recoupable.dev/plan"
           }
         }
       },

@@ -756,7 +756,7 @@
     },
     "/api/subscriptions/sessions": {
       "post": {
-        "description": "Create a Stripe Checkout session for Starter or Pro. Authentication is optional: omit auth for the pricing-page path (visitor pays first, signs in afterwards); send a valid `x-api-key` or `Authorization: Bearer` to attach the session to an existing account.\n\nUnauthenticated sessions are linked by the `checkout.session.completed` webhook: the API looks up `customer_details.email` among account emails, creates a new account (with the welcome email) when none exists, and stamps `accountId` on the Stripe subscription and customer. If the buyer later signs in with a different email, the client calls [Claim Subscription](/api-reference/subscriptions/claim-create) with the `session_id` Stripe appends to `successUrl`.\n\n`plan` defaults to `pro` when omitted (back-compat for authenticated callers). Pro sessions carry the 30-day trial; Starter charges on completion. Starter returns 400 `starter_unavailable` until `STRIPE_STARTER_PRICE_ID` is configured. An auth header that is present but invalid returns 401; omit the header entirely for an anonymous session.",
+        "description": "Create a checkout session to start a subscription. Authentication is optional: omit auth for the pricing-page path, or send a valid `x-api-key` / `Authorization: Bearer` to attach the session to an existing account. Returns a hosted checkout URL that the client should redirect to. `plan` picks the price: `pro` (default) is pre-configured with a 30-day trial period; `starter` is charged at checkout with no trial.",
         "requestBody": {
           "description": "Session creation parameters",
           "required": true,
@@ -780,7 +780,7 @@
             }
           },
           "400": {
-            "description": "Bad request - invalid body, or `starter_unavailable` when the Starter price is not configured",
+            "description": "Bad request - missing or invalid parameters, or `plan` is `starter` while the Starter price is not configured (`error` is literally `starter_unavailable`).",
             "content": {
               "application/json": {
                 "schema": {
