@@ -169,7 +169,7 @@
                       "task_limit": 1,
                       "min_cadence_minutes": 10080,
                       "current_task_count": 1,
-                      "billingUrl": "https://app.recoupable.dev"
+                      "billingUrl": "https://app.recoupable.dev/plan"
                     }
                   },
                   "minCadence": {
@@ -183,7 +183,7 @@
                       "task_limit": 1,
                       "min_cadence_minutes": 10080,
                       "current_task_count": 0,
-                      "billingUrl": "https://app.recoupable.dev"
+                      "billingUrl": "https://app.recoupable.dev/plan"
                     }
                   }
                 }
@@ -304,7 +304,7 @@
                       "task_limit": 1,
                       "min_cadence_minutes": 10080,
                       "current_task_count": 1,
-                      "billingUrl": "https://app.recoupable.dev"
+                      "billingUrl": "https://app.recoupable.dev/plan"
                     }
                   },
                   "minCadence": {
@@ -318,7 +318,7 @@
                       "task_limit": 1,
                       "min_cadence_minutes": 10080,
                       "current_task_count": 0,
-                      "billingUrl": "https://app.recoupable.dev"
+                      "billingUrl": "https://app.recoupable.dev/plan"
                     }
                   }
                 }
@@ -5307,8 +5307,8 @@
           "billingUrl": {
             "type": "string",
             "format": "uri",
-            "description": "Static link to the Recoup app where a human can upgrade the plan. Constant; retrying creates nothing.",
-            "example": "https://app.recoupable.dev"
+            "description": "Static link to `/plan` in the Recoup app, where a human can upgrade. Constant; retrying creates nothing.",
+            "example": "https://app.recoupable.dev/plan"
           }
         }
       },
