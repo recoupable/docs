@@ -98,8 +98,8 @@ The refill is lazy rather than scheduled: it applies on the next read of [`GET /
 
 ### Upgrade to Starter or Pro
 
-1. Sign in at [app.recoupable.dev](https://app.recoupable.dev)
-2. Open the account menu and pick a plan, or call [`POST /api/subscriptions/sessions`](/api-reference/subscriptions/sessions-create) with `plan` set to `starter` or `pro` and open the returned checkout `url`
+1. Sign in at [app.recoupable.dev/plan](https://app.recoupable.dev/plan)
+2. Pick a plan, or call [`POST /api/subscriptions/sessions`](/api-reference/subscriptions/sessions-create) with `plan` set to `starter` or `pro` and open the returned checkout `url`
 3. Stripe checkout creates a subscription tied to the account your API key authenticates against. Pro subscriptions include a **30-day trial**; Starter is charged at checkout
 
 ### Check your tier
