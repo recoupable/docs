@@ -757,14 +757,6 @@
     "/api/subscriptions/sessions": {
       "post": {
         "description": "Create a checkout session to start a subscription for the authenticated account. Returns a hosted checkout URL that the client should redirect to. `plan` picks the price: `pro` (default) is pre-configured with a 30-day trial period; `starter` is charged at checkout with no trial.",
-        "security": [
-          {
-            "apiKeyAuth": []
-          },
-          {
-            "bearerAuth": []
-          }
-        ],
         "requestBody": {
           "description": "Session creation parameters",
           "required": true,
@@ -794,25 +786,24 @@
                 "schema": {
                   "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
                 },
-                "examples": {
-                  "invalidBody": {
-                    "summary": "Missing successUrl",
-                    "value": {
-                      "error": "successUrl is required"
-                    }
-                  },
-                  "starterUnavailable": {
-                    "summary": "Starter price not configured",
-                    "value": {
-                      "error": "starter_unavailable"
-                    }
-                  }
+                "example": {
+                  "error": "starter_unavailable"
                 }
               }
             }
           },
           "401": {
-            "description": "Unauthorized - invalid or missing authentication",
+            "description": "Unauthorized - an auth header was supplied but is invalid (omit it entirely for an anonymous session)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -1283,6 +1274,100 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CreditsSessionErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/subscriptions/claim": {
+      "post": {
+        "description": "Attach a subscription bought through [Create Subscription Session](/api-reference/subscriptions/sessions-create) (anonymous path) to the authenticated account. Needed only when the signed-in email differs from the email typed into Stripe Checkout; when they match, the webhook already linked the subscription and this call is a no-op that returns 200.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "The Checkout session to claim",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClaimSubscriptionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Subscription attached to the authenticated account (or already was)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClaimSubscriptionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing `session_id`, or the session has no subscription",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClaimSubscriptionErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClaimSubscriptionErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown Checkout session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClaimSubscriptionErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "error": "session_not_found"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The subscription belongs to another account that has signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClaimSubscriptionErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "error": "already_claimed"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClaimSubscriptionErrorResponse"
                 }
               }
             }
@@ -4423,27 +4508,26 @@
           "successUrl"
         ],
         "properties": {
-          "successUrl": {
-            "type": "string",
-            "format": "uri",
-            "description": "The URL to redirect to after a successful payment.",
-            "example": "https://chat.recoupable.com?subscription=success"
-          },
           "plan": {
             "type": "string",
             "enum": [
               "starter",
               "pro"
             ],
-            "default": "pro",
-            "description": "Which plan to check out. `pro` ($99/mo) starts with a 30-day trial. `starter` ($19/mo) is charged at checkout with no trial. Returns 400 `starter_unavailable` when the Starter price is not configured.",
-            "example": "starter"
+            "description": "The plan to buy. Defaults to `pro` when omitted (back-compat for authenticated callers). `pro` carries the 30-day trial; `starter` charges on completion.",
+            "example": "pro"
           },
-          "accountId": {
+          "successUrl": {
             "type": "string",
-            "format": "uuid",
-            "description": "UUID of the account to create the session for. Only applicable when the authenticated account has admin access to multiple accounts. If not provided, creates a session for the API key's own account.",
-            "example": "123e4567-e89b-12d3-a456-426614174000"
+            "format": "uri",
+            "description": "Where Stripe sends the buyer after payment. For anonymous checkout include the literal `{CHECKOUT_SESSION_ID}` placeholder so the client can call Claim Subscription if the sign-in email differs.",
+            "example": "https://chat.recoupable.dev?checkout=success&session_id={CHECKOUT_SESSION_ID}"
+          },
+          "cancelUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Where Stripe sends the buyer if they leave Checkout without paying.",
+            "example": "https://recoupable.dev/pricing"
           }
         }
       },
@@ -4545,9 +4629,6 @@
           "total_credits",
           "used_credits",
           "is_pro",
-          "plan",
-          "task_limit",
-          "min_cadence_minutes",
           "timestamp"
         ],
         "properties": {
@@ -4577,31 +4658,8 @@
           },
           "is_pro": {
             "type": "boolean",
-            "description": "True when the account is on the Pro plan, directly via an account subscription, via an organization subscription, or via an enterprise email domain. Starter accounts are not pro.",
+            "description": "True when the account is on a pro plan, directly via an account subscription or via an organization subscription.",
             "example": false
-          },
-          "plan": {
-            "type": "string",
-            "enum": [
-              "free",
-              "starter",
-              "pro"
-            ],
-            "description": "The account's plan, resolved from its active Stripe subscription's price: `starter` for the Starter price, `pro` for any other active subscription, organization subscription, or enterprise domain, otherwise `free`. Drives `total_credits`, `task_limit`, and `min_cadence_minutes`.",
-            "example": "free"
-          },
-          "task_limit": {
-            "type": "integer",
-            "nullable": true,
-            "minimum": 1,
-            "description": "Maximum enabled scheduled tasks on this plan (Free 1, Starter 3). Null on Pro, which is uncapped. Exceeding it returns a 402 `plan_limit` from [`POST /api/tasks`](/api-reference/tasks/create).",
-            "example": 1
-          },
-          "min_cadence_minutes": {
-            "type": "integer",
-            "minimum": 1,
-            "description": "Shortest allowed gap between two runs of a scheduled task on this plan, in minutes: Free 10080 (weekly), Starter 1440 (daily), Pro 60 (hourly). A denser cron returns a 402 `plan_limit`.",
-            "example": 10080
           },
           "timestamp": {
             "type": "string",
@@ -4980,6 +5038,69 @@
             "type": "string",
             "description": "Human-readable error message.",
             "example": "successUrl is required"
+          }
+        }
+      },
+      "ClaimSubscriptionRequest": {
+        "type": "object",
+        "required": [
+          "session_id"
+        ],
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "description": "The Stripe Checkout session id from the `session_id` query parameter on the success URL.",
+            "example": "cs_live_a1b2c3d4e5f6g7h8i9j0"
+          }
+        }
+      },
+      "ClaimSubscriptionResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "subscription_id",
+          "plan"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ]
+          },
+          "subscription_id": {
+            "type": "string",
+            "description": "The Stripe subscription now attached to the authenticated account.",
+            "example": "sub_1Rz0abc123"
+          },
+          "plan": {
+            "type": "string",
+            "enum": [
+              "starter",
+              "pro"
+            ],
+            "description": "The plan the subscription is on, resolved from its Stripe price.",
+            "example": "pro"
+          }
+        }
+      },
+      "ClaimSubscriptionErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ]
+          },
+          "error": {
+            "type": "string",
+            "description": "Machine-readable code (`session_not_found`, `already_claimed`, `no_subscription`) or a validation message.",
+            "example": "already_claimed"
           }
         }
       },
