@@ -72,7 +72,7 @@ Recoup has three plans. All three refill credits on a monthly cycle, and the pla
 
 ### Task limits
 
-[`POST /api/tasks`](/api-reference/tasks/create) and [`PATCH /api/tasks`](/api-reference/tasks/update) check the plan before writing. Creating a task past `task_limit`, re-enabling a disabled task past it, or saving a cron whose consecutive runs are closer together than `min_cadence_minutes` returns **HTTP 402** with `error: "plan_limit"`:
+[`POST /api/tasks`](/api-reference/tasks/create) and [`PATCH /api/tasks`](/api-reference/tasks/update) [check the plan](/api-reference/accounts/credits-get) before writing. Creating a task past `task_limit`, re-enabling a disabled task past it, or saving a cron whose consecutive runs are closer together than `min_cadence_minutes` returns **HTTP 402** with `error: "plan_limit"`:
 
 ```json
 {
