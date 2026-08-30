@@ -62,11 +62,13 @@ Recoup has three plans. All three refill credits on a monthly cycle, and the pla
 
 | | **Free** | **Starter** | **Pro** |
 |---|---|---|---|
-| **Price** | $0 | $19/mo | $99/mo, 30-day trial |
+| **Price** | $0 | $19/mo | $99/mo |
+| **Trial** | — | none | 30 days |
 | **Monthly credits** | $3.33 | $20 | $300 |
 | **Scheduled tasks** | 1 | 3 | Unlimited |
-| **Shortest cadence** | Weekly (10080 min) | Daily (1440 min) | Hourly (60 min) |
-| **`plan` value** | `free` | `starter` | `pro` |
+| **Shortest cadence** | Weekly | Daily | Hourly |
+| **Cadence minutes** | 10080 | 1440 | 60 |
+| **plan** | `free` | `starter` | `pro` |
 
 The plan is resolved from the account's active Stripe subscription price, never stored: the Starter price maps to `starter`; any other active subscription, an organization subscription, or an enterprise email domain maps to `pro`; no subscription is `free`. Roster-wide social monitoring and emailing reports to recipients other than yourself stay Pro-only, so `is_pro` is false on Starter.
 
