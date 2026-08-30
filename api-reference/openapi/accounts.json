@@ -756,7 +756,7 @@
     },
     "/api/subscriptions/sessions": {
       "post": {
-        "description": "Create a checkout session to start a subscription. Authentication is optional: omit auth for the pricing-page path, or send a valid `x-api-key` / `Authorization: Bearer` to attach the session to an existing account. Returns a hosted checkout URL that the client should redirect to. `plan` picks the price: `pro` (default) is pre-configured with a 30-day trial period; `starter` is charged at checkout with no trial.",
+        "description": "Create a checkout session to start a subscription for the authenticated account. Returns a hosted checkout URL that the client should redirect to. `plan` picks the price: `pro` (default) is pre-configured with a 30-day trial period; `starter` is charged at checkout with no trial.",
         "requestBody": {
           "description": "Session creation parameters",
           "required": true,
@@ -1283,7 +1283,7 @@
     },
     "/api/subscriptions/claim": {
       "post": {
-        "description": "Attach a subscription bought through [Create Subscription Session](/api-reference/subscriptions/sessions-create) (anonymous path) to the authenticated account. Needed only when the signed-in email differs from the email typed into Stripe Checkout; when they match, the webhook already linked the subscription and this call is a no-op that returns 200.\n\nThe session is identified by the `session_id` Stripe substitutes into `successUrl` (`{CHECKOUT_SESSION_ID}`). The subscription is re-stamped to the caller when it is unowned or still owned by the placeholder account the webhook created for the billing email (an account that has never signed in). A subscription owned by any other account returns 409. Idempotent: claiming a subscription the caller already owns returns 200.",
+        "description": "Attach a subscription bought through [Create Subscription Session](/api-reference/subscriptions/sessions-create) (anonymous path) to the authenticated account. Needed only when the signed-in email differs from the email typed into Stripe Checkout; when they match, the webhook already linked the subscription and this call is a no-op that returns 200.",
         "security": [
           {
             "apiKeyAuth": []
