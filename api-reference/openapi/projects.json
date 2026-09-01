@@ -17,7 +17,7 @@
     "/api/projects/{projectId}": {
       "get": {
         "summary": "Get project",
-        "description": "A client project and every task on it, oldest first, with the project's collaborators. This is what the project page renders.\n\nAccess is by collaboration, not by ownership: the authenticated account must have a `project_collaborators` row for this project. Anyone else gets a 404 \u2014 see the response below.",
+        "description": "A client project and every task on it, oldest first, with the project's collaborators. This is what the project page renders.",
         "security": [
           {
             "apiKeyAuth": []
@@ -95,7 +95,7 @@
     "/api/projects/{projectId}/tasks": {
       "post": {
         "summary": "Create project task",
-        "description": "Add a task to a project. New tasks are always incomplete; set `completed` with the update endpoint instead.",
+        "description": "Add a task to a project. New tasks are always incomplete; set `completed` with [the update endpoint](/api-reference/projects/task-update) instead.",
         "security": [
           {
             "apiKeyAuth": []
