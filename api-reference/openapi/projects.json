@@ -398,7 +398,7 @@
       },
       "delete": {
         "summary": "Delete project task",
-        "description": "Permanently delete a task and every comment on it. There is no soft delete.",
+        "description": "Permanently delete a task and every comment on it.",
         "security": [
           {
             "apiKeyAuth": []
