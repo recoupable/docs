@@ -693,18 +693,26 @@
     },
     "schemas": {
       "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
         "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
         "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Always `\"error\"` for error responses."
+          },
           "error": {
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "description": "Human-readable error message."
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "Carries the message in place of `error` when the failure comes from the authentication layer, so a 401 raised while verifying the credential reads `message` and every other error reads `error`."
           }
         }
       },
