@@ -383,6 +383,18 @@
             "pages": [
               "api-reference/emails/create"
             ]
+          },
+          {
+            "group": "Projects",
+            "pages": [
+              "api-reference/projects/get",
+              "api-reference/projects/task-get",
+              "api-reference/projects/task-create",
+              "api-reference/projects/task-update",
+              "api-reference/projects/task-delete",
+              "api-reference/projects/comments-get",
+              "api-reference/projects/comments-create"
+            ]
           }
         ]
       },
