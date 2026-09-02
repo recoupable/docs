@@ -1399,6 +1399,14 @@
               }
             }
           },
+          "402": {
+            "description": "Insufficient credits. Charged per generated image at the pinned model's rate ($0.01 per image). A free-tier account without sufficient credits receives a 402.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ContentErrorResponse" }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -1462,6 +1470,14 @@
                 "schema": {
                   "$ref": "#/components/schemas/ContentErrorResponse"
                 }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient credits. Charged per second of output at the mode's rate: $0.16/s for `lipsync` (OmniHuman 1.5), $0.08/s otherwise (MiniMax H3 Max). A free-tier account without sufficient credits receives a 402.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ContentErrorResponse" }
               }
             }
           },
@@ -2987,10 +3003,6 @@
             "enum": ["0.5K", "1K", "2K", "4K"],
             "default": "1K",
             "description": "Output resolution"
-          },
-          "model": {
-            "type": "string",
-            "description": "fal.ai model ID. Defaults to fal-ai/nano-banana-2"
           }
         }
       },
@@ -3341,10 +3353,6 @@
             "type": "boolean",
             "default": false,
             "description": "Generate audio for the video"
-          },
-          "model": {
-            "type": "string",
-            "description": "Override the model. Auto-selected based on mode if omitted"
           }
         }
       },
