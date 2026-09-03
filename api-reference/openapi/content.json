@@ -1348,7 +1348,7 @@
     },
     "/api/content/image": {
       "post": {
-        "description": "Generate an image from a text prompt. Pass a `reference_image_url` to guide the output toward a specific look or subject. Returns the image URL.",
+        "description": "Generate an image from a text prompt. Pass `image_urls` to edit those images with the prompt instead of generating a new one. Returns the image URL.",
         "security": [
           {
             "apiKeyAuth": []
@@ -1399,6 +1399,14 @@
               }
             }
           },
+          "402": {
+            "description": "Insufficient credits. Charged per generated image at the pinned model's rate ($0.01 per image). A free-tier account without sufficient credits receives a 402.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ContentErrorResponse" }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -1414,7 +1422,7 @@
     },
     "/api/content/video": {
       "post": {
-        "description": "Generate a video. Set `mode` to control what kind of video you get:\n\n- `prompt` — create a video from a text description\n- `animate` — animate a still image\n- `reference` — use an image as a style/subject reference (not the first frame)\n- `extend` — continue an existing video\n- `first-last` — generate a video that transitions between two images\n- `lipsync` — sync face movement to an audio clip\n\nIf `mode` is omitted, it's inferred from the inputs you provide.",
+        "description": "Generate a video from a text prompt, optionally animating a still image (`image_url`) or transitioning between two images (`image_url` + `end_image_url`).",
         "security": [
           {
             "apiKeyAuth": []
@@ -1462,6 +1470,14 @@
                 "schema": {
                   "$ref": "#/components/schemas/ContentErrorResponse"
                 }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient credits. Charged per second of output at the pinned model's rate ($0.08/s, MiniMax H3 Max). A free-tier account without sufficient credits receives a 402.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ContentErrorResponse" }
               }
             }
           },
@@ -2948,26 +2964,19 @@
       "ContentCreateImageRequest": {
         "type": "object",
         "properties": {
-          "template": {
-            "type": "string",
-            "description": "Optional template ID. When provided, uses the template's image prompt, reference images, and style rules. Caller params override template defaults. Artist context overrides template style when available. See [GET /api/content/templates](/api-reference/content/templates) for available options."
-          },
           "prompt": {
             "type": "string",
-            "description": "Optional prompt to guide image generation"
+            "description": "Text prompt used to generate or edit the image"
           },
-          "reference_image_url": {
-            "type": "string",
-            "format": "uri",
-            "description": "URL of a reference image for conditioning the generation"
-          },
-          "images": {
+          "image_urls": {
             "type": "array",
             "items": {
               "type": "string",
               "format": "uri"
             },
-            "description": "Optional reference image URLs to guide generation"
+            "minItems": 1,
+            "maxItems": 10,
+            "description": "Reference images to edit (1-10 HTTP(S) URLs). When provided, edits these images with `prompt` instead of generating a new one."
           },
           "num_images": {
             "type": "integer",
@@ -2978,19 +2987,19 @@
           },
           "aspect_ratio": {
             "type": "string",
-            "enum": ["auto", "21:9", "16:9", "3:2", "4:3", "5:4", "1:1", "4:5", "3:4", "2:3", "9:16", "4:1", "1:4", "8:1", "1:8"],
-            "default": "auto",
-            "description": "Aspect ratio of the generated image"
+            "enum": ["21:9", "16:9", "4:3", "3:2", "1:1", "2:3", "3:4", "9:16", "9:21"],
+            "description": "Output aspect ratio. If omitted, the model chooses automatically based on the request."
           },
-          "resolution": {
+          "output_format": {
             "type": "string",
-            "enum": ["0.5K", "1K", "2K", "4K"],
-            "default": "1K",
-            "description": "Output resolution"
+            "enum": ["jpeg", "png", "webp"],
+            "default": "webp",
+            "description": "Format of the generated image"
           },
-          "model": {
-            "type": "string",
-            "description": "fal.ai model ID. Defaults to fal-ai/nano-banana-2"
+          "sync_mode": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true, the image is returned as a data URI and is not persisted in the request history"
           }
         }
       },
@@ -3259,118 +3268,71 @@
       "ContentCreateVideoRequest": {
         "type": "object",
         "required": [
-          "image_url"
+          "prompt",
+          "prompt_expansion_mode"
         ],
         "properties": {
-          "template": {
-            "type": "string",
-            "description": "Optional template ID. When provided, the template's video config (moods, movements) is used as the motion prompt. Caller params override template defaults. See [GET /api/content/templates](/api-reference/content/templates) for available options."
-          },
-          "mode": {
-            "type": "string",
-            "enum": [
-              "prompt",
-              "animate",
-              "reference",
-              "extend",
-              "first-last",
-              "lipsync"
-            ],
-            "description": "What kind of video to generate. If omitted, inferred from the inputs you provide."
-          },
           "prompt": {
             "type": "string",
-            "description": "Text describing the video content, motion, or how to continue/extend"
+            "minLength": 1,
+            "maxLength": 50000,
+            "description": "Text prompt for video generation"
+          },
+          "prompt_expansion_mode": {
+            "type": "string",
+            "default": "balanced",
+            "enum": ["balanced", "quality"],
+            "description": "How much effort to spend rewriting the prompt before generation. `balanced` returns in about a second. `quality` spends up to ~30s on a richer prompt."
           },
           "image_url": {
             "type": "string",
             "format": "uri",
-            "description": "Required. Image URL used as the input frame. The underlying model (fal-ai/veo3.1/fast/image-to-video) requires an image — text-only prompt mode is not supported. Generate an image first via POST /api/content/image if needed."
+            "description": "URL of the image to use as the first frame. When provided, the output aspect ratio follows this image. Generate an image first via POST /api/content/image if needed."
           },
           "end_image_url": {
             "type": "string",
             "format": "uri",
-            "description": "End frame image URL. Only used with `first-last` mode"
-          },
-          "video_url": {
-            "type": "string",
-            "format": "uri",
-            "description": "Video URL to extend. Only used with `extend` mode (max 8 seconds input)"
-          },
-          "audio_url": {
-            "type": "string",
-            "format": "uri",
-            "description": "Audio URL for lipsync mode. The generated face will move in sync with this audio"
-          },
-          "aspect_ratio": {
-            "type": "string",
-            "enum": [
-              "auto",
-              "16:9",
-              "9:16"
-            ],
-            "default": "auto",
-            "description": "Aspect ratio of the output video"
+            "description": "Optional URL of the image to use as the last frame, for first-to-last keyframe generation"
           },
           "duration": {
-            "type": "string",
-            "enum": [
-              "4s",
-              "6s",
-              "7s",
-              "8s"
-            ],
-            "default": "8s",
-            "description": "Duration of the generated video"
+            "type": "integer",
+            "minimum": 5,
+            "maximum": 15,
+            "default": 5,
+            "description": "Duration of the generated video, in seconds"
           },
           "resolution": {
             "type": "string",
-            "enum": [
-              "720p",
-              "1080p",
-              "4k"
-            ],
-            "default": "720p",
-            "description": "Output resolution"
+            "enum": ["480P", "768P"],
+            "default": "768P",
+            "description": "The native generation resolution of the video"
           },
-          "negative_prompt": {
-            "type": "string",
-            "description": "Describe what you do NOT want in the video"
+          "seed": {
+            "type": "integer",
+            "description": "Random seed. A random seed is selected when omitted."
           },
-          "generate_audio": {
+          "enable_safety_checker": {
+            "type": "boolean",
+            "default": true,
+            "description": "If true, the safety checker will be enabled"
+          },
+          "sync_mode": {
             "type": "boolean",
             "default": false,
-            "description": "Generate audio for the video"
-          },
-          "model": {
-            "type": "string",
-            "description": "Override the model. Auto-selected based on mode if omitted"
+            "description": "Return the generated video as base64 instead of a CDN URL"
           }
         }
       },
       "ContentCreateVideoResponse": {
         "type": "object",
         "required": [
-          "videoUrl",
-          "mode"
+          "videoUrl"
         ],
         "properties": {
           "videoUrl": {
             "type": "string",
             "format": "uri",
             "description": "URL of the generated video"
-          },
-          "mode": {
-            "type": "string",
-            "enum": [
-              "prompt",
-              "animate",
-              "reference",
-              "extend",
-              "first-last",
-              "lipsync"
-            ],
-            "description": "The resolved video generation mode (explicit or inferred from inputs)"
           }
         }
       },
