@@ -1513,17 +1513,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - account not accessible to the authenticated account",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AutoTopUpErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Account not found",
+            "description": "Forbidden - the account is not the caller's and not an organization they belong to (an unknown id also returns 403, never 404)",
             "content": {
               "application/json": {
                 "schema": {
@@ -1605,7 +1595,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - account not accessible to the authenticated account",
+            "description": "Forbidden - the account is not the caller's and not an organization they belong to (an unknown id also returns 403, never 404)",
             "content": {
               "application/json": {
                 "schema": {
@@ -1615,7 +1605,7 @@
             }
           },
           "404": {
-            "description": "Account not found",
+            "description": "The account has no credits row and one could not be created for it",
             "content": {
               "application/json": {
                 "schema": {
