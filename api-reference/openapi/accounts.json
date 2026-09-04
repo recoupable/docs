@@ -817,7 +817,7 @@
     },
     "/api/accounts/{id}/subscription": {
       "get": {
-        "description": "Retrieve the subscription for an account, directly or via an organization.",
+        "description": "Retrieve the subscription that confers an account's plan, directly or via an organization: `isPro`, `status`, `plan`, `source`, plus the billing fields `name`, `amountCents`, `currency`, `interval`, `collectionMethod` and `currentPeriodEnd`. Everything but `isPro` and `status` is null when `status` is `none`. `id` may be the authenticated account or an organization the caller belongs to.",
         "parameters": [
           {
             "name": "id",
@@ -1372,7 +1372,7 @@
     },
     "/api/accounts/{id}/payments": {
       "get": {
-        "description": "List the invoices paid or owed by an account, newest first: subscription renewals, credit purchases, and invoiced enterprise plans alike. Each row carries the hosted invoice URL for the receipt. Returns an empty list (not 404) when the account has no Stripe customer or no invoices yet. `id` may be the authenticated account or an organization the caller belongs to.",
+        "description": "List the invoices paid or owed by an account, newest first: subscription renewals, credit purchases, and invoiced enterprise plans alike. Non-draft rows carry the hosted invoice URL for the receipt; `url` is null for drafts. Returns an empty list (not 404) when the account has no Stripe customer or no invoices yet. `id` may be the authenticated account or an organization the caller belongs to.",
         "parameters": [
           {
             "name": "id",
@@ -4844,7 +4844,7 @@
             "example": "2026-10-04T00:00:00Z"
           }
         },
-        "description": "Subscription that confers the account's plan, directly or via an organization. The last six fields are all null when `status` is `none`."
+        "description": "Subscription that confers the account's plan, directly or via an organization. `plan`, `source`, and the six billing fields (`name`, `amountCents`, `currency`, `interval`, `collectionMethod`, `currentPeriodEnd`) are all null when `status` is `none`."
       },
       "SubscriptionErrorResponse": {
         "type": "object",
@@ -5460,7 +5460,7 @@
         "required": [
           "returnUrl"
         ],
-        "description": "Request body for creating a billing portal session. The account is determined from authentication (API key or session), not from this payload.",
+        "description": "Request body for creating a billing portal session. The account is taken from the `id` path parameter and must be accessible to the authenticated caller.",
         "properties": {
           "returnUrl": {
             "type": "string",
