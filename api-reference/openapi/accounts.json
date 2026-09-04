@@ -815,84 +815,9 @@
         }
       }
     },
-    "/api/subscriptions/card-on-file": {
-      "post": {
-        "description": "Create a $0 card-on-file checkout session for the authenticated account. Stripe `setup` mode saves a payment method without charging anything or starting a subscription, so a later top-up through [`POST /api/credits/sessions`](/api-reference/credits/sessions-create) can charge the saved card instead of collecting one again. Returns a hosted checkout URL that the client should redirect to.",
-        "security": [
-          {
-            "apiKeyAuth": []
-          },
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "description": "Card-on-file session parameters",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCardOnFileSessionRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Card-on-file session created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateSubscriptionSessionResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - missing or invalid parameters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
-                },
-                "example": {
-                  "error": "successUrl must be a valid URL"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - invalid or missing authentication",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
-                },
-                "example": {
-                  "error": "Exactly one of x-api-key or Authorization must be provided"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SubscriptionSessionErrorResponse"
-                },
-                "example": {
-                  "error": "Internal server error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/accounts/{id}/subscription": {
       "get": {
-        "description": "Retrieve the subscription for an account, directly or via an organization.",
+        "description": "Retrieve the subscription that confers an account's plan, directly or via an organization: `isPro`, `status`, `plan`, `source`, plus the billing fields `name`, `amountCents`, `currency`, `interval`, `collectionMethod` and `currentPeriodEnd`. Everything but `isPro` and `status` is null when `status` is `none`. `id` may be the authenticated account or an organization the caller belongs to.",
         "parameters": [
           {
             "name": "id",
@@ -1203,7 +1128,89 @@
             }
           },
           "403": {
-            "description": "Forbidden - account not accessible to the authenticated account",
+            "description": "Forbidden - the account is not the caller's and not an organization they belong to (an unknown id also returns 403, never 404)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountPaymentMethodErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Create a $0 card-on-file checkout session for an account. Stripe `setup` mode saves a payment method without charging anything or starting a subscription; the saved card becomes the account's default and is what credit purchases and auto top-up charge. The account's Stripe customer is created (and tagged with the account id) if it does not exist yet. Returns a hosted checkout URL that the client should redirect to. `id` may be the authenticated account or an organization the caller belongs to.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the account. Must be the authenticated account or another accessible via organization membership.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Card-on-file session parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCardOnFileSessionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Card-on-file session created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateSubscriptionSessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing or invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountPaymentMethodErrorResponse"
+                },
+                "example": {
+                  "error": "successUrl must be a valid URL"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountPaymentMethodErrorResponse"
+                },
+                "example": {
+                  "error": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - the account is not the caller's and not an organization they belong to (an unknown id also returns 403, never 404)",
             "content": {
               "application/json": {
                 "schema": {
@@ -1212,12 +1219,245 @@
               }
             }
           },
-          "404": {
-            "description": "Account not found",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AccountPaymentMethodErrorResponse"
+                },
+                "example": {
+                  "error": "Internal server error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Detach the default card on file from an account. After this call `GET /api/accounts/{id}/payment-method` returns `card: null`, credit purchases route through checkout again, and auto top-up (if enabled) is turned off because it has nothing to charge. Subscriptions collected by invoice are unaffected. `id` may be the authenticated account or an organization the caller belongs to.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the account. Must be the authenticated account or another accessible via organization membership.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Payment method detached; no body."
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountPaymentMethodErrorResponse"
+                },
+                "example": {
+                  "error": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - the account is not the caller's and not an organization they belong to (an unknown id also returns 403, never 404)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountPaymentMethodErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/accounts/{id}/portal": {
+      "post": {
+        "description": "Create a Stripe Customer Portal session for an account. Returns a hosted URL where the customer can update the card on file, view invoices, or cancel a Starter or Pro subscription; the client should redirect the user to that URL. `id` may be the authenticated account or an organization the caller belongs to. Enterprise (invoiced) plans are managed with your Recoup contact and the app does not offer this portal for them, but the endpoint works for any account with a Stripe customer.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the account. Must be the authenticated account or another accessible via organization membership.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Portal session parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSubscriptionPortalRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Portal session created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateSubscriptionPortalResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters, or the account has no Stripe customer yet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionPortalErrorResponse"
+                },
+                "example": {
+                  "error": "No active subscription found"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionPortalErrorResponse"
+                },
+                "example": {
+                  "error": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - the account is not the caller's and not an organization they belong to (an unknown id also returns 403, never 404)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionPortalErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/accounts/{id}/payments": {
+      "get": {
+        "description": "List the invoices paid or owed by an account, newest first: subscription renewals, credit purchases, and invoiced enterprise plans alike. Non-draft rows carry the hosted invoice URL for the receipt; `url` is null for drafts. Returns an empty list (not 404) when the account has no Stripe customer or no invoices yet. `id` may be the authenticated account or an organization the caller belongs to.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the account. Must be the authenticated account or another accessible via organization membership.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum rows to return.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "startingAfter",
+            "in": "query",
+            "description": "Cursor for the next page: the `id` of the last payment from the previous response.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "in_1U5xj400JObOnOb5BE0CmxCt"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payments retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountPaymentsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid `id`, `limit`, or `startingAfter`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountPaymentsErrorResponse"
+                },
+                "example": {
+                  "error": "limit must be between 1 and 100"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountPaymentsErrorResponse"
+                },
+                "example": {
+                  "error": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - the account is not the caller's and not an organization they belong to (an unknown id also returns 403, never 404)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountPaymentsErrorResponse"
                 }
               }
             }
@@ -1368,62 +1608,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ClaimSubscriptionErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/subscriptions/portal": {
-      "post": {
-        "description": "Create a subscription management session for the authenticated account. Returns a hosted URL where the customer can update payment method, view invoices, or cancel. The client should redirect the user to that URL.",
-        "security": [
-          {
-            "apiKeyAuth": []
-          },
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "description": "Portal session parameters",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateSubscriptionPortalRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Portal session created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateSubscriptionPortalResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - missing or invalid parameters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SubscriptionPortalErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - invalid or missing authentication",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SubscriptionPortalErrorResponse"
                 }
               }
             }
@@ -4571,7 +4755,13 @@
           "isPro",
           "status",
           "plan",
-          "source"
+          "source",
+          "name",
+          "amountCents",
+          "currency",
+          "interval",
+          "collectionMethod",
+          "currentPeriodEnd"
         ],
         "properties": {
           "isPro": {
@@ -4605,8 +4795,56 @@
             "nullable": true,
             "description": "Origin of the subscription. `account` for direct, `organization` when covered by an organization. Null when no subscription exists.",
             "example": "account"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true,
+            "description": "Display name of the plan's Stripe price (nickname) or product. Null when no subscription exists.",
+            "example": "Pro"
+          },
+          "amountCents": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Recurring amount in the smallest currency unit (cents for USD). Null when no subscription exists.",
+            "example": 9900
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true,
+            "description": "ISO 4217 currency code, lowercase.",
+            "example": "usd"
+          },
+          "interval": {
+            "type": "string",
+            "enum": [
+              "day",
+              "week",
+              "month",
+              "year"
+            ],
+            "nullable": true,
+            "description": "Billing interval of the recurring price.",
+            "example": "month"
+          },
+          "collectionMethod": {
+            "type": "string",
+            "enum": [
+              "charge_automatically",
+              "send_invoice"
+            ],
+            "nullable": true,
+            "description": "`charge_automatically` bills the card on file at renewal; `send_invoice` emails an invoice that is paid manually (enterprise plans). A saved card is never charged for a `send_invoice` plan.",
+            "example": "charge_automatically"
+          },
+          "currentPeriodEnd": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "End of the current billing period: the renewal date, or the next invoice date for invoiced plans.",
+            "example": "2026-10-04T00:00:00Z"
           }
-        }
+        },
+        "description": "Subscription that confers the account's plan, directly or via an organization. `plan`, `source`, and the six billing fields (`name`, `amountCents`, `currency`, `interval`, `collectionMethod`, `currentPeriodEnd`) are all null when `status` is `none`."
       },
       "SubscriptionErrorResponse": {
         "type": "object",
@@ -4955,6 +5193,106 @@
           }
         }
       },
+      "AccountPayment": {
+        "type": "object",
+        "required": [
+          "id",
+          "createdAt",
+          "description",
+          "amountCents",
+          "currency",
+          "status",
+          "url"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Stripe invoice id; use as `startingAfter` to page.",
+            "example": "in_1U5xj400JObOnOb5BE0CmxCt"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the invoice was created.",
+            "example": "2026-09-04T14:33:00Z"
+          },
+          "description": {
+            "type": "string",
+            "description": "What was billed: the first line item's description, or the plan name.",
+            "example": "Pro, monthly"
+          },
+          "amountCents": {
+            "type": "integer",
+            "description": "Amount due in the smallest currency unit.",
+            "example": 9900
+          },
+          "currency": {
+            "type": "string",
+            "description": "ISO 4217 currency code, lowercase.",
+            "example": "usd"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "open",
+              "paid",
+              "uncollectible",
+              "void"
+            ],
+            "description": "Stripe invoice status.",
+            "example": "paid"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "description": "Hosted invoice page (receipt). Null for draft invoices.",
+            "example": "https://invoice.stripe.com/i/acct_123/test_456"
+          }
+        }
+      },
+      "AccountPaymentsResponse": {
+        "type": "object",
+        "required": [
+          "account_id",
+          "payments",
+          "hasMore"
+        ],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The account these payments belong to.",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "payments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AccountPayment"
+            },
+            "description": "Invoices, newest first. Empty when the account has no Stripe customer or no invoices."
+          },
+          "hasMore": {
+            "type": "boolean",
+            "description": "True when another page exists; pass the last `id` as `startingAfter`.",
+            "example": false
+          }
+        }
+      },
+      "AccountPaymentsErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message.",
+            "example": "Account not found"
+          }
+        }
+      },
       "CreateCreditsSessionRequest": {
         "type": "object",
         "required": [
@@ -5122,7 +5460,7 @@
         "required": [
           "returnUrl"
         ],
-        "description": "Request body for creating a billing portal session. The account is determined from authentication (API key or session), not from this payload.",
+        "description": "Request body for creating a billing portal session. The account is taken from the `id` path parameter and must be accessible to the authenticated caller.",
         "properties": {
           "returnUrl": {
             "type": "string",

@@ -164,7 +164,7 @@ The decision tree:
 1. **Enough credits?** → Request proceeds, credits deducted on success.
 2. **Short?** → Request returns **HTTP 402** with the balance, the cost, and a link to billing.
 
-A card on the account is never charged on its own. Charging happens only when the account asks to buy credits, through [`POST /api/credits/sessions`](/api-reference/credits/sessions-create). Saving a card ahead of time via [card-on-file](/api-reference/subscriptions/card-on-file-create) makes that purchase a single call instead of a browser round-trip; it does not authorize a charge by itself.
+A card on the account is never charged on its own. Charging happens only when the account asks to buy credits, through [`POST /api/credits/sessions`](/api-reference/credits/sessions-create). Saving a card ahead of time via [`POST /api/accounts/{id}/payment-method`](/api-reference/accounts/payment-method-create) makes that purchase a single call instead of a browser round-trip; it does not authorize a charge by itself. Your plan, card, and every payment are on [`/api/accounts/{id}/subscription`](/api-reference/accounts/subscription-get), [`/api/accounts/{id}/payment-method`](/api-reference/accounts/payment-method-get), and [`/api/accounts/{id}/payments`](/api-reference/accounts/payments-get); pass an organization id as `{id}` to read the organization's billing.
 
 ---
 
