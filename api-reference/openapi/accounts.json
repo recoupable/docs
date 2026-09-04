@@ -1128,17 +1128,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - account not accessible to the authenticated account",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccountPaymentMethodErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Account not found",
+            "description": "Forbidden - the account is not the caller's and not an organization they belong to (an unknown id also returns 403, never 404)",
             "content": {
               "application/json": {
                 "schema": {
@@ -1220,17 +1210,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - account not accessible to the authenticated account",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccountPaymentMethodErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Account not found",
+            "description": "Forbidden - the account is not the caller's and not an organization they belong to (an unknown id also returns 403, never 404)",
             "content": {
               "application/json": {
                 "schema": {
@@ -1294,24 +1274,11 @@
             }
           },
           "403": {
-            "description": "Forbidden - account not accessible to the authenticated account",
+            "description": "Forbidden - the account is not the caller's and not an organization they belong to (an unknown id also returns 403, never 404)",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AccountPaymentMethodErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Account not found, or no payment method on file",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccountPaymentMethodErrorResponse"
-                },
-                "example": {
-                  "error": "No payment method on file"
                 }
               }
             }
@@ -1391,17 +1358,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - account not accessible to the authenticated account",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SubscriptionPortalErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Account not found",
+            "description": "Forbidden - the account is not the caller's and not an organization they belong to (an unknown id also returns 403, never 404)",
             "content": {
               "application/json": {
                 "schema": {
@@ -1496,17 +1453,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - account not accessible to the authenticated account",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccountPaymentsErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Account not found",
+            "description": "Forbidden - the account is not the caller's and not an organization they belong to (an unknown id also returns 403, never 404)",
             "content": {
               "application/json": {
                 "schema": {
