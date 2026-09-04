@@ -1465,6 +1465,168 @@
         }
       }
     },
+    "/api/accounts/{id}/auto-top-up": {
+      "get": {
+        "description": "Read the auto top-up settings for an account. Auto top-up is opt-in: it is off for every account until the account turns it on and chooses both the amount to buy and the balance that triggers it. When it is on, the api charges the default card on file for `amountCents` the first time a credit deduction leaves the balance below `thresholdCents`, then grants the credits and emails a receipt. `id` may be the authenticated account or an organization the caller belongs to.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the account. Must be the authenticated account or another accessible via organization membership.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Auto top-up settings (defaults when never configured).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutoTopUpResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutoTopUpErrorResponse"
+                },
+                "example": {
+                  "error": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account not accessible to the authenticated account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutoTopUpErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutoTopUpErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "Set the auto top-up settings for an account. All three fields are required on every call; there is no partial update. Turning it on requires a card on file (`GET /api/accounts/{id}/payment-method` returns a card), an amount between $5.00 and $1,000.00, and a threshold below the amount. Turning it off keeps the last amount and threshold so the account can turn it back on without retyping them. Guardrails that apply once it is on: at most one top-up per account per 10 minutes; a card decline turns `enabled` back to `false`, records `lastError`, and emails the account instead of retrying; removing the card turns it off. `id` may be the authenticated account or an organization the caller belongs to.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the account. Must be the authenticated account or another accessible via organization membership.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Auto top-up settings",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAutoTopUpRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Settings saved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutoTopUpResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid body, `enabled: true` without a card on file, `amountCents` outside 500..100000, `thresholdCents` negative, or `thresholdCents` not below `amountCents`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutoTopUpErrorResponse"
+                },
+                "example": {
+                  "error": "Add a payment method before turning on auto top-up"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutoTopUpErrorResponse"
+                },
+                "example": {
+                  "error": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - account not accessible to the authenticated account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutoTopUpErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutoTopUpErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/credits/sessions": {
       "post": {
         "description": "Top up credits on the authenticated account.\n\n**Credits are integer micro-dollars (1,000,000 = \\$1.00, the same 6-decimal unit as USDC).** The customer is charged the USD value of `credits` plus a Stripe processing fee (US card pricing: 2.9% + \\$0.30) \u2014 e.g. `credits: 100000000` charges \\$103.30 total (\\$100.00 credits + \\$3.30 fee).\n\n**Two outcomes, distinguished by response shape:**\n\n- **Auto-charged** \u2014 if the account has a card on file (from a prior subscription or top-up), the card is charged immediately and the response is `{ paymentIntentId, creditsPurchased, totalCents }`. Credits land in the account's balance asynchronously via Stripe webhook (typically within seconds). No human interaction required.\n\n- **Checkout required** \u2014 if no card is on file, or the saved card requires 3-D Secure authentication, the response is `{ id, url }` with a hosted Stripe Checkout URL. Redirect to that URL; credits land on successful payment.\n\nClients should discriminate on the presence of `url` (Checkout) vs `paymentIntentId` (auto-charged). Cards entered through the Checkout fallback are saved for future top-ups, so a customer's second top-up typically auto-charges.",
@@ -5290,6 +5452,94 @@
             "type": "string",
             "description": "Human-readable error message.",
             "example": "Account not found"
+          }
+        }
+      },
+      "AutoTopUpResponse": {
+        "type": "object",
+        "required": [
+          "account_id",
+          "enabled",
+          "amountCents",
+          "thresholdCents",
+          "lastRunAt",
+          "lastError"
+        ],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Whether auto top-up is on. Off by default.",
+            "example": true
+          },
+          "amountCents": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Amount charged and granted per top-up, in cents. Null until set.",
+            "example": 10000
+          },
+          "thresholdCents": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Balance, in cents, below which a top-up runs. Null until set.",
+            "example": 100
+          },
+          "lastRunAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "When the last auto top-up was attempted. Null until the first run.",
+            "example": "2026-09-04T15:05:00Z"
+          },
+          "lastError": {
+            "type": "string",
+            "nullable": true,
+            "description": "Stripe decline message from the attempt that turned auto top-up off. Null while healthy or once re-enabled.",
+            "example": "Your card was declined."
+          }
+        }
+      },
+      "UpdateAutoTopUpRequest": {
+        "type": "object",
+        "required": [
+          "enabled",
+          "amountCents",
+          "thresholdCents"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "amountCents": {
+            "type": "integer",
+            "minimum": 500,
+            "maximum": 100000,
+            "description": "Amount to charge and grant per top-up, in cents ($5.00 to $1,000.00).",
+            "example": 10000
+          },
+          "thresholdCents": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Balance, in cents, below which a top-up runs. Must be below `amountCents`.",
+            "example": 100
+          }
+        }
+      },
+      "AutoTopUpErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Human-readable error message.",
+            "example": "Add a payment method before turning on auto top-up"
           }
         }
       },
