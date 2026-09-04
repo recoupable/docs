@@ -337,6 +337,8 @@
               "api-reference/accounts/payment-method-create",
               "api-reference/accounts/payment-method-delete",
               "api-reference/accounts/payments-get",
+              "api-reference/accounts/auto-top-up-get",
+              "api-reference/accounts/auto-top-up-update",
               "api-reference/credits/sessions-create",
               "api-reference/accounts/credits-get",
               "api-reference/accounts/usage-get"
