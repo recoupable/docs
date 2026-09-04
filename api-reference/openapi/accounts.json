@@ -1535,7 +1535,7 @@
         }
       },
       "put": {
-        "description": "Set the auto top-up settings for an account. All three fields are required on every call; there is no partial update. Turning it on requires a card on file (`GET /api/accounts/{id}/payment-method` returns a card), an amount between $5.00 and $1,000.00, and a threshold below the amount. Turning it off keeps the last amount and threshold so the account can turn it back on without retyping them. Guardrails that apply once it is on: at most one top-up per account per 10 minutes; a card decline turns `enabled` back to `false`, records `lastError`, and emails the account instead of retrying; removing the card turns it off. `id` may be the authenticated account or an organization the caller belongs to.",
+        "description": "Set the auto top-up settings for an account. All three fields are required on every call; there is no partial update. Turning it on requires a card on file (`GET /api/accounts/{id}/payment-method` returns a card), an amount between 5.00 and 1,000.00 USD, and a threshold below the amount. Turning it off keeps the last amount and threshold so the account can turn it back on without retyping them. Guardrails that apply once it is on: at most one top-up per account per 10 minutes; a card decline turns `enabled` back to `false`, records `lastError`, and emails the account instead of retrying; removing the card turns it off. `id` may be the authenticated account or an organization the caller belongs to.",
         "parameters": [
           {
             "name": "id",
@@ -5519,7 +5519,7 @@
             "type": "integer",
             "minimum": 500,
             "maximum": 100000,
-            "description": "Amount to charge and grant per top-up, in cents ($5.00 to $1,000.00).",
+            "description": "Amount to charge and grant per top-up, in cents (5.00 to 1,000.00 USD).",
             "example": 10000
           },
           "thresholdCents": {
