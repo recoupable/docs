@@ -2428,7 +2428,7 @@
     },
     "/api/songs/analyze": {
       "post": {
-        "description": "Analyze music using a state-of-the-art Audio Language Model that listens directly to the audio waveform. Unlike text-based AI, this model processes the actual sound — identifying harmony, structure, timbre, lyrics, and cultural context through deep music understanding. Supports audio up to 20 minutes (MP3, WAV, FLAC). Two modes: (1) **Presets** — pass a `preset` name like `catalog_metadata`, `mood_tags`, or `full_report` for structured, optimized output. (2) **Custom prompt** — pass a `prompt` for free-form questions. The `full_report` preset runs all 13 presets in parallel and returns a comprehensive music intelligence report. Use `GET /api/songs/analyze/presets` to list available presets.",
+        "description": "Analyze music using a state-of-the-art Audio Language Model ([Music Flamingo](https://www.universalmusic.com/universal-music-group-to-transform-music-experience-for-billions-of-fans-with-nvidia-ai/)) that listens directly to the audio waveform.",
         "security": [
           {
             "apiKeyAuth": []
@@ -2475,6 +2475,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SongAnalyzeErrorResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient credits — the balance cannot cover the base price of this request (`$0.01` per model call, `$0.13` for `full_report`). The model is not called, nothing is charged, and no Stripe object is created. The body includes a static `billingUrl`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongAnalyzeInsufficientCreditsResponse"
                 }
               }
             }
@@ -4628,6 +4638,39 @@
             "description": "Error message describing what went wrong"
           }
         }
+      },
+      "SongAnalyzeInsufficientCreditsResponse": {
+        "type": "object",
+        "description": "Returned (402) when the account lacks credits for the analysis. Nothing is charged and no Stripe object is created. Credits must be bought explicitly via [`POST /api/credits/sessions`](/api-reference/credits/sessions-create).",
+        "properties": {
+          "error": {
+            "type": "string",
+            "enum": [
+              "insufficient_credits"
+            ]
+          },
+          "remaining_credits": {
+            "type": "integer",
+            "description": "The account's balance, in credits (micro-dollars: 1,000,000 = `$1.00`).",
+            "example": 0
+          },
+          "required_credits": {
+            "type": "integer",
+            "description": "The base price of this request, in credits: 10000 (`$0.01`) for a single preset or custom prompt, 130000 (`$0.13`) for `full_report`. The per-second inference charge is added after the model returns.",
+            "example": 10000
+          },
+          "billingUrl": {
+            "type": "string",
+            "description": "Static link to the Recoup app, where a human can save a card and buy credits. It is a constant, not a freshly minted Stripe Checkout Session, so a credit-gated endpoint that keeps returning 402 creates nothing. To buy credits programmatically, call [`POST /api/credits/sessions`](/api-reference/credits/sessions-create).",
+            "example": "https://app.recoupable.dev"
+          }
+        },
+        "required": [
+          "error",
+          "remaining_credits",
+          "required_credits",
+          "billingUrl"
+        ]
       },
       "SongAnalyzeRequest": {
         "type": "object",
