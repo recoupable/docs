@@ -14,7 +14,7 @@ Some Recoup endpoints are billed in **credits** — primarily endpoints that hit
 | **Research** ([`/api/research/*`](/api-reference/research/web)) | Yes | Each successful call deducts credits. Costs vary by endpoint and parameters (e.g. [`enrich`](/api-reference/research/enrich) charges by processor tier; [`extract`](/api-reference/research/extract) charges by URL count). |
 | **Content generation** ([`/api/image/generate`](/api-reference/image/generation)) | Yes | Image generation is priced per call. |
 | **AI Chat — streaming** ([`POST /api/chat`](/api-reference/chat/workflow)) | Yes | Variable cost based on model token usage, with a per-request minimum. |
-| **Music analysis** ([`POST /api/songs/analyze`](/api-reference/songs/analyze)) | Yes | 2× the model's measured compute time (`max($0.01, 2 × elapsed_seconds × $0.000583)` per model call); `full_report` is the sum of its 13 calls. |
+| **Music analysis** ([`POST /api/songs/analyze`](/api-reference/songs/analyze)) | Yes | \$0.01 per model call plus \$0.001166 per second of inference time; `full_report` is the sum of its 13 calls. |
 | **Social scrape** ([`/api/socials/{id}/scrape`](/api-reference/social/scrape), [`/api/artist/socials/scrape`](/api-reference/artist/socials-scrape)) | Yes | \$0.05, plus \$0.01 per post requested via `posts` — per social profile scraped. |
 | **Everything else** | Free at the API layer | [Artist CRUD](/api-reference/artists/list), [sandboxes](/api-reference/sandboxes/list), [sessions](/api-reference/sessions/get), [scheduled tasks](/api-reference/tasks/get), [account/org management](/api-reference/accounts/id), [agent signup](/api-reference/agents/signup), [Spotify proxies](/api-reference/spotify/search), etc. Subscription gating may still apply. |
 
@@ -218,4 +218,4 @@ Current as of this revision of the page. The authoritative source is the per-end
 | [`POST /api/research/enrich`](/api-reference/research/enrich) | \$0.05 / \$0.10 / \$0.25 (base / core / ultra processor) |
 | [`POST /api/research/deep`](/api-reference/research/deep) | \$0.25 per call |
 | [`POST /api/image/generate`](/api-reference/image/generation) | Per-call price; see endpoint reference |
-| [`POST /api/songs/analyze`](/api-reference/songs/analyze) | `max($0.01, 2 × elapsed_seconds × $0.000583)` per model call; `full_report` = 13 calls |
+| [`POST /api/songs/analyze`](/api-reference/songs/analyze) | `$0.01 + $0.001166 × elapsed_seconds` per model call; `full_report` = 13 calls |
