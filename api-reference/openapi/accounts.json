@@ -887,7 +887,7 @@
     },
     "/api/accounts/{id}/credits": {
       "get": {
-        "description": "Retrieve the current credit balance for an account. Returns the remaining credits along with the plan-derived monthly total and used count, plus a flag indicating whether the account is on a pro plan (directly or via an organization). Credits refill monthly; the `timestamp` field reflects the last refill or balance update.",
+        "description": "Retrieve the current credit balance for an account. Returns the remaining credits along with the plan-derived monthly total and used count, plus a flag indicating whether the account is on a pro plan (directly or via an organization). Credits refill monthly; the `timestamp` field reflects the last refill or balance update. An account that has never had a credits record gets one created on first read, seeded with its plan's monthly allotment, so this endpoint never returns 404 for an account the caller may access.",
         "parameters": [
           {
             "name": "id",
@@ -934,16 +934,6 @@
           },
           "403": {
             "description": "Forbidden - account not accessible to the authenticated account",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccountCreditsErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Account or credits record not found",
             "content": {
               "application/json": {
                 "schema": {
