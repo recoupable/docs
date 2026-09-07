@@ -2985,7 +2985,7 @@
           },
           "song_count": {
             "type": "integer",
-            "description": "Number of songs currently in the catalog."
+            "description": "Number of songs returned for this artist in this catalog; equals songs.length. This is not the total size of a multi-artist catalog."
           },
           "updated_at": {
             "type": "string",
@@ -2994,7 +2994,8 @@
           },
           "songs": {
             "type": "array",
-            "description": "The catalog's songs crediting this artist, sorted by plays descending and capped at the top 50 \u2014 `song_count` reflects the full catalog and may exceed `songs.length`.",
+            "description": "The catalog's songs crediting this artist, sorted by plays descending and capped at 1,000. song_count equals the number of returned songs.",
+            "maxItems": 1000,
             "items": {
               "$ref": "#/components/schemas/ArtistPublicProfileSong"
             }
