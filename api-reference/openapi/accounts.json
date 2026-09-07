@@ -5041,6 +5041,36 @@
             "description": "True when the account is on a pro plan, directly via an account subscription or via an organization subscription.",
             "example": false
           },
+          "plan": {
+            "type": "string",
+            "enum": [
+              "free",
+              "starter",
+              "pro"
+            ],
+            "description": "The plan the balance belongs to, resolved from the account's subscription, its organization, or an enterprise domain.",
+            "example": "free"
+          },
+          "task_limit": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 1,
+            "description": "Maximum enabled scheduled tasks on the plan. Null means uncapped.",
+            "example": 1
+          },
+          "min_cadence_minutes": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Shortest allowed gap between two consecutive runs of a task, in minutes (Free 10080, Starter 1440, Pro 60).",
+            "example": 10080
+          },
+          "analyze_limit": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 1,
+            "description": "Tracks the plan can analyze per calendar month with `POST /api/songs/analyze` (Free 5). Null means uncapped.",
+            "example": 5
+          },
           "timestamp": {
             "type": "string",
             "format": "date-time",

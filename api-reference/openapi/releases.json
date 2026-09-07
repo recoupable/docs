@@ -2481,11 +2481,42 @@
             }
           },
           "402": {
-            "description": "Insufficient credits — the balance cannot cover the base price of this request (`$0.05` per model call, `$0.65` for `full_report`). The model is not called, nothing is charged, and no Stripe object is created. The body includes a static `billingUrl`.",
+            "description": "Two cases, told apart by `error`. `plan_limit`: a Free account has already analyzed its 5 tracks this calendar month (`limit: analyze_count`); upgrade at `billingUrl`. `insufficient_credits`: the balance cannot cover the base price of this request (`$0.05` per model call, `$0.65` for `full_report`). In both cases the model is not called, nothing is charged, and no Stripe object is created. The plan check runs first.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SongAnalyzeInsufficientCreditsResponse"
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/AnalyzePlanLimitError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SongAnalyzeInsufficientCreditsResponse"
+                    }
+                  ]
+                },
+                "examples": {
+                  "planLimit": {
+                    "summary": "Free account on its sixth track this month",
+                    "value": {
+                      "status": "error",
+                      "error": "plan_limit",
+                      "limit": "analyze_count",
+                      "message": "Free includes 5 tracks analyzed a month. Starter and Pro are unlimited.",
+                      "plan": "free",
+                      "analyze_limit": 5,
+                      "current_analyze_count": 5,
+                      "billingUrl": "https://app.recoupable.dev/plan"
+                    }
+                  },
+                  "insufficientCredits": {
+                    "summary": "Balance below the base price",
+                    "value": {
+                      "error": "insufficient_credits",
+                      "remaining_credits": 0,
+                      "required_credits": 50000,
+                      "billingUrl": "https://app.recoupable.dev"
+                    }
+                  }
                 }
               }
             }
@@ -4624,6 +4655,75 @@
               "$ref": "#/components/schemas/SongArtist"
             },
             "description": "Array of artist objects associated with this song"
+          }
+        }
+      },
+      "AnalyzePlanLimitError": {
+        "type": "object",
+        "description": "Returned (402) when the account's plan has no analyze slot left this calendar month. Same envelope as the task `PlanLimitError`, with the analyze counters in place of the task ones. Nothing is charged and the model is not called.",
+        "required": [
+          "status",
+          "error",
+          "limit",
+          "message",
+          "plan",
+          "analyze_limit",
+          "current_analyze_count",
+          "billingUrl"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ]
+          },
+          "error": {
+            "type": "string",
+            "enum": [
+              "plan_limit"
+            ],
+            "description": "Machine-readable code. Literally `plan_limit`."
+          },
+          "limit": {
+            "type": "string",
+            "enum": [
+              "analyze_count"
+            ],
+            "description": "Which entitlement blocked the request. Literally `analyze_count`."
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable explanation naming the plan and the limit, suitable to show to a user.",
+            "example": "Free includes 5 tracks analyzed a month. Starter and Pro are unlimited."
+          },
+          "plan": {
+            "type": "string",
+            "enum": [
+              "free",
+              "starter",
+              "pro"
+            ],
+            "description": "The account's current plan, resolved from its subscription.",
+            "example": "free"
+          },
+          "analyze_limit": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Tracks the plan can analyze per calendar month (UTC). A track is counted once by its `audio_url`.",
+            "example": 5
+          },
+          "current_analyze_count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Distinct tracks the account has analyzed since the first of the month.",
+            "example": 5
+          },
+          "billingUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Static link to `/plan` in the Recoup app, where a human can upgrade. Constant; retrying creates nothing.",
+            "example": "https://app.recoupable.dev/plan"
           }
         }
       },
