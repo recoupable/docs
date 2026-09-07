@@ -2460,7 +2460,7 @@
             }
           },
           "400": {
-            "description": "Bad request — missing or invalid fields",
+            "description": "Bad request — missing or invalid fields, including a missing `audio_url` (`missing_fields: [\"audio_url\"]`) or both `preset` and `prompt` in one request",
             "content": {
               "application/json": {
                 "schema": {
@@ -2485,6 +2485,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SongAnalyzeInsufficientCreditsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unverifiable audio. Before the model is called, `audio_url` is checked with a `HEAD` request (a ranged `GET` for hosts that reject `HEAD`). It must answer 2xx within 10 seconds with an `audio/*` or `application/octet-stream` content type. When it does not, the model is not called and nothing is charged.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongAnalyzeAudioUrlErrorResponse"
                 }
               }
             }
@@ -4616,6 +4626,37 @@
           }
         }
       },
+      "SongAnalyzeAudioUrlErrorResponse": {
+        "type": "object",
+        "description": "Returned (422) when `audio_url` could not be verified. The model is not called and nothing is charged.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ]
+          },
+          "error": {
+            "type": "string",
+            "enum": [
+              "audio_url_unreachable",
+              "audio_url_not_audio"
+            ],
+            "description": "`audio_url_unreachable`: the URL did not answer 2xx within 10 seconds. `audio_url_not_audio`: it answered, but with a content type that is not `audio/*` or `application/octet-stream`.",
+            "example": "audio_url_not_audio"
+          },
+          "message": {
+            "type": "string",
+            "description": "What the check observed, for the caller's logs.",
+            "example": "audio_url answered 200 with content type text/html"
+          }
+        },
+        "required": [
+          "status",
+          "error",
+          "message"
+        ]
+      },
       "SongAnalyzeErrorResponse": {
         "type": "object",
         "properties": {
@@ -4674,7 +4715,10 @@
       },
       "SongAnalyzeRequest": {
         "type": "object",
-        "description": "Provide exactly one of `preset` or `prompt`. Use `preset` for structured analysis workflows, or `prompt` for free-form questions.",
+        "description": "Provide exactly one of `preset` or `prompt`, plus `audio_url`. Use `preset` for structured analysis workflows, or `prompt` for free-form questions about the audio.",
+        "required": [
+          "audio_url"
+        ],
         "properties": {
           "preset": {
             "type": "string",
@@ -4707,7 +4751,7 @@
           "audio_url": {
             "type": "string",
             "format": "uri",
-            "description": "Public URL to an audio file (MP3, WAV, or FLAC — up to 20 minutes)",
+            "description": "Public URL to an audio file (MP3, WAV, or FLAC, up to 20 minutes). Required in every mode, including a custom `prompt`. Verified before the model is called: the URL must answer a `HEAD` request (or a ranged `GET`) with 2xx within 10 seconds and an `audio/*` or `application/octet-stream` content type, else the request returns 422 and nothing is charged.",
             "example": "https://example.com/song.mp3"
           },
           "max_new_tokens": {
