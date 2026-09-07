@@ -975,7 +975,7 @@
     },
     "/api/artists/{id}/profile": {
       "get": {
-        "description": "Public artist profile: the artist's name, image, connected social profiles, and linked catalogs in one call.\n\n**No authentication.** This endpoint is deliberately public and unbilled \u2014 it backs the shareable artist page at `chat.recoupable.dev/artists/{id}` and can be called without an API key. Only public fields are returned; account settings, instructions, and valuation data are never included.\n\nResponses are cacheable (`Cache-Control: public, s-maxage=300, stale-while-revalidate=600`), so a value may be up to a few minutes stale.",
+        "description": "Public artist profile: name, image, connected socials, unique credited songs, and optional saved catalog metadata in one call. Songs resolve directly by artist ID and do not require catalog membership.\n\n**No authentication.** This endpoint is public and unbilled. Only public fields are returned, including estimated valuation; private account settings and instructions are excluded. Responses are dynamically generated without a CDN cache TTL.",
         "parameters": [
           {
             "name": "id",
@@ -1000,7 +1000,7 @@
             }
           },
           "404": {
-            "description": "No artist with this id. Returned for unknown ids and for accounts that are not artists \u2014 the two cases are deliberately indistinguishable, so the endpoint cannot be used to probe which account ids exist.",
+            "description": "No artist with this id. Returned for unknown ids and for accounts that are not artists — the two cases are deliberately indistinguishable, so the endpoint cannot be used to probe which account ids exist.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2902,7 +2902,9 @@
           "image",
           "socials",
           "catalogs",
-          "valuation"
+          "valuation",
+          "songs",
+          "song_count"
         ],
         "properties": {
           "id": {
@@ -2928,7 +2930,7 @@
           },
           "catalogs": {
             "type": "array",
-            "description": "Catalogs linked to the artist, newest first; empty when none are linked.",
+            "description": "Saved catalogs containing credited songs, retained for existing consumers. Use root songs for the artist discography. Empty when no catalogs exist or catalog enrichment fails.",
             "items": {
               "$ref": "#/components/schemas/ArtistPublicProfileCatalog"
             }
@@ -2937,6 +2939,20 @@
             "$ref": "#/components/schemas/ArtistPublicProfileValuation",
             "description": "Estimated value band for the artist's catalog(s), from the published Recoup valuation model over all credited songs' latest play counts. Null when the artist has no measured songs.",
             "nullable": true
+          },
+          "songs": {
+            "type": "array",
+            "maxItems": 1000,
+            "description": "Unique recordings credited to the artist, resolved by artist ID independently of saved catalogs. Sorted by plays descending, then ISRC; up to 1,000 returned. Recordings without catalog membership are included. Empty when no credited song metadata is available. Row estimates use the published model with its default five-year age because recording release dates are not stored.",
+            "items": {
+              "$ref": "#/components/schemas/ArtistPublicProfileSong"
+            }
+          },
+          "song_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000,
+            "description": "Number of unique artist recordings returned; equals root songs.length, not the sum of catalog song counts."
           }
         }
       },
