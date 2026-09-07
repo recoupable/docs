@@ -2943,7 +2943,7 @@
           "songs": {
             "type": "array",
             "maxItems": 1000,
-            "description": "Unique recordings credited to the artist, resolved by artist ID independently of saved catalogs. Sorted by plays descending, then ISRC; up to 1,000 returned. Recordings without catalog membership are included. Empty when no credited song metadata is available. Row estimates use the published model with its default five-year age because recording release dates are not stored.",
+            "description": "Unique recordings credited to the artist, resolved by artist ID independently of saved catalogs. Sorted by plays descending, then ISRC; up to 1,000 returned. Recordings without catalog membership are included. Empty when no credited song metadata is available. Row estimates allocate the artist-level mid valuation in proportion to each recording's plays, sharing the artist valuation's age assumption. Song membership is independent of optional catalog-age enrichment.",
             "items": {
               "$ref": "#/components/schemas/ArtistPublicProfileSong"
             }
