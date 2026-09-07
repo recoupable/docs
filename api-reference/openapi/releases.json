@@ -4700,11 +4700,9 @@
           "plan": {
             "type": "string",
             "enum": [
-              "free",
-              "starter",
-              "pro"
+              "free"
             ],
-            "description": "The account's current plan, resolved from its subscription.",
+            "description": "The account's current plan. Only Free carries an analyze cap today, so this is always `free`; Starter and Pro never receive this response.",
             "example": "free"
           },
           "analyze_limit": {
