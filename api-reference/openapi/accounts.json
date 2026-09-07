@@ -5009,6 +5009,10 @@
           "total_credits",
           "used_credits",
           "is_pro",
+          "plan",
+          "task_limit",
+          "min_cadence_minutes",
+          "analyze_limit",
           "timestamp"
         ],
         "properties": {
