@@ -975,7 +975,7 @@
     },
     "/api/artists/{id}/profile": {
       "get": {
-        "description": "Public artist profile: the artist's name, image, connected social profiles, and linked catalogs in one call.\n\n**No authentication.** This endpoint is deliberately public and unbilled \u2014 it backs the shareable artist page at `chat.recoupable.dev/artists/{id}` and can be called without an API key. Only public fields are returned; account settings, instructions, and valuation data are never included.\n\nResponses are cacheable (`Cache-Control: public, s-maxage=300, stale-while-revalidate=600`), so a value may be up to a few minutes stale.",
+        "description": "Public artist profile with name, image, connected socials, recorded songs, linked catalogs and modeled valuation. No authentication or billing. Private account settings and instructions are excluded. The requested account must be an artist on a roster. Song credits include accounts sharing the exact Spotify artist identity; names alone never match. Measured songs without a catalog appear in a display-only Recorded songs group. Responses have no CDN cache directive and the artist page fetches without caching.",
         "parameters": [
           {
             "name": "id",
@@ -2977,7 +2977,7 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "The catalog id."
+            "description": "Catalog UUID, or the requested artist UUID for the display-only Recorded songs group. The latter is not a writable catalog ID."
           },
           "name": {
             "type": "string",
@@ -2990,11 +2990,11 @@
           "updated_at": {
             "type": "string",
             "format": "date-time",
-            "description": "When the catalog last changed."
+            "description": "When the catalog last changed; for Recorded songs, the latest measurement timestamp in that group."
           },
           "songs": {
             "type": "array",
-            "description": "The catalog's songs crediting this artist, sorted by plays descending and capped at the top 50 \u2014 `song_count` reflects the full catalog and may exceed `songs.length`.",
+            "description": "Songs crediting the resolved artist identity, sorted by plays descending and capped at 1,000 per group. Recorded songs contains measured ISRCs absent from saved catalog groups. song_count reflects the complete group and may exceed songs.length.",
             "items": {
               "$ref": "#/components/schemas/ArtistPublicProfileSong"
             }
