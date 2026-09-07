@@ -2480,7 +2480,7 @@
             }
           },
           "402": {
-            "description": "Insufficient credits — the balance cannot cover the base price of this request (`$0.01` per model call, `$0.13` for `full_report`). The model is not called, nothing is charged, and no Stripe object is created. The body includes a static `billingUrl`.",
+            "description": "Insufficient credits — the balance cannot cover the base price of this request (`$0.05` per model call, `$0.65` for `full_report`). The model is not called, nothing is charged, and no Stripe object is created. The body includes a static `billingUrl`.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4656,8 +4656,8 @@
           },
           "required_credits": {
             "type": "integer",
-            "description": "The base price of this request, in credits: 10000 (`$0.01`) for a single preset or custom prompt, 130000 (`$0.13`) for `full_report`. The per-second inference charge is added after the model returns.",
-            "example": 10000
+            "description": "The base price of this request, in credits: 50000 (`$0.05`) for a single preset or custom prompt, 650000 (`$0.65`) for `full_report`. The per-second inference charge is added after the model returns.",
+            "example": 50000
           },
           "billingUrl": {
             "type": "string",
