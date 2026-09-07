@@ -2928,7 +2928,7 @@
           },
           "catalogs": {
             "type": "array",
-            "description": "Catalogs linked to the artist, newest first; empty when none are linked.",
+            "description": "Linked catalogs, newest first, followed by a display-only Recorded songs group when measured credited ISRCs have no saved catalog. May be non-empty even when no catalogs are linked.",
             "items": {
               "$ref": "#/components/schemas/ArtistPublicProfileCatalog"
             }
