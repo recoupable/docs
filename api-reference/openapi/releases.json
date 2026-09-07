@@ -2985,6 +2985,8 @@
           },
           "song_count": {
             "type": "integer",
+            "minimum": 0,
+            "maximum": 1000,
             "description": "Number of songs returned for this artist in this catalog; equals songs.length. This is not the total size of a multi-artist catalog."
           },
           "updated_at": {
