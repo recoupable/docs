@@ -2395,7 +2395,8 @@
                           },
                           "requiresAudio": {
                             "type": "boolean",
-                            "description": "Whether this preset needs an audio_url"
+                            "description": "Always `true`: every analyze request requires `audio_url`, whichever preset or prompt it uses. Kept on the response for compatibility.",
+                            "example": true
                           },
                           "responseFormat": {
                             "type": "string",
