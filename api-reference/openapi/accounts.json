@@ -1278,7 +1278,7 @@
     },
     "/api/accounts/{id}/portal": {
       "post": {
-        "description": "Create a Stripe Customer Portal session for an account. Returns a hosted URL where the customer can update the card on file, view invoices, or cancel a Starter or Pro subscription; the client should redirect the user to that URL. When more than one Stripe customer is tagged with the account id, the portal opens on the one that holds the default card (otherwise the newest). `id` may be the authenticated account or an organization the caller belongs to. Enterprise (invoiced) plans are managed with your Recoup contact and the app does not offer this portal for them, but the endpoint works for any account with a Stripe customer.",
+        "description": "Create a Stripe Customer Portal session for an account. Returns a hosted URL where the customer can update the card on file, view invoices, or cancel a Starter or Pro subscription; the client should redirect the user to that URL. The portal opens on the Stripe customer that owns the account's active subscription, so accounts without an active subscription get a 400 even when a tagged customer with a card exists. `id` may be the authenticated account or an organization the caller belongs to. Enterprise (invoiced) plans are managed with your Recoup contact and the app does not offer this portal for them, but the endpoint works for any account with a Stripe customer.",
         "parameters": [
           {
             "name": "id",
@@ -1322,7 +1322,7 @@
             }
           },
           "400": {
-            "description": "Bad request - invalid parameters, or the account has no tagged Stripe customer yet",
+            "description": "Bad request - invalid parameters, or the account has no active subscription",
             "content": {
               "application/json": {
                 "schema": {
