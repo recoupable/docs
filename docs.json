@@ -150,6 +150,15 @@
               "api-reference/songs/catalog-songs-add",
               "api-reference/songs/catalog-songs-delete"
             ]
+          },
+          {
+            "group": "Context",
+            "pages": [
+              "api-reference/context/operate",
+              "api-reference/context/guest-start",
+              "api-reference/context/guest-read",
+              "api-reference/context/guest-claim"
+            ]
           }
         ]
       },

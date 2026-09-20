@@ -1,0 +1,362 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup Context Engine",
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.recoupable.dev"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "ApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "GuestSession": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "recoup_context_guest"
+      }
+    }
+  },
+  "paths": {
+    "/api/context": {
+      "post": {
+        "operationId": "contextOperation",
+        "summary": "Ingest, read, or select context",
+        "description": "Metadata pilot; release only after companion database/API deployments. Saves Spotify track, release and credited artist metadata for reuse. The MCP context tool uses the same operations. No paid enrichment runs yet: lyrics, audio analysis, artwork interpretation and artist research are reported as gaps. Briefs select saved evidence and do not generate creative concepts. Inspect readiness and missingTopics before using them. Ingest dispatches a durable workflow; retry the same input and idempotency key after dispatch failure. Private context is scoped to the authenticated account or authorized organization.",
+        "security": [
+          {
+            "ApiKey": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "action",
+                      "url",
+                      "idempotency_key"
+                    ],
+                    "properties": {
+                      "action": {
+                        "type": "string",
+                        "const": "ingest"
+                      },
+                      "organization_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Optional organization that owns the private context. Current membership is checked."
+                      },
+                      "url": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "Spotify track URL. Albums, playlists and YouTube ingestion are not enabled in this pilot."
+                      },
+                      "idempotency_key": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[A-Za-z0-9._:-]+$",
+                        "description": "Stable key for retrying the same input without duplicate work."
+                      },
+                      "topics": {
+                        "type": "array",
+                        "minItems": 1,
+                        "maxItems": 10,
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "release_metadata",
+                            "artist_metadata",
+                            "catalog_metadata",
+                            "lyrics",
+                            "song_summary",
+                            "artwork_branding",
+                            "artist_research",
+                            "artist_brand",
+                            "era",
+                            "video_narrative"
+                          ]
+                        }
+                      },
+                      "direction": {
+                        "type": "string",
+                        "maxLength": 4000,
+                        "description": "Stored customer direction. Metadata extraction does not interpret it as source facts."
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "action",
+                      "request_id"
+                    ],
+                    "properties": {
+                      "action": {
+                        "type": "string",
+                        "const": "read"
+                      },
+                      "organization_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Optional organization that owns the private context. Current membership is checked."
+                      },
+                      "request_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "action",
+                      "request_id",
+                      "purpose"
+                    ],
+                    "properties": {
+                      "action": {
+                        "type": "string",
+                        "const": "brief"
+                      },
+                      "organization_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Optional organization that owns the private context. Current membership is checked."
+                      },
+                      "request_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "purpose": {
+                        "type": "string",
+                        "enum": [
+                          "creative_direction",
+                          "playlist_pitch"
+                        ]
+                      },
+                      "max_characters": {
+                        "type": "integer",
+                        "minimum": 1000,
+                        "maximum": 32000,
+                        "default": 12000
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Saved ingestion request; inspect request.status and use read to poll. Existing completed/partial requests return without provider work."
+          },
+          "200": {
+            "description": "Read returns request. Brief returns purpose, readiness, documents, characters, missingTopics, guidance and gaps. Documents include saved result/version references and source citations."
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "409": {
+            "description": "Operation failed, access unavailable, input/key conflict, or request not found. Retry ingestion with the same idempotency key after correcting the cause."
+          }
+        }
+      }
+    },
+    "/api/context/guest": {
+      "post": {
+        "summary": "Start guest context extraction",
+        "description": "Feature-flagged metadata pilot. Saves a Spotify track URL in a temporary workspace before signup. Uses an HttpOnly seven-day cookie; only its hash is stored. One URL per guest session and 100 new guest workspaces per day globally. Extracts artist and release metadata only. Does not run paid enrichment, generate a site, or send email. Serve through the same-origin funnel; cross-site cookie integration is not provided. Retry the same URL and cookie to resume dispatch.",
+        "security": [],
+        "parameters": [
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The configured funnel origin. This is a browser session flow, not a public unauthenticated MCP tool."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "action",
+                  "url"
+                ],
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "start"
+                    ]
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "uri"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Saved guest context or claim receipt."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Guest session or account authentication missing."
+          },
+          "403": {
+            "description": "Origin or workspace access denied."
+          },
+          "409": {
+            "description": "Operation unavailable; retry the same input and session."
+          },
+          "503": {
+            "description": "Guest context is disabled."
+          },
+          "202": {
+            "description": "Guest work saved and workflow dispatched. Preserve Set-Cookie for status and claim."
+          }
+        }
+      },
+      "get": {
+        "summary": "Read guest context",
+        "description": "Returns metadata and status for the current unclaimed, unexpired guest session. Guest access ends when claimed. Unclaimed work expires after seven days.",
+        "security": [
+          {
+            "GuestSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Saved guest context or claim receipt."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Guest session or account authentication missing."
+          },
+          "403": {
+            "description": "Origin or workspace access denied."
+          },
+          "409": {
+            "description": "Operation unavailable; retry the same input and session."
+          },
+          "503": {
+            "description": "Guest context is disabled."
+          }
+        }
+      }
+    },
+    "/api/context/guest/claim": {
+      "post": {
+        "summary": "Claim guest context after sign-in",
+        "description": "Requires the original guest cookie plus verified account authentication. Optionally claims into an authorized organization. Transfers saved metadata without refetching it; an in-progress worker finishes into the claimed destination. Repeated claims by the same account and destination return the same request ID. Another account cannot claim it. Existing matching identities and customer corrections are preserved. No artist ownership claim is implied. Signup UI integration must call this endpoint after authentication. The Recoup app provides a /context entry page and claims into the personal account after login. A failed extraction remains retryable through the same claim receipt. No completion email or website is generated by this flow.",
+        "security": [
+          {
+            "GuestSession": [],
+            "BearerAuth": []
+          },
+          {
+            "GuestSession": [],
+            "ApiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The configured funnel origin. This is a browser session flow, not a public unauthenticated MCP tool."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "action"
+                ],
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "claim"
+                    ]
+                  },
+                  "organization_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Saved guest context or claim receipt."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Guest session or account authentication missing."
+          },
+          "403": {
+            "description": "Origin or workspace access denied."
+          },
+          "409": {
+            "description": "Operation unavailable; retry the same input and session."
+          },
+          "503": {
+            "description": "Guest context is disabled."
+          }
+        }
+      }
+    }
+  }
+}
