@@ -1,0 +1,184 @@
+---
+title: "Catalogs Plugin"
+description: "Full catalog acquisition lifecycle — from messy seller data rooms to source-cited deal packages with normalized royalties, valuations, rights checks, and IC memos."
+---
+
+## Overview
+
+The Catalogs Plugin turns an AI agent into a catalog acquisition analyst. Drop a seller's data room (PDFs, CSVs, Excel files) and the agent normalizes royalty data, checks rights, runs valuation models, and produces a complete deal package — HTML dashboard, buyer/seller memos, and IC presentation materials.
+
+```bash
+claude plugin install https://github.com/recoupable/recoup-catalogs-plugin
+```
+
+<Tip>
+**Try it:** Say "Let's analyze a catalog with /recoup-catalog-deal" — the agent asks what kind of deal this is (buy-side, seller-prep, or financing) and walks you through the entire workflow.
+</Tip>
+
+## Skills
+
+### recoup-catalog-deal
+
+**Full deal lifecycle.** The front-door command. Handles the complete workflow from data room to finished deal package. Asks the deal type (buy-side acquisition, seller preparation, or financing/underwriting) and orchestrates the appropriate sub-skills.
+
+> **Trigger:** "Analyze a catalog deal", "Run /recoup-catalog-deal", "I have a data room to process"
+
+---
+
+### recoup-deal-kickoff
+
+**Deal initialization.** Sets up the deal workspace, classifies incoming files, creates the processing queue, and establishes the deal parameters (deal type, parties, timeline).
+
+> **Trigger:** "Start a new catalog deal", "Set up a deal workspace"
+
+---
+
+### recoup-catalog-ingest
+
+**Data room ingestion.** Normalizes messy seller data into a canonical schema. Handles PDFs, CSVs, TSVs, and Excel files. Applies cleaning rules, deduplicates entries, maps columns to the canonical format, and flags anomalies.
+
+Includes reference materials:
+- **Canonical schema** — the target format for all normalized data
+- **Cleaning rules** — common data quality issues and how to resolve them
+- **Data room checklist** — what to look for in a complete data room
+
+> **Trigger:** "Ingest this data room", "Normalize these royalty files", "Process seller documents"
+
+---
+
+### recoup-catalog-analyze
+
+**Catalog valuation and analysis.** Runs valuation models on normalized data: growth/decay curves, revenue projections, NPS (net publisher's share) calculations, comparable transactions, and risk scoring.
+
+References:
+- **Valuation framework** — methodology and assumptions
+- **Pro performance income** — how to model performance royalties
+- **Output templates** — standard report formats
+
+> **Trigger:** "Value this catalog", "Run analysis on the catalog", "What's this catalog worth"
+
+---
+
+### recoup-royalty-audit
+
+**Royalty verification.** Audits royalty statements against known rates, identifies underpayments, flags unusual patterns, and produces an exceptions report.
+
+> **Trigger:** "Audit these royalties", "Check for underpayments", "Royalty exceptions report"
+
+---
+
+### recoup-financing-underwrite
+
+**Financing underwriting.** Generates lender-ready packages: cash flow projections, debt service coverage ratios, collateral analysis, and risk assessments for catalog-backed financing.
+
+> **Trigger:** "Underwrite this catalog for financing", "Generate a lending package", "Debt service analysis"
+
+---
+
+### recoup-catalog-package
+
+**Deal package assembly.** Compiles all analysis outputs into a polished deal package: HTML dashboard, executive summary, detailed workpapers, and formatted memos for buyers, sellers, or lenders.
+
+> **Trigger:** "Package the deal", "Create the final deliverable", "Assemble the deal package"
+
+---
+
+### recoup-post-close-admin
+
+**Post-close administration.** Handles post-acquisition tasks: rights registration, royalty collection setup, catalog integration, and ongoing monitoring dashboards.
+
+> **Trigger:** "Post-close setup", "Register acquired rights", "Set up royalty collection"
+
+---
+
+### recoup-catalog-demo
+
+**Demo deal.** A guided demo using sample data to showcase the full catalog deal workflow. Useful for training new team members or demonstrating capabilities to prospects.
+
+> **Trigger:** "Demo a catalog deal", "Show me how catalog analysis works", "Run a sample deal"
+
+## Example workflow
+
+A typical catalog acquisition workflow:
+
+```text
+You:    Let's analyze a catalog. /recoup-catalog-deal
+Agent:  What type of deal is this?
+        1. Buy-side acquisition
+        2. Seller preparation
+        3. Financing / underwriting
+
+You:    Buy-side acquisition. Call it "Indie Catalog Q3"
+Agent:  Setting up deal workspace...
+        Ready. Drag your seller's files in, or point me to the data room.
+
+You:    [drops PDFs and CSVs]
+Agent:  Ingesting 12 files...
+        - 3 royalty statements (PDF → normalized CSV)
+        - 2 catalog listings (Excel → canonical schema)
+        - 4 contracts (PDF → extracted terms)
+        - 3 supporting documents
+        
+        ⚠️ 2 anomalies flagged:
+        - Royalty rate mismatch on 3 tracks
+        - Missing mechanical license for 1 composition
+        
+        Running valuation analysis...
+        ✅ Deal package ready.
+        
+        📊 Dashboard: deals/indie-catalog-q3/dashboard.html
+        📋 IC Memo: deals/indie-catalog-q3/ic-memo.md
+        💰 Valuation: $2.4M (8.2x NPS, 3% growth)
+```
+
+## Optional dependencies
+
+Core scripts run on Python standard library. PDF and Excel extraction need:
+
+```bash
+pip3 install pdfplumber openpyxl
+```
+
+Skip this if your data room is CSV/TSV only.
+
+## Install
+
+<CodeGroup>
+
+```bash Claude Code
+claude plugin install https://github.com/recoupable/recoup-catalogs-plugin
+```
+
+```text Claude Cowork
+Add custom plugin → https://github.com/recoupable/recoup-catalogs-plugin
+```
+
+```bash Codex
+codex plugin install https://github.com/recoupable/recoup-catalogs-plugin
+```
+
+```text Cursor
+Settings → Plugins → Add custom plugin → paste the GitHub URL
+```
+
+```bash Via Marketplace
+/plugin install recoup-catalogs-plugin@recoup-marketplace
+```
+
+</CodeGroup>
+
+<Warning>
+**Restart required.** After installing, restart your agent session so the PreToolUse and Stop hooks load correctly.
+</Warning>
+
+## Required environment
+
+| Variable | How to get it |
+|---|---|
+| `RECOUP_API_KEY` | Run `getting-started` in [Platform Plugin](/plugins/platform), or call [`POST /api/agents/signup`](/api-reference/agents/signup) |
+
+## Source
+
+<Card title="GitHub" icon="github" href="https://github.com/recoupable/recoup-catalogs-plugin">
+  View source, report issues, or contribute.
+</Card>
