@@ -32,7 +32,7 @@
       "post": {
         "operationId": "contextOperation",
         "summary": "Ingest, read, or compile context briefs",
-        "description": "Save reusable music context, read progress, or compile a task-specific evidence brief. This reference documents the ingestion, read and brief actions of the shared HTTP/MCP operation. Brief compilation combines up to ten completed or partial requests in one authorized workspace, reuses saved evidence without provider or model calls, and returns bounded Markdown plus the selected input versions. Creative direction prioritizes lyrics and artwork; playlist pitching prioritizes catalog/audio metadata. Shared artist evidence appears once, with coverage reported separately for each request. Briefs are evidence packets, not generated creative concepts or finished outreach. Inspect readiness, request_coverage and gaps. The response is not persisted as an immutable server-side snapshot; recompilation can reflect newer accepted evidence. Ingestion dispatches a durable workflow; retry the same input and idempotency key after dispatch failure.",
+        "description": "Save reusable music context, read progress, or compile a task-specific evidence brief. This reference documents the ingestion, read, brief, save_brief and read_brief actions of the shared HTTP/MCP operation. Brief compilation combines up to ten completed or partial requests in one authorized workspace, reuses saved evidence without provider or model calls, and returns bounded Markdown plus the selected input versions. Creative direction prioritizes lyrics and artwork; playlist pitching prioritizes catalog/audio metadata. Shared artist evidence appears once, with coverage reported separately for each request. Briefs are evidence packets, not generated creative concepts or finished outreach. Inspect readiness, request_coverage and gaps. The brief action is read-only; use save_brief with the same inputs and an idempotency_key to freeze the server-compiled output, then read_brief with its brief_id to retrieve it without recompilation. A newer document revision marks the snapshot superseded without rewriting it. Withdrawn/unavailable evidence, cancelled requests, or removed subject scope withhold the payload. Saving rechecks current evidence before committing. Apply the companion snapshot migration before using save_brief/read_brief. Ingestion dispatches a durable workflow; retry the same input and idempotency key after dispatch failure.",
         "security": [
           {
             "ApiKey": []
@@ -174,6 +174,85 @@
                         "description": "Additional saved requests in the same selected workspace. Duplicate IDs are read once. Every request must be completed or partial; unavailable, cancelled, or inaccessible requests reject the operation."
                       }
                     }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "action",
+                      "request_id",
+                      "purpose",
+                      "idempotency_key"
+                    ],
+                    "properties": {
+                      "action": {
+                        "type": "string",
+                        "const": "save_brief"
+                      },
+                      "organization_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Optional organization that owns the private context. Current membership is checked."
+                      },
+                      "request_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "purpose": {
+                        "type": "string",
+                        "enum": [
+                          "creative_direction",
+                          "playlist_pitch"
+                        ]
+                      },
+                      "max_characters": {
+                        "type": "integer",
+                        "minimum": 1000,
+                        "maximum": 32000,
+                        "default": 12000,
+                        "description": "Bounds selected evidence JSON and rendered Markdown independently. Does not cap the entire response, which also contains coverage and manifests. Documents are omitted whole to fit; omissions appear as coverage gaps."
+                      },
+                      "additional_request_ids": {
+                        "type": "array",
+                        "maxItems": 9,
+                        "default": [],
+                        "items": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "description": "Additional saved requests in the same selected workspace. Duplicate IDs are read once. Every request must be completed or partial; unavailable, cancelled, or inaccessible requests reject the operation."
+                      },
+                      "idempotency_key": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[A-Za-z0-9._:-]+$",
+                        "description": "Identifies one exact compiled output. Identical output reuses the saved record; different output with this key returns a conflict. After context updates, use read_brief for the old copy or a new key for a new snapshot."
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "action",
+                      "brief_id"
+                    ],
+                    "properties": {
+                      "action": {
+                        "type": "string",
+                        "const": "read_brief"
+                      },
+                      "brief_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "organization_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Optional organization that owns the private context. Current membership is checked."
+                      }
+                    }
                   }
                 ]
               },
@@ -189,6 +268,22 @@
                     "purpose": "creative_direction",
                     "max_characters": 12000
                   }
+                },
+                "saveBrief": {
+                  "summary": "Save a playlist-pitch brief",
+                  "value": {
+                    "action": "save_brief",
+                    "request_id": "11111111-1111-4111-8111-111111111111",
+                    "purpose": "playlist_pitch",
+                    "idempotency_key": "pitch-v1"
+                  }
+                },
+                "readBrief": {
+                  "summary": "Read an exact saved brief",
+                  "value": {
+                    "action": "read_brief",
+                    "brief_id": "33333333-3333-4333-8333-333333333333"
+                  }
                 }
               }
             }
@@ -199,7 +294,7 @@
             "description": "Saved ingestion request; inspect request.status and use read to poll. Existing completed/partial requests return without provider work."
           },
           "200": {
-            "description": "Read returns request. Brief returns request_id, request_ids, purpose, readiness, bounded Markdown text and text_characters, documents and their serialized characters count, missingTopics, guidance, gaps, request_coverage, and input_manifest. Each coverage entry includes requestId, readiness and missingTopics; overall readiness remains partial if any request has a gap or partial evidence. The manifest includes compilerVersion, method, requestIds, excludedTopics, and selected documents with documentId, resultId (null only if unavailable), subjectId, topic, version and sourceVersionIds. The result is returned without creating a saved brief record."
+            "description": "Read returns request. Brief returns request_id, request_ids, purpose, readiness, bounded Markdown text and text_characters, documents and their serialized characters count, missingTopics, guidance, gaps, request_coverage, and input_manifest. Each coverage entry includes requestId, readiness and missingTopics; overall readiness remains partial if any request has a gap or partial evidence. The manifest includes compilerVersion, method, requestIds, excludedTopics, and selected documents with documentId, resultId (null only if unavailable), subjectId, topic, version and sourceVersionIds. The result is returned without creating a saved brief record. Save/read brief return {snapshot: {id, created_at, purpose, state, superseded, brief}}. state is saved or unavailable; unavailable snapshots return brief: null. saved snapshots return the exact compiled response including its input manifest. Another workspace cannot read the record."
           },
           "400": {
             "description": "Invalid input"
