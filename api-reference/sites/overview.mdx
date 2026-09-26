@@ -54,6 +54,25 @@ Send that body to `PATCH /api/sites/{id}`. MCP's `generate_site` accepts `id`, `
 
 Generation failures leave the saved draft unchanged. A `409` means another edit changed the revision; read the site again before retrying.
 
+## Generate from saved Context Engine evidence
+
+Save a single-song `creative_direction` brief using the Context Engine `save_brief` action, then pass its snapshot ID when generating the site:
+
+```json
+{
+  "action": "generate",
+  "revision": 0,
+  "background": true,
+  "contextBriefId": "SAVED_BRIEF_UUID"
+}
+```
+
+The same `contextBriefId` field is available on MCP `generate_site`. The brief must belong to the site's workspace and match its Spotify track. Sites rejects unavailable or superseded snapshots before generation. Revisions reuse the draft's selected brief unless a new ID is supplied.
+
+This path reuses accepted song summaries, artwork observations and release/artist metadata instead of collecting music and research again. The creative director and generator receive attribution, coverage and missing-topic information. Initial support admits evidence attributed to public Spotify media; private uploads, customer assertions, raw lyrics and arbitrary web research are excluded. Partial evidence stays partial.
+
+Generation still uses credits for creative direction, assets, implementation and review. It saves a private draft, never publishes automatically. Snapshot availability is checked again before saving and publishing. Later source withdrawal does not automatically retract an already published site. Internal evidence and source identifiers are excluded from the public site response.
+
 ## Publish
 
 After reviewing the draft, send `{"action":"publish","revision":CURRENT_REVISION}` to the same PATCH endpoint, or call `publish_site` with `id` and `revision`.
