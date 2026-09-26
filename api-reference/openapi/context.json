@@ -31,8 +31,8 @@
     "/api/context": {
       "post": {
         "operationId": "contextOperation",
-        "summary": "Ingest, read, or select context",
-        "description": "Metadata pilot; release only after companion database/API deployments. Saves Spotify track, release and credited artist metadata for reuse. The MCP context tool uses the same operations. No paid enrichment runs yet: lyrics, audio analysis, artwork interpretation and artist research are reported as gaps. Briefs select saved evidence and do not generate creative concepts. Inspect readiness and missingTopics before using them. Ingest dispatches a durable workflow; retry the same input and idempotency key after dispatch failure. Private context is scoped to the authenticated account or authorized organization.",
+        "summary": "Ingest, read, or compile context briefs",
+        "description": "Save reusable music context, read progress, or compile a task-specific evidence brief. This reference documents the ingestion, read and brief actions of the shared HTTP/MCP operation. Brief compilation combines up to ten completed or partial requests in one authorized workspace, reuses saved evidence without provider or model calls, and returns bounded Markdown plus the selected input versions. Creative direction prioritizes lyrics and artwork; playlist pitching prioritizes catalog/audio metadata. Shared artist evidence appears once, with coverage reported separately for each request. Briefs are evidence packets, not generated creative concepts or finished outreach. Inspect readiness, request_coverage and gaps. The response is not persisted as an immutable server-side snapshot; recompilation can reflect newer accepted evidence. Ingestion dispatches a durable workflow; retry the same input and idempotency key after dispatch failure.",
         "security": [
           {
             "ApiKey": []
@@ -160,11 +160,36 @@
                         "type": "integer",
                         "minimum": 1000,
                         "maximum": 32000,
-                        "default": 12000
+                        "default": 12000,
+                        "description": "Bounds selected evidence JSON and rendered Markdown independently. Does not cap the entire response, which also contains coverage and manifests. Documents are omitted whole to fit; omissions appear as coverage gaps."
+                      },
+                      "additional_request_ids": {
+                        "type": "array",
+                        "maxItems": 9,
+                        "default": [],
+                        "items": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "description": "Additional saved requests in the same selected workspace. Duplicate IDs are read once. Every request must be completed or partial; unavailable, cancelled, or inaccessible requests reject the operation."
                       }
                     }
                   }
                 ]
+              },
+              "examples": {
+                "twoSongBrief": {
+                  "summary": "Compile creative direction from two saved songs",
+                  "value": {
+                    "action": "brief",
+                    "request_id": "11111111-1111-4111-8111-111111111111",
+                    "additional_request_ids": [
+                      "22222222-2222-4222-8222-222222222222"
+                    ],
+                    "purpose": "creative_direction",
+                    "max_characters": 12000
+                  }
+                }
               }
             }
           }
@@ -174,7 +199,7 @@
             "description": "Saved ingestion request; inspect request.status and use read to poll. Existing completed/partial requests return without provider work."
           },
           "200": {
-            "description": "Read returns request. Brief returns purpose, readiness, documents, characters, missingTopics, guidance and gaps. Documents include saved result/version references and source citations."
+            "description": "Read returns request. Brief returns request_id, request_ids, purpose, readiness, bounded Markdown text and text_characters, documents and their serialized characters count, missingTopics, guidance, gaps, request_coverage, and input_manifest. Each coverage entry includes requestId, readiness and missingTopics; overall readiness remains partial if any request has a gap or partial evidence. The manifest includes compilerVersion, method, requestIds, excludedTopics, and selected documents with documentId, resultId (null only if unavailable), subjectId, topic, version and sourceVersionIds. The result is returned without creating a saved brief record."
           },
           "400": {
             "description": "Invalid input"
