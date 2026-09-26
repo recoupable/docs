@@ -19,7 +19,8 @@ The caller is derived from authentication. Do not send an `account_id`. An optio
 | `GET /api/sites` | `list_sites` | `{ sites: [...] }` |
 | `POST /api/sites` | `create_site` | `{ site: ... }`, HTTP 201 |
 | `GET /api/sites/{id}` | `get_site` | `{ site: ... }` |
-| `PATCH /api/sites/{id}` action `generate` | `generate_site` | Updated private draft |
+| `PATCH /api/sites/{id}` action `concepts` | `propose_site_concepts` | Short pitches or missing context |
+| `PATCH /api/sites/{id}` action `generate` | `generate_site` | Production from a customer-selected pitch |
 | `PATCH /api/sites/{id}` action `publish` | `publish_site` | Saved draft becomes public |
 | `PATCH /api/sites/{id}` action `unpublish` | `unpublish_site` | Public snapshot removed, draft retained |
 | `GET /api/sites/{id}/signups` | `get_site_signups` | `{ signups: [{ email, created_at }] }`, up to 10,000 |
@@ -29,7 +30,7 @@ Listing accepts optional `organizationId` and `artistId` query parameters. All p
 
 ## Create and generate
 
-Create a draft with a Spotify track, album, or playlist URL. Recoup retrieves its title and artwork. The brief is optional; without it, Recoup chooses a playable concept. Alternatively, supply both a name and a brief without a release URL.
+Create a draft with a Spotify track, album, or playlist URL. Recoup retrieves its title and artwork. The brief is optional; without it, Recoup uses the available song and artist context to propose activities. Alternatively, supply both a name and a brief without a release URL.
 
 ```bash
 curl https://api.recoupable.dev/api/sites \
@@ -40,34 +41,51 @@ curl https://api.recoupable.dev/api/sites \
 
 Optional creation fields: `name` (120 characters), `brief` (6,000), `organizationId`, `artistId`, and `assets` (up to eight workspace-owned assets returned by the upload endpoint). An artist must be accessible to the caller and belong to the selected organization when one is used.
 
-Read the returned `site.id` and `site.revision`, then generate:
+Read `site.id` and `site.revision`, then request pitches:
+
+```json
+{"action":"concepts","revision":0}
+```
+
+Send this to `PATCH /api/sites/{id}`, or call MCP `propose_site_concepts` with `id` and `revision`. Optional `instruction` and `contextBriefId` apply to pitching too. This can use credits for context collection and a pitch call, but does not create images, site code or change the draft.
+
+The response is `{ concepts: { status, candidates, reason }, revision }`. Status is `ready`, `needs-context`, or `no-good-concept`. Metadata and cover details alone return `needs-context`; provide usable song analysis or sourced artist context rather than forcing an activity out of the artwork.
+
+Show the short pitches to the customer and wait for their choice. Each candidate contains `name`, `activity`, `fanMotivation`, `songOrArtistConnection`, and `friendHook`. Pass the selected object unchanged as `approvedConcept`:
 
 ```json
 {
   "action": "generate",
   "revision": 0,
-  "instruction": "Build a maze game with touch and keyboard controls."
+  "approvedConcept": {
+    "name": "CUSTOMER_SELECTED_NAME",
+    "activity": "SELECTED_ACTIVITY",
+    "fanMotivation": "SELECTED_MOTIVATION",
+    "songOrArtistConnection": "SELECTED_CONNECTION",
+    "friendHook": "SELECTED_HOOK"
+  }
 }
 ```
 
-Send that body to `PATCH /api/sites/{id}`. MCP's `generate_site` accepts `id`, `revision`, and `instruction` without an `action` field. Generation uses GPT-6 Astra by default and may take several minutes; use a client timeout that permits up to 300 seconds.
+MCP `generate_site` accepts the same fields plus `id`, without `action`. A customer-authored concept is also accepted. This is an explicit caller-confirmed selection, not a signed approval receipt; agents must not choose on the customer's behalf. Older clients must add selection: generation without `approvedConcept` is rejected before paid work.
+
+Generation defaults to background execution and returns a generation token; poll `get_site_generation` (HTTP action `generation`) for the result. Set `background: false` only for a synchronous client that supports a long timeout. If review rejects the concept, the draft is marked `needs-review`; the system does not silently substitute a new activity. Asset and implementation repairs retain their bounded pass.
 
 Generation failures leave the saved draft unchanged. A `409` means another edit changed the revision; read the site again before retrying.
 
 ## Generate from saved Context Engine evidence
 
-Save a single-song `creative_direction` brief using the Context Engine `save_brief` action, then pass its snapshot ID when generating the site:
+Save a single-song `creative_direction` brief using the Context Engine `save_brief` action, then pass its snapshot ID when requesting pitches:
 
 ```json
 {
-  "action": "generate",
+  "action": "concepts",
   "revision": 0,
-  "background": true,
   "contextBriefId": "SAVED_BRIEF_UUID"
 }
 ```
 
-The same `contextBriefId` field is available on MCP `generate_site`. The brief must belong to the site's workspace and match its Spotify track. Sites rejects unavailable or superseded snapshots before generation. Revisions reuse the draft's selected brief unless a new ID is supplied.
+Pass the same `contextBriefId` with the selected `approvedConcept` to generation. It is available on both MCP `propose_site_concepts` and `generate_site`. Without a saved brief, generation may collect context again. The brief must belong to the site's workspace and match its Spotify track. Sites rejects unavailable or superseded snapshots before generation. Revisions reuse the draft's selected brief unless a new ID is supplied.
 
 This path reuses accepted song summaries, artwork observations and release/artist metadata instead of collecting music and research again. The creative director and generator receive attribution, coverage and missing-topic information. Initial support admits evidence attributed to public Spotify media; private uploads, customer assertions, raw lyrics and arbitrary web research are excluded. Partial evidence stays partial.
 
