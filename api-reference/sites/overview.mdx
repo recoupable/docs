@@ -41,7 +41,15 @@ curl https://api.recoupable.dev/api/sites \
 
 Optional creation fields: `name` (120 characters), `brief` (6,000), `organizationId`, `artistId`, and `assets` (up to eight workspace-owned assets returned by the upload endpoint). An artist must be accessible to the caller and belong to the selected organization when one is used.
 
-Read `site.id` and `site.revision`, then request pitches:
+Read `site.id` and `site.revision`, then start automatic generation:
+
+```json
+{"action":"generate","revision":0}
+```
+
+For Spotify tracks, the background workflow saves metadata, acquires and verifies full audio, saves Music Flamingo lyrics and musical analysis, collects artwork observations and public artist research, compiles a saved brief, selects a concept, and builds and reviews the site. No separate collector calls are required. Audio acquisition requires a Spotify preview for waveform verification and stops if no matching full recording is found. Completed accepted context is reused.
+
+To choose a concept yourself before generation, optionally request pitches:
 
 ```json
 {"action":"concepts","revision":0}
@@ -51,7 +59,7 @@ Send this to `PATCH /api/sites/{id}`, or call MCP `propose_site_concepts` with `
 
 The response is `{ concepts: { status, candidates, reason }, revision }`. Status is `ready`, `needs-context`, or `no-good-concept`. Metadata and cover details alone return `needs-context`; provide usable song analysis or sourced artist context rather than forcing an activity out of the artwork.
 
-Show the short pitches to the customer and wait for their choice. Each candidate contains `name`, `activity`, `fanMotivation`, `songOrArtistConnection`, and `friendHook`. Pass the selected object unchanged as `approvedConcept`:
+In the explicit-selection flow, show the short pitches to the customer and wait for their choice. Each candidate contains `name`, `activity`, `fanMotivation`, `songOrArtistConnection`, and `friendHook`. Pass the selected object unchanged as `approvedConcept`:
 
 ```json
 {
@@ -67,11 +75,11 @@ Show the short pitches to the customer and wait for their choice. Each candidate
 }
 ```
 
-MCP `generate_site` accepts the same fields plus `id`, without `action`. A customer-authored concept is also accepted. This is an explicit caller-confirmed selection, not a signed approval receipt; agents must not choose on the customer's behalf. Older clients must add selection: generation without `approvedConcept` is rejected before paid work.
+MCP `generate_site` accepts the same fields plus `id`, without `action`. A customer-authored concept is also accepted. The optional `approvedConcept` preserves a caller-selected activity. When omitted, the engine selects from its proposed concepts after collecting context.
 
 Generation defaults to background execution and returns a generation token; poll `get_site_generation` (HTTP action `generation`) for the result. Set `background: false` only for a synchronous client that supports a long timeout. If review rejects the concept, the draft is marked `needs-review`; the system does not silently substitute a new activity. Asset and implementation repairs retain their bounded pass.
 
-Generation failures leave the saved draft unchanged. A `409` means another edit changed the revision; read the site again before retrying.
+Generation failures identify the stopped stage and leave the saved draft unchanged. A `409` means another edit changed the revision; read the site again before retrying.
 
 ## Generate from saved Context Engine evidence
 
@@ -85,9 +93,9 @@ Save a single-song `creative_direction` brief using the Context Engine `save_bri
 }
 ```
 
-Pass the same `contextBriefId` with the selected `approvedConcept` to generation. It is available on both MCP `propose_site_concepts` and `generate_site`. Without a saved brief, generation may collect context again. The brief must belong to the site's workspace and match its Spotify track. Sites rejects unavailable or superseded snapshots before generation. Revisions reuse the draft's selected brief unless a new ID is supplied.
+Pass the same `contextBriefId` with the selected `approvedConcept` to generation. It is available on both MCP `propose_site_concepts` and `generate_site`. Without a saved brief, track generation automatically collects and saves context, reusing compatible accepted module results. The brief must belong to the site's workspace and match its Spotify track. Sites rejects unavailable or superseded snapshots before generation. Revisions reuse the draft's selected brief unless a new ID is supplied.
 
-This path reuses accepted song summaries, artwork observations and release/artist metadata instead of collecting music and research again. The creative director and generator receive attribution, coverage and missing-topic information. Initial support admits evidence attributed to public Spotify media; private uploads, customer assertions, raw lyrics and arbitrary web research are excluded. Partial evidence stays partial.
+This path reuses accepted song summaries, artwork observations, public artist research and release/artist metadata instead of collecting them again. The creative director and generator receive attribution, coverage and missing-topic information. Supported evidence includes public Spotify metadata/artwork, YouTube-attributed audio analysis and saved public-search research. Private uploads, customer assertions and raw lyrics are excluded. Matching saved machine transcripts inform paraphrased themes but are not forwarded to the site. Partial evidence stays partial.
 
 Generation still uses credits for creative direction, assets, implementation and review. It saves a private draft, never publishes automatically. Snapshot availability is checked again before saving and publishing. Later source withdrawal does not automatically retract an already published site. Internal evidence and source identifiers are excluded from the public site response.
 
