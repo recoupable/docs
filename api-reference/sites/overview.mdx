@@ -102,6 +102,11 @@ Generation still uses credits for creative direction, assets, implementation and
 ## Publish
 
 After reviewing the draft, send `{"action":"publish","revision":CURRENT_REVISION}` to the same PATCH endpoint, or call `publish_site` with `id` and `revision`.
+
+Publishing automatically prepares Spotify fan connection for an active paid workspace. The standard agreement uses the attributed artist's name; the customer does not need a separate setup step. Missing artist attribution or unavailable Spotify configuration stops paid publication with an actionable error. Unpaid workspaces can publish with email signup; the response reports `fanConnection: "subscription-required"`. Successful paid setup reports `fanConnection: "enabled"`.
+
+For a custom hosted destination, HTTP callers may include `returnUrl` (an HTTPS URL without credentials or fragment) in the publish body. Otherwise an existing connection destination is preserved, or the configured Sites public origin is used. The Recoup editor supplies its actual published URL. The authenticated fan-connection API remains available for external integrations.
+
 The public page is `https://chat.recoupable.dev/s/{id}`.
 
 Unpublish with `action: "unpublish"`, or `unpublish_site`. Agents should publish only when explicitly instructed.
