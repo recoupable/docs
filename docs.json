@@ -439,7 +439,8 @@
           {
             "group": "Sites",
             "pages": [
-              "api-reference/sites/overview"
+              "api-reference/sites/overview",
+              "essentials/site-fan-connection"
             ]
           }
         ]
