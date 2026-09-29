@@ -82,3 +82,11 @@ Operators must apply `20260928010000_site_fan_connections.sql`, configure `SITES
 `GET /api/sites/{siteId}/activity` returns 30-day counts for visits, starts, completions, replays and shares to authorized workspace members. `POST /api/sites/public/{siteId}/activity` accepts `{id: EVENT_UUID, visitId: VISIT_UUID, event: "visit" | "start" | "complete" | "replay" | "share"}`. Reuse the event UUID when retrying. Use a site-scoped visit ID. Never send emails, profile data or arbitrary page contents to this endpoint. These are browser-reported interactions, not verified Spotify listening or a named fan activity history.
 
 Recoup-hosted generated sites use the trusted host bridge: `window.recoup.track(event)` reports approved events; `window.recoup.join()` reveals the trusted signup controls. External sites should implement the equivalent fixed-event transport and keep account credentials on the server.
+
+## Playback for Premium and Free listeners
+
+The hosted player reads the connected Spotify profile's `product` field. Premium listeners use the Spotify Web Playback SDK. Free (`free` or `open`) listeners use the site's saved, verified recording through the same play/pause, seek and volume controls. If the profile cannot be read, its subscription remains unknown; available artist audio keeps playback usable. The player also handles a Spotify SDK account rejection by switching to the recording.
+
+`GET /api/sites/public/{siteId}` includes `playbackAudioUrl`, a fresh signed audio URL valid for one hour, or `null` when no matching verified recording is available. It is resolved from the published site's workspace-owned context request and matching Spotify track; private research and analysis are excluded. Fetch a fresh public response when reloading rather than storing this URL permanently. Publish only audio you have permission to serve to fans.
+
+File playback is not a Spotify stream. Spotify playback subscription, Recoup's paid fan-connection entitlement, and fan capture are separate concerns. A missing audio file must show an honest unavailable state while keeping the game playable.
