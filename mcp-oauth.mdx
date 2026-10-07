@@ -92,9 +92,9 @@ The following paths were reviewed in official client documentation on October 7,
 | Client | Setup and callback guidance |
 | --- | --- |
 | [Perplexity](https://www.perplexity.ai/help-center/en/articles/13915507-adding-custom-remote-connectors) | Add a custom remote connector with OAuth and DCR. Use per-user authentication. Documented callbacks are `https://www.perplexity.ai/rest/connections/oauth_callback` and, for enterprise, `https://enterprise.perplexity.ai/rest/connections/oauth_callback`. |
-| [Claude Code](https://code.claude.com/docs/en/mcp) | Add Recoup as an HTTP server and authenticate through `/mcp`. Automatic registration uses a localhost callback; `--callback-port` can fix its port when required. |
+| [Claude Code](https://code.claude.com/docs/en/mcp) | Add Recoup as an HTTP server and authenticate through `/mcp` inside Claude Code. Automatic registration uses a localhost callback; `--callback-port` can fix its port when required. |
 | [VS Code](https://code.visualstudio.com/api/extension-guides/ai/mcp#authorization) | Add an HTTP server in `.vscode/mcp.json`. OAuth supports DCR; documented callbacks include `http://127.0.0.1:33418` and `https://vscode.dev/redirect`. Preserve the callback supplied by your VS Code surface. |
-| [Gemini CLI](https://geminicli.com/docs/tools/mcp-server/) | Configure the MCP URL as `httpUrl` and authenticate with `/mcp auth recoup`. DCR uses `http://localhost:<random-port>/oauth/callback` unless configured otherwise. |
+| [Gemini CLI](https://geminicli.com/docs/tools/mcp-server/) | Configure the MCP URL as `httpUrl` and authenticate with `/mcp auth recoup` inside the Gemini CLI chat. DCR uses `http://localhost:<random-port>/oauth/callback` unless configured otherwise. |
 | [OpenCode](https://opencode.ai/docs/mcp-servers/) | Add a remote MCP server and run `opencode mcp auth recoup`. OAuth supports automatic registration. Let the client supply its callback. |
 | [Kiro](https://kiro.dev/docs/mcp/configuration/) | Add the remote MCP URL and use DCR. Set `oauth.oauthScopes` to Recoup's scopes; the default identity scopes do not grant Recoup tool access. Use the client's loopback callback. |
 | [n8n](https://docs.n8n.io/integrations/builtin/credentials/mcp/) | Create an MCP OAuth credential with **Use Dynamic Client Registration** enabled. Use the exact callback shown by your n8n instance. |
