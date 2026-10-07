@@ -21,6 +21,7 @@
               "cli",
               "claude",
               "mcp",
+              "mcp-oauth",
               "authentication",
               "credits"
             ]
@@ -491,6 +492,7 @@
       "claude",
       "perplexity",
       "mcp",
+              "mcp-oauth",
       "cursor",
       "vscode"
     ]
