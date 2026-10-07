@@ -21,6 +21,7 @@
               "cli",
               "claude",
               "mcp",
+              "mcp-oauth",
               "authentication",
               "credits"
             ]

@@ -9,11 +9,23 @@ The Recoup API exposes an [MCP](https://modelcontextprotocol.io/) server that AI
 https://api.recoupable.dev/mcp
 ```
 
-## Authentication
+## Connect with your Recoup account
 
-All MCP tools require an API key. Pass it as a Bearer token in the `Authorization` header when connecting to the MCP server.
+OAuth clients can connect without copying an API key. Add this remote MCP URL:
 
-You can get a key from the [API Keys page](https://chat.recoupable.dev/keys).
+```text
+https://api.recoupable.dev/mcp
+```
+
+Choose OAuth with automatic client registration, sign in to your existing Recoup account, review the requested permissions, and select **Allow access**.
+
+See the [OAuth setup guide](/mcp-oauth) for client instructions, available tools, and troubleshooting.
+
+## API-key authentication
+
+API-key clients can still pass a Bearer token in the `Authorization` header. Get a key from [API Keys](https://app.recoupable.dev/keys) and store it in your client's secret manager or environment, never in a prompt or committed configuration.
+
+The sandbox tools below belong to the API-key surface. They are **not** available through the personal-account OAuth connection.
 
 ## Tools
 

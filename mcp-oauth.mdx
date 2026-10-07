@@ -1,0 +1,109 @@
+---
+title: "Connect an agent"
+description: "Connect an MCP client to your personal Recoup account with OAuth."
+---
+
+Use this URL in your agent's remote MCP settings:
+
+```text
+https://api.recoupable.dev/mcp
+```
+
+Select **OAuth** and **automatic registration** (also called Dynamic Client Registration or DCR). Sign in to your existing Recoup account and allow the requested access. No API key or client secret needs to be copied.
+
+## What your agent can do
+
+OAuth currently connects your **personal account**. Organization workspaces are excluded, even if you administer them.
+
+| Permission | Tools |
+| --- | --- |
+| `mcp:read` | `list_artists`, `get_artist_socials`, `get_chats` |
+| `mcp:write` | `create_new_artist`, `update_account_info` |
+
+Only directly owned personal artists are accessible. Writes are checked against the current account, grant, and scope on every call. OAuth does not enable email sending, publishing, record deletion, paid jobs, sandbox execution, or API-key retrieval.
+
+Access lasts up to 30 days. Five-minute access tokens renew through rotating refresh tokens without extending the original grant. Clients must request offline access when needed. After expiry, reconnect and approve a new grant.
+
+## Claude
+
+1. Open **Customize → Connectors → Add custom connector**.
+2. Name it **Recoup** and enter the MCP URL above.
+3. Choose **Sign in now** and **Register automatically**. Do not choose published identity: Recoup does not currently support CIMD registration.
+4. Connect, sign in to Recoup, and select **Allow access**.
+5. In a new chat, ask Claude to list your Recoup artists. Review individual tool-use approvals when prompted.
+
+Claude web was tested against production on October 7, 2026: connection, five-tool discovery, artist read, temporary artist creation/update/readback, artist socials, and another read after access-token expiry passed. The temporary artist was removed afterward.
+
+Claude Desktop 2.26454.0 was also tested on October 7, 2026 using the same authorized connector: tool discovery, artist listing, temporary artist creation/update/readback passed. The test artist was removed afterward. Separate disconnect/reconnect checks are still pending. Local stdio configuration is a different transport. See [Claude's remote connector guide](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp).
+
+## ChatGPT
+
+In the interface tested on October 7, 2026:
+
+1. Open **Plugins → Add → Add custom MCP server**.
+2. Enter **Recoup**, the MCP URL, and **OAuth**.
+3. Under advanced OAuth settings, confirm **Dynamic Client Registration (DCR)** and the requested `mcp:read` / `mcp:write` scopes.
+4. Create the plugin, connect it, and complete Recoup consent.
+5. Start a chat with Recoup enabled and request an artist list.
+
+Discovery and automatic registration reached Recoup consent in production. Token exchange and tool execution in ChatGPT are still under verification. Workspace policy and account access may limit custom integrations. UI labels can differ; see [OpenAI's MCP setup documentation](https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt).
+
+## Codex
+
+```bash
+codex mcp add recoup --url https://api.recoupable.dev/mcp
+codex mcp login recoup --scopes mcp:read,mcp:write
+```
+
+Complete the browser sign-in and consent, then check the connection in your client. The actual Codex CLI login reached Recoup consent; execution tests are pending. Desktop and IDE surfaces must be verified separately. See [Codex MCP configuration](https://developers.openai.com/codex/mcp).
+
+## Cursor
+
+Add a remote server to your project's `.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "recoup": {
+      "url": "https://api.recoupable.dev/mcp"
+    }
+  }
+}
+```
+
+Open Cursor's MCP settings and authenticate. Cursor desktop and web/agent journeys have not yet been verified against Recoup production. See [Cursor's MCP guide](https://cursor.com/docs/mcp) for the current setup and workspace restrictions.
+
+## Other agents and callbacks
+
+Use a remote Streamable HTTP MCP client supporting OAuth discovery, authorization code flow with PKCE S256, and DCR. Recoup publishes:
+
+- Resource metadata: `https://api.recoupable.dev/.well-known/oauth-protected-resource/mcp`
+- Authorization-server metadata: `https://api.recoupable.dev/.well-known/oauth-authorization-server/api/oauth`
+- Resource: `https://api.recoupable.dev/mcp`
+
+Register the exact callback used by your client. Registration binds callbacks to that client; there is no shared wildcard callback list. Hosted callbacks use HTTPS. Native clients use validated loopback callbacks. Do not substitute `localhost` for `127.0.0.1` or edit a callback after registration.
+
+A generic MCP SDK client has passed production reads, writes, refresh rotation, and revocation. That does not prove every agent surface. CIMD network registration and organization grants remain unavailable.
+
+## Disconnect
+
+Open [Connected agents](https://app.recoupable.dev/oauth/connections) and disconnect the selected agent. Future requests and refreshes stop; already completed changes remain. Other connections are independent. Reconnect from the agent when you want to grant access again.
+
+## Troubleshooting
+
+| Symptom | What to do |
+| --- | --- |
+| Custom connector option missing | Check your client's plan and workspace-admin permissions. |
+| Published identity / CIMD unavailable | Choose automatic registration / DCR. |
+| Connection request expired | Restart Connect from the client; do not reuse an old consent URL. |
+| Wrong Recoup account | Use Switch before approving. |
+| Connected but no tool access | Check selected scopes, individual tool approvals, and whether the grant expired or was revoked. |
+| Organization artist missing | The first OAuth release supports personal artists only. |
+| `401` after disconnect | Expected: reconnect and approve a new grant. |
+| `429` | Respect `Retry-After`; avoid repeated registration attempts. |
+| `503` | Retry later; do not weaken authentication or callback checks. |
+| Write timed out | Read back the target before retrying. Artist creation is not guaranteed idempotent; an automatic retry may create a duplicate. |
+
+For clients without OAuth, [API-key authentication](/mcp) remains available. Keep keys out of model prompts and shared configuration. A stdio-only client needs a separately maintained adapter; the remote URL is not itself a stdio command.
+
+For help, contact [agent@recoupable.dev](mailto:agent@recoupable.dev). Include the client name, time, and error text; never include tokens, passwords, or API keys.
