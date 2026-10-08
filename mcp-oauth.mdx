@@ -23,7 +23,7 @@ The consent screen explains that this permission includes reading, creating, edi
 | `mcp:read` | Original personal-only `list_artists`, `get_artist_socials`, `get_chats` |
 | `mcp:write` | Original personal-only `create_new_artist`, `update_account_info` |
 
-Existing limited grants do **not** expand automatically. Reconnect with `mcp:tools`, review the broader permission, and refresh your client's tool catalog. Clients requesting only `mcp:read` / `mcp:write` keep the five-tool experience.
+Existing limited grants do **not** expand automatically. Reconnect with `mcp:tools`, review the broader permission, and refresh your client's tool catalog. Clients requesting the `mcp:read` + `mcp:write` pair keep the five-tool experience.
 
 OAuth never exposes `get_api_key`: it does not return bearer credentials to the model. Composio integrations and sandbox execution are separate from the registered Recoup MCP catalog.
 
@@ -136,3 +136,5 @@ Open [Connected agents](https://app.recoupable.dev/oauth/connections) and discon
 For clients without OAuth, [API-key authentication](/mcp) remains available. Keep keys out of model prompts and shared configuration. A stdio-only client needs a separately maintained adapter; the remote URL is not itself a stdio command.
 
 For help, contact [agent@recoupable.dev](mailto:agent@recoupable.dev). Include the client name, time, and error text; never include tokens, passwords, or API keys.
+
+Full OAuth tool calls share account-level limits of 120 calls per minute and 30 calls per tool per minute across connected clients. Chat compaction accepts up to 50 chats per call.
