@@ -22,6 +22,7 @@
               "claude",
               "mcp",
               "mcp-oauth",
+              "mcp-cimd",
               "authentication",
               "credits"
             ]
