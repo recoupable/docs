@@ -1,6 +1,6 @@
 ---
 title: "Connect an agent"
-description: "Connect an MCP client to your personal Recoup account with OAuth."
+description: "Connect an MCP client to Recoup with OAuth and account-authorized tools."
 ---
 
 Use this URL in your agent's remote MCP settings:
@@ -13,14 +13,23 @@ Select **OAuth**. Recoup supports [published client metadata (CIMD)](/mcp-cimd) 
 
 ## What your agent can do
 
-OAuth currently connects your **personal account**. Organization workspaces are excluded, even if you administer them.
+Request **`mcp:tools`** for the full catalog: **51 tools** covering artists and socials, catalogs, chats, scheduled tasks, research/search, Spotify, YouTube revenue, image/audio/video operations, files, Context, Sites, email and support.
 
-| Permission | Tools |
+The consent screen explains that this permission includes reading, creating, editing and deleting data, sending messages, publishing content, and using paid generation tools. It covers personal and organization workspaces your account can access. Resource ownership is checked on each call. Private conversations and scheduled tasks remain account-bound.
+
+| Permission | Access |
 | --- | --- |
-| `mcp:read` | `list_artists`, `get_artist_socials`, `get_chats` |
-| `mcp:write` | `create_new_artist`, `update_account_info` |
+| `mcp:tools` | Full business-tool catalog across accessible workspaces |
+| `mcp:read` | Original personal-only `list_artists`, `get_artist_socials`, `get_chats` |
+| `mcp:write` | Original personal-only `create_new_artist`, `update_account_info` |
 
-Only directly owned personal artists are accessible. Writes are checked against the current account, grant, and scope on every call. OAuth does not enable email sending, publishing, record deletion, paid jobs, sandbox execution, or API-key retrieval.
+Existing limited grants do **not** expand automatically. Reconnect with `mcp:tools`, review the broader permission, and refresh your client's tool catalog. Clients requesting only `mcp:read` / `mcp:write` keep the five-tool experience.
+
+OAuth never exposes `get_api_key`: it does not return bearer credentials to the model. Composio integrations and sandbox execution are separate from the registered Recoup MCP catalog.
+
+Email uses the same recipient restrictions as the API and checks any referenced conversation's owner. Review recipients and content before sending. `create_knowledge_base` and `generate_txt_file` publish to permanent public Arweave storage: use only content explicitly approved for that destination, never confidential material. Video generation returns an account-bound `id`; pass that entire value as `video_id` to the retrieval tools. Older raw provider video IDs cannot be used with OAuth. Task-run status requires verifiable caller ownership and returns status fields, not raw provider payloads or logs.
+
+The platform verification results below describe the original five-tool catalog unless explicitly stated otherwise. They do not establish full-catalog production verification.
 
 New connections stay authorized until you disconnect them, including when inactive. Five-minute access tokens renew through rotating refresh tokens. Disconnect an agent from [Connected agents](https://app.recoupable.dev/oauth/connections) to revoke its access and refresh tokens immediately.
 
@@ -44,7 +53,7 @@ In the interface tested on October 7, 2026:
 
 1. Open **Plugins → Add → Add custom MCP server**.
 2. Enter **Recoup**, the MCP URL, and **OAuth**.
-3. Under advanced OAuth settings, confirm **Dynamic Client Registration (DCR)** and the requested `mcp:read` / `mcp:write` scopes.
+3. Under advanced OAuth settings, confirm **Dynamic Client Registration (DCR)** and request `mcp:tools` for full access.
 4. Create the plugin, connect it, and complete Recoup consent.
 5. Start a chat with Recoup enabled and request an artist list.
 
@@ -54,7 +63,7 @@ ChatGPT web was tested against production on October 7, 2026: OAuth login, artis
 
 ```bash
 codex mcp add recoup --url https://api.recoupable.dev/mcp
-codex mcp login recoup --scopes mcp:read,mcp:write
+codex mcp login recoup --scopes mcp:tools
 ```
 
 Complete the browser sign-in and consent, then ask Codex to list your Recoup artists. Codex CLI 0.161.0 passed production OAuth login and an actual `list_artists` call on October 7, 2026. Version 0.145.0 failed issuer-response validation; upgrade if using that version. Writes, refresh, and disconnect/reconnect remain unverified in Codex. Desktop and IDE surfaces must be verified separately. See [Codex MCP configuration](https://developers.openai.com/codex/mcp).
@@ -85,11 +94,11 @@ Use a remote Streamable HTTP MCP client supporting OAuth discovery, authorizatio
 
 Register the exact callback used by your client. Registration binds callbacks to that client; there is no shared wildcard callback list. Hosted callbacks use HTTPS. Native clients use validated loopback callbacks. Do not substitute `localhost` for `127.0.0.1` or edit a callback after registration.
 
-A generic MCP SDK client has passed production reads, writes, refresh rotation, and revocation. That does not prove every agent surface. CIMD uses the same consent and permissions; see [CIMD requirements and verification status](/mcp-cimd). Organization grants remain unavailable.
+A generic MCP SDK client has passed production reads, writes, refresh rotation, and revocation. That does not prove every agent surface. CIMD uses the same consent and permissions; see [CIMD requirements and verification status](/mcp-cimd). Full-tool consent includes accessible organization workspaces; the original limited grants remain personal-only.
 
 ### Additional client setup paths
 
-The following paths were reviewed in official client documentation on October 7, 2026. **They have not been tested end to end against Recoup.** Use automatic registration and request `mcp:read` and, when needed, `mcp:write`. The client registers its callback; you do not need a Recoup platform-specific callback allowlist.
+The following paths were reviewed in official client documentation on October 7, 2026. **They have not been tested end to end against Recoup.** Use automatic registration and request `mcp:tools` for full access, or `mcp:read` / `mcp:write` for the limited personal tools. The client registers its callback; you do not need a Recoup platform-specific callback allowlist.
 
 | Client | Setup and callback guidance |
 | --- | --- |
@@ -116,8 +125,9 @@ Open [Connected agents](https://app.recoupable.dev/oauth/connections) and discon
 | Published identity / CIMD unavailable or fails | Check the [metadata requirements](/mcp-cimd), or choose automatic registration / DCR if your client offers it. |
 | Connection request expired | Restart Connect from the client; do not reuse an old consent URL. |
 | Wrong Recoup account | Use Switch before approving. |
+| Still seeing only five tools | Reconnect requesting `mcp:tools`, approve full access, then refresh the client tool catalog. |
 | Connected but no tool access | Check selected scopes, individual tool approvals, and whether the grant expired or was revoked. |
-| Organization artist missing | The first OAuth release supports personal artists only. |
+| Organization artist missing | Reconnect with `mcp:tools` and verify your organization membership. |
 | `401` after disconnect | Expected: reconnect and approve a new grant. |
 | `429` | Respect `Retry-After`; avoid repeated registration attempts. |
 | `503` | Retry later; do not weaken authentication or callback checks. |
