@@ -22,7 +22,9 @@ OAuth currently connects your **personal account**. Organization workspaces are 
 
 Only directly owned personal artists are accessible. Writes are checked against the current account, grant, and scope on every call. OAuth does not enable email sending, publishing, record deletion, paid jobs, sandbox execution, or API-key retrieval.
 
-Access lasts up to 30 days. Five-minute access tokens renew through rotating refresh tokens without extending the original grant. Clients must request offline access when needed. After expiry, reconnect and approve a new grant.
+New connections stay authorized until you disconnect them, including when inactive. Five-minute access tokens renew through rotating refresh tokens. Disconnect an agent from [Connected agents](https://app.recoupable.dev/oauth/connections) to revoke its access and refresh tokens immediately.
+
+Connections approved under the previous 30-day policy keep their original expiration. Reconnect once to approve access until disconnected.
 
 ## Claude
 
