@@ -9,7 +9,7 @@ Use this URL in your agent's remote MCP settings:
 https://api.recoupable.dev/mcp
 ```
 
-Select **OAuth** and **automatic registration** (also called Dynamic Client Registration or DCR). Sign in to your existing Recoup account and allow the requested access. No API key or client secret needs to be copied.
+Select **OAuth**. Recoup supports [published client metadata (CIMD)](/mcp-cimd) and **automatic registration** (also called Dynamic Client Registration or DCR). Sign in to your existing Recoup account and allow the requested access. No API key or client secret needs to be copied.
 
 ## What your agent can do
 
@@ -28,7 +28,7 @@ Access lasts up to 30 days. Five-minute access tokens renew through rotating ref
 
 1. Open **Customize → Connectors → Add custom connector**.
 2. Name it **Recoup** and enter the MCP URL above.
-3. Choose **Sign in now** and **Register automatically**. Do not choose published identity: Recoup does not currently support CIMD registration.
+3. Choose **Sign in now**. **Register automatically** uses DCR; **published identity** uses CIMD. The production client tests below used DCR.
 4. Connect, sign in to Recoup, and select **Allow access**.
 5. In a new chat, ask Claude to list your Recoup artists. Review individual tool-use approvals when prompted.
 
@@ -83,7 +83,7 @@ Use a remote Streamable HTTP MCP client supporting OAuth discovery, authorizatio
 
 Register the exact callback used by your client. Registration binds callbacks to that client; there is no shared wildcard callback list. Hosted callbacks use HTTPS. Native clients use validated loopback callbacks. Do not substitute `localhost` for `127.0.0.1` or edit a callback after registration.
 
-A generic MCP SDK client has passed production reads, writes, refresh rotation, and revocation. That does not prove every agent surface. CIMD network registration and organization grants remain unavailable.
+A generic MCP SDK client has passed production reads, writes, refresh rotation, and revocation. That does not prove every agent surface. CIMD uses the same consent and permissions; see [CIMD requirements and verification status](/mcp-cimd). Organization grants remain unavailable.
 
 ### Additional client setup paths
 
@@ -111,7 +111,7 @@ Open [Connected agents](https://app.recoupable.dev/oauth/connections) and discon
 | Symptom | What to do |
 | --- | --- |
 | Custom connector option missing | Check your client's plan and workspace-admin permissions. |
-| Published identity / CIMD unavailable | Choose automatic registration / DCR. |
+| Published identity / CIMD unavailable or fails | Check the [metadata requirements](/mcp-cimd), or choose automatic registration / DCR if your client offers it. |
 | Connection request expired | Restart Connect from the client; do not reuse an old consent URL. |
 | Wrong Recoup account | Use Switch before approving. |
 | Connected but no tool access | Check selected scopes, individual tool approvals, and whether the grant expired or was revoked. |
