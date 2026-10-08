@@ -17,7 +17,7 @@
     "/api/organizations/professionals": {
       "get": {
         "summary": "List professional roster",
-        "description": "List organization-private songwriter/producer records. Names are discovery candidates, never identity proof. Follow next_cursor until null to inspect the complete roster. Membership is rechecked on every page; responses are private and not cached. API-key MCP equivalent: list_professional_roster. Not exposed through delegated OAuth MCP.",
+        "description": "List organization-private songwriter/producer records. Names are discovery candidates, never identity proof. Follow next_cursor until null to inspect the complete roster. Membership is rechecked on every page; responses are private and not cached. Legacy MCP equivalent (API key or Privy token): list_professional_roster. Not exposed through delegated OAuth MCP.",
         "security": [
           {
             "bearerAuth": []
@@ -138,7 +138,7 @@
       },
       "post": {
         "summary": "Confirm professional roster addition",
-        "description": "Requires explicit operator identity confirmation and organization roster intent. Use new only after confirming a distinct professional, including resolving same-name candidates; never infer identity from a name. Use existing with a professional_id from this organization to add roles without renaming. Both songwriter and producer can belong to one record. This operation creates no login account, shared canonical identity, catalog rights, enrichment job, or cross-workspace context. Research/name intake alone never calls this operation. Membership is rechecked before idempotency replay. API-key MCP equivalent: confirm_professional_roster. Not exposed through delegated OAuth MCP. Returns the original saved response on retry, including its created flag and original status (201 for a new record, 200 for an existing record).",
+        "description": "Requires explicit operator identity confirmation and organization roster intent. Use new only after confirming a distinct professional, including resolving same-name candidates; never infer identity from a name. Use existing with a professional_id from this organization to add roles without renaming. Both songwriter and producer can belong to one record. This operation creates no login account, shared canonical identity, catalog rights, enrichment job, or cross-workspace context. Research/name intake alone never calls this operation. Membership is rechecked before idempotency replay. Legacy MCP equivalent (API key or Privy token): confirm_professional_roster. Not exposed through delegated OAuth MCP. Returns the original saved response on retry, including its created flag and original status (201 for a new record, 200 for an existing record).",
         "security": [
           {
             "bearerAuth": []
