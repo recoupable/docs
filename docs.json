@@ -372,7 +372,9 @@
               "api-reference/organizations/remove-member",
               "api-reference/organizations/list-domains",
               "api-reference/organizations/add-domain",
-              "api-reference/organizations/remove-domain"
+              "api-reference/organizations/remove-domain",
+              "api-reference/organizations/professionals",
+              "api-reference/organizations/professionals-confirm"
             ]
           },
           {
