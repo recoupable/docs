@@ -17,7 +17,7 @@ A client name or logo is self-declared metadata, not proof of vendor endorsement
 
 - Serve JSON with HTTP 200 over public HTTPS on port 443. Redirects are rejected.
 - Set `client_id` to the exact document URL and include `client_name` and `redirect_uris`.
-- Use a document URL without credentials, fragments, or dot path segments.
+- Use a document URL with an explicit path and without credentials, fragments, or dot path segments.
 - Use authorization code flow with PKCE S256 and Recoup's `mcp:read` / `mcp:write` scopes.
 - Public clients should set `token_endpoint_auth_method` to `none`. Never publish client secrets or private keys.
 - Register exact callbacks. Hosted HTTP callbacks are rejected; native loopback callbacks support dynamic ports. `localhost` and `127.0.0.1` remain different hosts.
