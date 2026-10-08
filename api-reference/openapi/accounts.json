@@ -17,7 +17,7 @@
     "/api/organizations/professionals": {
       "get": {
         "summary": "List professional roster",
-        "description": "List organization-private songwriter/producer records. Names are discovery candidates, never identity proof. Follow next_cursor until null to inspect the complete roster. Membership is rechecked on every page; responses are private and not cached. MCP equivalent: list_professional_roster.",
+        "description": "List organization-private songwriter/producer records. Names are discovery candidates, never identity proof. Follow next_cursor until null to inspect the complete roster. Membership is rechecked on every page; responses are private and not cached. API-key MCP equivalent: list_professional_roster. Not exposed through delegated OAuth MCP.",
         "security": [
           {
             "bearerAuth": []
@@ -66,9 +66,8 @@
                       }
                     },
                     "next_cursor": {
-                      "type": "string",
-                      "format": "uuid",
-                      "nullable": true
+                      "type": ["string", "null"],
+                      "format": "uuid"
                     }
                   }
                 }
@@ -76,7 +75,7 @@
             }
           },
           "400": {
-            "description": "Invalid or unconfirmed request",
+            "description": "Invalid organization ID or cursor",
             "content": {
               "application/json": {
                 "schema": {
@@ -121,7 +120,7 @@
             }
           },
           "503": {
-            "description": "Unavailable storage or unconfirmed response; retry with the same key and input",
+            "description": "Unavailable storage or invalid response; retry the same page",
             "content": {
               "application/json": {
                 "schema": {
@@ -139,7 +138,7 @@
       },
       "post": {
         "summary": "Confirm professional roster addition",
-        "description": "Requires explicit operator identity confirmation and organization roster intent. Use new only after confirming a distinct professional, including resolving same-name candidates; never infer identity from a name. Use existing with a professional_id from this organization to add roles without renaming. Both songwriter and producer can belong to one record. This operation creates no login account, shared canonical identity, catalog rights, enrichment job, or cross-workspace context. Research/name intake alone never calls this operation. Membership is rechecked before idempotency replay. MCP equivalent: confirm_professional_roster. Returns the original saved response on retry, including its created flag and 201 status.",
+        "description": "Requires explicit operator identity confirmation and organization roster intent. Use new only after confirming a distinct professional, including resolving same-name candidates; never infer identity from a name. Use existing with a professional_id from this organization to add roles without renaming. Both songwriter and producer can belong to one record. This operation creates no login account, shared canonical identity, catalog rights, enrichment job, or cross-workspace context. Research/name intake alone never calls this operation. Membership is rechecked before idempotency replay. API-key MCP equivalent: confirm_professional_roster. Not exposed through delegated OAuth MCP. Returns the original saved response on retry, including its created flag and original status (201 for a new record, 200 for an existing record).",
         "security": [
           {
             "bearerAuth": []
