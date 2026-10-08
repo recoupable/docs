@@ -32,6 +32,8 @@ The implementation has passed local production-provider tests for CIMD discovery
 
 A local smoke test also retrieved the official Claude and Claude Code documents over real DNS/TLS, resolved them using the production provider, and checked Claude Code's dynamic loopback ports. This is metadata compatibility evidence, not a completed production user login through CIMD. The client-specific production results on [Connect an agent](/mcp-oauth) were obtained using DCR.
 
+Production verification on October 7, 2026 confirmed CIMD discovery with DCR still available and successfully started OAuth authorization interactions using the official Claude and Claude Code client IDs, including a dynamic localhost callback port. Completing user sign-in and a tool call through CIMD in production remains unverified.
+
 If a metadata host is unavailable or blocks server requests, CIMD fails closed. Use DCR if the client offers that choice, or retry after its metadata endpoint is restored.
 
 See the [MCP authorization specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization) and [CIMD draft 02](https://www.ietf.org/archive/id/draft-ietf-oauth-client-id-metadata-document-02.html). CIMD remains a draft specification; Recoup's provider currently implements draft 02.
