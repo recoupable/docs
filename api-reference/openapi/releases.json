@@ -14,6 +14,331 @@
     }
   ],
   "paths": {
+    "/api/catalogs/{catalogId}/playcount-history": {
+      "get": {
+        "summary": "Read catalog playcount history and period comparisons",
+        "description": "Read-only, store-backed public Spotify observations for current catalog membership, including unmeasured recordings. No collection, provider calls, charges or cron activation. API keys and Privy bearer tokens supported; identity overrides, unknown and duplicate query parameters rejected. Compare two adjacent equal observation periods with complete daily coverage and at most one hour capture drift. Missing days, invalid counts, negative corrections and excessive drift suppress growth. Real zero values remain zero; zero prior movement produces null percentage growth. Summaries apply only to this page; increment page while pagination.has_more. Catalog edits can change paging. Legacy rows lack historical provider counter identity and upstream update time: comparisons are provisional, not verified same-counter history, exact daily streams, royalties or causal marketing uplift. This endpoint does not import private artist analytics. Standard MCP tool: get_catalog_playcount_history; unavailable for delegated OAuth pending organization-grant audit. Proposed endpoint requires the linked API feature release; documentation is not proof of production availability.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "catalogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Catalog owned by the authenticated account or an organization it currently belongs to."
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Current UTC observation-period start. Previous period immediately precedes it. Boundaries use the latest observation on that date, not midnight stream totals."
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 31
+            },
+            "description": "Equal length of both periods. Every UTC observation day through the final boundary must be finished and captured."
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000,
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 25,
+              "default": 25
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Saved observations and page-scoped comparison coverage",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "private, no-store"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success"
+                      ]
+                    },
+                    "catalog_id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "platform": {
+                      "type": "string",
+                      "enum": [
+                        "spotify"
+                      ]
+                    },
+                    "metric": {
+                      "type": "string",
+                      "enum": [
+                        "platform_displayed_play_count"
+                      ]
+                    },
+                    "data_source": {
+                      "type": "string",
+                      "enum": [
+                        "apify_spotify_playcount"
+                      ]
+                    },
+                    "semantics": {
+                      "type": "string"
+                    },
+                    "source_timestamp_available": {
+                      "type": "boolean",
+                      "enum": [
+                        false
+                      ]
+                    },
+                    "provider_identity_available": {
+                      "type": "boolean",
+                      "enum": [
+                        false
+                      ]
+                    },
+                    "comparison_quality": {
+                      "type": "string",
+                      "enum": [
+                        "legacy_recording_series_identity_unverified"
+                      ]
+                    },
+                    "missing_observation_reason_available": {
+                      "type": "boolean",
+                      "enum": [
+                        false
+                      ]
+                    },
+                    "collection_enabled": {
+                      "type": "boolean",
+                      "enum": [
+                        false
+                      ]
+                    },
+                    "periods": {
+                      "type": "object",
+                      "properties": {
+                        "previous": {
+                          "type": "object",
+                          "properties": {
+                            "start": {
+                              "type": "string",
+                              "format": "date"
+                            },
+                            "end": {
+                              "type": "string",
+                              "format": "date"
+                            }
+                          }
+                        },
+                        "current": {
+                          "type": "object",
+                          "properties": {
+                            "start": {
+                              "type": "string",
+                              "format": "date"
+                            },
+                            "end": {
+                              "type": "string",
+                              "format": "date"
+                            }
+                          }
+                        },
+                        "days": {
+                          "type": "integer"
+                        },
+                        "timezone": {
+                          "type": "string",
+                          "enum": [
+                            "UTC"
+                          ]
+                        },
+                        "boundary_semantics": {
+                          "type": "string"
+                        },
+                        "alignment_tolerance_seconds": {
+                          "type": "integer",
+                          "enum": [
+                            3600
+                          ]
+                        }
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer"
+                        },
+                        "limit": {
+                          "type": "integer"
+                        },
+                        "total_count": {
+                          "type": "integer"
+                        },
+                        "total_pages": {
+                          "type": "integer"
+                        },
+                        "has_more": {
+                          "type": "boolean"
+                        }
+                      }
+                    },
+                    "summary_scope": {
+                      "type": "string",
+                      "enum": [
+                        "page"
+                      ]
+                    },
+                    "comparable_recordings": {
+                      "type": "integer"
+                    },
+                    "recordings": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "isrc": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "state": {
+                            "type": "string",
+                            "enum": [
+                              "comparable",
+                              "incomplete",
+                              "counter_correction",
+                              "invalid_observation",
+                              "unaligned_observations"
+                            ]
+                          },
+                          "observations": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "date": {
+                                  "type": "string",
+                                  "format": "date"
+                                },
+                                "captured_at": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                },
+                                "value": {
+                                  "type": "number"
+                                }
+                              }
+                            }
+                          },
+                          "missing_days": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "format": "date"
+                            }
+                          },
+                          "invalid_days": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "format": "date"
+                            }
+                          },
+                          "correction_days": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "format": "date"
+                            }
+                          },
+                          "previous_change": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "current_change": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "absolute_growth": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "percentage_growth": {
+                            "type": "number",
+                            "nullable": true,
+                            "description": "Percentage change in period counter movement; null for a zero baseline or non-comparable series."
+                          },
+                          "zero_baseline": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or unfinished observation-period query"
+          },
+          "401": {
+            "description": "Missing or invalid credentials"
+          },
+          "404": {
+            "description": "Catalog missing or inaccessible"
+          },
+          "503": {
+            "description": "Store unavailable or history exceeds bounded read; use a shorter period"
+          }
+        }
+      }
+    },
     "/api/tasks": {
       "get": {
         "description": "Retrieve scheduled tasks. Each task includes `recent_runs` (last 5 runs), `upcoming` (next scheduled run times) sourced directly from the Trigger.dev API, and `owner_email` when an account email exists for the task owner. Supports filtering by id, account_id, or artist_account_id.",
