@@ -151,7 +151,10 @@
               "api-reference/songs/catalog-valuations",
               "api-reference/songs/catalog-songs",
               "api-reference/songs/catalog-songs-add",
-              "api-reference/songs/catalog-songs-delete"
+              "api-reference/songs/catalog-songs-delete",
+              "api-reference/songs/catalog-streams",
+              "api-reference/songs/catalog-stream-tracking",
+              "api-reference/songs/update-catalog-stream-tracking"
             ]
           },
           {

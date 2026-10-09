@@ -14,6 +14,617 @@
     }
   ],
   "paths": {
+    "/api/catalogs/{catalogId}/streams": {
+      "get": {
+        "summary": "Read daily catalog streams",
+        "description": "Saved Luminate worldwide aggregate calendar-day streams across reporting DSPs, not Spotify-only or royalty statements. Includes current catalog recordings even when unmeasured, latest collection status, per-recording daily rows/retrieval time, missing dates, equal-period totals and growth. Newer source corrections win; historical versions remain stored. Missing days and changed provider recording identity suppress comparisons. Zero baseline yields null percentage. Page through pagination.has_more; summary_scope is page. Reads make no provider requests. Standard MCP: get_catalog_streams. Requires API and database feature release; unavailable to delegated OAuth. Unchanged daily values reuse their saved versions; new dates and corrections are appended, with fresh coverage/provenance receipts for every run.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "catalogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Catalog owned by the authenticated account or an organization it currently belongs to."
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Current period start, inclusive. Previous period has the same length and immediately precedes it."
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 31
+            },
+            "description": "Equal period length; end dates are exclusive. Missing days suppress growth."
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000,
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 25,
+              "default": 25
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Saved history and comparisons",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "catalog_id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "provider": {
+                      "type": "string",
+                      "enum": [
+                        "luminate"
+                      ]
+                    },
+                    "platform": {
+                      "type": "string",
+                      "enum": [
+                        "all_dsps"
+                      ]
+                    },
+                    "metric": {
+                      "type": "string",
+                      "enum": [
+                        "daily_streams"
+                      ]
+                    },
+                    "latest_run": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "description": "Run status, per-ISRC coverage, errors, window and completion timestamp."
+                    },
+                    "territory": {
+                      "type": "string",
+                      "enum": [
+                        "worldwide"
+                      ]
+                    },
+                    "semantics": {
+                      "type": "string"
+                    },
+                    "source_updated_at": {
+                      "type": "null"
+                    },
+                    "periods": {
+                      "type": "object",
+                      "properties": {
+                        "previous": {
+                          "type": "object",
+                          "properties": {
+                            "start": {
+                              "type": "string",
+                              "format": "date"
+                            },
+                            "end_exclusive": {
+                              "type": "string",
+                              "format": "date"
+                            }
+                          }
+                        },
+                        "current": {
+                          "type": "object",
+                          "properties": {
+                            "start": {
+                              "type": "string",
+                              "format": "date"
+                            },
+                            "end_exclusive": {
+                              "type": "string",
+                              "format": "date"
+                            }
+                          }
+                        },
+                        "days": {
+                          "type": "integer"
+                        },
+                        "timezone": {
+                          "type": "string",
+                          "enum": [
+                            "UTC"
+                          ]
+                        }
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer"
+                        },
+                        "limit": {
+                          "type": "integer"
+                        },
+                        "total_count": {
+                          "type": "integer"
+                        },
+                        "has_more": {
+                          "type": "boolean"
+                        }
+                      }
+                    },
+                    "summary_scope": {
+                      "type": "string",
+                      "enum": [
+                        "page"
+                      ]
+                    },
+                    "recordings": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "isrc": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "provider_recording_id": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "retrieved_at": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "format": "date-time"
+                          },
+                          "days": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "date": {
+                                  "type": "string",
+                                  "format": "date"
+                                },
+                                "streams": {
+                                  "type": [
+                                    "integer",
+                                    "null"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "date",
+                                "streams"
+                              ]
+                            }
+                          },
+                          "state": {
+                            "type": "string",
+                            "enum": [
+                              "comparable",
+                              "incomplete",
+                              "unfinished_period",
+                              "invalid_observation"
+                            ]
+                          },
+                          "missing_days": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "format": "date"
+                            }
+                          },
+                          "previous_streams": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ]
+                          },
+                          "current_streams": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ]
+                          },
+                          "absolute_growth": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ]
+                          },
+                          "percentage_growth": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "zero_baseline": {
+                            "type": "boolean"
+                          },
+                          "latest_attempt": {
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "description": "Fresh recording-level receipt for the latest run, including state, observed_days, retrieved_at, source_hash and provider_recording_id. Observation retrieved_at is when its retained version was introduced."
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or incomplete calendar period"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "404": {
+            "description": "Catalog not accessible"
+          },
+          "503": {
+            "description": "Storage, configuration or dispatch unavailable"
+          }
+        }
+      }
+    },
+    "/api/catalogs/{catalogId}/stream-tracking": {
+      "get": {
+        "summary": "Inspect daily catalog tracking",
+        "description": "Read enabled state and latest run coverage without starting provider work. Standard MCP manage_catalog_stream_tracking with action=status. Unchanged daily values reuse their saved versions; new dates and corrections are appended, with fresh coverage/provenance receipts for every run.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "catalogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Catalog owned by the authenticated account or an organization it currently belongs to."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Collection status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "catalog_id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "provider": {
+                      "type": "string",
+                      "enum": [
+                        "luminate"
+                      ]
+                    },
+                    "platform": {
+                      "type": "string",
+                      "enum": [
+                        "all_dsps"
+                      ]
+                    },
+                    "metric": {
+                      "type": "string",
+                      "enum": [
+                        "daily_streams"
+                      ]
+                    },
+                    "latest_run": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "description": "Run status, per-ISRC coverage, errors, window and completion timestamp."
+                    },
+                    "territory": {
+                      "type": "string",
+                      "enum": [
+                        "worldwide"
+                      ]
+                    },
+                    "tracking": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "properties": {
+                        "catalog_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "owner_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "enabled": {
+                          "type": "boolean"
+                        },
+                        "revision": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    },
+                    "collection": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "properties": {
+                        "state": {
+                          "type": "string",
+                          "enum": [
+                            "started",
+                            "already_claimed_or_disabled"
+                          ]
+                        },
+                        "run_id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "uuid"
+                        },
+                        "workflow_run_id": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or incomplete calendar period"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "404": {
+            "description": "Catalog not accessible"
+          },
+          "503": {
+            "description": "Storage, configuration or dispatch unavailable"
+          }
+        }
+      },
+      "post": {
+        "summary": "Control daily catalog tracking",
+        "description": "Enable starts initial 62-day backfill and daily refresh at 09:00 UTC. Source window ends two UTC dates before the run date to allow reporting lag; source freshness is not guaranteed. New recordings join the next run. Maximum 250 recordings per catalog; larger catalogs fail before provider calls. Disable fences future writes and retains saved history. Refresh claims at most one run per UTC day and subscription revision; repeated enable is idempotent. If today was already claimed, collection.state=already_claimed_or_disabled and no duplicate provider work starts; failed claims can run again the next day. Failures are isolated by recording and exposed in coverage. Standard MCP manage_catalog_stream_tracking. Enabled tracking makes asynchronous provider calls. API-key/Privy bearer auth supported; identity overrides rejected. Requires API and database feature release. Unchanged daily values reuse their saved versions; new dates and corrections are appended, with fresh coverage/provenance receipts for every run.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "catalogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Catalog owned by the authenticated account or an organization it currently belongs to."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "action"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "enable",
+                      "disable",
+                      "refresh"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tracking state and asynchronous collection receipt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "catalog_id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "provider": {
+                      "type": "string",
+                      "enum": [
+                        "luminate"
+                      ]
+                    },
+                    "platform": {
+                      "type": "string",
+                      "enum": [
+                        "all_dsps"
+                      ]
+                    },
+                    "metric": {
+                      "type": "string",
+                      "enum": [
+                        "daily_streams"
+                      ]
+                    },
+                    "latest_run": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "description": "Run status, per-ISRC coverage, errors, window and completion timestamp."
+                    },
+                    "territory": {
+                      "type": "string",
+                      "enum": [
+                        "worldwide"
+                      ]
+                    },
+                    "tracking": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "properties": {
+                        "catalog_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "owner_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "enabled": {
+                          "type": "boolean"
+                        },
+                        "revision": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    },
+                    "collection": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "properties": {
+                        "state": {
+                          "type": "string",
+                          "enum": [
+                            "started",
+                            "already_claimed_or_disabled"
+                          ]
+                        },
+                        "run_id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "uuid"
+                        },
+                        "workflow_run_id": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Tracking must be enabled before refresh"
+          },
+          "400": {
+            "description": "Invalid input or incomplete calendar period"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "404": {
+            "description": "Catalog not accessible"
+          },
+          "503": {
+            "description": "Storage, configuration or dispatch unavailable"
+          }
+        }
+      }
+    },
     "/api/catalogs/{catalogId}/playcount-history": {
       "get": {
         "summary": "Read catalog playcount history and period comparisons",
