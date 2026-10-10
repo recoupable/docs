@@ -176,14 +176,23 @@
                                 "maximum": 62
                               },
                               "retrieved_at": {
-                                "type": "string",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
                                 "format": "date-time"
                               },
                               "source_hash": {
-                                "type": "string"
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
                               },
                               "provider_recording_id": {
-                                "type": "string"
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
                               }
                             }
                           }
@@ -396,14 +405,23 @@
                                 "maximum": 62
                               },
                               "retrieved_at": {
-                                "type": "string",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
                                 "format": "date-time"
                               },
                               "source_hash": {
-                                "type": "string"
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
                               },
                               "provider_recording_id": {
-                                "type": "string"
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
                               }
                             },
                             "description": "Fresh recording-level receipt for the latest run, including state, observed_days, retrieved_at, source_hash and provider_recording_id. Observation retrieved_at is when its retained version was introduced."
@@ -552,14 +570,23 @@
                                 "maximum": 62
                               },
                               "retrieved_at": {
-                                "type": "string",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
                                 "format": "date-time"
                               },
                               "source_hash": {
-                                "type": "string"
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
                               },
                               "provider_recording_id": {
-                                "type": "string"
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
                               }
                             }
                           }
@@ -805,14 +832,23 @@
                                 "maximum": 62
                               },
                               "retrieved_at": {
-                                "type": "string",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
                                 "format": "date-time"
                               },
                               "source_hash": {
-                                "type": "string"
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
                               },
                               "provider_recording_id": {
-                                "type": "string"
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
                               }
                             }
                           }
@@ -914,6 +950,9 @@
           },
           "503": {
             "description": "Storage, configuration or dispatch unavailable"
+          },
+          "429": {
+            "description": "Too many tracking control requests; limited to 10 per account per minute across REST and MCP."
           }
         }
       }
