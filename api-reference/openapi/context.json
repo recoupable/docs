@@ -68,7 +68,7 @@
                       "url": {
                         "type": "string",
                         "format": "uri",
-                        "description": "Spotify track URL. Albums, playlists and YouTube ingestion are not enabled in this pilot."
+                        "description": "Spotify track URL (open.spotify.com/track/<id>, optional intl-xx prefix; tracking parameters are removed). Album URLs are routed to the ingest_release action; playlists, artist pages and YouTube are not enabled in this pilot and are rejected with an explicit message."
                       },
                       "idempotency_key": {
                         "type": "string",
@@ -294,16 +294,16 @@
             "description": "Saved ingestion request; inspect request.status and use read to poll. Existing completed/partial requests return without provider work."
           },
           "200": {
-            "description": "Read returns request. Brief returns request_id, request_ids, purpose, readiness, bounded Markdown text and text_characters, documents and their serialized characters count, missingTopics, guidance, gaps, request_coverage, and input_manifest. Each coverage entry includes requestId, readiness and missingTopics; overall readiness remains partial if any request has a gap or partial evidence. The manifest includes compilerVersion, method, requestIds, excludedTopics, and selected documents with documentId, resultId (null only if unavailable), subjectId, topic, version and sourceVersionIds. The result is returned without creating a saved brief record. Save/read brief return {snapshot: {id, created_at, purpose, state, superseded, brief}}. state is saved or unavailable; unavailable snapshots return brief: null. saved snapshots return the exact compiled response including its input manifest. Another workspace cannot read the record."
+            "description": "Read returns request. A failed ingest request has status failed and request.error formatted as <code>: <recovery guidance>, where code is one of unsupported_input, recording_unavailable (Spotify no longer serves the track), provider_outage (retry with the same idempotency_key), provider_rejected, provider_response_invalid, identity_conflict (existing records disagree; no artist record was created) or unknown. Retrying ingest with the same idempotency_key re-claims a failed request. Brief returns request_id, request_ids, purpose, readiness, bounded Markdown text and text_characters, documents and their serialized characters count, missingTopics, guidance, gaps, request_coverage, and input_manifest. Each coverage entry includes requestId, readiness and missingTopics; overall readiness remains partial if any request has a gap or partial evidence. The manifest includes compilerVersion, method, requestIds, excludedTopics, and selected documents with documentId, resultId (null only if unavailable), subjectId, topic, version and sourceVersionIds. The result is returned without creating a saved brief record. Save/read brief return {snapshot: {id, created_at, purpose, state, superseded, brief}}. state is saved or unavailable; unavailable snapshots return brief: null. saved snapshots return the exact compiled response including its input manifest. Another workspace cannot read the record."
           },
           "400": {
-            "description": "Invalid input"
+            "description": "Invalid input. issues[] lists Zod issues; for an unsupported ingest url the issue message carries the routing guidance (for example that an album URL belongs to ingest_release, or that playlists are not supported)."
           },
           "401": {
             "description": "Authentication required"
           },
           "409": {
-            "description": "Operation failed, access unavailable, input/key conflict, or request not found. Retry ingestion with the same idempotency key after correcting the cause."
+            "description": "Operation failed, access unavailable, input/key conflict, or request not found. Retry ingestion with the same idempotency key after correcting the cause. A failure during background extraction is not a 409: ingest returns 202 and read exposes the failed request with request.error."
           }
         }
       }
