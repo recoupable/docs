@@ -109,6 +109,102 @@
                     "additionalProperties": false,
                     "required": [
                       "action",
+                      "brief",
+                      "idempotency_key"
+                    ],
+                    "description": "Save a private music campaign brief in the selected workspace: goals, audience, dates, channels and candidate links to records the workspace has already saved. Promoted links are candidates only; they do not verify ownership, rights, roster membership or catalog interest, and no site or plan is generated. Raw URLs, file paths and asset references are rejected. Save promoted artists, songs, releases and catalogs first through ingest, ingest_artist, ingest_release or ingest_catalog, then reference their request_id and subject_id. Supplied material (artwork, audio, video, copy, documents) is not inventoried yet and stays an explicit gap. The saved request is partial with gaps listed in output.gaps. Requires the companion campaign-brief database migrations.",
+                    "properties": {
+                      "action": {
+                        "type": "string",
+                        "const": "ingest_campaign_brief"
+                      },
+                      "organization_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Optional organization that owns the private context. Current membership is checked."
+                      },
+                      "idempotency_key": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[A-Za-z0-9._:-]+$",
+                        "description": "Stable key for retrying the same brief. A brief without channels or promoted keeps its original fingerprint, so briefs saved before those fields existed replay unchanged; a changed brief under the same key is rejected."
+                      },
+                      "brief": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "name",
+                          "goal"
+                        ],
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "minLength": 2,
+                            "maxLength": 200
+                          },
+                          "goal": {
+                            "type": "string",
+                            "minLength": 2,
+                            "maxLength": 2000
+                          },
+                          "audience": {
+                            "type": "string",
+                            "maxLength": 500
+                          },
+                          "start_date": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "end_date": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Must not precede start_date."
+                          },
+                          "channels": {
+                            "type": "array",
+                            "maxItems": 10,
+                            "items": {
+                              "type": "string",
+                              "minLength": 2,
+                              "maxLength": 60
+                            },
+                            "description": "Up to ten distinct channel names, for example short-form video, radio or press. Whitespace is normalized and names are compared case-insensitively. Links and file paths are not channels and are rejected."
+                          },
+                          "promoted": {
+                            "type": "array",
+                            "maxItems": 20,
+                            "items": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "request_id",
+                                "subject_id"
+                              ],
+                              "properties": {
+                                "request_id": {
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "description": "A completed or partial Context request saved in the same workspace."
+                                },
+                                "subject_id": {
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "description": "An artist, recording, release or catalog subject listed in that request's output. Campaign, company, songwriter and material subjects are not accepted."
+                                }
+                              }
+                            },
+                            "description": "Distinct already-saved subjects this campaign promotes. Each is stored as a promoted_candidate with ownership_verified=false. An unknown, cross-workspace, cancelled or wrong-kind target rejects the whole brief; nothing is saved partially."
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "action",
                       "request_id"
                     ],
                     "properties": {
