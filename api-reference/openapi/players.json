@@ -38,11 +38,11 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "PlayerList fields returned by the release player service.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerList"
                 }
               }
             }
@@ -52,7 +52,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -62,7 +62,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -72,7 +72,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -82,7 +82,27 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing/invalid authentication or failed provider authorization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Request rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -103,11 +123,11 @@
         "parameters": [],
         "responses": {
           "201": {
-            "description": "Success",
+            "description": "PlayerResource fields returned by the release player service.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerResource"
                 }
               }
             }
@@ -117,7 +137,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -127,7 +147,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -137,7 +157,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -147,7 +167,37 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing/invalid authentication or failed provider authorization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Request rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Publishing requires an active paid workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -222,7 +272,31 @@
                     "description": "Publishing requires an active paid workspace. Disabled players are unavailable publicly."
                   }
                 },
-                "description": "At least one of spotifyUrl or appleUrl is required. Disabled by default."
+                "description": "At least one of spotifyUrl or appleUrl is required. Disabled by default.",
+                "anyOf": [
+                  {
+                    "required": [
+                      "spotifyUrl"
+                    ],
+                    "properties": {
+                      "spotifyUrl": {
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    }
+                  },
+                  {
+                    "required": [
+                      "appleUrl"
+                    ],
+                    "properties": {
+                      "appleUrl": {
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -266,11 +340,11 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "PlayerResource fields returned by the release player service.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerResource"
                 }
               }
             }
@@ -280,7 +354,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -290,7 +364,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -300,7 +374,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -310,7 +384,27 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing/invalid authentication or failed provider authorization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Request rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -341,11 +435,11 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "PlayerResource fields returned by the release player service.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerResource"
                 }
               }
             }
@@ -355,7 +449,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -365,7 +459,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -375,7 +469,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -385,7 +479,47 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing/invalid authentication or failed provider authorization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Request rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Publishing requires an active paid workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The player revision changed. Read the latest settings before retrying.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -511,11 +645,11 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "PlayerReportResponse fields returned by the release player service.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerReportResponse"
                 }
               }
             }
@@ -525,7 +659,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -535,7 +669,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -545,7 +679,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -555,7 +689,27 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing/invalid authentication or failed provider authorization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Request rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -620,11 +774,11 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "PlayerFansResponse fields returned by the release player service.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerFansResponse"
                 }
               }
             }
@@ -634,7 +788,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -644,7 +798,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -654,7 +808,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -664,7 +818,27 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing/invalid authentication or failed provider authorization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Request rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -749,11 +923,11 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "PublicPlayerConfig fields returned by the release player service.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PublicPlayerConfig"
                 }
               }
             }
@@ -763,7 +937,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -773,7 +947,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -783,7 +957,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -793,7 +967,27 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing/invalid authentication or failed provider authorization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Request rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -809,11 +1003,11 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "ListeningReceipt fields returned by the release player service.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/ListeningReceipt"
                 }
               }
             }
@@ -823,7 +1017,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -833,7 +1027,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -843,7 +1037,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -853,7 +1047,27 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing/invalid authentication or failed provider authorization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Request rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -943,11 +1157,11 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "SpotifyPlayerSession fields returned by the release player service.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/SpotifyPlayerSession"
                 }
               }
             }
@@ -957,7 +1171,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -967,7 +1181,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -977,7 +1191,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -987,7 +1201,27 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing/invalid authentication or failed provider authorization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Request rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
                 }
               }
             }
@@ -1039,6 +1273,521 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "PlayerError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "error"
+        ]
+      },
+      "ReleasePlayer": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "owner_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "artist_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "created_by": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "spotify_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "apple_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "artwork": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "allowed_origins": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "owner_id",
+          "artist_id",
+          "name",
+          "spotify_url",
+          "apple_url",
+          "allowed_origins",
+          "enabled",
+          "revision"
+        ]
+      },
+      "PlayerResource": {
+        "type": "object",
+        "properties": {
+          "player": {
+            "$ref": "#/components/schemas/ReleasePlayer"
+          },
+          "listenUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "spotifyEmbedUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "appleEmbedUrl": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "player",
+          "listenUrl",
+          "spotifyEmbedUrl",
+          "appleEmbedUrl"
+        ]
+      },
+      "PlayerList": {
+        "type": "object",
+        "properties": {
+          "players": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReleasePlayer"
+            }
+          }
+        },
+        "required": [
+          "players"
+        ]
+      },
+      "PlayerFan": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "provider": {
+            "type": "string",
+            "const": "spotify"
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "display_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "first_connected_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "last_connected_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "provider",
+          "first_connected_at",
+          "last_connected_at"
+        ]
+      },
+      "PlayerFansResponse": {
+        "type": "object",
+        "properties": {
+          "fans": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlayerFan"
+            }
+          },
+          "scope": {
+            "type": "string",
+            "const": "artist_in_workspace"
+          },
+          "marketingConsent": {
+            "type": "boolean",
+            "const": false
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "limit": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "fans",
+          "scope",
+          "marketingConsent",
+          "offset",
+          "limit"
+        ]
+      },
+      "PlayerActivity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "session_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "event": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string",
+            "enum": [
+              "spotify",
+              "apple_music"
+            ]
+          },
+          "track_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "position_ms": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "listened_ms": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "received_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "fan_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "display_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "session_id",
+          "event",
+          "provider",
+          "listened_ms",
+          "received_at"
+        ]
+      },
+      "PlayerReportResponse": {
+        "type": "object",
+        "properties": {
+          "measurement": {
+            "type": "string",
+            "const": "browser_reported_playback"
+          },
+          "dspStreams": {
+            "type": "null"
+          },
+          "periodDays": {
+            "type": "integer",
+            "const": 30
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "limit": {
+            "type": "integer",
+            "const": 100
+          },
+          "report": {
+            "type": "object",
+            "properties": {
+              "sessions": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "connectedFans": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "reportedListeningMs": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "playEvents": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "campaigns": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "provider": {
+                      "type": "string"
+                    },
+                    "source": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "campaign": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "sessions": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "listened_ms": {
+                      "type": "integer",
+                      "format": "int64"
+                    }
+                  },
+                  "required": []
+                }
+              },
+              "activity": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PlayerActivity"
+                }
+              }
+            },
+            "required": [
+              "sessions",
+              "connectedFans",
+              "reportedListeningMs",
+              "playEvents",
+              "campaigns",
+              "activity"
+            ]
+          }
+        },
+        "required": [
+          "measurement",
+          "dspStreams",
+          "periodDays",
+          "offset",
+          "limit",
+          "report"
+        ]
+      },
+      "PublicPlayerConfig": {
+        "type": "object",
+        "properties": {
+          "playerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "artwork": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "spotifyUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "appleUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "provider": {
+            "type": "string",
+            "enum": [
+              "spotify",
+              "apple_music"
+            ]
+          },
+          "release": {
+            "type": "string",
+            "format": "uri"
+          },
+          "sessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "flow": {
+            "type": "string",
+            "description": "Short-lived signed player capability; only the trusted Recoup player should handle this."
+          },
+          "spotify": {
+            "type": "object",
+            "properties": {
+              "configured": {
+                "type": "boolean"
+              },
+              "clientId": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "redirectUri": {
+                "type": "string",
+                "format": "uri"
+              },
+              "scopes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "configured",
+              "clientId",
+              "redirectUri",
+              "scopes"
+            ]
+          }
+        },
+        "required": [
+          "playerId",
+          "name",
+          "spotifyUrl",
+          "appleUrl",
+          "revision"
+        ]
+      },
+      "ListeningReceipt": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "recorded": {
+            "type": "boolean",
+            "description": "False for an already-recorded retry."
+          }
+        },
+        "required": [
+          "success",
+          "recorded"
+        ]
+      },
+      "SpotifyPlayerSession": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "description": "Private provider access token, delivered only to the trusted Recoup browser. Never embed in an artist website."
+          },
+          "refresh_token": {
+            "type": "string",
+            "description": "Optional private provider refresh token; same trusted-browser boundary."
+          },
+          "expires_in": {
+            "type": "number"
+          },
+          "token_type": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "player_session_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fanCapture": {
+            "type": "boolean",
+            "description": "True only after the verified fan identity was persisted."
+          }
+        },
+        "required": [
+          "access_token",
+          "expires_in",
+          "scope",
+          "player_session_id",
+          "fanCapture"
+        ]
       }
     }
   }
