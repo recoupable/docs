@@ -1380,11 +1380,13 @@
           },
           "spotifyEmbedUrl": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "description": "Stable provider route. This URL is returned even when that provider is unconfigured; inspect the corresponding destination in player before displaying it."
           },
           "appleEmbedUrl": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "description": "Stable provider route. This URL is returned even when that provider is unconfigured; inspect the corresponding destination in player before displaying it."
           }
         },
         "required": [
@@ -1541,7 +1543,8 @@
           "provider",
           "listened_ms",
           "received_at"
-        ]
+        ],
+        "description": "Raw database reporting row; snake_case keys are preserved intentionally."
       },
       "PlayerReportResponse": {
         "type": "object",
@@ -1640,7 +1643,8 @@
           "offset",
           "limit",
           "report"
-        ]
+        ],
+        "description": "Reporting envelope uses camelCase. Nested activity and campaign rows intentionally expose raw database snake_case fields."
       },
       "PublicPlayerConfig": {
         "type": "object",
