@@ -32,7 +32,7 @@
       "post": {
         "operationId": "contextOperation",
         "summary": "Ingest, read, or compile context briefs",
-        "description": "Save reusable music context, read progress, or compile a task-specific evidence brief. This reference documents the ingestion, read, brief, save_brief and read_brief actions of the shared HTTP/MCP operation. Brief compilation combines up to ten completed or partial requests in one authorized workspace, reuses saved evidence without provider or model calls, and returns bounded Markdown plus the selected input versions. Creative direction prioritizes lyrics and artwork; playlist pitching prioritizes catalog/audio metadata. Shared artist evidence appears once, with coverage reported separately for each request. Briefs are evidence packets, not generated creative concepts or finished outreach. Inspect readiness, request_coverage and gaps. The brief action is read-only; use save_brief with the same inputs and an idempotency_key to freeze the server-compiled output, then read_brief with its brief_id to retrieve it without recompilation. A newer document revision marks the snapshot superseded without rewriting it. Withdrawn/unavailable evidence, cancelled requests, or removed subject scope withhold the payload. Saving rechecks current evidence before committing. Apply the companion snapshot migration before using save_brief/read_brief. Ingestion dispatches a durable workflow; retry the same input and idempotency key after dispatch failure.",
+        "description": "Save reusable music context, read progress, or compile a task-specific evidence brief. This reference documents the ingestion, read, brief, save_brief and read_brief actions of the shared HTTP/MCP operation. Brief compilation combines up to ten completed or partial requests in one authorized workspace, reuses saved evidence without provider or model calls, and returns bounded Markdown plus the selected input versions. Creative direction prioritizes lyrics and artwork; playlist pitching prioritizes catalog/audio metadata. Shared artist evidence appears once, with coverage reported separately for each request. Briefs are evidence packets, not generated creative concepts or finished outreach. Inspect readiness, request_coverage and gaps. The brief action is read-only; use save_brief with the same inputs and an idempotency_key to freeze the server-compiled output, then read_brief with its brief_id to retrieve it without recompilation. A newer document revision marks the snapshot superseded without rewriting it. Withdrawn/unavailable evidence, cancelled requests, or removed subject scope withhold the payload. Saving rechecks current evidence before committing. Apply the companion snapshot migration before using save_brief/read_brief. Ingestion dispatches a durable workflow; retry the same input and idempotency key after dispatch failure. The company_onboarding purpose compiles a company-onboarding assessment from one to ten saved requests in the selected workspace: it adds assessment_scope \"selected_saved_context_requests\" and per-request next_steps ({requestId, action, topics}, where action is review_assessment_coverage when that request has missing topics and review_available_evidence otherwise). Missing topics describe coverage in this assessment, including size-limited omissions; they are review prompts, not proof that evidence does not exist. Submitted names, provider metadata and credits do not establish rights, ownership or mandates, and the assessment covers the selected requests, not the complete company register. company_onboarding additionally requires the company-assessment purpose migration (20261010010000_context_company_assessment.sql).",
         "security": [
           {
             "ApiKey": []
@@ -153,8 +153,10 @@
                         "type": "string",
                         "enum": [
                           "creative_direction",
-                          "playlist_pitch"
-                        ]
+                          "playlist_pitch",
+                          "company_onboarding"
+                        ],
+                        "description": "creative_direction and playlist_pitch compile song evidence briefs. company_onboarding compiles a company-onboarding assessment from the selected saved requests and adds assessment_scope and next_steps; it requires the company-assessment purpose migration (20261010010000_context_company_assessment.sql)."
                       },
                       "max_characters": {
                         "type": "integer",
@@ -202,8 +204,10 @@
                         "type": "string",
                         "enum": [
                           "creative_direction",
-                          "playlist_pitch"
-                        ]
+                          "playlist_pitch",
+                          "company_onboarding"
+                        ],
+                        "description": "creative_direction and playlist_pitch compile song evidence briefs. company_onboarding compiles a company-onboarding assessment from the selected saved requests and adds assessment_scope and next_steps; it requires the company-assessment purpose migration (20261010010000_context_company_assessment.sql)."
                       },
                       "max_characters": {
                         "type": "integer",
@@ -294,7 +298,7 @@
             "description": "Saved ingestion request; inspect request.status and use read to poll. Existing completed/partial requests return without provider work."
           },
           "200": {
-            "description": "Read returns request. Brief returns request_id, request_ids, purpose, readiness, bounded Markdown text and text_characters, documents and their serialized characters count, missingTopics, guidance, gaps, request_coverage, and input_manifest. Each coverage entry includes requestId, readiness and missingTopics; overall readiness remains partial if any request has a gap or partial evidence. The manifest includes compilerVersion, method, requestIds, excludedTopics, and selected documents with documentId, resultId (null only if unavailable), subjectId, topic, version and sourceVersionIds. The result is returned without creating a saved brief record. Save/read brief return {snapshot: {id, created_at, purpose, state, superseded, brief}}. state is saved or unavailable; unavailable snapshots return brief: null. saved snapshots return the exact compiled response including its input manifest. Another workspace cannot read the record."
+            "description": "Read returns request. Brief returns request_id, request_ids, purpose, readiness, bounded Markdown text and text_characters, documents and their serialized characters count, missingTopics, guidance, gaps, request_coverage, and input_manifest. Each coverage entry includes requestId, readiness and missingTopics; overall readiness remains partial if any request has a gap or partial evidence. The manifest includes compilerVersion, method, requestIds, excludedTopics, and selected documents with documentId, resultId (null only if unavailable), subjectId, topic, version and sourceVersionIds. The result is returned without creating a saved brief record. Save/read brief return {snapshot: {id, created_at, purpose, state, superseded, brief}}. state is saved or unavailable; unavailable snapshots return brief: null. saved snapshots return the exact compiled response including its input manifest. Another workspace cannot read the record. For purpose company_onboarding, brief and save_brief responses (and read_brief snapshots of them) additionally include assessment_scope (always selected_saved_context_requests) and next_steps: one entry per request with requestId, action (review_assessment_coverage or review_available_evidence) and that request's missing topics."
           },
           "400": {
             "description": "Invalid input"
