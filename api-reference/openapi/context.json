@@ -269,7 +269,7 @@
                       "document_id": {
                         "type": "string",
                         "format": "uuid",
-                        "description": "A context document ID from a brief manifest (documentId) or read result (id)."
+                        "description": "A context document ID from a brief or saved brief response: documents[].id or input_manifest.documents[].documentId."
                       },
                       "organization_id": {
                         "type": "string",
@@ -278,8 +278,8 @@
                       },
                       "before_revision": {
                         "type": "integer",
-                        "minimum": 0,
-                        "description": "Exclusive cursor: return revisions below this number. Use next_before from the previous page."
+                        "minimum": 1,
+                        "description": "Exclusive cursor: return revisions below this number. Use next_before from the previous page; revision 0 is never recorded."
                       },
                       "limit": {
                         "type": "integer",
