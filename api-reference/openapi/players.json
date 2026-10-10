@@ -34,6 +34,26 @@
               "format": "uuid",
               "description": "Authorized workspace; omit for the authenticated account. Never send account_id."
             }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000,
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
           }
         ],
         "responses": {
@@ -848,7 +868,7 @@
     },
     "/api/players/public/{id}": {
       "get": {
-        "summary": "Read public player configuration",
+        "summary": "Read public player metadata without creating a session",
         "description": "Internal transport for the trusted Recoup browser player. Without provider, returns only public release settings. With provider, validates parent and creates or resumes a signed, provider-bound listening session. No owner, fan profile or email is exposed. The embedding website should use returned embed URLs rather than calling this API or handling credentials.",
         "security": [],
         "parameters": [
@@ -859,65 +879,6 @@
             "schema": {
               "type": "string",
               "format": "uuid"
-            }
-          },
-          {
-            "name": "provider",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "spotify",
-                "apple_music"
-              ]
-            }
-          },
-          {
-            "name": "parent",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "description": "Exact registered embed origin; omit for a standalone player."
-          },
-          {
-            "name": "flow",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "description": "Existing signed session; keeps OAuth popup/reload on the same session."
-          },
-          {
-            "name": "source",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "maxLength": 100
-            }
-          },
-          {
-            "name": "medium",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "maxLength": 100
-            }
-          },
-          {
-            "name": "campaign",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "maxLength": 100
-            }
-          },
-          {
-            "name": "content",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "maxLength": 100
             }
           }
         ],
@@ -1261,6 +1222,144 @@
           }
         }
       }
+    },
+    "/api/players/public/{id}/session": {
+      "post": {
+        "summary": "Acquire or resume a registered player session",
+        "description": "Internal transport for the trusted Recoup browser player. Without provider, returns only public release settings. With provider, validates parent and creates or resumes a signed, provider-bound listening session. No owner, fan profile or email is exposed. The embedding website should use returned embed URLs rather than calling this API or handling credentials.",
+        "security": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "PublicPlayerConfig fields returned by the release player service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicPlayerConfig"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Workspace, origin, or session access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Player not available",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Feature/configuration temporarily unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing/invalid authentication or failed provider authorization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Request rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "acquirePlayerSession",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "provider": {
+                    "type": "string",
+                    "enum": [
+                      "spotify",
+                      "apple_music"
+                    ]
+                  },
+                  "parent": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "flow": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "string",
+                    "maxLength": 100
+                  },
+                  "medium": {
+                    "type": "string",
+                    "maxLength": 100
+                  },
+                  "campaign": {
+                    "type": "string",
+                    "maxLength": 100
+                  },
+                  "content": {
+                    "type": "string",
+                    "maxLength": 100
+                  }
+                },
+                "required": [
+                  "provider",
+                  "parent"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1404,6 +1503,19 @@
             "items": {
               "$ref": "#/components/schemas/ReleasePlayer"
             }
+          },
+          "offset": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "nextOffset": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Use as offset for the next page; null marks the end."
           }
         },
         "required": [
