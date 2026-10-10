@@ -290,6 +290,23 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Publishing requires an active paid workspace. Disabled players are unavailable publicly."
+                  },
+                  "freePlayback": {
+                    "type": "string",
+                    "enum": [
+                      "spotify",
+                      "audio"
+                    ],
+                    "default": "spotify",
+                    "description": "Release-owner choice for verified Spotify Free accounts. spotify opens the configured Spotify release; audio plays a workspace-owned uploaded file. Premium continues using Spotify streaming."
+                  },
+                  "audioUrl": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uri",
+                    "description": "MP3 or WAV URL returned by POST /api/sites/assets for the same workspace. Requires an existing audio object; arbitrary or other-workspace URLs are rejected. Required when freePlayback is audio. Uploads currently have a 4 MB limit."
                   }
                 },
                 "description": "At least one of spotifyUrl or appleUrl is required. Disabled by default.",
@@ -610,6 +627,22 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Publishing requires an active paid workspace. Disabled players are unavailable publicly."
+                  },
+                  "freePlayback": {
+                    "type": "string",
+                    "enum": [
+                      "spotify",
+                      "audio"
+                    ],
+                    "description": "Release-owner choice for verified Spotify Free accounts. spotify opens the configured Spotify release; audio plays a workspace-owned uploaded file. Premium continues using Spotify streaming."
+                  },
+                  "audioUrl": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uri",
+                    "description": "MP3 or WAV URL returned by POST /api/sites/assets for the same workspace. Requires an existing audio object; arbitrary or other-workspace URLs are rejected. Required when freePlayback is audio. Uploads currently have a 4 MB limit."
                   }
                 }
               }
@@ -1453,6 +1486,23 @@
           "updated_at": {
             "type": "string",
             "format": "date-time"
+          },
+          "free_playback": {
+            "type": "string",
+            "enum": [
+              "spotify",
+              "audio"
+            ],
+            "default": "spotify",
+            "description": "Release-owner choice for verified Spotify Free accounts. spotify opens the configured Spotify release; audio plays a workspace-owned uploaded file. Premium continues using Spotify streaming."
+          },
+          "audio_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "description": "MP3 or WAV URL returned by POST /api/sites/assets for the same workspace. Requires an existing audio object; arbitrary or other-workspace URLs are rejected. Required when freePlayback is audio. Uploads currently have a 4 MB limit."
           }
         },
         "required": [
@@ -1464,7 +1514,9 @@
           "apple_url",
           "allowed_origins",
           "enabled",
-          "revision"
+          "revision",
+          "free_playback",
+          "audio_url"
         ]
       },
       "PlayerResource": {
@@ -1841,6 +1893,23 @@
               "redirectUri",
               "scopes"
             ]
+          },
+          "freePlayback": {
+            "type": "string",
+            "enum": [
+              "spotify",
+              "audio"
+            ],
+            "default": "spotify",
+            "description": "Release-owner choice for verified Spotify Free accounts. spotify opens the configured Spotify release; audio plays a workspace-owned uploaded file. Premium continues using Spotify streaming."
+          },
+          "audioUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "description": "Included only in provider-session responses. Configured uploaded audio is provided for Spotify sessions in audio mode; otherwise null. Not included in chooser metadata."
           }
         },
         "required": [
@@ -1848,7 +1917,8 @@
           "name",
           "spotifyUrl",
           "appleUrl",
-          "revision"
+          "revision",
+          "freePlayback"
         ]
       },
       "ListeningReceipt": {

@@ -34,7 +34,20 @@ Add `source`, `medium`, `campaign`, and `content` query parameters to campaign l
 
 The website sends a player ID and its exact origin, not a provider token, email, owner ID or arbitrary release override. Recoup handles provider authorization, playback and reporting. Display the direct DSP destination as a fallback for unavailable browser playback.
 
-For a listening-only player, a verified Spotify Premium account stays in the browser player. A verified Spotify Free account automatically opens the configured release in Spotify after authorization; no extra playback click is required in Recoup. An unavailable profile lookup is not treated as proof of a Free account. Spotify chooses whether the destination opens in its app or website, and its Free-account playback rules still apply.
+For a listening-only player, a verified Spotify Premium account stays in the browser player. By default, a verified Spotify Free account automatically opens the configured release in Spotify after authorization; no extra playback click is required in Recoup. An unavailable profile lookup is not treated as proof of a Free account. Spotify chooses whether the destination opens in its app or website, and its Free-account playback rules still apply.
+
+The release owner can instead select `freePlayback: "audio"` and supply `audioUrl`. Upload an MP3 or WAV through the authenticated `POST /api/sites/assets` endpoint in the same workspace (currently under 4 MB), then pass its returned `asset.url` to `create_release_player` or `update_release_player`. Recoup verifies workspace ownership, object existence and audio metadata. Audio mode also requires a Spotify destination for fallback. Fans do not select this policy, and embed query parameters cannot override it.
+
+```json
+{
+  "id": "PLAYER_UUID",
+  "revision": 1,
+  "freePlayback": "audio",
+  "audioUrl": "WORKSPACE_UPLOADED_ASSET_URL"
+}
+```
+
+After a verified Free-account sign-in, audio mode opens the uploaded-file controls in Recoup. Premium keeps Spotify streaming. If the file is absent, Free accounts open Spotify; if the file fails to load, the player offers the existing Open in Spotify link. This version plays one uploaded file per release player, not an uploaded playlist. Uploaded-file playback does not generate Spotify streams and is excluded from the DSP playback reports; fan connection reporting still applies. Switch back using `freePlayback: "spotify"`; optionally clear `audioUrl` to null in the same update.
 
 Embedded websites must handle the `recoup:open-dsp` message with `provider: "spotify"`, verify both the player origin and iframe window, then navigate to their configured Spotify destination. Do not accept a destination URL from the message. Gatsby implements this handler. Recoup can capture the available fan profile before this handoff, but playback after leaving the player is outside its listening telemetry.
 
@@ -48,4 +61,4 @@ The API owns `SITES_SPOTIFY_CLIENT_ID` and the optional `PLAYER_APP_ORIGIN` (def
 
 The browser app uses the existing server-only `SITES_API_URL` override for a local/preview API. Provider credentials stay on the trusted player origin. Existing Apple developer signing credentials supply the short-lived, origin-bound browser token.
 
-Apply `20261010060000_release_players.sql`, release the API and browser app, register and enable the player's destinations/origins, then verify actual provider authorization, fan readback, playback and activity readback before declaring a campaign live. For the Gatsby Grace artist website (a Next.js app, not the Gatsby framework), set `NEXT_PUBLIC_RECOUP_PLAYER_ID` and `NEXT_PUBLIC_RECOUP_WISH_PLAYER_ID` to the corresponding registered player IDs. Until configured, Gatsby retains its direct DSP links.
+Apply release-player migrations `20261010060000` through `20261010060003`, release the API and browser app, register and enable the player's destinations/origins, then verify actual provider authorization, fan readback, playback and activity readback before declaring a campaign live. For the Gatsby Grace artist website (a Next.js app, not the Gatsby framework), set `NEXT_PUBLIC_RECOUP_PLAYER_ID` and `NEXT_PUBLIC_RECOUP_WISH_PLAYER_ID` to the corresponding registered player IDs. Until configured, Gatsby retains its direct DSP links.
