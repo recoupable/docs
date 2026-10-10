@@ -112,7 +112,7 @@
                       "brief",
                       "idempotency_key"
                     ],
-                    "description": "Save a private music campaign brief in the selected workspace: goals, audience, dates, channels and candidate links to records the workspace has already saved. Promoted links are candidates only; they do not verify ownership, rights, roster membership or catalog interest, and no site or plan is generated. Raw URLs, file paths and asset references are rejected. Save promoted artists, songs, releases and catalogs first through ingest, ingest_artist, ingest_release or ingest_catalog, then reference their request_id and subject_id. Supplied material (artwork, audio, video, copy, documents) is not inventoried yet and stays an explicit gap. The saved request is partial with gaps listed in output.gaps. Requires the companion campaign-brief database migrations.",
+                    "description": "Save a private music campaign brief in the selected workspace: goals, audience, dates, channels and candidate links to records the workspace has already saved. Promoted links are candidates only; they do not verify ownership, rights, roster membership or catalog interest, and no site or plan is generated. Raw URLs, file paths and asset references are not accepted as channels or promoted targets, and keys such as promoted_url, file_path or assets are rejected; goal and audience remain free text. Save promoted artists, songs, releases and catalogs first through ingest, ingest_artist, ingest_release or ingest_catalog, then reference their request_id and subject_id. Supplied material (artwork, audio, video, copy, documents) is not inventoried yet and stays an explicit gap. The saved request is partial with gaps listed in output.gaps. Requires the companion campaign-brief database migrations.",
                     "properties": {
                       "action": {
                         "type": "string",
@@ -164,16 +164,18 @@
                           "channels": {
                             "type": "array",
                             "maxItems": 10,
+                            "uniqueItems": true,
                             "items": {
                               "type": "string",
-                              "minLength": 2,
+                              "minLength": 1,
                               "maxLength": 60
                             },
-                            "description": "Up to ten distinct channel names, for example short-form video, radio or press. Whitespace is normalized and names are compared case-insensitively. Links and file paths are not channels and are rejected."
+                            "description": "Up to ten distinct channel names, for example X, short-form video, radio or press. Whitespace is normalized and names are compared case-insensitively. Links and file paths are not channels and are rejected, including URI schemes such as mailto: or spotify: and drive paths such as C:\\plans."
                           },
                           "promoted": {
                             "type": "array",
                             "maxItems": 20,
+                            "uniqueItems": true,
                             "items": {
                               "type": "object",
                               "additionalProperties": false,
