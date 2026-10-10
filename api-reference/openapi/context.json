@@ -109,6 +109,104 @@
                     "additionalProperties": false,
                     "required": [
                       "action",
+                      "brief",
+                      "idempotency_key"
+                    ],
+                    "description": "Save a private music campaign brief in the selected workspace: goals, audience, dates, channels and candidate links to records the workspace has already saved. Promoted links are candidates only; they do not verify ownership, rights, roster membership or catalog interest, and no site or plan is generated. Promoted targets are only request_id and subject_id pairs, never URLs or files, and keys such as promoted_url, file_path or assets are rejected. Channel names that look like links are rejected, but that check catches obvious links only (see channels); channel names are never fetched or linked. Goal and audience remain free text. Save promoted artists, songs, releases and catalogs first through a Context ingest request, then reference its request_id and subject_id. Supplied material (artwork, audio, video, copy, documents) is not inventoried yet and stays an explicit gap. The saved request is partial with gaps listed in output.gaps. Requires the companion campaign-brief database migrations.",
+                    "properties": {
+                      "action": {
+                        "type": "string",
+                        "const": "ingest_campaign_brief"
+                      },
+                      "organization_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Optional organization that owns the private context. Current membership is checked."
+                      },
+                      "idempotency_key": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[A-Za-z0-9._:-]+$",
+                        "description": "Stable key for retrying the same brief. A brief without channels or promoted keeps its original fingerprint, so briefs saved before those fields existed replay unchanged; a changed brief under the same key is rejected."
+                      },
+                      "brief": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "name",
+                          "goal"
+                        ],
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "minLength": 2,
+                            "maxLength": 200
+                          },
+                          "goal": {
+                            "type": "string",
+                            "minLength": 2,
+                            "maxLength": 2000
+                          },
+                          "audience": {
+                            "type": "string",
+                            "maxLength": 500
+                          },
+                          "start_date": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "end_date": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Must not precede start_date."
+                          },
+                          "channels": {
+                            "type": "array",
+                            "maxItems": 10,
+                            "uniqueItems": true,
+                            "items": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 60
+                            },
+                            "description": "Up to ten distinct channel names, for example X, short-form video, radio or press. Whitespace is normalized and names are compared case-insensitively. Values that look like links are rejected: scheme URLs, URI schemes such as mailto: or spotify:, www. hosts, and absolute, home or drive paths such as /plans or C:\\plans. This is not a complete URL or file detector: a bare example.com/release or plan.pdf is accepted as a name, and no channel name is fetched or linked."
+                          },
+                          "promoted": {
+                            "type": "array",
+                            "maxItems": 20,
+                            "uniqueItems": true,
+                            "items": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "request_id",
+                                "subject_id"
+                              ],
+                              "properties": {
+                                "request_id": {
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "description": "A completed or partial Context request saved in the same workspace."
+                                },
+                                "subject_id": {
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "description": "An artist, recording, release or catalog subject listed in that request's output. Every other subject kind, such as video, campaign, company, songwriter or material, is rejected."
+                                }
+                              }
+                            },
+                            "description": "Distinct already-saved subjects this campaign promotes. Each is stored as a promoted_candidate with ownership_verified=false. An unknown, cross-workspace, cancelled or wrong-kind target rejects the whole brief; nothing is saved partially. Retrying an already-saved brief with the same idempotency_key returns the stored request even if a target request was cancelled later; a new key re-checks every target."
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "action",
                       "request_id"
                     ],
                     "properties": {
