@@ -25,6 +25,46 @@
         "in": "cookie",
         "name": "recoup_context_guest"
       }
+    },
+    "schemas": {
+      "ContextOperationError": {
+        "type": "object",
+        "required": [
+          "error",
+          "code",
+          "retryable",
+          "guidance"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Stable summary authored by the API for this code. It never contains database or provider diagnostics."
+          },
+          "code": {
+            "type": "string",
+            "enum": [
+              "permission_denied",
+              "not_found",
+              "conflict",
+              "unsupported_input",
+              "not_ready",
+              "unavailable",
+              "budget_exhausted",
+              "storage_failed",
+              "internal"
+            ],
+            "description": "permission_denied (403): the caller is not a current member of the selected owner, or the record is not linked to it. not_found (404): the request, subject, brief, execution or review does not exist or is not visible in this workspace. conflict (409): the idempotency_key was reused with different input, a review fingerprint is stale, the saved record changed, or it is already past the state the action needs (for example a release identity that is already confirmed). unsupported_input (422): the input passed schema validation but this action does not support it, such as a YouTube video URL sent to ingest while only Spotify tracks are enabled, or a value the stored rules reject. not_ready (409): the request or a prerequisite has not reached the state the action needs yet. unavailable (503): a provider or capability is disabled or unreachable, or storage failed transiently. budget_exhausted (402): the authorized budget is exhausted and no paid work started. storage_failed (409): storage rejected the operation for its current saved state; an identical retry is rejected again. internal (500): unclassified failure. Bodies that fail schema validation, including album, playlist or other non-track URLs sent to ingest, return 400 before the operation runs and carry no code."
+          },
+          "retryable": {
+            "type": "boolean",
+            "description": "true when an identical retry may succeed later without changes; actions that take an idempotency_key must reuse it. A retry with the same key never creates a second request or saved record."
+          },
+          "guidance": {
+            "type": "string",
+            "description": "The next step for the caller or agent."
+          }
+        }
+      }
     }
   },
   "paths": {
@@ -32,7 +72,7 @@
       "post": {
         "operationId": "contextOperation",
         "summary": "Ingest, read, or compile context briefs",
-        "description": "Save reusable music context, read progress, or compile a task-specific evidence brief. This reference documents the ingestion, read, brief, save_brief and read_brief actions of the shared HTTP/MCP operation. Brief compilation combines up to ten completed or partial requests in one authorized workspace, reuses saved evidence without provider or model calls, and returns bounded Markdown plus the selected input versions. Creative direction prioritizes lyrics and artwork; playlist pitching prioritizes catalog/audio metadata. Shared artist evidence appears once, with coverage reported separately for each request. Briefs are evidence packets, not generated creative concepts or finished outreach. Inspect readiness, request_coverage and gaps. The brief action is read-only; use save_brief with the same inputs and an idempotency_key to freeze the server-compiled output, then read_brief with its brief_id to retrieve it without recompilation. A newer document revision marks the snapshot superseded without rewriting it. Withdrawn/unavailable evidence, cancelled requests, or removed subject scope withhold the payload. Saving rechecks current evidence before committing. Apply the companion snapshot migration before using save_brief/read_brief. Ingestion dispatches a durable workflow; retry the same input and idempotency key after dispatch failure.",
+        "description": "Save reusable music context, read progress, or compile a task-specific evidence brief. This reference documents the ingestion, read, brief, save_brief and read_brief actions of the shared HTTP/MCP operation. Brief compilation combines up to ten completed or partial requests in one authorized workspace, reuses saved evidence without provider or model calls, and returns bounded Markdown plus the selected input versions. Creative direction prioritizes lyrics and artwork; playlist pitching prioritizes catalog/audio metadata. Shared artist evidence appears once, with coverage reported separately for each request. Briefs are evidence packets, not generated creative concepts or finished outreach. Inspect readiness, request_coverage and gaps. The brief action is read-only; use save_brief with the same inputs and an idempotency_key to freeze the server-compiled output, then read_brief with its brief_id to retrieve it without recompilation. A newer document revision marks the snapshot superseded without rewriting it. Withdrawn/unavailable evidence, cancelled requests, or removed subject scope withhold the payload. Saving rechecks current evidence before committing. Apply the companion snapshot migration before using save_brief/read_brief. Ingestion dispatches a durable workflow; retry the same input and idempotency key after dispatch failure. Failures use one typed error contract on HTTP and MCP: the HTTP body is {error, code, retryable, guidance} with the statuses documented below, and the MCP context tool returns {success: false, code, message, retryable, guidance} with the same values and isError: true. Schema failures are not typed: HTTP returns 400 {error, issues} and MCP rejects the call with InvalidParams. Reading a request whose status is partial is the partial-result contract: output.subjectIds lists what was saved and output.gaps lists what is missing; a brief over a partial request reports readiness partial. Cancellation, source withdrawal, scoped correction and selected-topic refresh are not exposed yet and will reuse this error contract when added.",
         "security": [
           {
             "ApiKey": []
@@ -284,6 +324,32 @@
                     "action": "read_brief",
                     "brief_id": "33333333-3333-4333-8333-333333333333"
                   }
+                },
+                "urlOnlyIngest": {
+                  "summary": "Ingest one Spotify track URL with only an idempotency key",
+                  "description": "The smallest start request. The 202 body carries the durable request.id; poll it with read. No account_id is accepted; identity comes from the credential.",
+                  "value": {
+                    "action": "ingest",
+                    "url": "https://open.spotify.com/track/0000000000000000000000",
+                    "idempotency_key": "track-ingest-2026-10-10-a"
+                  }
+                },
+                "reconnectSameKey": {
+                  "summary": "Reconnect after a lost response by re-sending the identical body",
+                  "description": "Send exactly the same url, topics, direction, organization_id and idempotency_key as the first attempt. The server matches the normalized input fingerprint and returns the same request.id; no second request is created. A completed, partial or cancelled request is returned as-is with no new work. A queued, running or failed request is handed to the durable workflow again: the database claim admits one active run per request, so a live lease prevents duplicate execution, while a failed request or an expired lease is claimed and run again. Changing any field under the same key returns 409 conflict.",
+                  "value": {
+                    "action": "ingest",
+                    "url": "https://open.spotify.com/track/0000000000000000000000",
+                    "idempotency_key": "track-ingest-2026-10-10-a"
+                  }
+                },
+                "readPartialResult": {
+                  "summary": "Read a request that finished with partial evidence",
+                  "description": "A 200 read whose request.status is partial is a usable result, not an error: output.subjectIds lists the saved subjects and output.gaps lists the topics or sources that are missing or unavailable. Compile a brief over it to see readiness and request_coverage. Partial is final for its idempotency_key: re-sending the original ingest body returns this request unchanged. To collect again after the gap cause is resolved, send ingest for the same URL with a new idempotency_key; that creates a new request and reuses identical saved evidence.",
+                  "value": {
+                    "action": "read",
+                    "request_id": "11111111-1111-4111-8111-111111111111"
+                  }
                 }
               }
             }
@@ -297,13 +363,80 @@
             "description": "Read returns request. Brief returns request_id, request_ids, purpose, readiness, bounded Markdown text and text_characters, documents and their serialized characters count, missingTopics, guidance, gaps, request_coverage, and input_manifest. Each coverage entry includes requestId, readiness and missingTopics; overall readiness remains partial if any request has a gap or partial evidence. The manifest includes compilerVersion, method, requestIds, excludedTopics, and selected documents with documentId, resultId (null only if unavailable), subjectId, topic, version and sourceVersionIds. The result is returned without creating a saved brief record. Save/read brief return {snapshot: {id, created_at, purpose, state, superseded, brief}}. state is saved or unavailable; unavailable snapshots return brief: null. saved snapshots return the exact compiled response including its input manifest. Another workspace cannot read the record."
           },
           "400": {
-            "description": "Invalid input"
+            "description": "Invalid input: the body failed schema validation before the operation ran, including an album, playlist or other non-track URL sent to ingest. The body is {error: \"Invalid context request\", issues} with no typed code; the MCP tool rejects the same input with an InvalidParams error."
           },
           "401": {
             "description": "Authentication required"
           },
+          "402": {
+            "description": "budget_exhausted: the authorized budget is exhausted and no paid work started.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContextOperationError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "permission_denied: the caller is not a current member of the selected owner.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContextOperationError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not_found: the request, subject, brief, execution or review does not exist or is not visible in this workspace.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContextOperationError"
+                }
+              }
+            }
+          },
           "409": {
-            "description": "Operation failed, access unavailable, input/key conflict, or request not found. Retry ingestion with the same idempotency key after correcting the cause."
+            "description": "conflict, not_ready or storage_failed; see code. conflict: the idempotency_key was reused with different input or saved state changed; read the record, then send identical input or a new key. not_ready: the request or a prerequisite has not reached the required state yet; read it and retry later. storage_failed: storage rejected the operation for its saved state; read it before changing input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContextOperationError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "unsupported_input: the input passed schema validation but this action does not support it, such as a YouTube video URL sent to ingest. Only public Spotify track URLs are accepted by ingest in this pilot.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContextOperationError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "internal: unclassified failure. Confirm saved state with read before changing input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContextOperationError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "unavailable: a provider or capability is disabled or unreachable, or storage failed transiently. Retry later with the same input, reusing the idempotency_key on actions that take one.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContextOperationError"
+                }
+              }
+            }
           }
         }
       }
