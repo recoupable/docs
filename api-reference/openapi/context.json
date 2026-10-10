@@ -32,7 +32,7 @@
       "post": {
         "operationId": "contextOperation",
         "summary": "Ingest, read, or compile context briefs",
-        "description": "Save reusable music context, read progress, or compile a task-specific evidence brief. This reference documents the ingestion, read, brief, save_brief and read_brief actions of the shared HTTP/MCP operation. Brief compilation combines up to ten completed or partial requests in one authorized workspace, reuses saved evidence without provider or model calls, and returns bounded Markdown plus the selected input versions. Creative direction prioritizes lyrics and artwork; playlist pitching prioritizes catalog/audio metadata. Shared artist evidence appears once, with coverage reported separately for each request. Briefs are evidence packets, not generated creative concepts or finished outreach. Inspect readiness, request_coverage and gaps. The brief action is read-only; use save_brief with the same inputs and an idempotency_key to freeze the server-compiled output, then read_brief with its brief_id to retrieve it without recompilation. A newer document revision marks the snapshot superseded without rewriting it. Withdrawn/unavailable evidence, cancelled requests, or removed subject scope withhold the payload. Saving rechecks current evidence before committing. Apply the companion snapshot migration before using save_brief/read_brief. Ingestion dispatches a durable workflow; retry the same input and idempotency key after dispatch failure.",
+        "description": "Save reusable music context, read progress, or compile a task-specific evidence brief. This reference documents the ingestion, read, brief, save_brief, read_brief and resolve_songwriter_identity actions of the shared HTTP/MCP operation. Brief compilation combines up to ten completed or partial requests in one authorized workspace, reuses saved evidence without provider or model calls, and returns bounded Markdown plus the selected input versions. Creative direction prioritizes lyrics and artwork; playlist pitching prioritizes catalog/audio metadata. Shared artist evidence appears once, with coverage reported separately for each request. Briefs are evidence packets, not generated creative concepts or finished outreach. Inspect readiness, request_coverage and gaps. The brief action is read-only; use save_brief with the same inputs and an idempotency_key to freeze the server-compiled output, then read_brief with its brief_id to retrieve it without recompilation. A newer document revision marks the snapshot superseded without rewriting it. Withdrawn/unavailable evidence, cancelled requests, or removed subject scope withhold the payload. Saving rechecks current evidence before committing. Apply the companion snapshot migration before using save_brief/read_brief. Ingestion dispatches a durable workflow; retry the same input and idempotency key after dispatch failure. resolve_songwriter_identity links one saved songwriter-name request to one organization professional the operator explicitly selected and confirmed; the database rechecks workspace membership and the professional's workspace. It records an operator-confirmed resolution only: no roster enrollment, new professional, name matching, enrichment, login account, catalog right or mandate follows from it.",
         "security": [
           {
             "ApiKey": []
@@ -253,6 +253,50 @@
                         "description": "Optional organization that owns the private context. Current membership is checked."
                       }
                     }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "action",
+                      "request_id",
+                      "professional_id",
+                      "confirmed",
+                      "idempotency_key"
+                    ],
+                    "properties": {
+                      "action": {
+                        "type": "string",
+                        "const": "resolve_songwriter_identity"
+                      },
+                      "organization_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Optional organization that owns the private context. Current membership is checked."
+                      },
+                      "request_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Saved songwriter-name request in the selected workspace. Songwriter-name requests are created by the shared operation's ingest_songwriter_name action (also the delegated MCP tool import_songwriter_context), which this reference does not yet document. It must be partial or completed with its submitted-name evidence still available; withdrawn evidence cannot be resolved."
+                      },
+                      "professional_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Organization professional explicitly selected by the operator from the professional roster (GET /api/organizations/professionals). A professional from another workspace is rejected with 409. Names never select identity; same-name candidates require this ID."
+                      },
+                      "confirmed": {
+                        "type": "boolean",
+                        "const": true,
+                        "description": "Explicit operator confirmation that the submitted name refers to the selected professional. Must be true."
+                      },
+                      "idempotency_key": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[A-Za-z0-9._:-]+$",
+                        "description": "Stable key for retrying the same resolution. An exact replay returns the saved receipt; the same key with a different request or professional is a conflict."
+                      }
+                    }
                   }
                 ]
               },
@@ -284,6 +328,17 @@
                     "action": "read_brief",
                     "brief_id": "33333333-3333-4333-8333-333333333333"
                   }
+                },
+                "resolveSongwriterIdentity": {
+                  "summary": "Link a saved songwriter name to a selected professional",
+                  "value": {
+                    "action": "resolve_songwriter_identity",
+                    "organization_id": "11111111-1111-4111-8111-111111111111",
+                    "request_id": "44444444-4444-4444-8444-444444444444",
+                    "professional_id": "55555555-5555-4555-8555-555555555555",
+                    "confirmed": true,
+                    "idempotency_key": "resolve-writer-1"
+                  }
                 }
               }
             }
@@ -294,7 +349,7 @@
             "description": "Saved ingestion request; inspect request.status and use read to poll. Existing completed/partial requests return without provider work."
           },
           "200": {
-            "description": "Read returns request. Brief returns request_id, request_ids, purpose, readiness, bounded Markdown text and text_characters, documents and their serialized characters count, missingTopics, guidance, gaps, request_coverage, and input_manifest. Each coverage entry includes requestId, readiness and missingTopics; overall readiness remains partial if any request has a gap or partial evidence. The manifest includes compilerVersion, method, requestIds, excludedTopics, and selected documents with documentId, resultId (null only if unavailable), subjectId, topic, version and sourceVersionIds. The result is returned without creating a saved brief record. Save/read brief return {snapshot: {id, created_at, purpose, state, superseded, brief}}. state is saved or unavailable; unavailable snapshots return brief: null. saved snapshots return the exact compiled response including its input manifest. Another workspace cannot read the record."
+            "description": "Read returns request. Brief returns request_id, request_ids, purpose, readiness, bounded Markdown text and text_characters, documents and their serialized characters count, missingTopics, guidance, gaps, request_coverage, and input_manifest. Each coverage entry includes requestId, readiness and missingTopics; overall readiness remains partial if any request has a gap or partial evidence. The manifest includes compilerVersion, method, requestIds, excludedTopics, and selected documents with documentId, resultId (null only if unavailable), subjectId, topic, version and sourceVersionIds. The result is returned without creating a saved brief record. Save/read brief return {snapshot: {id, created_at, purpose, state, superseded, brief}}. state is saved or unavailable; unavailable snapshots return brief: null. saved snapshots return the exact compiled response including its input manifest. Another workspace cannot read the record. resolve_songwriter_identity returns {resolution: {id, request_id, subject_id, professional_id, resolved_by, resolution_basis, created_at}, created}. created is false on an exact replay. The request keeps its submitted-name evidence and input; its output gains resolvedProfessionalId and drops the unconfirmed-identity gap, and read shows the change. A different professional for an already resolved request, or the same idempotency key with different input, returns 409; a professional from another workspace or revoked membership also returns 409, and no resolution is recorded."
           },
           "400": {
             "description": "Invalid input"
@@ -303,7 +358,7 @@
             "description": "Authentication required"
           },
           "409": {
-            "description": "Operation failed, access unavailable, input/key conflict, or request not found. Retry ingestion with the same idempotency key after correcting the cause."
+            "description": "Operation failed, access unavailable, input/key conflict, or request not found. For ingestion, retry with the same idempotency key after correcting the cause. For resolve_songwriter_identity, an already resolved request or a reused key with different input is final: retrying does not change the stored resolution; a wrong selection needs a new songwriter-name request."
           }
         }
       }
