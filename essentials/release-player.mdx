@@ -62,3 +62,15 @@ The API owns `SITES_SPOTIFY_CLIENT_ID` and the optional `PLAYER_APP_ORIGIN` (def
 The browser app uses the existing server-only `SITES_API_URL` override for a local/preview API. Provider credentials stay on the trusted player origin. Existing Apple developer signing credentials supply the short-lived, origin-bound browser token.
 
 Apply release-player migrations `20261010060000` through `20261010060004`, release the API and browser app, register and enable the player's destinations/origins, then verify actual provider authorization, fan readback, playback and activity readback before declaring a campaign live. For the Gatsby Grace artist website (a Next.js app, not the Gatsby framework), set `NEXT_PUBLIC_RECOUP_PLAYER_ID` and `NEXT_PUBLIC_RECOUP_WISH_PLAYER_ID` to the corresponding registered player IDs. Until configured, Gatsby retains its direct DSP links.
+
+## Playlist browsing and organization fan relationships
+
+Spotify playlist destinations show their title and a paginated, selectable song list after connecting to browser playback. Selecting a row starts at its position in the original playlist context; it does not replace the playlist with a single-song queue. The current track is highlighted from Spotify playback state. Unavailable/local/non-song entries stay in position but cannot be selected. Single-song destinations retain the compact player. List-loading failures offer retry and Open in Spotify while playback controls remain available.
+
+The public-playlist list uses the existing Spotify API supported by Recoup’s Extended Quota Mode app. Development Mode restrictions can prevent non-owner playlist reads; a loading fallback is not proof that a playlist is private. Spotify Free handoff and uploaded-file fallback remain unchanged.
+
+A workspace contact is keyed by owner, provider and provider user ID. Its artist fan relationships keep their own IDs and first/last connection dates. Reconnecting through another release of the same artist reuses that relationship. Connecting to another artist in the same workspace adds a relationship to the same contact. Connecting in another workspace creates an independent contact; it never transfers ownership or exposes the other workspace’s activity. Matching email or name alone never merges contacts.
+
+Use `get_workspace_player_fans` or `GET /api/players/fans?organizationId=ORGANIZATION_UUID` for deduplicated contacts and artist relationships. Existing `get_release_player_fans` / `GET /api/players/{id}/fans` remain artist-scoped and add `contact_id`; available profile fields come from the workspace contact. Listening activity retains its historical artist relationship `fan_id` and adds `contact_id`. A Spotify connection still does not subscribe the fan to marketing emails.
+
+Apply `20261010100000_player_organization_contacts.sql` before releasing the API consumers. It backfills organization contacts and links existing fan relationships without changing their IDs or session/event history. The browser playlist change can ship independently. Verify a real non-owner Premium playlist session, selected-song playback, fan readback and organization isolation after deployment.
