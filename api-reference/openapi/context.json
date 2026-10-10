@@ -32,7 +32,7 @@
       "post": {
         "operationId": "contextOperation",
         "summary": "Ingest, read, or compile context briefs",
-        "description": "Save reusable music context, read progress, or compile a task-specific evidence brief. This reference documents the ingestion, read, brief, save_brief and read_brief actions of the shared HTTP/MCP operation. Brief compilation combines up to ten completed or partial requests in one authorized workspace, reuses saved evidence without provider or model calls, and returns bounded Markdown plus the selected input versions. Creative direction prioritizes lyrics and artwork; playlist pitching prioritizes catalog/audio metadata. Shared artist evidence appears once, with coverage reported separately for each request. Briefs are evidence packets, not generated creative concepts or finished outreach. Inspect readiness, request_coverage and gaps. The brief action is read-only; use save_brief with the same inputs and an idempotency_key to freeze the server-compiled output, then read_brief with its brief_id to retrieve it without recompilation. A newer document revision marks the snapshot superseded without rewriting it. Withdrawn/unavailable evidence, cancelled requests, or removed subject scope withhold the payload. Saving rechecks current evidence before committing. Apply the companion snapshot migration before using save_brief/read_brief. Ingestion dispatches a durable workflow; retry the same input and idempotency key after dispatch failure.",
+        "description": "Save reusable music context, read progress, or compile a task-specific evidence brief. This reference documents the ingestion, read, brief, save_brief, read_brief, ingest_unreleased_recording and ingest_planned_release actions of the shared HTTP/MCP operation. Brief compilation combines up to ten completed or partial requests in one authorized workspace, reuses saved evidence without provider or model calls, and returns bounded Markdown plus the selected input versions. Creative direction prioritizes lyrics and artwork; playlist pitching prioritizes catalog/audio metadata. Shared artist evidence appears once, with coverage reported separately for each request. Briefs are evidence packets, not generated creative concepts or finished outreach. Inspect readiness, request_coverage and gaps. The brief action is read-only; use save_brief with the same inputs and an idempotency_key to freeze the server-compiled output, then read_brief with its brief_id to retrieve it without recompilation. A newer document revision marks the snapshot superseded without rewriting it. Withdrawn/unavailable evidence, cancelled requests, or removed subject scope withhold the payload. Saving rechecks current evidence before committing. Apply the companion snapshot migration before using save_brief/read_brief. Ingestion dispatches a durable workflow; retry the same input and idempotency key after dispatch failure. ingest_unreleased_recording and ingest_planned_release save customer assertions under internal workspace identities without dispatching any workflow, provider lookup or charge; ISRC, UPC and store IDs stay explicitly unknown and the request stays partial. Apply the companion unreleased-music migration before using them.",
         "security": [
           {
             "ApiKey": []
@@ -253,6 +253,195 @@
                         "description": "Optional organization that owns the private context. Current membership is checked."
                       }
                     }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "action",
+                      "recording",
+                      "idempotency_key"
+                    ],
+                    "description": "Save an unreleased recording under an internal workspace identity. No ISRC, UPC or store ID is accepted or invented; identifiers remain unknown until a later assignment step. Saving does not assert ownership, roster membership or a composition link.",
+                    "properties": {
+                      "action": {
+                        "type": "string",
+                        "const": "ingest_unreleased_recording"
+                      },
+                      "organization_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Optional organization that owns the private context. Current membership is checked."
+                      },
+                      "recording": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "title"
+                        ],
+                        "properties": {
+                          "title": {
+                            "type": "string",
+                            "minLength": 2,
+                            "maxLength": 200,
+                            "description": "Submitted working or final title. A title is private customer evidence, not a verified recording identity. Control characters are rejected; whitespace runs are collapsed."
+                          },
+                          "working_title": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          "lifecycle_state": {
+                            "type": "string",
+                            "enum": [
+                              "idea",
+                              "in_production",
+                              "mixed",
+                              "mastered",
+                              "delivered_to_distributor"
+                            ],
+                            "description": "Production lifecycle as asserted by the account. Omitted means unknown."
+                          },
+                          "planned_release_date": {
+                            "type": "string",
+                            "format": "date"
+                          }
+                        }
+                      },
+                      "idempotency_key": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[A-Za-z0-9._:-]+$",
+                        "description": "Stable key for retrying the same input. The same key with different input is rejected."
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "action",
+                      "release",
+                      "idempotency_key"
+                    ],
+                    "description": "Save a planned release under an internal workspace identity. Lifecycle, products/formats and promotional or pre-save links are stored separately from store identifiers, which stay unknown; callers cannot supply a UPC, ISRC or store ID. Referenced recordings must already be saved in the same workspace. One recording may appear on any number of planned releases.",
+                    "properties": {
+                      "action": {
+                        "type": "string",
+                        "const": "ingest_planned_release"
+                      },
+                      "organization_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Optional organization that owns the private context. Current membership is checked."
+                      },
+                      "release": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "title"
+                        ],
+                        "properties": {
+                          "title": {
+                            "type": "string",
+                            "minLength": 2,
+                            "maxLength": 200
+                          },
+                          "lifecycle_state": {
+                            "type": "string",
+                            "enum": [
+                              "planned",
+                              "scheduled",
+                              "announced",
+                              "delivered",
+                              "released_unverified"
+                            ],
+                            "description": "Release lifecycle as asserted by the account. Omitted means unknown. released_unverified means the account says it is out but no store listing has been verified."
+                          },
+                          "planned_release_date": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "products": {
+                            "type": "array",
+                            "maxItems": 20,
+                            "items": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "format"
+                              ],
+                              "properties": {
+                                "format": {
+                                  "type": "string",
+                                  "enum": [
+                                    "digital_single",
+                                    "digital_ep",
+                                    "digital_album",
+                                    "vinyl",
+                                    "cd",
+                                    "cassette"
+                                  ]
+                                },
+                                "label": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 200
+                                }
+                              }
+                            }
+                          },
+                          "promotional_links": {
+                            "type": "array",
+                            "maxItems": 20,
+                            "items": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "url"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "enum": [
+                                    "pre_save",
+                                    "smart_link",
+                                    "landing_page",
+                                    "teaser"
+                                  ]
+                                },
+                                "url": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "maxLength": 2048,
+                                  "pattern": "^https?://\\S+$",
+                                  "description": "Lowercase http:// or https:// link without whitespace or control characters. A pre-save or smart link is a promotional locator, not a store identifier."
+                                }
+                              }
+                            }
+                          },
+                          "recording_subject_ids": {
+                            "type": "array",
+                            "maxItems": 100,
+                            "uniqueItems": true,
+                            "items": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "description": "Subject IDs of unreleased or ISRC-backed recordings already saved in the same workspace, in tracklist order; positions start at 1. A recording appears at most once per release. Unknown, withdrawn or other-workspace IDs are rejected when the request is first saved; an identical replay returns the saved request."
+                          }
+                        }
+                      },
+                      "idempotency_key": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[A-Za-z0-9._:-]+$",
+                        "description": "Stable key for retrying the same input. The same key with different input is rejected."
+                      }
+                    }
                   }
                 ]
               },
@@ -294,7 +483,7 @@
             "description": "Saved ingestion request; inspect request.status and use read to poll. Existing completed/partial requests return without provider work."
           },
           "200": {
-            "description": "Read returns request. Brief returns request_id, request_ids, purpose, readiness, bounded Markdown text and text_characters, documents and their serialized characters count, missingTopics, guidance, gaps, request_coverage, and input_manifest. Each coverage entry includes requestId, readiness and missingTopics; overall readiness remains partial if any request has a gap or partial evidence. The manifest includes compilerVersion, method, requestIds, excludedTopics, and selected documents with documentId, resultId (null only if unavailable), subjectId, topic, version and sourceVersionIds. The result is returned without creating a saved brief record. Save/read brief return {snapshot: {id, created_at, purpose, state, superseded, brief}}. state is saved or unavailable; unavailable snapshots return brief: null. saved snapshots return the exact compiled response including its input manifest. Another workspace cannot read the record."
+            "description": "Read returns request. Brief returns request_id, request_ids, purpose, readiness, bounded Markdown text and text_characters, documents and their serialized characters count, missingTopics, guidance, gaps, request_coverage, and input_manifest. Each coverage entry includes requestId, readiness and missingTopics; overall readiness remains partial if any request has a gap or partial evidence. The manifest includes compilerVersion, method, requestIds, excludedTopics, and selected documents with documentId, resultId (null only if unavailable), subjectId, topic, version and sourceVersionIds. The result is returned without creating a saved brief record. Save/read brief return {snapshot: {id, created_at, purpose, state, superseded, brief}}. state is saved or unavailable; unavailable snapshots return brief: null. saved snapshots return the exact compiled response including its input manifest. Another workspace cannot read the record. ingest_unreleased_recording and ingest_planned_release return {request} with status partial, input.kind unreleased_recording or planned_release, input.identityConfirmed false, output.subjectIds with the internal subject, and output.gaps naming the unassigned identifiers."
           },
           "400": {
             "description": "Invalid input"
