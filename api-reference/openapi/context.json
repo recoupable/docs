@@ -253,6 +253,159 @@
                         "description": "Optional organization that owns the private context. Current membership is checked."
                       }
                     }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "action",
+                      "company_subject_id",
+                      "counterparty",
+                      "relationship_kind",
+                      "status",
+                      "idempotency_key"
+                    ],
+                    "description": "Record one operator-asserted business relationship between a saved company subject (from ingest_company_name) and this workspace, one of its artist accounts or one of its organization professionals. The record is private to the workspace and separate from access: it grants no login, membership, ownership, rights share, mandate or collection authority, and it never confirms the company's identity. frontline_roster is distinct from catalog_interest, so a company can keep a catalog_interest after an artist's frontline_roster relationship becomes former. Unknown dates stay null; nothing is inferred. Replaying the same idempotency_key with identical input returns the saved row; changed input is rejected. Returns contract_version company-relationship-v1, relationship (id, company_subject_id, counterparty, relationship_kind, status, started_on, ended_on, basis operator_assertion, note, asserted_by, created_at), replayed and gaps operator_assertion_not_verified, no_ownership_rights_or_mandate_implied and no_access_granted. Not available to delegated OAuth connections.",
+                    "properties": {
+                      "action": {
+                        "type": "string",
+                        "const": "record_company_relationship"
+                      },
+                      "organization_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Optional organization that owns the private context. Current membership is checked."
+                      },
+                      "company_subject_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Saved company subject ID from a company-name context request in this workspace."
+                      },
+                      "counterparty": {
+                        "description": "Who the company has the relationship with, inside this workspace. workspace means the workspace itself (for example its own label or publishing business). artist_account must be an artist the workspace can already access; professional must be an organization professional of this workspace. The counterparty is never created, enrolled or granted access by this action.",
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "workspace"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "artist_id"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "artist_account"
+                              },
+                              "artist_id": {
+                                "type": "string",
+                                "format": "uuid"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "professional_id"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "professional"
+                              },
+                              "professional_id": {
+                                "type": "string",
+                                "format": "uuid"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "relationship_kind": {
+                        "type": "string",
+                        "enum": [
+                          "frontline_roster",
+                          "catalog_interest",
+                          "publishing",
+                          "distribution",
+                          "management",
+                          "services",
+                          "other"
+                        ],
+                        "description": "Business relationship vocabulary only. None of these values asserts ownership, a rights share or a mandate."
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "current",
+                          "former"
+                        ],
+                        "description": "former preserves a historical relationship, such as an artist who left the roster, without deleting it."
+                      },
+                      "started_on": {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      "ended_on": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Only valid with status former. Omit when the end date is unknown."
+                      },
+                      "note": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "default": ""
+                      },
+                      "idempotency_key": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[A-Za-z0-9._:-]+$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "action",
+                      "company_subject_id"
+                    ],
+                    "description": "List this workspace's operator-asserted relationships for one saved company subject, 50 per page ordered by id. coverage is operator_asserted_relationships_only: researched, parsed or inferred relationships are not included. A withdrawn company source withholds the list with state unavailable. Another workspace's rows are never returned, and an unknown or foreign company subject is denied without disclosing whether it exists. Returns contract_version, company_subject_id, state (available or unavailable), coverage, items with the same fields as a recorded relationship, next_id (null on the last page) and the same gaps. Not available to delegated OAuth connections.",
+                    "properties": {
+                      "action": {
+                        "type": "string",
+                        "const": "list_company_relationships"
+                      },
+                      "organization_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Optional organization that owns the private context. Current membership is checked."
+                      },
+                      "company_subject_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "after_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Relationship ID cursor from the previous page's next_id."
+                      }
+                    }
                   }
                 ]
               },
@@ -283,6 +436,21 @@
                   "value": {
                     "action": "read_brief",
                     "brief_id": "33333333-3333-4333-8333-333333333333"
+                  }
+                },
+                "recordFormerRosterRelationship": {
+                  "summary": "Record that an artist left a company's frontline roster",
+                  "value": {
+                    "action": "record_company_relationship",
+                    "company_subject_id": "44444444-4444-4444-8444-444444444444",
+                    "counterparty": {
+                      "kind": "artist_account",
+                      "artist_id": "55555555-5555-4555-8555-555555555555"
+                    },
+                    "relationship_kind": "frontline_roster",
+                    "status": "former",
+                    "ended_on": "2025-06-30",
+                    "idempotency_key": "roster-former-v1"
                   }
                 }
               }
