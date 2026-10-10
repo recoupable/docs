@@ -32,7 +32,7 @@
       "post": {
         "operationId": "contextOperation",
         "summary": "Ingest, read, or compile context briefs",
-        "description": "Save reusable music context, read progress, or compile a task-specific evidence brief. This reference documents the ingestion, read, brief, save_brief and read_brief actions of the shared HTTP/MCP operation. Brief compilation combines up to ten completed or partial requests in one authorized workspace, reuses saved evidence without provider or model calls, and returns bounded Markdown plus the selected input versions. Creative direction prioritizes lyrics and artwork; playlist pitching prioritizes catalog/audio metadata. Shared artist evidence appears once, with coverage reported separately for each request. Briefs are evidence packets, not generated creative concepts or finished outreach. Inspect readiness, request_coverage and gaps. The brief action is read-only; use save_brief with the same inputs and an idempotency_key to freeze the server-compiled output, then read_brief with its brief_id to retrieve it without recompilation. A newer document revision marks the snapshot superseded without rewriting it. Withdrawn/unavailable evidence, cancelled requests, or removed subject scope withhold the payload. Saving rechecks current evidence before committing. Apply the companion snapshot migration before using save_brief/read_brief. Ingestion dispatches a durable workflow; retry the same input and idempotency key after dispatch failure.",
+        "description": "Save reusable music context, read progress, or compile a task-specific evidence brief. This reference documents the ingestion, read, brief, save_brief and read_brief actions of the shared HTTP/MCP operation. Brief compilation combines up to ten completed or partial requests in one authorized workspace, reuses saved evidence without provider or model calls, and returns bounded Markdown plus the selected input versions. Creative direction prioritizes lyrics and artwork; playlist pitching prioritizes catalog/audio metadata. Shared artist evidence appears once, with coverage reported separately for each request. Briefs are evidence packets, not generated creative concepts or finished outreach. Inspect readiness, request_coverage and gaps. The brief action is read-only; use save_brief with the same inputs and an idempotency_key to freeze the server-compiled output, then read_brief with its brief_id to retrieve it without recompilation. A newer document revision marks the snapshot superseded without rewriting it. Withdrawn/unavailable evidence, cancelled requests, or removed subject scope withhold the payload. Saving rechecks current evidence before committing. Apply the companion snapshot migration before using save_brief/read_brief. Ingestion dispatches a durable workflow; retry the same input and idempotency key after dispatch failure. record_company_relationship and list_company_relationships keep operator-asserted company business relationships, such as frontline roster and catalog interest, private to the workspace and separate from access.",
         "security": [
           {
             "ApiKey": []
@@ -265,7 +265,7 @@
                       "status",
                       "idempotency_key"
                     ],
-                    "description": "Record one operator-asserted business relationship between a saved company subject (from ingest_company_name) and this workspace, one of its artist accounts or one of its organization professionals. The record is private to the workspace and separate from access: it grants no login, membership, ownership, rights share, mandate or collection authority, and it never confirms the company's identity. frontline_roster is distinct from catalog_interest, so a company can keep a catalog_interest after an artist's frontline_roster relationship becomes former. Unknown dates stay null; nothing is inferred. Replaying the same idempotency_key with identical input returns the saved row; changed input is rejected. Returns contract_version company-relationship-v1, relationship (id, company_subject_id, counterparty, relationship_kind, status, started_on, ended_on, basis operator_assertion, note, asserted_by, created_at), replayed and gaps operator_assertion_not_verified, no_ownership_rights_or_mandate_implied and no_access_granted. Not available to delegated OAuth connections.",
+                    "description": "Record one operator-asserted business relationship that a saved company subject holds toward this workspace, one of its artist accounts or one of its organization professionals (for example, the company has the artist on its frontline roster, or distributes for the workspace). The company subject is the subjectIds[0] returned when the workspace saves a company name through this shared Context operation; that company-name action is not yet described in this reference. The record is private to the workspace and separate from access: it grants no login, membership, ownership, rights share, mandate or collection authority, and it never confirms the company's identity. frontline_roster is distinct from catalog_interest, so a company can keep a catalog_interest after an artist's frontline_roster relationship becomes former. Rows are never rewritten or deleted: when an artist leaves the roster, record a former row with supersedes_id set to the earlier current row. Unknown dates stay null; nothing is inferred. Replaying the same idempotency_key with identical input returns the saved row; changed input is rejected. The counterparty must be reachable in the workspace now: an artist the workspace no longer reaches, a party known only by name, and the reverse direction (the workspace holding an interest in the company) cannot be recorded yet. Returns contract_version company-relationship-v1, relationship (id, company_subject_id, counterparty, relationship_kind, status, started_on, ended_on, basis operator_assertion, note, asserted_by, supersedes_id, superseded_by, created_at), replayed and gaps operator_assertion_not_verified, no_ownership_rights_or_mandate_implied and no_access_granted. Not available to delegated OAuth connections.",
                     "properties": {
                       "action": {
                         "type": "string",
@@ -282,7 +282,7 @@
                         "description": "Saved company subject ID from a company-name context request in this workspace."
                       },
                       "counterparty": {
-                        "description": "Who the company has the relationship with, inside this workspace. workspace means the workspace itself (for example its own label or publishing business). artist_account must be an artist the workspace can already access; professional must be an organization professional of this workspace. The counterparty is never created, enrolled or granted access by this action.",
+                        "description": "Who the company holds the relationship toward, inside this workspace. workspace means the workspace itself (for example its own label or publishing business). artist_account must be an artist the workspace can already access; professional must be an organization professional of this workspace. The counterparty is never created, enrolled or granted access by this action.",
                         "oneOf": [
                           {
                             "type": "object",
@@ -363,18 +363,32 @@
                       "ended_on": {
                         "type": "string",
                         "format": "date",
-                        "description": "Only valid with status former. Omit when the end date is unknown."
+                        "description": "Only valid with status former, and not before started_on. Omit when the end date is unknown."
                       },
                       "note": {
                         "type": "string",
                         "maxLength": 2000,
                         "default": ""
                       },
+                      "supersedes_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Earlier relationship row this one replaces, such as the current frontline_roster row when the artist leaves. It must belong to the same workspace, company, counterparty and relationship_kind, and each row is superseded at most once. The earlier row is kept unchanged and is listed with superseded_by."
+                      },
                       "idempotency_key": {
                         "type": "string",
                         "minLength": 1,
                         "maxLength": 128,
                         "pattern": "^[A-Za-z0-9._:-]+$"
+                      }
+                    },
+                    "dependentSchemas": {
+                      "ended_on": {
+                        "properties": {
+                          "status": {
+                            "const": "former"
+                          }
+                        }
                       }
                     }
                   },
@@ -385,7 +399,7 @@
                       "action",
                       "company_subject_id"
                     ],
-                    "description": "List this workspace's operator-asserted relationships for one saved company subject, 50 per page ordered by id. coverage is operator_asserted_relationships_only: researched, parsed or inferred relationships are not included. A withdrawn company source withholds the list with state unavailable. Another workspace's rows are never returned, and an unknown or foreign company subject is denied without disclosing whether it exists. Returns contract_version, company_subject_id, state (available or unavailable), coverage, items with the same fields as a recorded relationship, next_id (null on the last page) and the same gaps. Not available to delegated OAuth connections.",
+                    "description": "List this workspace's operator-asserted relationships for one saved company subject, 50 per page ordered by id. coverage is operator_asserted_relationships_only: researched, parsed or inferred relationships are not included. After the workspace withdraws the company source, the list returns state unavailable with no items. Another workspace's rows are never returned, and an unknown or foreign company subject (including another workspace's withdrawn one) is denied without disclosing whether it exists. Returns contract_version, company_subject_id, state (available or unavailable), coverage, items with the same fields as a recorded relationship, next_id (null on the last page) and the same gaps. Items with superseded_by null are the latest statements; superseded rows remain as history. Not available to delegated OAuth connections.",
                     "properties": {
                       "action": {
                         "type": "string",
@@ -450,6 +464,7 @@
                     "relationship_kind": "frontline_roster",
                     "status": "former",
                     "ended_on": "2025-06-30",
+                    "supersedes_id": "66666666-6666-4666-8666-666666666666",
                     "idempotency_key": "roster-former-v1"
                   }
                 }
