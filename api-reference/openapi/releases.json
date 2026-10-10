@@ -113,108 +113,7 @@
                       ]
                     },
                     "latest_run": {
-                      "type": [
-                        "object",
-                        "null"
-                      ],
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "format": "uuid"
-                        },
-                        "catalog_id": {
-                          "type": "string",
-                          "format": "uuid"
-                        },
-                        "revision": {
-                          "type": "string",
-                          "format": "uuid"
-                        },
-                        "scheduled_day": {
-                          "type": "string",
-                          "format": "date"
-                        },
-                        "since": {
-                          "type": "string",
-                          "format": "date"
-                        },
-                        "until": {
-                          "type": "string",
-                          "format": "date"
-                        },
-                        "status": {
-                          "type": "string",
-                          "enum": [
-                            "queued",
-                            "running",
-                            "complete",
-                            "partial",
-                            "failed",
-                            "cancelled"
-                          ]
-                        },
-                        "coverage": {
-                          "type": "object",
-                          "additionalProperties": {
-                            "type": [
-                              "object",
-                              "null"
-                            ],
-                            "properties": {
-                              "state": {
-                                "type": "string",
-                                "enum": [
-                                  "complete",
-                                  "partial",
-                                  "unavailable",
-                                  "failed"
-                                ]
-                              },
-                              "observed_days": {
-                                "type": "integer",
-                                "minimum": 0,
-                                "maximum": 62
-                              },
-                              "retrieved_at": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ],
-                                "format": "date-time"
-                              },
-                              "source_hash": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ]
-                              },
-                              "provider_recording_id": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ]
-                              }
-                            }
-                          }
-                        },
-                        "error": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        },
-                        "created_at": {
-                          "type": "string",
-                          "format": "date-time"
-                        },
-                        "finished_at": {
-                          "type": [
-                            "string",
-                            "null"
-                          ],
-                          "format": "date-time"
-                        }
-                      },
+                      "$ref": "#/components/schemas/CatalogStreamRun",
                       "description": "Run status, per-ISRC coverage, errors, window and completion timestamp."
                     },
                     "territory": {
@@ -385,45 +284,7 @@
                             "type": "boolean"
                           },
                           "latest_attempt": {
-                            "type": [
-                              "object",
-                              "null"
-                            ],
-                            "properties": {
-                              "state": {
-                                "type": "string",
-                                "enum": [
-                                  "complete",
-                                  "partial",
-                                  "unavailable",
-                                  "failed"
-                                ]
-                              },
-                              "observed_days": {
-                                "type": "integer",
-                                "minimum": 0,
-                                "maximum": 62
-                              },
-                              "retrieved_at": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ],
-                                "format": "date-time"
-                              },
-                              "source_hash": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ]
-                              },
-                              "provider_recording_id": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ]
-                              }
-                            },
+                            "$ref": "#/components/schemas/CatalogStreamReceipt",
                             "description": "Fresh recording-level receipt for the latest run, including state, observed_days, retrieved_at, source_hash and provider_recording_id. Observation retrieved_at is when its retained version was introduced."
                           }
                         }
@@ -507,108 +368,7 @@
                       ]
                     },
                     "latest_run": {
-                      "type": [
-                        "object",
-                        "null"
-                      ],
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "format": "uuid"
-                        },
-                        "catalog_id": {
-                          "type": "string",
-                          "format": "uuid"
-                        },
-                        "revision": {
-                          "type": "string",
-                          "format": "uuid"
-                        },
-                        "scheduled_day": {
-                          "type": "string",
-                          "format": "date"
-                        },
-                        "since": {
-                          "type": "string",
-                          "format": "date"
-                        },
-                        "until": {
-                          "type": "string",
-                          "format": "date"
-                        },
-                        "status": {
-                          "type": "string",
-                          "enum": [
-                            "queued",
-                            "running",
-                            "complete",
-                            "partial",
-                            "failed",
-                            "cancelled"
-                          ]
-                        },
-                        "coverage": {
-                          "type": "object",
-                          "additionalProperties": {
-                            "type": [
-                              "object",
-                              "null"
-                            ],
-                            "properties": {
-                              "state": {
-                                "type": "string",
-                                "enum": [
-                                  "complete",
-                                  "partial",
-                                  "unavailable",
-                                  "failed"
-                                ]
-                              },
-                              "observed_days": {
-                                "type": "integer",
-                                "minimum": 0,
-                                "maximum": 62
-                              },
-                              "retrieved_at": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ],
-                                "format": "date-time"
-                              },
-                              "source_hash": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ]
-                              },
-                              "provider_recording_id": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ]
-                              }
-                            }
-                          }
-                        },
-                        "error": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        },
-                        "created_at": {
-                          "type": "string",
-                          "format": "date-time"
-                        },
-                        "finished_at": {
-                          "type": [
-                            "string",
-                            "null"
-                          ],
-                          "format": "date-time"
-                        }
-                      },
+                      "$ref": "#/components/schemas/CatalogStreamRun",
                       "description": "Run status, per-ISRC coverage, errors, window and completion timestamp."
                     },
                     "territory": {
@@ -769,108 +529,7 @@
                       ]
                     },
                     "latest_run": {
-                      "type": [
-                        "object",
-                        "null"
-                      ],
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "format": "uuid"
-                        },
-                        "catalog_id": {
-                          "type": "string",
-                          "format": "uuid"
-                        },
-                        "revision": {
-                          "type": "string",
-                          "format": "uuid"
-                        },
-                        "scheduled_day": {
-                          "type": "string",
-                          "format": "date"
-                        },
-                        "since": {
-                          "type": "string",
-                          "format": "date"
-                        },
-                        "until": {
-                          "type": "string",
-                          "format": "date"
-                        },
-                        "status": {
-                          "type": "string",
-                          "enum": [
-                            "queued",
-                            "running",
-                            "complete",
-                            "partial",
-                            "failed",
-                            "cancelled"
-                          ]
-                        },
-                        "coverage": {
-                          "type": "object",
-                          "additionalProperties": {
-                            "type": [
-                              "object",
-                              "null"
-                            ],
-                            "properties": {
-                              "state": {
-                                "type": "string",
-                                "enum": [
-                                  "complete",
-                                  "partial",
-                                  "unavailable",
-                                  "failed"
-                                ]
-                              },
-                              "observed_days": {
-                                "type": "integer",
-                                "minimum": 0,
-                                "maximum": 62
-                              },
-                              "retrieved_at": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ],
-                                "format": "date-time"
-                              },
-                              "source_hash": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ]
-                              },
-                              "provider_recording_id": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ]
-                              }
-                            }
-                          }
-                        },
-                        "error": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        },
-                        "created_at": {
-                          "type": "string",
-                          "format": "date-time"
-                        },
-                        "finished_at": {
-                          "type": [
-                            "string",
-                            "null"
-                          ],
-                          "format": "date-time"
-                        }
-                      },
+                      "$ref": "#/components/schemas/CatalogStreamRun",
                       "description": "Run status, per-ISRC coverage, errors, window and completion timestamp."
                     },
                     "territory": {
@@ -3806,6 +3465,113 @@
       }
     },
     "schemas": {
+      "CatalogStreamReceipt": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "complete",
+              "partial",
+              "unavailable",
+              "failed"
+            ]
+          },
+          "observed_days": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 62
+          },
+          "retrieved_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "source_hash": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "provider_recording_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "CatalogStreamRun": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "catalog_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "scheduled_day": {
+            "type": "string",
+            "format": "date"
+          },
+          "since": {
+            "type": "string",
+            "format": "date"
+          },
+          "until": {
+            "type": "string",
+            "format": "date"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "complete",
+              "partial",
+              "failed",
+              "cancelled"
+            ]
+          },
+          "coverage": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CatalogStreamReceipt"
+            }
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finished_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
       "AddCatalogSongInput": {
         "type": "object",
         "required": [
