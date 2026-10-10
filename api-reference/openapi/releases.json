@@ -117,6 +117,95 @@
                         "object",
                         "null"
                       ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "catalog_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "revision": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "scheduled_day": {
+                          "type": "string",
+                          "format": "date"
+                        },
+                        "since": {
+                          "type": "string",
+                          "format": "date"
+                        },
+                        "until": {
+                          "type": "string",
+                          "format": "date"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "queued",
+                            "running",
+                            "complete",
+                            "partial",
+                            "failed",
+                            "cancelled"
+                          ]
+                        },
+                        "coverage": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "properties": {
+                              "state": {
+                                "type": "string",
+                                "enum": [
+                                  "complete",
+                                  "partial",
+                                  "unavailable",
+                                  "failed"
+                                ]
+                              },
+                              "observed_days": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 62
+                              },
+                              "retrieved_at": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "source_hash": {
+                                "type": "string"
+                              },
+                              "provider_recording_id": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "error": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "finished_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "date-time"
+                        }
+                      },
                       "description": "Run status, per-ISRC coverage, errors, window and completion timestamp."
                     },
                     "territory": {
@@ -291,6 +380,32 @@
                               "object",
                               "null"
                             ],
+                            "properties": {
+                              "state": {
+                                "type": "string",
+                                "enum": [
+                                  "complete",
+                                  "partial",
+                                  "unavailable",
+                                  "failed"
+                                ]
+                              },
+                              "observed_days": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 62
+                              },
+                              "retrieved_at": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "source_hash": {
+                                "type": "string"
+                              },
+                              "provider_recording_id": {
+                                "type": "string"
+                              }
+                            },
                             "description": "Fresh recording-level receipt for the latest run, including state, observed_days, retrieved_at, source_hash and provider_recording_id. Observation retrieved_at is when its retained version was introduced."
                           }
                         }
@@ -378,6 +493,95 @@
                         "object",
                         "null"
                       ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "catalog_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "revision": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "scheduled_day": {
+                          "type": "string",
+                          "format": "date"
+                        },
+                        "since": {
+                          "type": "string",
+                          "format": "date"
+                        },
+                        "until": {
+                          "type": "string",
+                          "format": "date"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "queued",
+                            "running",
+                            "complete",
+                            "partial",
+                            "failed",
+                            "cancelled"
+                          ]
+                        },
+                        "coverage": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "properties": {
+                              "state": {
+                                "type": "string",
+                                "enum": [
+                                  "complete",
+                                  "partial",
+                                  "unavailable",
+                                  "failed"
+                                ]
+                              },
+                              "observed_days": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 62
+                              },
+                              "retrieved_at": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "source_hash": {
+                                "type": "string"
+                              },
+                              "provider_recording_id": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "error": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "finished_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "date-time"
+                        }
+                      },
                       "description": "Run status, per-ISRC coverage, errors, window and completion timestamp."
                     },
                     "territory": {
@@ -444,7 +648,7 @@
             }
           },
           "400": {
-            "description": "Invalid input or incomplete calendar period"
+            "description": "Invalid input"
           },
           "401": {
             "description": "Authentication required"
@@ -542,6 +746,95 @@
                         "object",
                         "null"
                       ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "catalog_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "revision": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "scheduled_day": {
+                          "type": "string",
+                          "format": "date"
+                        },
+                        "since": {
+                          "type": "string",
+                          "format": "date"
+                        },
+                        "until": {
+                          "type": "string",
+                          "format": "date"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "queued",
+                            "running",
+                            "complete",
+                            "partial",
+                            "failed",
+                            "cancelled"
+                          ]
+                        },
+                        "coverage": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "properties": {
+                              "state": {
+                                "type": "string",
+                                "enum": [
+                                  "complete",
+                                  "partial",
+                                  "unavailable",
+                                  "failed"
+                                ]
+                              },
+                              "observed_days": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 62
+                              },
+                              "retrieved_at": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "source_hash": {
+                                "type": "string"
+                              },
+                              "provider_recording_id": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "error": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "finished_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "date-time"
+                        }
+                      },
                       "description": "Run status, per-ISRC coverage, errors, window and completion timestamp."
                     },
                     "territory": {
@@ -611,7 +904,7 @@
             "description": "Tracking must be enabled before refresh"
           },
           "400": {
-            "description": "Invalid input or incomplete calendar period"
+            "description": "Invalid input"
           },
           "401": {
             "description": "Authentication required"
@@ -854,8 +1147,10 @@
                             "type": "string"
                           },
                           "name": {
-                            "type": "string",
-                            "nullable": true
+                            "type": [
+                              "string",
+                              "null"
+                            ]
                           },
                           "state": {
                             "type": "string",
@@ -908,20 +1203,28 @@
                             }
                           },
                           "previous_change": {
-                            "type": "number",
-                            "nullable": true
+                            "type": [
+                              "number",
+                              "null"
+                            ]
                           },
                           "current_change": {
-                            "type": "number",
-                            "nullable": true
+                            "type": [
+                              "number",
+                              "null"
+                            ]
                           },
                           "absolute_growth": {
-                            "type": "number",
-                            "nullable": true
+                            "type": [
+                              "number",
+                              "null"
+                            ]
                           },
                           "percentage_growth": {
-                            "type": "number",
-                            "nullable": true,
+                            "type": [
+                              "number",
+                              "null"
+                            ],
                             "description": "Percentage change in period counter movement; null for a zero baseline or non-comparable series."
                           },
                           "zero_baseline": {
