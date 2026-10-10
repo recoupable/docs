@@ -106,6 +106,7 @@
                   },
                   {
                     "type": "object",
+                    "description": "Read one saved request. A request whose Spotify track is already mapped to a different ISRC fails with an error starting identity_conflict: and output.identityConflicts [{providerId, observedIsrc, existingIsrcs, linkIds}]. linkIds name the contested identity links: a legacy mapping is saved as a conflict link with the provider evidence, and an existing accepted mapping is reported unchanged. No recording, release or artist context is accepted for that request and brief refuses it; retry the request after the mapping is resolved.",
                     "additionalProperties": false,
                     "required": [
                       "action",
