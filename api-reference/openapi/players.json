@@ -773,7 +773,7 @@
     "/api/players/{id}/fans": {
       "get": {
         "summary": "Read artist player fans",
-        "description": "Artist-level Spotify fans across releases in the same workspace. Returns fans (id, provider, available email, display_name, first/last_connected_at), scope=artist_in_workspace, marketingConsent=false, offset, limit. Does not expose provider tokens or grant marketing permission. MCP: get_release_player_fans.",
+        "description": "Artist-level Spotify fan relationships across releases in the authorized workspace. Each row keeps its stable relationship id and adds contact_id, the workspace-owned contact shared across artist relationships. Email/display_name come from the latest available confirmed workspace contact profile. scope=artist_in_workspace; marketingConsent=false. No provider tokens or cross-workspace identity links. MCP: get_release_player_fans.",
         "security": [
           {
             "apiKeyAuth": []
@@ -1393,6 +1393,116 @@
           }
         }
       }
+    },
+    "/api/players/fans": {
+      "get": {
+        "summary": "Read workspace player fans",
+        "description": "One contact per workspace and Spotify provider identity, with all artist relationships for that workspace. Authentication and current workspace access are required. Never merged by email/name or linked across organizations. Sign-in does not grant email marketing consent. MCP: get_workspace_player_fans.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "query",
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid",
+              "description": "Authorized workspace; omit for the authenticated account. Never send account_id."
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000,
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "PlayerFansResponse fields returned by the release player service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspacePlayerFansResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Workspace, origin, or session access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Feature/configuration temporarily unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing/invalid authentication or failed provider authorization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Request rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1604,13 +1714,20 @@
           "last_connected_at": {
             "type": "string",
             "format": "date-time"
+          },
+          "contact_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Workspace-owned contact shared across this fan\u2019s artist relationships."
           }
         },
         "required": [
           "id",
           "provider",
           "first_connected_at",
-          "last_connected_at"
+          "last_connected_at",
+          "contact_id",
+          "contact_id"
         ]
       },
       "PlayerFansResponse": {
@@ -1698,6 +1815,13 @@
               "string",
               "null"
             ]
+          },
+          "contact_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
           }
         },
         "required": [
@@ -1974,6 +2098,110 @@
           "player_session_id",
           "fanCapture"
         ]
+      },
+      "WorkspacePlayerFansResponse": {
+        "type": "object",
+        "required": [
+          "fans",
+          "scope",
+          "marketingConsent",
+          "offset",
+          "limit",
+          "nextOffset"
+        ],
+        "properties": {
+          "fans": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "provider",
+                "email",
+                "display_name",
+                "first_connected_at",
+                "last_connected_at",
+                "artists"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "Contact ID within this workspace, not an artist relationship ID."
+                },
+                "provider": {
+                  "type": "string",
+                  "const": "spotify"
+                },
+                "email": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "display_name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "first_connected_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "last_connected_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "artists": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "artist_id",
+                      "first_connected_at",
+                      "last_connected_at"
+                    ],
+                    "properties": {
+                      "artist_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "first_connected_at": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "last_connected_at": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "scope": {
+            "type": "string",
+            "const": "workspace"
+          },
+          "marketingConsent": {
+            "type": "boolean",
+            "const": false
+          },
+          "offset": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "nextOffset": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        }
       }
     }
   }
