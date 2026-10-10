@@ -68,7 +68,7 @@
                       "url": {
                         "type": "string",
                         "format": "uri",
-                        "description": "Spotify track URL. Albums, playlists and YouTube ingestion are not enabled in this pilot."
+                        "description": "Spotify track URL. A single YouTube video URL passes validation but this pilot rejects it before any provider call (only Spotify tracks are enabled). Spotify album URLs, including a single's album page, are rejected here and must be submitted with ingest_release. Playlists, artist pages and channels are unsupported and rejected with 400 before any provider call."
                       },
                       "idempotency_key": {
                         "type": "string",
@@ -153,7 +153,8 @@
                         "type": "string",
                         "enum": [
                           "creative_direction",
-                          "playlist_pitch"
+                          "playlist_pitch",
+                          "company_onboarding"
                         ]
                       },
                       "max_characters": {
@@ -202,7 +203,8 @@
                         "type": "string",
                         "enum": [
                           "creative_direction",
-                          "playlist_pitch"
+                          "playlist_pitch",
+                          "company_onboarding"
                         ]
                       },
                       "max_characters": {
