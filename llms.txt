@@ -1,0 +1,50 @@
+# Recoup
+
+> AI infrastructure for the music business. Opinionated plugins and APIs that let AI agents run record labels.
+
+Recoup follows a BYOA (Bring Your Own Agent) strategy: customers use their own AI coding tools (Claude Code, Claude Cowork, Cursor, Codex) and install Recoup plugins to get music-industry superpowers.
+
+## Quick Start
+
+Base URL: `https://api.recoupable.com/api`
+Auth: `x-api-key` header on all requests.
+
+Get an API key instantly (no human needed):
+```
+POST https://api.recoupable.com/api/agents/signup
+Body: {"email": "agent+<unique>@recoupable.com"}
+Response: {"api_key": "recoup_sk_..."}
+```
+
+Or create one manually: https://chat.recoupable.com/keys
+
+## Plugins
+
+Install in any supported AI coding tool:
+
+| Plugin | Install | What it does |
+|--------|---------|-------------|
+| recoup-research-plugin | `claude plugin install https://github.com/recoupable/recoup-research-plugin` | Artist analytics, audience insights, playlist intelligence, competitive analysis, trend detection, people outreach, web intelligence |
+| recoup-content-plugin | `claude plugin install https://github.com/recoupable/recoup-content-plugin` | Create short-form music videos, captions, images for artists |
+| recoup-catalogs-plugin | `claude plugin install https://github.com/recoupable/recoup-catalogs-plugin` | Catalog acquisition analysis — normalize data rooms, value catalogs, generate IC memos and dashboards |
+| recoup-platform-plugin | `claude plugin install https://github.com/recoupable/recoup-platform-plugin` | Cross-cutting platform utilities (accounts, tasks, sandboxes) |
+
+## API Groups
+
+- **Research** — Artist profiles, streaming analytics, audience demographics, playlist positions, competitive landscape, career trajectory, genre analysis, festival appearances, chart history, web intelligence. The core data layer.
+- **Content** — AI video creation pipeline: generate images, videos (6 modes incl. lipsync), captions. Templates system. Async pipeline with polling.
+- **Artists** — Create/manage artist accounts, social profiles, fan segments, profile data across platforms.
+- **Chat** — AI-powered conversations with artist context. Streaming and generate modes. Workflow support.
+- **Tasks** — Cron-scheduled automation (daily reports, content generation, social monitoring).
+- **Songs & Catalogs** — Song database (ISRC-based), catalog management, AI music analysis with presets.
+- **Social** — Spotify, Instagram, X (Twitter) data. Social scraping, connector OAuth management.
+- **Accounts & Orgs** — User accounts, organizations, subscriptions, credits, billing.
+- **Sandboxes** — Ephemeral dev environments with GitHub-backed file storage.
+- **AI** — Model listing, agent templates (CRUD + favorites).
+
+## Docs
+
+- Full documentation: https://developers.recoupable.com
+- API reference: https://developers.recoupable.com/api-reference/introduction
+- Quickstart: https://developers.recoupable.com/quickstart
+- Expanded LLM reference: https://developers.recoupable.com/llms-full.txt
