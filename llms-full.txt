@@ -1,0 +1,647 @@
+# Recoup API — Full Reference
+
+> Music business infrastructure for AI agents. Research, content creation, catalog deals, and platform management — all via REST API or agent plugins.
+
+Base URL: https://api.recoupable.dev/api
+Docs: https://developers.recoupable.dev
+MCP Server: https://api.recoupable.dev/mcp
+Compact version: https://developers.recoupable.dev/llms.txt
+
+## Authentication
+
+All endpoints require `x-api-key` header except agent onboarding (`/api/agents/signup`, `/api/agents/verify`).
+
+### Get an API key instantly
+```
+POST /api/agents/signup
+Content-Type: application/json
+{"email": "agent+{timestamp}-{random}@recoupable.com"}
+→ {"account_id": "uuid", "api_key": "recoup_sk_..."}
+```
+
+The `agent+` prefix bypasses email verification. Combine `$(date +%s)` and `$RANDOM` for collision-free addresses.
+
+### Verify (non-agent emails)
+```
+POST /api/agents/verify
+{"email": "user@example.com", "code": "123456"}
+→ {"api_key": "recoup_sk_..."}
+```
+
+---
+
+## Agent Plugins
+
+Install structured workflows into Claude Code, Cowork, Codex, or Cursor:
+
+| Plugin | Skills | Install |
+|--------|--------|---------|
+| Platform | 2 (getting-started, health-check) | `claude plugin install https://github.com/recoupable/recoup-platform-plugin` |
+| Research | 7 (artist-research, playlist-intelligence, audience-analysis, competitive-analysis, trend-detection, people-outreach, web-intelligence) | `claude plugin install https://github.com/recoupable/recoup-research-plugin` |
+| Content | 3 (content-creation, short-video, recoup-content-create) | `claude plugin install https://github.com/recoupable/recoup-content-plugin` |
+| Catalog Deals | 17 (full deal pipeline: data room → normalization → valuation → memos) | `claude plugin install https://github.com/recoupable/recoup-catalogs-plugin` |
+
+Marketplace (all plugins): Add `https://github.com/recoupable/marketplace`
+
+---
+
+## Research Endpoints
+
+### GET /api/research/search
+Search for artists by name.
+Query params: `q` (required), `limit`, `offset`
+
+### GET /api/research/lookup
+Resolve artist name or URL to internal ID.
+Query params: `name` or `url`
+
+### GET /api/research/profile
+Full artist profile — bio, genres, labels, social links, images.
+Query params: `artistId` (required)
+
+### GET /api/research/metrics
+Streaming platform metrics — Spotify listeners, followers, growth rates.
+Query params: `artistId` (required)
+
+### GET /api/research/audience
+Audience demographics — age, gender, geography, listening habits.
+Query params: `artistId` (required)
+
+### GET /api/research/similar
+Similar artists based on audience overlap and genre.
+Query params: `artistId` (required), `limit`
+
+### GET /api/research/playlists
+Playlist placements — which playlists feature this artist.
+Query params: `artistId` (required)
+
+### GET /api/research/track-playlists
+Playlists for a specific track.
+Query params: `trackId` (required)
+
+### GET /api/research/tracks
+Full track catalog for an artist.
+Query params: `artistId` (required)
+
+### GET /api/research/track
+Single track details.
+Query params: `trackId` (required)
+
+### GET /api/research/track-stats
+Streaming stats for a specific track.
+Query params: `trackId` (required)
+
+### GET /api/research/albums
+Album catalog for an artist.
+Query params: `artistId` (required)
+
+### GET /api/research/album-measurements
+Streaming measurements for an album.
+Query params: `albumId` (required)
+
+### GET /api/research/measurements
+Track-level streaming measurements.
+Query params: `trackId` (required)
+
+### POST /api/research/measurement-jobs
+Create a measurement tracking job for ongoing monitoring.
+
+### GET /api/research/career
+Career timeline — releases, milestones, label changes, social growth.
+Query params: `artistId` (required)
+
+### GET /api/research/milestones
+Key career milestones.
+Query params: `artistId` (required)
+
+### GET /api/research/insights
+AI-generated insights about an artist's career and data.
+Query params: `artistId` (required)
+
+### GET /api/research/deep
+Deep research report — comprehensive multi-source analysis.
+Query params: `artistId` (required)
+
+### GET /api/research/people
+Industry people search — find managers, A&Rs, producers, etc.
+Query params: `q` (required)
+
+### POST /api/research/enrich
+Enrich an entity (person, company) with web data.
+
+### GET /api/research/extract
+Extract structured content from a URL.
+Query params: `url` (required)
+
+### GET /api/research/web
+Web search with music industry context.
+Query params: `q` (required)
+
+### GET /api/research/urls
+Social media URLs and web presence for an artist.
+Query params: `artistId` (required)
+
+---
+
+## Content Creation Endpoints
+
+### POST /api/content/create
+Full content pipeline — takes an artist account ID and produces a finished social-ready video with caption.
+Body: `{"artistAccountId": "uuid", "template": "optional-name", "lipsync": false, "upscale": false}`
+Returns: `{"runId": "uuid"}` — poll with tasks endpoint.
+
+### POST /api/content/image
+Generate an image from a text prompt.
+Body: `{"prompt": "...", "reference_image_url": "optional", "template": "optional"}`
+Returns: `{"url": "image-url"}`
+
+### POST /api/content/video
+Generate a video. 6 modes:
+- `prompt` — text to video. Body: `{"prompt": "..."}`
+- `animate` — still image to video. Body: `{"image_url": "...", "prompt": "..."}`
+- `reference` — style reference. Body: `{"image_url": "...", "prompt": "..."}`
+- `extend` — continue existing video. Body: `{"video_url": "...", "prompt": "..."}`
+- `first-last` — transition between two images. Body: `{"image_url": "...", "end_image_url": "...", "prompt": "..."}`
+- `lipsync` — sync face to audio. Body: `{"image_url": "...", "audio_url": "..."}`
+
+### POST /api/content/caption
+Generate a social media caption.
+Body: `{"prompt": "...", "length": "short|medium|long"}`
+
+### POST /api/content/transcribe
+Transcribe audio to timestamped text.
+Body: `{"audio_url": "..."}`
+
+### PATCH /api/content
+Edit content — trim, crop, resize, overlay text, add audio.
+Body: `{"content_url": "...", "operations": [...]}`
+
+### POST /api/content/upscale
+Upscale image or video resolution (up to 4x).
+Body: `{"url": "...", "scale": 2}`
+
+### POST /api/content/analyze
+AI video analysis — describe scenes, check quality, evaluate content.
+Body: `{"video_url": "..."}`
+
+### GET /api/content/templates
+List available content templates with descriptions and preview images.
+
+### GET /api/content/validate
+Check if an artist has required assets for content creation.
+Query params: `artistAccountId` (required)
+
+### POST /api/content/estimate
+Preview estimated cost and duration before creating content.
+Body: `{"artistAccountId": "uuid", "template": "optional"}`
+
+---
+
+## Artist Endpoints
+
+### GET /api/artists
+List artists for an account.
+Query params: `accountId` (required)
+
+### POST /api/artists
+Create a new artist.
+Body: `{"name": "...", "accountId": "..."}`
+
+### PATCH /api/artists
+Update artist details (image, bio, socials, label).
+Body: `{"artistId": "...", ...fields}`
+
+### DELETE /api/artists
+Delete an artist.
+Body: `{"artistId": "..."}`
+
+### POST /api/artists/pin
+Pin artist to top of list.
+Body: `{"artistId": "..."}`
+
+### POST /api/artists/unpin
+Unpin artist.
+Body: `{"artistId": "..."}`
+
+### GET /api/artists/socials
+Get artist social media links.
+Query params: `artistId` (required)
+
+### GET /api/artist/profile
+Full artist profile with all metadata.
+Query params: `artistId` (required)
+
+### POST /api/artist/socials-scrape
+Scrape and update artist social media data.
+Body: `{"artistId": "..."}`
+
+---
+
+## Chat Endpoints
+
+### POST /api/chat/workflow
+Send a message to a chat (non-streaming). Returns completed response.
+Body: `{"chatId": "...", "message": "...", "artistId": "optional"}`
+
+### POST /api/chat/workflow/stream
+Send a message to a chat (streaming). Returns SSE stream.
+Body: `{"chatId": "...", "message": "...", "artistId": "optional"}`
+
+### GET /api/chat/runs
+List runs for a chat.
+Query params: `chatId` (required)
+
+### GET /api/chat/runs/status
+Check status of a specific run.
+Query params: `runId` (required)
+
+### POST /api/chat/stop
+Stop a running chat generation.
+Body: `{"runId": "..."}`
+
+### POST /api/chats
+Create a new chat.
+Body: `{"name": "optional", "artistId": "optional"}`
+
+### GET /api/chats
+List all chats.
+
+### GET /api/chats/artist
+List chats for a specific artist.
+Query params: `artistId` (required)
+
+### PATCH /api/chats
+Update chat metadata.
+Body: `{"chatId": "...", ...fields}`
+
+### DELETE /api/chats
+Delete a chat.
+Body: `{"chatId": "..."}`
+
+### GET /api/chat/messages
+Get messages in a chat.
+Query params: `chatId` (required), `limit`, `offset`
+
+### POST /api/chat/messages/copy
+Copy messages between chats.
+
+### DELETE /api/chat/messages/trailing
+Delete trailing messages from a point.
+
+### POST /api/chats/compact
+Compact chat history (summarize older messages).
+Body: `{"chatId": "..."}`
+
+---
+
+## Songs & Catalogs Endpoints
+
+### GET /api/songs
+List songs.
+
+### POST /api/songs
+Create a song.
+Body: `{"title": "...", "artistId": "..."}`
+
+### POST /api/songs/analyze
+AI-powered music analysis. Analyze audio content, production, metadata.
+Body: `{"audio_url": "...", "preset": "catalog_metadata|...", "prompt": "optional"}`
+Returns structured analysis.
+
+### GET /api/songs/analyze/presets
+List available analysis presets.
+
+### GET /api/songs/catalogs
+List catalogs.
+
+### POST /api/songs/catalogs
+Create a catalog collection.
+Body: `{"name": "..."}`
+
+### GET /api/songs/catalog-songs
+List songs in a catalog.
+Query params: `catalogId` (required)
+
+### POST /api/songs/catalog-songs
+Add songs to a catalog.
+Body: `{"catalogId": "...", "songIds": [...]}`
+
+### DELETE /api/songs/catalog-songs
+Remove songs from a catalog.
+Body: `{"catalogId": "...", "songIds": [...]}`
+
+---
+
+## Task Endpoints
+
+Schedule recurring automation (daily emails, content generation, research refreshes).
+
+### GET /api/tasks
+List all tasks.
+
+### POST /api/tasks
+Create a task.
+Body: `{"name": "...", "schedule": "cron-expression", "action": {...}}`
+
+### PATCH /api/tasks
+Update a task.
+Body: `{"taskId": "...", ...fields}`
+
+### DELETE /api/tasks
+Delete a task.
+Body: `{"taskId": "..."}`
+
+### GET /api/tasks/runs
+Task execution history.
+Query params: `taskId` (required)
+
+---
+
+## Social Connector Endpoints
+
+### GET /api/connectors
+List connected social platforms (TikTok, Instagram, X, YouTube, LinkedIn).
+
+### POST /api/connectors/authorize
+Start OAuth flow for a platform.
+Body: `{"platform": "tiktok|instagram|x|youtube|linkedin"}`
+
+### POST /api/connectors/disconnect
+Disconnect a platform.
+Body: `{"connectorId": "..."}`
+
+### GET /api/connectors/actions
+List available actions for connected platforms.
+
+### POST /api/connectors/execute
+Execute a social action (post content, etc.).
+Body: `{"connectorId": "...", "action": "...", "params": {...}}`
+
+### POST /api/connectors/upload
+Upload a file for use in social posts.
+
+---
+
+## Spotify Endpoints
+
+### GET /api/spotify/search
+Search Spotify catalog.
+Query params: `q` (required), `type` (artist|track|album)
+
+### GET /api/spotify/artist
+Spotify artist details.
+Query params: `artistId` (Spotify ID)
+
+### GET /api/spotify/artist/albums
+Artist's albums on Spotify.
+Query params: `artistId` (Spotify ID)
+
+### GET /api/spotify/artist/top-tracks
+Artist's top tracks on Spotify.
+Query params: `artistId` (Spotify ID)
+
+### GET /api/spotify/album
+Album details on Spotify.
+Query params: `albumId` (Spotify ID)
+
+---
+
+## Account & Organization Endpoints
+
+### GET /api/accounts/id
+Get current authenticated account.
+
+### GET /api/accounts
+Get account details.
+Query params: `accountId`
+
+### POST /api/accounts
+Create an account.
+
+### PATCH /api/accounts
+Update account details.
+
+### POST /api/accounts/add-artist
+Add an artist to an account.
+
+### GET /api/accounts/credits
+Get credit balance.
+
+### GET /api/accounts/payment-method
+Get payment method info.
+
+### GET /api/accounts/subscription
+Get subscription details.
+
+### GET /api/organizations
+List organizations.
+
+### POST /api/organizations
+Create an organization.
+
+### POST /api/organizations/add-artist
+Add artist to org.
+
+### POST /api/organizations/add-member
+Add member to org.
+
+### DELETE /api/organizations/remove-member
+Remove member from org.
+
+### POST /api/organizations/add-domain
+Add domain to org.
+
+### GET /api/organizations/list-domains
+List org domains.
+
+### DELETE /api/organizations/remove-domain
+Remove domain from org.
+
+---
+
+## Sandbox Endpoints
+
+Managed cloud environments for agent execution.
+
+### GET /api/sandboxes
+List sandboxes.
+
+### POST /api/sandboxes
+Create a sandbox (optionally run a command or prompt).
+Body: `{"command": "...", "args": [...], "prompt": "...", "account_id": "optional"}`
+
+### POST /api/sandboxes/snapshot
+Snapshot a sandbox for later restoration.
+Body: `{"sandboxId": "..."}`
+
+### DELETE /api/sandboxes
+Delete a sandbox.
+Body: `{"sandboxId": "..."}`
+
+### POST /api/sandboxes/setup
+Setup/configure a sandbox.
+
+### GET /api/sandboxes/file
+Get a file from a sandbox.
+Query params: `sandboxId`, `path`
+
+### POST /api/sandboxes/upload
+Upload files to a sandbox.
+
+### POST /api/sandbox
+Legacy sandbox creation endpoint.
+
+### GET /api/sandbox/status
+Legacy sandbox status check.
+
+### POST /api/sandbox/reconnect
+Legacy sandbox reconnect.
+
+---
+
+## Session Endpoints
+
+### POST /api/sessions
+Create a session.
+
+### GET /api/sessions
+Get session details.
+
+### PATCH /api/sessions
+Update session.
+
+### POST /api/sessions/chats
+Create a chat in a session.
+
+### GET /api/sessions/chats
+List chats in a session.
+
+### GET /api/sessions/chat
+Get a specific session chat.
+
+### PATCH /api/sessions/chat
+Update a session chat.
+
+### DELETE /api/sessions/chat
+Delete a session chat.
+
+### POST /api/sessions/chat/read
+Mark a session chat as read.
+
+---
+
+## Other Endpoints
+
+### GET /api/pulses
+List pulses (notifications/digests).
+
+### PATCH /api/pulses
+Update pulse settings.
+
+### POST /api/emails
+Send an email to the authenticated account.
+Body: `{"subject": "...", "text": "...", "html": "optional"}`
+
+### GET /api/posts
+Get social posts.
+
+### GET /api/comments
+Get comments/engagement data.
+
+### GET /api/ai/models
+List available AI models.
+
+### POST /api/social/scrape
+Scrape social media profiles.
+
+### POST /api/apify/scraper
+Run an Apify scraping actor.
+
+### POST /api/credits/sessions
+Create a credit session (for metered billing).
+
+### POST /api/subscriptions/portal
+Create a subscription management portal session.
+
+### POST /api/subscriptions/sessions
+Create a subscription checkout session.
+
+---
+
+## Content Agent (Slack Bot)
+
+@mention syntax in Slack:
+```
+@RecoupContentAgent <artist_account_id> [template] [batch=N] [lipsync]
+```
+
+---
+
+## CLI Reference
+
+```bash
+npm install -g @recoupable/cli
+export RECOUP_API_KEY=your-key
+
+recoup whoami                          # Current account
+recoup orgs list                       # List organizations
+recoup artists list                    # List artists
+recoup chats list                      # List chats
+recoup chats create --name "Topic"     # Create chat
+recoup tasks status --run <runId>      # Task run status
+recoup songs presets                   # Analysis presets
+recoup songs analyze --preset <name> --audio <url>  # Analyze audio
+recoup content templates               # List templates
+recoup content validate --artist <id>  # Validate artist
+recoup content estimate --artist <id>  # Estimate cost
+recoup content create --artist <id>    # Create content
+recoup sandboxes list                  # List sandboxes
+recoup emails --subject "..." --text "..."  # Send email
+```
+
+---
+
+## MCP Server
+
+Connect at `https://api.recoupable.dev/mcp` with `Authorization: Bearer {api_key}`.
+
+Tools:
+- `prompt_sandbox` — Send a prompt to a persistent per-account sandbox
+- `run_sandbox_command` — Create a new sandbox and run a command
+
+---
+
+## Workflows
+
+### Create & Research an Artist (end-to-end)
+1. `POST /api/artists` — create the artist
+2. `GET /api/research/search?q={name}` — find Spotify match
+3. `PATCH /api/artists` — update with image, label, socials from search
+4. `GET /api/research/profile?artistId={id}` — structured profile
+5. `GET /api/research/career?artistId={id}` — career timeline
+6. `GET /api/research/playlists?artistId={id}` — playlist data
+7. `GET /api/research/web?q={name}` — web context
+8. Synthesize into knowledge base report
+
+### Create Content for an Artist
+1. `GET /api/content/validate?artistAccountId={id}` — check readiness
+2. `GET /api/content/templates` — browse templates
+3. `POST /api/content/estimate` — preview cost
+4. `POST /api/content/create` — run pipeline
+5. Poll `GET /api/tasks/runs?taskId={runId}` until complete
+6. Result includes video URL + caption
+
+### Connect & Post to Social Media
+1. `POST /api/connectors/authorize` — OAuth connect platform
+2. `POST /api/connectors/upload` — upload media
+3. `POST /api/connectors/execute` — publish post
+
+---
+
+## Links
+
+- [Compact version (llms.txt)](https://developers.recoupable.dev/llms.txt)
+- [Interactive docs](https://developers.recoupable.dev)
+- [OpenAPI spec](https://github.com/sweetmantech/docs/blob/main/api-reference/openapi.json)
+- [Agent plugins marketplace](https://github.com/recoupable/marketplace)
+- Support: agent@recoupable.dev
