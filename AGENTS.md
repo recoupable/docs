@@ -6,6 +6,15 @@ This file provides guidance to coding agents like Claude Code (claude.ai/code) a
 
 This is the Recoup API documentation site built with [Mintlify](https://mintlify.com). It provides API reference documentation for the Recoup platform.
 
+## Maintained source and retained host
+
+Author documentation in `recoupable/marketing/content/docs/source` and follow
+[DOCUMENTATION-POLICY.md](DOCUMENTATION-POLICY.md). This checkout is a pinned
+Mintlify publication copy. `SOURCE-PROVENANCE.json` records the source commit and
+file hashes. Refresh pages through Marketing's `scripts/sync-legacy-docs.py`;
+run `python3 scripts/check_source.py` before committing. Keep this host's branding
+and deployment settings here. Host cutover and archival remain separate work.
+
 ## Git Workflow
 
 **Always commit and push changes after completing a task.** Follow these rules:
@@ -67,10 +76,10 @@ Reference `Recoup-Chat` codebase for correct branding values:
 - **Primary color**: `#345A5D` (from `tailwind.config.ts` primaryGreen)
 - **Support email**: `agent@recoupable.dev`
 - **App URL**: `https://chat.recoupable.dev`
-- **Website**: `https://recoupable.com`
+- **Website**: `https://recoupable.dev`
 - **Social URLs**:
   - X: `https://x.com/recoupai`
-  - GitHub: `https://github.com/recoupable-com`
+  - GitHub: `https://github.com/recoupable`
   - LinkedIn: `https://www.linkedin.com/company/recoupable`
 
 ## Writing Documentation

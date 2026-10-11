@@ -103,7 +103,7 @@ Generation still uses credits for creative direction, assets, implementation and
 
 After reviewing the draft, send `{"action":"publish","revision":CURRENT_REVISION}` to the same PATCH endpoint, or call `publish_site` with `id` and `revision`.
 
-Publishing automatically prepares Spotify fan connection for an active paid workspace. The standard agreement uses the attributed artist's name; the customer does not need a separate setup step. Missing artist attribution or unavailable Spotify configuration stops paid publication with an actionable error. Unpaid workspaces can publish with email signup; the response reports `fanConnection: "subscription-required"`. Successful paid setup reports `fanConnection: "enabled"`.
+Publishing automatically prepares Spotify fan connection for an active paid workspace. The standard agreement uses the attributed artist's name; the customer does not need a separate setup step. Missing artist attribution or unavailable Spotify configuration stops paid publication with an actionable error. Publication requires an eligible paid workspace. Unpaid publication returns HTTP 402 before publishing. Successful paid setup reports `fanConnection: "enabled"`.
 
 For a custom hosted destination, HTTP callers may include `returnUrl` (an HTTPS URL without credentials or fragment) in the publish body. Otherwise an existing connection destination is preserved, or the configured Sites public origin is used. The Recoup editor supplies its actual published URL. The authenticated fan-connection API remains available for external integrations.
 
@@ -127,3 +127,7 @@ Public pages render in the chat app. The API owns snapshots, generation, uploads
 ## Errors
 
 `400` invalid input; `401` missing/invalid authentication; `403` workspace or artist access denied; `404` missing/unpublished site; `409` stale revision; `422` Spotify metadata unavailable; `503` temporary operation failure.
+
+## Reconciliation status
+
+Publication is gated on an eligible paid workspace; unavailable entitlement returns 402 before publication. Earlier prose describing free publishing is obsolete. Newer delete/cancel and generation-token lifecycle contracts are tracked in [mono#330](https://github.com/recoupable/mono/issues/330); this guide does not claim complete lifecycle coverage.

@@ -1,0 +1,1092 @@
+{
+  "repository": "recoupable/marketing",
+  "commit": "440c4a6e654379e8a184fae2c3661e04463ceaf6",
+  "sourceDirectory": "content/docs/source",
+  "files": [
+    {
+      "path": "agents.mdx",
+      "sourcePath": "content/docs/source/agents.mdx",
+      "sha256": "b0e9ef7ce3981a98536f1c17e4834b4db3ada2158936c15db19cc74f06de2d6e"
+    },
+    {
+      "path": "api-reference/accounts/add-artist.mdx",
+      "sourcePath": "content/docs/source/api-reference/accounts/add-artist.mdx",
+      "sha256": "5549333a4b3770e0239143cc3ca31f87e94c71a7b306c24a9ba65b0b6dc51030"
+    },
+    {
+      "path": "api-reference/accounts/auto-top-up-get.mdx",
+      "sourcePath": "content/docs/source/api-reference/accounts/auto-top-up-get.mdx",
+      "sha256": "8244d90f6577415e884d2145df389ff6e9b0b5bd97af79ba4959f51fe8b763d0"
+    },
+    {
+      "path": "api-reference/accounts/auto-top-up-update.mdx",
+      "sourcePath": "content/docs/source/api-reference/accounts/auto-top-up-update.mdx",
+      "sha256": "c8bdc8aefe141746f10084c24e8284fdceecb6ca89c97dfa9276fb2c9dc6f4ad"
+    },
+    {
+      "path": "api-reference/accounts/create.mdx",
+      "sourcePath": "content/docs/source/api-reference/accounts/create.mdx",
+      "sha256": "846b3be526ccea47de59cc4edead4b404e46034787519c8f3e40f3cbb9599672"
+    },
+    {
+      "path": "api-reference/accounts/credits-get.mdx",
+      "sourcePath": "content/docs/source/api-reference/accounts/credits-get.mdx",
+      "sha256": "050e6b19ae997a9fe07729e16db331e2a46cc944370718ab7aa939255962f200"
+    },
+    {
+      "path": "api-reference/accounts/get.mdx",
+      "sourcePath": "content/docs/source/api-reference/accounts/get.mdx",
+      "sha256": "4a80b9e40f09b58296ef6957e5505f0a3e4e4454b0d9b78b95634b5c31817710"
+    },
+    {
+      "path": "api-reference/accounts/id.mdx",
+      "sourcePath": "content/docs/source/api-reference/accounts/id.mdx",
+      "sha256": "6f11151f336c1d54032cbb6213d91b59b5ab069cc5b56814aac8f7588a629a03"
+    },
+    {
+      "path": "api-reference/accounts/payment-method-create.mdx",
+      "sourcePath": "content/docs/source/api-reference/accounts/payment-method-create.mdx",
+      "sha256": "e38482ffc7fa56c242166a842e28b66c1529359ab85a0530269de9327256381b"
+    },
+    {
+      "path": "api-reference/accounts/payment-method-delete.mdx",
+      "sourcePath": "content/docs/source/api-reference/accounts/payment-method-delete.mdx",
+      "sha256": "23b8d12b651a7ce0b1095bf2d68ed2fb569fd25e9f8b02cb5db9ee85af8666f6"
+    },
+    {
+      "path": "api-reference/accounts/payment-method-get.mdx",
+      "sourcePath": "content/docs/source/api-reference/accounts/payment-method-get.mdx",
+      "sha256": "5d92f6accee77ee5f5e9b063c6c9f1c47825c87bfd12657a88347fca8850813c"
+    },
+    {
+      "path": "api-reference/accounts/payments-get.mdx",
+      "sourcePath": "content/docs/source/api-reference/accounts/payments-get.mdx",
+      "sha256": "ffdd2783c5a779beee0be43b3bfe88ddb263038a9c006b8e69a8e828c66078c4"
+    },
+    {
+      "path": "api-reference/accounts/portal-create.mdx",
+      "sourcePath": "content/docs/source/api-reference/accounts/portal-create.mdx",
+      "sha256": "3aa2412f42fcc8582238eb445b14d33e98a84524d8a3ddd3a9ea872e1c90b020"
+    },
+    {
+      "path": "api-reference/accounts/subscription-get.mdx",
+      "sourcePath": "content/docs/source/api-reference/accounts/subscription-get.mdx",
+      "sha256": "7e921ddb6154759b143cd43fd63f462255c2ddf5dedc0b9c2404bb2ed0fffbb9"
+    },
+    {
+      "path": "api-reference/accounts/update.mdx",
+      "sourcePath": "content/docs/source/api-reference/accounts/update.mdx",
+      "sha256": "8b304fa8742585ee766a5867d86e6a302ae6e7a84612fa9f20c4705e576a5992"
+    },
+    {
+      "path": "api-reference/accounts/usage-get.mdx",
+      "sourcePath": "content/docs/source/api-reference/accounts/usage-get.mdx",
+      "sha256": "fb9aa9f2fca85210e962bd1eec04d1aabd4f49ede380c56416310812e3278127"
+    },
+    {
+      "path": "api-reference/admins/agent-signups.mdx",
+      "sourcePath": "content/docs/source/api-reference/admins/agent-signups.mdx",
+      "sha256": "54b0a7bf58466d9e049b76a37ec0a0a019ee60857584c695ada7b8c9562d7f80"
+    },
+    {
+      "path": "api-reference/admins/artists-pro.mdx",
+      "sourcePath": "content/docs/source/api-reference/admins/artists-pro.mdx",
+      "sha256": "68163e315334bacc229439d948210007b62bec91bdea11637758f012d70ea4f2"
+    },
+    {
+      "path": "api-reference/admins/check.mdx",
+      "sourcePath": "content/docs/source/api-reference/admins/check.mdx",
+      "sha256": "76858ebc8557e9618e3498e35048cff28cd6a62750f68645daab16ce772fdfe6"
+    },
+    {
+      "path": "api-reference/admins/coding-agent-slack-tags.mdx",
+      "sourcePath": "content/docs/source/api-reference/admins/coding-agent-slack-tags.mdx",
+      "sha256": "2bf74ca3320269bcfc9fa24f88463f5eec409895d068bd9fc35b92f4174607e1"
+    },
+    {
+      "path": "api-reference/admins/coding-pr.mdx",
+      "sourcePath": "content/docs/source/api-reference/admins/coding-pr.mdx",
+      "sha256": "b0c334e37fd3c42dea1d59643bbcb4b2ec79f20eb460fa07e36a094c8d8098c5"
+    },
+    {
+      "path": "api-reference/admins/content-slack-tags.mdx",
+      "sourcePath": "content/docs/source/api-reference/admins/content-slack-tags.mdx",
+      "sha256": "e4194f6bfd1ea0567a865fe86628c81342aa77986abb4f4cfc43a03448c67378"
+    },
+    {
+      "path": "api-reference/admins/credits-events.mdx",
+      "sourcePath": "content/docs/source/api-reference/admins/credits-events.mdx",
+      "sha256": "953ad3b06a7c404f5cf1fd7d646a8d16423938ae1e4300e1cb93c80e04414229"
+    },
+    {
+      "path": "api-reference/admins/credits-grant.mdx",
+      "sourcePath": "content/docs/source/api-reference/admins/credits-grant.mdx",
+      "sha256": "030dbf1bafef7acb0ae4c29ef434eb6d5088c0e985799b2c7506facc4c038d99"
+    },
+    {
+      "path": "api-reference/admins/credits-rollup.mdx",
+      "sourcePath": "content/docs/source/api-reference/admins/credits-rollup.mdx",
+      "sha256": "7d4b306ff37786d967f78ade0151132f838ea56e68642dc61de0fcdd578923c7"
+    },
+    {
+      "path": "api-reference/admins/emails.mdx",
+      "sourcePath": "content/docs/source/api-reference/admins/emails.mdx",
+      "sha256": "057840bfec0d2f24fd4694274d098bbc81fbb4213edfaebf70d5f633879d3981"
+    },
+    {
+      "path": "api-reference/admins/privy.mdx",
+      "sourcePath": "content/docs/source/api-reference/admins/privy.mdx",
+      "sha256": "0868bbb4a590fea4ec7f743e8918311bd0b6067f11641bee84ed2cc434c7eca9"
+    },
+    {
+      "path": "api-reference/admins/sandboxes-orgs.mdx",
+      "sourcePath": "content/docs/source/api-reference/admins/sandboxes-orgs.mdx",
+      "sha256": "d00f29489a29d579648e6d780d5b0b850ad9bfb22d040b3c0f1b6eb1d4b9531f"
+    },
+    {
+      "path": "api-reference/admins/sandboxes.mdx",
+      "sourcePath": "content/docs/source/api-reference/admins/sandboxes.mdx",
+      "sha256": "ed74b98bf473dc39f3c23cddad44823c1a7d7f8f9e4a3d6ca97861776fcfc959"
+    },
+    {
+      "path": "api-reference/agents/signup.mdx",
+      "sourcePath": "content/docs/source/api-reference/agents/signup.mdx",
+      "sha256": "ecae90d5064564629fd5809c298b4bcfeece4371e98a1b2f13bab7a4bac88d2a"
+    },
+    {
+      "path": "api-reference/agents/verify.mdx",
+      "sourcePath": "content/docs/source/api-reference/agents/verify.mdx",
+      "sha256": "2fa1222f8c8d5d4a72f27ada8372e9e639fa5b6133f3a20b019b61a08b8375ce"
+    },
+    {
+      "path": "api-reference/ai/models.mdx",
+      "sourcePath": "content/docs/source/api-reference/ai/models.mdx",
+      "sha256": "9aff9e3cd038d664bdb378a988f91a535184ec4c6d8fd58b7f7ecca406ef2ad9"
+    },
+    {
+      "path": "api-reference/apify/scraper.mdx",
+      "sourcePath": "content/docs/source/api-reference/apify/scraper.mdx",
+      "sha256": "da038a93e2bcebabb14a60fb869ea1fd97e672f5501eaaae9fe1ea570c3eff0d"
+    },
+    {
+      "path": "api-reference/apple/songs.mdx",
+      "sourcePath": "content/docs/source/api-reference/apple/songs.mdx",
+      "sha256": "f1e2ebe6862fc1a1504e5678cd3e55847d205a53236124f90bec9a5f47807588"
+    },
+    {
+      "path": "api-reference/artist/socials-scrape.mdx",
+      "sourcePath": "content/docs/source/api-reference/artist/socials-scrape.mdx",
+      "sha256": "180d5eb2e817e0c9baa0e48e486449514380a5801f0c67094753b9a25e5a39bd"
+    },
+    {
+      "path": "api-reference/artists/create.mdx",
+      "sourcePath": "content/docs/source/api-reference/artists/create.mdx",
+      "sha256": "68c94a310a607976fd2f4a79b69bb3a5c561c0682b100696a12025241333a368"
+    },
+    {
+      "path": "api-reference/artists/delete.mdx",
+      "sourcePath": "content/docs/source/api-reference/artists/delete.mdx",
+      "sha256": "da2716bb33e15771dfd6f8a368384073eab32b4bff706cff9431433e63fdf90a"
+    },
+    {
+      "path": "api-reference/artists/list.mdx",
+      "sourcePath": "content/docs/source/api-reference/artists/list.mdx",
+      "sha256": "c466ace5186089da54c49192dc0a42649c8ec11c989722fc8ebad58b5571030d"
+    },
+    {
+      "path": "api-reference/artists/pin.mdx",
+      "sourcePath": "content/docs/source/api-reference/artists/pin.mdx",
+      "sha256": "abd0264e7802cb6b08e9f14b6050be7766ef2ebb1dc520c882d8ab919344515e"
+    },
+    {
+      "path": "api-reference/artists/profile.mdx",
+      "sourcePath": "content/docs/source/api-reference/artists/profile.mdx",
+      "sha256": "0317fd48437d7d70fafbb0305836cbd7ad4f47dff1801e46a32ef9d1b3d6af2e"
+    },
+    {
+      "path": "api-reference/artists/socials-delete.mdx",
+      "sourcePath": "content/docs/source/api-reference/artists/socials-delete.mdx",
+      "sha256": "2810692f64343746f996878714f77ae115932388e1da2ae537210b194ffbe0f3"
+    },
+    {
+      "path": "api-reference/artists/socials.mdx",
+      "sourcePath": "content/docs/source/api-reference/artists/socials.mdx",
+      "sha256": "13514ade04ad339094d839bb7b3496c8dcdd024717d25780677bfb180cec9be0"
+    },
+    {
+      "path": "api-reference/artists/unpin.mdx",
+      "sourcePath": "content/docs/source/api-reference/artists/unpin.mdx",
+      "sha256": "14a6b7e3f1bd73c717e995be197e5c0a7e918cab336c8157548e48f1b222d7c5"
+    },
+    {
+      "path": "api-reference/artists/update.mdx",
+      "sourcePath": "content/docs/source/api-reference/artists/update.mdx",
+      "sha256": "9353fd1a6af42889453aa5cd7286b3a0895411180a01b72d132a0d80bebef0d5"
+    },
+    {
+      "path": "api-reference/chat/artist.mdx",
+      "sourcePath": "content/docs/source/api-reference/chat/artist.mdx",
+      "sha256": "c18b92a5dd82b1e4c0e1a27171c55d3d556a64c4fa2a9aadcadd1626296c6f74"
+    },
+    {
+      "path": "api-reference/chat/chats.mdx",
+      "sourcePath": "content/docs/source/api-reference/chat/chats.mdx",
+      "sha256": "4da65bc8e3bc8c74c23c0b1e6457f651a414d2e787aa7a54a9b88a6e1df60668"
+    },
+    {
+      "path": "api-reference/chat/compact.mdx",
+      "sourcePath": "content/docs/source/api-reference/chat/compact.mdx",
+      "sha256": "2787ddac144f76c8ebafc2a623c8e1bde22c0ccda8f4acea59c6e81eb37b79fa"
+    },
+    {
+      "path": "api-reference/chat/create.mdx",
+      "sourcePath": "content/docs/source/api-reference/chat/create.mdx",
+      "sha256": "8d33c957c9a7376be2ede0bd901551285f38900e3e46b64db8a2d2a7f4fac169"
+    },
+    {
+      "path": "api-reference/chat/delete.mdx",
+      "sourcePath": "content/docs/source/api-reference/chat/delete.mdx",
+      "sha256": "d46e91ab0730d63458e6d49b051457457aaa5620052289ba4e43efb75bd64c47"
+    },
+    {
+      "path": "api-reference/chat/messages-copy.mdx",
+      "sourcePath": "content/docs/source/api-reference/chat/messages-copy.mdx",
+      "sha256": "1b3829f5a9f381e8b8492ac3bff6507b5f72c594041d4dc531108fcb3d235a71"
+    },
+    {
+      "path": "api-reference/chat/messages-trailing-delete.mdx",
+      "sourcePath": "content/docs/source/api-reference/chat/messages-trailing-delete.mdx",
+      "sha256": "2633b0d9439fa45624de3ba86e0435967717d19402b78600173183cd203f2cd6"
+    },
+    {
+      "path": "api-reference/chat/messages.mdx",
+      "sourcePath": "content/docs/source/api-reference/chat/messages.mdx",
+      "sha256": "ac840a0b3433a73d421f60d53a0e535c463b2fae61b2a872ebf4a8c76f9a58c3"
+    },
+    {
+      "path": "api-reference/chat/runs-status.mdx",
+      "sourcePath": "content/docs/source/api-reference/chat/runs-status.mdx",
+      "sha256": "0133cf704b59e6c2af4488fe6d90818997f37ea02a9de061f32b52ae3ef788c0"
+    },
+    {
+      "path": "api-reference/chat/runs.mdx",
+      "sourcePath": "content/docs/source/api-reference/chat/runs.mdx",
+      "sha256": "9438c19e8732cb1cbe35bf0eec766f60ed02f79a8cb466d2faf33c9fe1944557"
+    },
+    {
+      "path": "api-reference/chat/stop.mdx",
+      "sourcePath": "content/docs/source/api-reference/chat/stop.mdx",
+      "sha256": "82b53ab848e005fcc92c1aee5e59e6e49ce20da4f8ce2f7e2aaa61c920c6122c"
+    },
+    {
+      "path": "api-reference/chat/update.mdx",
+      "sourcePath": "content/docs/source/api-reference/chat/update.mdx",
+      "sha256": "d5e3a064396ca8588ad230e1e5d3b4eded85d36aa67e771a5fe2442fceeb516e"
+    },
+    {
+      "path": "api-reference/chat/workflow-stream.mdx",
+      "sourcePath": "content/docs/source/api-reference/chat/workflow-stream.mdx",
+      "sha256": "463ccc1d7fc1a43b79b5afa5f573931b9c0a10e67a63bda8d36b24d768c83a35"
+    },
+    {
+      "path": "api-reference/chat/workflow.mdx",
+      "sourcePath": "content/docs/source/api-reference/chat/workflow.mdx",
+      "sha256": "47c23aee6d6ea2a34c5e68ac2ab861eb93c91dc439a5549ae1ed37dea9ff5e7b"
+    },
+    {
+      "path": "api-reference/comments/get.mdx",
+      "sourcePath": "content/docs/source/api-reference/comments/get.mdx",
+      "sha256": "1187bad14e0f01d6bd0fbaba230a8c8e41111441a601944d46cf5cbed80ee31d"
+    },
+    {
+      "path": "api-reference/connectors/authorize.mdx",
+      "sourcePath": "content/docs/source/api-reference/connectors/authorize.mdx",
+      "sha256": "1a96ccecf72c975b94f3fc2588d00277c299f3b496f7ddf46322c18386558d40"
+    },
+    {
+      "path": "api-reference/connectors/disconnect.mdx",
+      "sourcePath": "content/docs/source/api-reference/connectors/disconnect.mdx",
+      "sha256": "388a232bd1dffcbc07d9fee859e4e5b5f2766312c63424b9bb1a89be8a15c14b"
+    },
+    {
+      "path": "api-reference/connectors/execute-action.mdx",
+      "sourcePath": "content/docs/source/api-reference/connectors/execute-action.mdx",
+      "sha256": "99f5ef43f5bbe25fa09eaafb60130d7aef023efebf0ab15a9dcfac068091c7d4"
+    },
+    {
+      "path": "api-reference/connectors/list-actions.mdx",
+      "sourcePath": "content/docs/source/api-reference/connectors/list-actions.mdx",
+      "sha256": "7f89a4187e82b58cbc92356000aa785adb315cbc787df5cd825e49cdf96d087e"
+    },
+    {
+      "path": "api-reference/connectors/list.mdx",
+      "sourcePath": "content/docs/source/api-reference/connectors/list.mdx",
+      "sha256": "606315d842d606818b4695620e5fdb2c94ca6701b4f68bdf4b3856e7e732feae"
+    },
+    {
+      "path": "api-reference/connectors/upload-file.mdx",
+      "sourcePath": "content/docs/source/api-reference/connectors/upload-file.mdx",
+      "sha256": "95288c4be7b67435a1f04c201cb8146f96a62c8633ea2477d9addc09c7aab985"
+    },
+    {
+      "path": "api-reference/content/analyze-video.mdx",
+      "sourcePath": "content/docs/source/api-reference/content/analyze-video.mdx",
+      "sha256": "bb546c4fbdafe57e9f1feab15ccc6baff966c63b326815ad03c7181f45755bd8"
+    },
+    {
+      "path": "api-reference/content/create.mdx",
+      "sourcePath": "content/docs/source/api-reference/content/create.mdx",
+      "sha256": "39276f1387da64ee92c581ce64d5defd34d95233b11f4ecbf23c844d6c68311d"
+    },
+    {
+      "path": "api-reference/content/edit.mdx",
+      "sourcePath": "content/docs/source/api-reference/content/edit.mdx",
+      "sha256": "8bcd9d6a6a21a27c34a32e51d3a47265fa5405a9c65000103a3e15e1245705ae"
+    },
+    {
+      "path": "api-reference/content/estimate.mdx",
+      "sourcePath": "content/docs/source/api-reference/content/estimate.mdx",
+      "sha256": "ac8aec0b71e3c193026e217fd3f139466b4f45442644c80fc4d78f011719fd26"
+    },
+    {
+      "path": "api-reference/content/generate-caption.mdx",
+      "sourcePath": "content/docs/source/api-reference/content/generate-caption.mdx",
+      "sha256": "989beb39cc545a7406ae6ce1d7fae08bd2409bbe8c96f8df1162104e4ce8ae88"
+    },
+    {
+      "path": "api-reference/content/generate-image.mdx",
+      "sourcePath": "content/docs/source/api-reference/content/generate-image.mdx",
+      "sha256": "4b1434f5830de6d8fae96c32130edd5d7a7019fe7e2791e0292b02adb0343fed"
+    },
+    {
+      "path": "api-reference/content/generate-video.mdx",
+      "sourcePath": "content/docs/source/api-reference/content/generate-video.mdx",
+      "sha256": "484a221b06d6d9566f8b661640865a8b308ffd28ec747d99bec992b7cc2217fc"
+    },
+    {
+      "path": "api-reference/content/lipsync.mdx",
+      "sourcePath": "content/docs/source/api-reference/content/lipsync.mdx",
+      "sha256": "5783c4d080652d35c7fbd9e3caec220d703d82ab2f0c6318fe76b41c0bb7e642"
+    },
+    {
+      "path": "api-reference/content/template-detail.mdx",
+      "sourcePath": "content/docs/source/api-reference/content/template-detail.mdx",
+      "sha256": "abfe7fcfd8062e7c6245ad9c781efc44b458141d4d144cf855c499345f2e7b7a"
+    },
+    {
+      "path": "api-reference/content/templates.mdx",
+      "sourcePath": "content/docs/source/api-reference/content/templates.mdx",
+      "sha256": "11b6b0cea029fd3ea9b8d5a89804b85c80cdc62ed07f10a24043da066e104daf"
+    },
+    {
+      "path": "api-reference/content/transcribe-audio.mdx",
+      "sourcePath": "content/docs/source/api-reference/content/transcribe-audio.mdx",
+      "sha256": "ed08dbaa5635adad2c84857e74f312fca1944b658ad2578ef26a1f873829b5ce"
+    },
+    {
+      "path": "api-reference/content/upscale.mdx",
+      "sourcePath": "content/docs/source/api-reference/content/upscale.mdx",
+      "sha256": "bbd9c2aba759904d2e0118e855799697390f7f261c7a22c6326c92ab141c41f8"
+    },
+    {
+      "path": "api-reference/content/validate.mdx",
+      "sourcePath": "content/docs/source/api-reference/content/validate.mdx",
+      "sha256": "4502e86f2aa5a7b4820b42104f82d0d1a21f32e2e6b8028428e4bd3f38c6794f"
+    },
+    {
+      "path": "api-reference/content-agent/callback.mdx",
+      "sourcePath": "content/docs/source/api-reference/content-agent/callback.mdx",
+      "sha256": "7b47ba648464e9c7f93db38617d741bb92d033d41e77ebf1a937b311ce4ddb2a"
+    },
+    {
+      "path": "api-reference/content-agent/webhook.mdx",
+      "sourcePath": "content/docs/source/api-reference/content-agent/webhook.mdx",
+      "sha256": "a51048ec416e95aca32159d56f8b8a40608aaae641b420e49dac48c24b216bbf"
+    },
+    {
+      "path": "api-reference/context/guest-claim.mdx",
+      "sourcePath": "content/docs/source/api-reference/context/guest-claim.mdx",
+      "sha256": "b9b0a3bbb5abc0f7ed7ff933bd6c8373bbd49fb5d97e8d492526a47fd8dc4c26"
+    },
+    {
+      "path": "api-reference/context/guest-read.mdx",
+      "sourcePath": "content/docs/source/api-reference/context/guest-read.mdx",
+      "sha256": "ffcf57268900c0712cb5f3c2af5e593eff9425cc1feb49f9b654552aa8d28096"
+    },
+    {
+      "path": "api-reference/context/guest-start.mdx",
+      "sourcePath": "content/docs/source/api-reference/context/guest-start.mdx",
+      "sha256": "30221bc1ae8d531cc16aac5434fc750f0140c2bab64bf7fc6de241a5df654501"
+    },
+    {
+      "path": "api-reference/context/operate.mdx",
+      "sourcePath": "content/docs/source/api-reference/context/operate.mdx",
+      "sha256": "d9edb8935522b0c847e0835d341ab1de67fca9baf02dd35767d87ed8a0ac6979"
+    },
+    {
+      "path": "api-reference/credits/sessions-create.mdx",
+      "sourcePath": "content/docs/source/api-reference/credits/sessions-create.mdx",
+      "sha256": "ebed6de54f1ef3736ab2330530c34b48f321073d2b05642f4606fdab77d98758"
+    },
+    {
+      "path": "api-reference/emails/create.mdx",
+      "sourcePath": "content/docs/source/api-reference/emails/create.mdx",
+      "sha256": "8173c5d981921afed61d477315177e426764ef9e3c507fbd9316354f5cbbd9ef"
+    },
+    {
+      "path": "api-reference/fans/get.mdx",
+      "sourcePath": "content/docs/source/api-reference/fans/get.mdx",
+      "sha256": "7426f2ea36bc2bd935eccb429880d15214e0b8171f6ccc02315c4b89102614a2"
+    },
+    {
+      "path": "api-reference/image/generation.mdx",
+      "sourcePath": "content/docs/source/api-reference/image/generation.mdx",
+      "sha256": "37af09e72620dfd623a5afffb621a86c6f66c12ac73596de2db7ff519c731741"
+    },
+    {
+      "path": "api-reference/music/generate.mdx",
+      "sourcePath": "content/docs/source/api-reference/music/generate.mdx",
+      "sha256": "98d25fb00a74439df46121db9973a2be41059100f9b199edc9ab03b8e2f4ef16"
+    },
+    {
+      "path": "api-reference/music/get.mdx",
+      "sourcePath": "content/docs/source/api-reference/music/get.mdx",
+      "sha256": "5b3794cdc410cc299c468187aa4e0c346703486fb1852a77f35111965fe96133"
+    },
+    {
+      "path": "api-reference/music/list.mdx",
+      "sourcePath": "content/docs/source/api-reference/music/list.mdx",
+      "sha256": "f4822c81c87cb67e89ddca33cce63fbd68d28e94d1698580311979227bf13b82"
+    },
+    {
+      "path": "api-reference/openapi/accounts.json",
+      "sourcePath": "content/docs/source/api-reference/openapi/accounts.json",
+      "sha256": "f1bdfe7150f4bda12381a16c4a89da2322b6a871e204e1e1da48c87ed1b95a64"
+    },
+    {
+      "path": "api-reference/openapi/ai.json",
+      "sourcePath": "content/docs/source/api-reference/openapi/ai.json",
+      "sha256": "ac3d356376c5cd870d3fcf9a8cf2f4dca1375ee6d41057d33fbd6bbae67dac09"
+    },
+    {
+      "path": "api-reference/openapi/content.json",
+      "sourcePath": "content/docs/source/api-reference/openapi/content.json",
+      "sha256": "ebe0ced0ee49d1394a5275e9cd57f451d27c2fd1d667b963c299a382ada87f5e"
+    },
+    {
+      "path": "api-reference/openapi/context.json",
+      "sourcePath": "content/docs/source/api-reference/openapi/context.json",
+      "sha256": "021891944f58cf959d8e281b6ebca1799ae1f22770b7883d5e44121d3d67854d"
+    },
+    {
+      "path": "api-reference/openapi/players.json",
+      "sourcePath": "content/docs/source/api-reference/openapi/players.json",
+      "sha256": "797af1dbee3ff18dbc8dc1b3ebafdb41de23692eac6b7e02977614e675f8d801"
+    },
+    {
+      "path": "api-reference/openapi/projects.json",
+      "sourcePath": "content/docs/source/api-reference/openapi/projects.json",
+      "sha256": "4fc6dfe80102013d60d1a82d93466e41de27c35fb3f94967dc02115f431eecfc"
+    },
+    {
+      "path": "api-reference/openapi/releases.json",
+      "sourcePath": "content/docs/source/api-reference/openapi/releases.json",
+      "sha256": "dccf64ff9815268852dca0f6e1e12c29077eca60fe20551aaa4a07f48999ea5f"
+    },
+    {
+      "path": "api-reference/openapi/research.json",
+      "sourcePath": "content/docs/source/api-reference/openapi/research.json",
+      "sha256": "320cfd7dac57be22a8e2da95f48f2888bbff8c3dfe5016cf0773c0a24201459d"
+    },
+    {
+      "path": "api-reference/openapi/sandbox.json",
+      "sourcePath": "content/docs/source/api-reference/openapi/sandbox.json",
+      "sha256": "b626a5d424acf7b2795a8d4b561c70b6f37be3f1fb5314fc33f506201874d1b9"
+    },
+    {
+      "path": "api-reference/openapi/sessions.json",
+      "sourcePath": "content/docs/source/api-reference/openapi/sessions.json",
+      "sha256": "e3332130860d1bc436e754fdfcbfa1e5ac58daf9414f79db5c0cd9acab21503c"
+    },
+    {
+      "path": "api-reference/openapi/social.json",
+      "sourcePath": "content/docs/source/api-reference/openapi/social.json",
+      "sha256": "a881e8cbb9e57545d9803d495ad403e06dcbefef3eb6560e79c0d54aba5d2c48"
+    },
+    {
+      "path": "api-reference/openapi/templates.json",
+      "sourcePath": "content/docs/source/api-reference/openapi/templates.json",
+      "sha256": "65c63ec2e5c942cbe79cc3f1dfd0a1f7abb97f9b5077826f0d430b3cb9478fcf"
+    },
+    {
+      "path": "api-reference/organizations/add-artist.mdx",
+      "sourcePath": "content/docs/source/api-reference/organizations/add-artist.mdx",
+      "sha256": "39d3a5e64b578f08e2b49a78b5858a06af9941d4cf0be941c271d8fd3f9decde"
+    },
+    {
+      "path": "api-reference/organizations/add-domain.mdx",
+      "sourcePath": "content/docs/source/api-reference/organizations/add-domain.mdx",
+      "sha256": "aa89e80d4f63948759c4e2daca5720eec12d562bed184b54988a5957b8dfb6ea"
+    },
+    {
+      "path": "api-reference/organizations/add-member.mdx",
+      "sourcePath": "content/docs/source/api-reference/organizations/add-member.mdx",
+      "sha256": "5348c6f5d771bc4761a6f88e0a52d16235f76b3d10958cbbac1bd3b27627366e"
+    },
+    {
+      "path": "api-reference/organizations/create.mdx",
+      "sourcePath": "content/docs/source/api-reference/organizations/create.mdx",
+      "sha256": "82e2c4aa1b0d929dacd2f9e09d6f138af46ce61e63ba67e829d92a511a644e28"
+    },
+    {
+      "path": "api-reference/organizations/list-domains.mdx",
+      "sourcePath": "content/docs/source/api-reference/organizations/list-domains.mdx",
+      "sha256": "9b550422ba1dd78c25313829a8fbd68483d593650a544c5833ec7e493a371a53"
+    },
+    {
+      "path": "api-reference/organizations/list.mdx",
+      "sourcePath": "content/docs/source/api-reference/organizations/list.mdx",
+      "sha256": "fe1940a49b258f2944f72b9bc86c7c2ac5fa54c66c20f1c14abefaef0959c0a9"
+    },
+    {
+      "path": "api-reference/organizations/professionals-confirm.mdx",
+      "sourcePath": "content/docs/source/api-reference/organizations/professionals-confirm.mdx",
+      "sha256": "bc1d48c173c35e391c0bea4d3dc39882b99e16b0350a851ec08f3f978e04c52d"
+    },
+    {
+      "path": "api-reference/organizations/professionals.mdx",
+      "sourcePath": "content/docs/source/api-reference/organizations/professionals.mdx",
+      "sha256": "3be76fdaefaddecc77bf45867b62efbe8c7c1ca6adc6b2a475875239bf1b4687"
+    },
+    {
+      "path": "api-reference/organizations/remove-domain.mdx",
+      "sourcePath": "content/docs/source/api-reference/organizations/remove-domain.mdx",
+      "sha256": "5f1150723b07eb1e77c7e9eb8870d8ec21eebe4755fe72368771482fd6d62486"
+    },
+    {
+      "path": "api-reference/organizations/remove-member.mdx",
+      "sourcePath": "content/docs/source/api-reference/organizations/remove-member.mdx",
+      "sha256": "7400174937f7afa6c719d12f34cb6e1e45ac130b5c0d9dbb9466fda909e78f95"
+    },
+    {
+      "path": "api-reference/players/activity.mdx",
+      "sourcePath": "content/docs/source/api-reference/players/activity.mdx",
+      "sha256": "791d28ac7862da62a51e03a81a0a423f80892242ac41b00e533169a1b00ad08c"
+    },
+    {
+      "path": "api-reference/players/create.mdx",
+      "sourcePath": "content/docs/source/api-reference/players/create.mdx",
+      "sha256": "8d2cd8966d015836a43792e32dac36672bc8860dd157b692551cdd660cfc6610"
+    },
+    {
+      "path": "api-reference/players/fans.mdx",
+      "sourcePath": "content/docs/source/api-reference/players/fans.mdx",
+      "sha256": "54be00d85d320b2ef89ea683c07181d7c93ca415aec501a0aa2424414933d5a7"
+    },
+    {
+      "path": "api-reference/players/get.mdx",
+      "sourcePath": "content/docs/source/api-reference/players/get.mdx",
+      "sha256": "bdcfdc082170538961817c895cb1e701f559befb658935b960832d78e1fc99b6"
+    },
+    {
+      "path": "api-reference/players/list.mdx",
+      "sourcePath": "content/docs/source/api-reference/players/list.mdx",
+      "sha256": "819cb77d3bd836db97fd4f9f521e87c31ca5794d88d318a43e0d94d9d55af07d"
+    },
+    {
+      "path": "api-reference/players/update.mdx",
+      "sourcePath": "content/docs/source/api-reference/players/update.mdx",
+      "sha256": "09d7aeaba4b89932118275f8601af6ec8e98086819efe6a6cbdd1494c3e15b97"
+    },
+    {
+      "path": "api-reference/players/workspace-fans.mdx",
+      "sourcePath": "content/docs/source/api-reference/players/workspace-fans.mdx",
+      "sha256": "b48567cf0fdf33e9dd3f0dcb941c0c4c59f452d640b7657edee403b35cc7c7b7"
+    },
+    {
+      "path": "api-reference/posts/get.mdx",
+      "sourcePath": "content/docs/source/api-reference/posts/get.mdx",
+      "sha256": "5f7c8ca472647b0a7554c95e5c1f4c2f6625f1bfda8c0753bc664c7181834a50"
+    },
+    {
+      "path": "api-reference/projects/comments-create.mdx",
+      "sourcePath": "content/docs/source/api-reference/projects/comments-create.mdx",
+      "sha256": "63a9b7cdcc8ce176781e179c728dcfac4c882a94092a5bdecfb2f07eaa72ab4e"
+    },
+    {
+      "path": "api-reference/projects/comments-get.mdx",
+      "sourcePath": "content/docs/source/api-reference/projects/comments-get.mdx",
+      "sha256": "310198a956ce8f1ba96fa640a9cbd1c9bfed3cb10bf03d376da7b1151a8fbb61"
+    },
+    {
+      "path": "api-reference/projects/get.mdx",
+      "sourcePath": "content/docs/source/api-reference/projects/get.mdx",
+      "sha256": "ef289025ea1188e8a6fec0370ca934b7ac37d4758e283dc81147eb2acfe5bf0d"
+    },
+    {
+      "path": "api-reference/projects/task-create.mdx",
+      "sourcePath": "content/docs/source/api-reference/projects/task-create.mdx",
+      "sha256": "c7819e79fee8991609802152fca115c5567c26ab61847b4be6e2d859f6aea38f"
+    },
+    {
+      "path": "api-reference/projects/task-delete.mdx",
+      "sourcePath": "content/docs/source/api-reference/projects/task-delete.mdx",
+      "sha256": "1cf347b887c293c8819c73c28bcd0592b3879e997939d6c828832eb4df4b3148"
+    },
+    {
+      "path": "api-reference/projects/task-get.mdx",
+      "sourcePath": "content/docs/source/api-reference/projects/task-get.mdx",
+      "sha256": "96a8095a5ce773600c315eb48b014abc44aff32faf63356666150e4f8ed58014"
+    },
+    {
+      "path": "api-reference/projects/task-update.mdx",
+      "sourcePath": "content/docs/source/api-reference/projects/task-update.mdx",
+      "sha256": "235507921f4df34cd25f82eecbce52bc99c2e36825c288af93f9cbb0af75324a"
+    },
+    {
+      "path": "api-reference/pulses/list.mdx",
+      "sourcePath": "content/docs/source/api-reference/pulses/list.mdx",
+      "sha256": "1c4e6407785752e5e38cda0e7ff0e27a50b1cd733732ae05809c65aa2405c80c"
+    },
+    {
+      "path": "api-reference/pulses/update.mdx",
+      "sourcePath": "content/docs/source/api-reference/pulses/update.mdx",
+      "sha256": "edf1dc10d4f5e1105d45341d2d87f046d380b083095fd7a8547c30bb2c64a334"
+    },
+    {
+      "path": "api-reference/research/album-measurements.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/album-measurements.mdx",
+      "sha256": "558454121f2f857216cf6f0355402a221e49d8670efe5247751889b033c7c6c2"
+    },
+    {
+      "path": "api-reference/research/deep.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/deep.mdx",
+      "sha256": "838ce532a1abe769beaf832f19a3192dae9e6820bc431a2745c627aa9903083d"
+    },
+    {
+      "path": "api-reference/research/enrich.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/enrich.mdx",
+      "sha256": "d979e5d70ad831e3ef0a4e14ad8b4494f85545e08bc448e458a42162e25be2d4"
+    },
+    {
+      "path": "api-reference/research/events.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/events.mdx",
+      "sha256": "6bb8469edd50323ce5dd9d8e29246bfc15eb95e2278c2f9c50adac1d62904402"
+    },
+    {
+      "path": "api-reference/research/extract.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/extract.mdx",
+      "sha256": "b706edaf8db028010dcef56ab37f9919cd4f019283e3923ceaf8d22e6f4f322b"
+    },
+    {
+      "path": "api-reference/research/measurement-jobs.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/measurement-jobs.mdx",
+      "sha256": "f2fd7853c322a231b2cd11143f32125c2174a49593fcb02c14e1d547737eccc2"
+    },
+    {
+      "path": "api-reference/research/measurements.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/measurements.mdx",
+      "sha256": "e4e2aad05a66c858da1ef43860e4dc875ea46e0ca013cd695702944321a1f642"
+    },
+    {
+      "path": "api-reference/research/people.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/people.mdx",
+      "sha256": "715b7a29b9ba2ee490094857ec86492df687a956d7a009487f17932c853cd5ac"
+    },
+    {
+      "path": "api-reference/research/track-stats.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/track-stats.mdx",
+      "sha256": "8fbdffbcce0186fd8c600de575909ebbf9ba6bff6c91aef5f491cb5201b82427"
+    },
+    {
+      "path": "api-reference/research/web.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/web.mdx",
+      "sha256": "d4e1134c388794c5c2d835be78a758f3afd4988aae65bd284cd59228a07725ca"
+    },
+    {
+      "path": "api-reference/sandbox/create.mdx",
+      "sourcePath": "content/docs/source/api-reference/sandbox/create.mdx",
+      "sha256": "73a733bf3750a18e55e16ee9002dd51dc5c4b53f62a32715720335c817abff5e"
+    },
+    {
+      "path": "api-reference/sandbox/reconnect.mdx",
+      "sourcePath": "content/docs/source/api-reference/sandbox/reconnect.mdx",
+      "sha256": "78eabebdc34e5183a84d40bd2dc7c180a612fb3c8eb21f9b1222d57b5ccd023a"
+    },
+    {
+      "path": "api-reference/sandbox/status.mdx",
+      "sourcePath": "content/docs/source/api-reference/sandbox/status.mdx",
+      "sha256": "94b61c58acad8d2d59e2ec0afb753a115fa802ee5224f0e1fd19c842b6d700c2"
+    },
+    {
+      "path": "api-reference/sandboxes/create.mdx",
+      "sourcePath": "content/docs/source/api-reference/sandboxes/create.mdx",
+      "sha256": "23a446ab58324f5572afbe82cd0dc15b62e3ea75694efbc555ce035cdf9fa807"
+    },
+    {
+      "path": "api-reference/sandboxes/delete.mdx",
+      "sourcePath": "content/docs/source/api-reference/sandboxes/delete.mdx",
+      "sha256": "04cdfdccfe0ee240f3a86faaf48484673533b348d9593c0cfa8a2aae7d703d13"
+    },
+    {
+      "path": "api-reference/sandboxes/get-file.mdx",
+      "sourcePath": "content/docs/source/api-reference/sandboxes/get-file.mdx",
+      "sha256": "295ccafa0dcbfd10c5c00c125e6efd95d40550bc1dbce1cf05f7e9abed9eaa64"
+    },
+    {
+      "path": "api-reference/sandboxes/list.mdx",
+      "sourcePath": "content/docs/source/api-reference/sandboxes/list.mdx",
+      "sha256": "451380f0bf19c434e314f6ee3cb2c6d6a6cdd9d6c20409766ca56edfa14feef1"
+    },
+    {
+      "path": "api-reference/sandboxes/setup.mdx",
+      "sourcePath": "content/docs/source/api-reference/sandboxes/setup.mdx",
+      "sha256": "64d9b4d486b90be56b40ec224e5db83208c44e78f4359da800f25057ee159a66"
+    },
+    {
+      "path": "api-reference/sandboxes/snapshot.mdx",
+      "sourcePath": "content/docs/source/api-reference/sandboxes/snapshot.mdx",
+      "sha256": "e94cd04e49050b6c69fcbfbb18204790be71b2601fdf26a9bc42bad66320a160"
+    },
+    {
+      "path": "api-reference/sandboxes/stage-file.mdx",
+      "sourcePath": "content/docs/source/api-reference/sandboxes/stage-file.mdx",
+      "sha256": "8eea1bc122fd97865f3e7b78b5ab8aa0efd282f20396c22ff95acfc0d2d9ff50"
+    },
+    {
+      "path": "api-reference/sandboxes/upload-files.mdx",
+      "sourcePath": "content/docs/source/api-reference/sandboxes/upload-files.mdx",
+      "sha256": "819654f0e8c95a5fc3977dbef7cf36b1e0ef43ef40bf85163d584c729b63ca96"
+    },
+    {
+      "path": "api-reference/sessions/create-chat.mdx",
+      "sourcePath": "content/docs/source/api-reference/sessions/create-chat.mdx",
+      "sha256": "e866f07bae15bd47b6b786bfcc0414478a6a4ec9e31575868de8dc4365c2656c"
+    },
+    {
+      "path": "api-reference/sessions/create.mdx",
+      "sourcePath": "content/docs/source/api-reference/sessions/create.mdx",
+      "sha256": "effa2b6efb25c6a24da1a57c7bf3f1900f7cc0bf664c875a7e7a7564d97bfda5"
+    },
+    {
+      "path": "api-reference/sessions/delete-chat.mdx",
+      "sourcePath": "content/docs/source/api-reference/sessions/delete-chat.mdx",
+      "sha256": "9f8b4fde52dc65f640cbaeac88dc45815aca71076708b0b12aeed7704210b083"
+    },
+    {
+      "path": "api-reference/sessions/get-chat.mdx",
+      "sourcePath": "content/docs/source/api-reference/sessions/get-chat.mdx",
+      "sha256": "1efdcd1602f0843c337465a7b7f2d2a5d6319ae15cf2f642cb63b626f2ea8a3d"
+    },
+    {
+      "path": "api-reference/sessions/get.mdx",
+      "sourcePath": "content/docs/source/api-reference/sessions/get.mdx",
+      "sha256": "21b9731ab615317504adf2ee2469a56497621ddb21c5f9fa9739aa143c5e70cd"
+    },
+    {
+      "path": "api-reference/sessions/list-chats.mdx",
+      "sourcePath": "content/docs/source/api-reference/sessions/list-chats.mdx",
+      "sha256": "2b5eb56c5546052d1fea694e822418e52e2c3900d57af23bc83949064e40898b"
+    },
+    {
+      "path": "api-reference/sessions/mark-chat-read.mdx",
+      "sourcePath": "content/docs/source/api-reference/sessions/mark-chat-read.mdx",
+      "sha256": "648a24fb1724aa09e21cabb2b024533ba76d611ca983166bb825cb7a69605f1e"
+    },
+    {
+      "path": "api-reference/sessions/patch-chat.mdx",
+      "sourcePath": "content/docs/source/api-reference/sessions/patch-chat.mdx",
+      "sha256": "6a3fced530bdf896d471a8d8a5232427e291f05b93467c407f6cccabd4b1d381"
+    },
+    {
+      "path": "api-reference/sessions/patch.mdx",
+      "sourcePath": "content/docs/source/api-reference/sessions/patch.mdx",
+      "sha256": "1bfadbc7bd23f668c62f88c407d4676c38d46be8370d7abf8d1584236ae88bcf"
+    },
+    {
+      "path": "api-reference/sites/overview.mdx",
+      "sourcePath": "content/docs/source/api-reference/sites/overview.mdx",
+      "sha256": "ee84e7935d9a5dd5310a4edc9aca7be22ee79249413c19c594e780adbe2b8124"
+    },
+    {
+      "path": "api-reference/social/scrape.mdx",
+      "sourcePath": "content/docs/source/api-reference/social/scrape.mdx",
+      "sha256": "3c42f1c9c935669dcda7c1670f7aac324573cee9cf5c98d5b6a36c64cbfa8fac"
+    },
+    {
+      "path": "api-reference/songs/analyze-presets.mdx",
+      "sourcePath": "content/docs/source/api-reference/songs/analyze-presets.mdx",
+      "sha256": "47ce2d4a4111a4cd4ea80c8c4dac5372a746c424989382a532cb091a69dff915"
+    },
+    {
+      "path": "api-reference/songs/analyze.mdx",
+      "sourcePath": "content/docs/source/api-reference/songs/analyze.mdx",
+      "sha256": "0d5ea5fdca75e1775860066ccac66db16c89b4c58c746acf48929f6aefdd4a7b"
+    },
+    {
+      "path": "api-reference/songs/catalog-delete.mdx",
+      "sourcePath": "content/docs/source/api-reference/songs/catalog-delete.mdx",
+      "sha256": "296662d32781cd2bf350a53f26c2a98c6b4e15b146312d0ee766162498978a26"
+    },
+    {
+      "path": "api-reference/songs/catalog-measurements.mdx",
+      "sourcePath": "content/docs/source/api-reference/songs/catalog-measurements.mdx",
+      "sha256": "7b5d6b494ef75444ac77a92b75fd1cfff385fbba4a16bd8e490bdbf29e90c0e2"
+    },
+    {
+      "path": "api-reference/songs/catalog-playcount-history.mdx",
+      "sourcePath": "content/docs/source/api-reference/songs/catalog-playcount-history.mdx",
+      "sha256": "a9d13eb3f05dc0e86bc70539f398ac04aecf80758e1eb485fd1294b25bc73bc2"
+    },
+    {
+      "path": "api-reference/songs/catalog-rename.mdx",
+      "sourcePath": "content/docs/source/api-reference/songs/catalog-rename.mdx",
+      "sha256": "02bda2257d3beef0f8809f01eca9394ac1948551726c28bbe28be70be8880374"
+    },
+    {
+      "path": "api-reference/songs/catalog-songs-add.mdx",
+      "sourcePath": "content/docs/source/api-reference/songs/catalog-songs-add.mdx",
+      "sha256": "2792fab4cfb9f09e7013a5bff5cee68a438f69b4f306e06cb2ae23bf499df2b6"
+    },
+    {
+      "path": "api-reference/songs/catalog-songs-delete.mdx",
+      "sourcePath": "content/docs/source/api-reference/songs/catalog-songs-delete.mdx",
+      "sha256": "3e1ab240f7acf5bfcae5a56dc4d843e512f2ab2412e0fea01ec0d70d9cc127d0"
+    },
+    {
+      "path": "api-reference/songs/catalog-songs.mdx",
+      "sourcePath": "content/docs/source/api-reference/songs/catalog-songs.mdx",
+      "sha256": "6c3f928fba14f793758f9b317c76464b0c3a275868a346a1e75b8c44798c9a2a"
+    },
+    {
+      "path": "api-reference/songs/catalog-stream-tracking.mdx",
+      "sourcePath": "content/docs/source/api-reference/songs/catalog-stream-tracking.mdx",
+      "sha256": "4e5174b73889c3e978f0dec176d927ca1c216853a2734bf7aba85899cadd24eb"
+    },
+    {
+      "path": "api-reference/songs/catalog-streams.mdx",
+      "sourcePath": "content/docs/source/api-reference/songs/catalog-streams.mdx",
+      "sha256": "bea177e50cfb02c535b6e55c4a5713f9bce155e6f40484fa0a78943363a7589f"
+    },
+    {
+      "path": "api-reference/songs/catalog-valuations.mdx",
+      "sourcePath": "content/docs/source/api-reference/songs/catalog-valuations.mdx",
+      "sha256": "1e1306043062e1ee25be4a632332d4d6fc2751302a406df8ab2abd82145f6433"
+    },
+    {
+      "path": "api-reference/songs/catalogs-create.mdx",
+      "sourcePath": "content/docs/source/api-reference/songs/catalogs-create.mdx",
+      "sha256": "2e2ba0209e7b08055d04e19de963f265011545eabb71afec71ef38f57537e84d"
+    },
+    {
+      "path": "api-reference/songs/catalogs.mdx",
+      "sourcePath": "content/docs/source/api-reference/songs/catalogs.mdx",
+      "sha256": "be9af90e48ade2303eb0f75f33816ba9d6819bd89af31a566aeb8b567ba3ddf0"
+    },
+    {
+      "path": "api-reference/songs/create.mdx",
+      "sourcePath": "content/docs/source/api-reference/songs/create.mdx",
+      "sha256": "c3d03a58594e8e5d36c58e620e640580e9fda29dab933763f6157692bb1db221"
+    },
+    {
+      "path": "api-reference/songs/runs.mdx",
+      "sourcePath": "content/docs/source/api-reference/songs/runs.mdx",
+      "sha256": "d13cae689e68b43731ea6ab36bf5b258ac3020a8d4b9cf62942e02e5d9e5a33e"
+    },
+    {
+      "path": "api-reference/songs/songs.mdx",
+      "sourcePath": "content/docs/source/api-reference/songs/songs.mdx",
+      "sha256": "aedc5206a0c519c36fa06a9407139d0e43039462737d6ebbb9fc62d3b77c8963"
+    },
+    {
+      "path": "api-reference/songs/update-catalog-stream-tracking.mdx",
+      "sourcePath": "content/docs/source/api-reference/songs/update-catalog-stream-tracking.mdx",
+      "sha256": "82aae282ae05ee06701b233e1613bfa7b124e5c51b2b7ae7dd7467c0f00f9450"
+    },
+    {
+      "path": "api-reference/songs/valuation-run.mdx",
+      "sourcePath": "content/docs/source/api-reference/songs/valuation-run.mdx",
+      "sha256": "92d3ccdf04fe41f26f5052a0997e75055f237974459c94d77d9c5d14ebfafc9d"
+    },
+    {
+      "path": "api-reference/spotify/album.mdx",
+      "sourcePath": "content/docs/source/api-reference/spotify/album.mdx",
+      "sha256": "f73881aa7d23a099a4841a8947be6c9f544c94e8d7aecd579ad4cabff26199f8"
+    },
+    {
+      "path": "api-reference/spotify/artist-albums.mdx",
+      "sourcePath": "content/docs/source/api-reference/spotify/artist-albums.mdx",
+      "sha256": "bce32866bb95ae2ac5942f25d5b1195c8b70dfaf4952f8092cc2dc5cffae0d11"
+    },
+    {
+      "path": "api-reference/spotify/artist-top-tracks.mdx",
+      "sourcePath": "content/docs/source/api-reference/spotify/artist-top-tracks.mdx",
+      "sha256": "ee9b1e1f49287d5bc2330043f210b9362c8ed4785ad7a90141ad5c3a53f2d791"
+    },
+    {
+      "path": "api-reference/spotify/artist.mdx",
+      "sourcePath": "content/docs/source/api-reference/spotify/artist.mdx",
+      "sha256": "ebe0b3b6f14e9af88ee2e4c707b915cce9af8123181525f2f7282c5f433eed47"
+    },
+    {
+      "path": "api-reference/spotify/search.mdx",
+      "sourcePath": "content/docs/source/api-reference/spotify/search.mdx",
+      "sha256": "605d26212f32bca18e2739ce56182ecc90aac158d4cd3bd80fe334d3d8ba1776"
+    },
+    {
+      "path": "api-reference/subscriptions/claim-create.mdx",
+      "sourcePath": "content/docs/source/api-reference/subscriptions/claim-create.mdx",
+      "sha256": "5154177a22b242d035c37b037a63e669549c8b161fc1b160fcffcda3bffccbd1"
+    },
+    {
+      "path": "api-reference/subscriptions/sessions-create.mdx",
+      "sourcePath": "content/docs/source/api-reference/subscriptions/sessions-create.mdx",
+      "sha256": "0cba654522bcbcbd7fb8134ea9c3287374b18944c470e5f3eae3f471d48ec7eb"
+    },
+    {
+      "path": "api-reference/tasks/create.mdx",
+      "sourcePath": "content/docs/source/api-reference/tasks/create.mdx",
+      "sha256": "a2ad1723cf011349f8614504f12edfb080319f3174a25df8ffb73d92997d0cf9"
+    },
+    {
+      "path": "api-reference/tasks/delete.mdx",
+      "sourcePath": "content/docs/source/api-reference/tasks/delete.mdx",
+      "sha256": "3aa122805bf23cccaa8403fc04924c7a687aea671a34d8a378756333a7e8b06a"
+    },
+    {
+      "path": "api-reference/tasks/get.mdx",
+      "sourcePath": "content/docs/source/api-reference/tasks/get.mdx",
+      "sha256": "8dfcb926a2dcb292858ec721459ae9960a904318b393f381413ae1a2e417fb8d"
+    },
+    {
+      "path": "api-reference/tasks/runs.mdx",
+      "sourcePath": "content/docs/source/api-reference/tasks/runs.mdx",
+      "sha256": "1839c22c2882bae8cf7bd43896c22ad64e7ba17df7f1fb0ec5466e410be7e6b0"
+    },
+    {
+      "path": "api-reference/tasks/update.mdx",
+      "sourcePath": "content/docs/source/api-reference/tasks/update.mdx",
+      "sha256": "f1c05658aa8a86a5d5e8317051d8324b1628c9c0e96238530489b2275a62a2ec"
+    },
+    {
+      "path": "api-reference/templates/create.mdx",
+      "sourcePath": "content/docs/source/api-reference/templates/create.mdx",
+      "sha256": "ab24e72734c670b7224a8f2a84b62bd82c5837fc58202a8eea770c8b5ae639ea"
+    },
+    {
+      "path": "api-reference/templates/delete.mdx",
+      "sourcePath": "content/docs/source/api-reference/templates/delete.mdx",
+      "sha256": "d85de5a3e9130dbd5ea97530d1a5fa1e032569792b2222641d966ff0a44988d2"
+    },
+    {
+      "path": "api-reference/templates/favorite.mdx",
+      "sourcePath": "content/docs/source/api-reference/templates/favorite.mdx",
+      "sha256": "8400254a5f67dde07e7a69c67155e8f881f246562b46d676069cabdb8c84ac90"
+    },
+    {
+      "path": "api-reference/templates/list.mdx",
+      "sourcePath": "content/docs/source/api-reference/templates/list.mdx",
+      "sha256": "f2a4691a095e1ae5d134a181f99aa341bc0907b4e5e2848417ed95cffa9d8b9b"
+    },
+    {
+      "path": "api-reference/templates/update.mdx",
+      "sourcePath": "content/docs/source/api-reference/templates/update.mdx",
+      "sha256": "03e231beb6e2abe8bc49610558c26caa3200a859f41a04ba48ee7c7514d661d6"
+    },
+    {
+      "path": "api-reference/transcribe/audio.mdx",
+      "sourcePath": "content/docs/source/api-reference/transcribe/audio.mdx",
+      "sha256": "0719cae987a625ecdf1942b9365d0a084dd7d7b0fa0be73899d531801b1a9a29"
+    },
+    {
+      "path": "authentication.mdx",
+      "sourcePath": "content/docs/source/authentication.mdx",
+      "sha256": "d9a4bde91dc9b25b2bdd5e2692f61cdbd095e23f4309bc66ab9b181337df8faf"
+    },
+    {
+      "path": "claude.mdx",
+      "sourcePath": "content/docs/source/claude.mdx",
+      "sha256": "949265d99f95fc4ca64e6bff8b30c97966d98936b0d638de0f93f071370550fb"
+    },
+    {
+      "path": "cli.mdx",
+      "sourcePath": "content/docs/source/cli.mdx",
+      "sha256": "219ea4719348b2e32883c988208a9a7072f8b6fcb94668228fa97a9be4b94adc"
+    },
+    {
+      "path": "connectors/ownership.mdx",
+      "sourcePath": "content/docs/source/connectors/ownership.mdx",
+      "sha256": "3f9e6bbe3059c4282fcc713e90d406b26f10986a9326f5fea6192f8105b25f49"
+    },
+    {
+      "path": "content-agent.mdx",
+      "sourcePath": "content/docs/source/content-agent.mdx",
+      "sha256": "431c32cce00ed668f3bde8868687596200fecb37ef35f631df5e7f9c44fed824"
+    },
+    {
+      "path": "credits.mdx",
+      "sourcePath": "content/docs/source/credits.mdx",
+      "sha256": "5522e07263888257b9dbe3a77aff1ae49a7993d90d160608b4937f5f0f378c66"
+    },
+    {
+      "path": "essentials/release-player.mdx",
+      "sourcePath": "content/docs/source/essentials/release-player.mdx",
+      "sha256": "30a5b2c4c6625d6a022bb3d874fdf6bf77d57661973b388c912bc9ebf9787e8d"
+    },
+    {
+      "path": "essentials/site-fan-connection.mdx",
+      "sourcePath": "content/docs/source/essentials/site-fan-connection.mdx",
+      "sha256": "953a2e4a29d6d3bc2c57c62b3b66e3b83d2322953d81159b60302617331c5926"
+    },
+    {
+      "path": "index.mdx",
+      "sourcePath": "content/docs/source/index.mdx",
+      "sha256": "cf10a8551be017bca333e390647719f353aeafdf26a12c06254e8bcd10af865d"
+    },
+    {
+      "path": "mcp-cimd.mdx",
+      "sourcePath": "content/docs/source/mcp-cimd.mdx",
+      "sha256": "a58a8faddd54828eaad7de25ecc2e252f28d386c8735a05a827537629292ade0"
+    },
+    {
+      "path": "mcp-oauth.mdx",
+      "sourcePath": "content/docs/source/mcp-oauth.mdx",
+      "sha256": "a0f8addd8887a78e932786f04fc63a2cdc56550446031ddb1dfc3bfe999aab24"
+    },
+    {
+      "path": "mcp.mdx",
+      "sourcePath": "content/docs/source/mcp.mdx",
+      "sha256": "7d77b5427252fb5f58e8e8933dfa68bff1aaf61a978f5cdab85cc140a98e0f94"
+    },
+    {
+      "path": "quickstart.mdx",
+      "sourcePath": "content/docs/source/quickstart.mdx",
+      "sha256": "cdef37d9ee97d5475b226d9d2f4d139f93378b73ae32cb786d3ebb9d009356f6"
+    },
+    {
+      "path": "research-availability.mdx",
+      "sourcePath": "content/docs/source/research-availability.mdx",
+      "sha256": "38f1ef96bc7fcf4f9b4ff4fda4425e4b034a1933dd069e2b7954e109295c07ef"
+    },
+    {
+      "path": "snippets/snippet-intro.mdx",
+      "sourcePath": "content/docs/source/snippets/snippet-intro.mdx",
+      "sha256": "2d5a664b4ccdd9168f5e4211c4bef725562655257cee840099aba530d4429e00"
+    },
+    {
+      "path": "workflows/create-artist.mdx",
+      "sourcePath": "content/docs/source/workflows/create-artist.mdx",
+      "sha256": "02e99c9a2c35e16954e0aa3368722252d4a87b25bd4748b673b18affc7256412"
+    },
+    {
+      "path": "workflows/generate-music-video.mdx",
+      "sourcePath": "content/docs/source/workflows/generate-music-video.mdx",
+      "sha256": "df08b22bdc866daaf6adfbdfaafac47859f1281449841990d0e2af499a1e2d7d"
+    }
+  ],
+  "navigationSha256": "b0f0f2d32aaf2a527bff5343ff69394b9a29da1c0fd215f07cd797fea3bfc399",
+  "hostSpecific": [
+    "docs.json theme, colors, navbar, footer, logo and host settings"
+  ],
+  "releaseNote": "This prepares content only. Host cutover and archival remain separate."
+}
