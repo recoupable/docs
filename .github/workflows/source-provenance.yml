@@ -28,3 +28,4 @@ jobs:
           ref: ${{ steps.source.outputs.commit }}
           path: .documentation-source
       - run: python3 scripts/check_source.py --source .documentation-source
+      - run: python3 scripts/test_check_source.py

@@ -1,12 +1,12 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "440c4a6e654379e8a184fae2c3661e04463ceaf6",
+  "commit": "275a4cd367c1871ef104905c070d4b854021bcd4",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
       "path": "agents.mdx",
       "sourcePath": "content/docs/source/agents.mdx",
-      "sha256": "b0e9ef7ce3981a98536f1c17e4834b4db3ada2158936c15db19cc74f06de2d6e"
+      "sha256": "bdeab06e53fa101e3cea8398704422457027c595cc25983b60cb147701f276b3"
     },
     {
       "path": "api-reference/accounts/add-artist.mdx",
@@ -461,7 +461,7 @@
     {
       "path": "api-reference/openapi/accounts.json",
       "sourcePath": "content/docs/source/api-reference/openapi/accounts.json",
-      "sha256": "f1bdfe7150f4bda12381a16c4a89da2322b6a871e204e1e1da48c87ed1b95a64"
+      "sha256": "db81e931f01769677503410969c8a2f4e2bd00745be8648e1c6635a2a8166afd"
     },
     {
       "path": "api-reference/openapi/ai.json",
@@ -471,7 +471,7 @@
     {
       "path": "api-reference/openapi/content.json",
       "sourcePath": "content/docs/source/api-reference/openapi/content.json",
-      "sha256": "ebe0ced0ee49d1394a5275e9cd57f451d27c2fd1d667b963c299a382ada87f5e"
+      "sha256": "2b8d2b504107cb9ecc6ac6be97c238b34fd4a3b2056ad40e80d9c4765e35fcbc"
     },
     {
       "path": "api-reference/openapi/context.json",
@@ -481,7 +481,7 @@
     {
       "path": "api-reference/openapi/players.json",
       "sourcePath": "content/docs/source/api-reference/openapi/players.json",
-      "sha256": "797af1dbee3ff18dbc8dc1b3ebafdb41de23692eac6b7e02977614e675f8d801"
+      "sha256": "8b97d047e8f2fc698b7dfa704b153a1325bba5161b1f95a9c1e6a9f2421b7d23"
     },
     {
       "path": "api-reference/openapi/projects.json",
@@ -496,7 +496,7 @@
     {
       "path": "api-reference/openapi/research.json",
       "sourcePath": "content/docs/source/api-reference/openapi/research.json",
-      "sha256": "320cfd7dac57be22a8e2da95f48f2888bbff8c3dfe5016cf0773c0a24201459d"
+      "sha256": "698f422e0c3fd39470294431590ff4f62a263c18c081a2365d24dcd0fe34df96"
     },
     {
       "path": "api-reference/openapi/sandbox.json",
@@ -659,6 +659,21 @@
       "sha256": "558454121f2f857216cf6f0355402a221e49d8670efe5247751889b033c7c6c2"
     },
     {
+      "path": "api-reference/research/albums.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/albums.mdx",
+      "sha256": "613fca9a5dde6a5126e07fb1f22fccbb845d22663c44d94174d1a1fe5d7977c4"
+    },
+    {
+      "path": "api-reference/research/audience.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/audience.mdx",
+      "sha256": "7486c33664f8d2d2107387e99abf76920569a3cc785f0c4f6d0111e241439fcb"
+    },
+    {
+      "path": "api-reference/research/career.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/career.mdx",
+      "sha256": "06f8ae316138a4849683aae920c37b97f1f09f90cf948bf766d5d0d07373c8ef"
+    },
+    {
       "path": "api-reference/research/deep.mdx",
       "sourcePath": "content/docs/source/api-reference/research/deep.mdx",
       "sha256": "838ce532a1abe769beaf832f19a3192dae9e6820bc431a2745c627aa9903083d"
@@ -679,6 +694,16 @@
       "sha256": "b706edaf8db028010dcef56ab37f9919cd4f019283e3923ceaf8d22e6f4f322b"
     },
     {
+      "path": "api-reference/research/insights.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/insights.mdx",
+      "sha256": "3628d04bd6d25ab73bf93673b1cf4b005cfd144762ce7dec14b007e73f45fb1a"
+    },
+    {
+      "path": "api-reference/research/lookup.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/lookup.mdx",
+      "sha256": "67f6e5ea9421466d5347b63f286d0fb071e913fe9e31c433e62e2bbbcca676a0"
+    },
+    {
       "path": "api-reference/research/measurement-jobs.mdx",
       "sourcePath": "content/docs/source/api-reference/research/measurement-jobs.mdx",
       "sha256": "f2fd7853c322a231b2cd11143f32125c2174a49593fcb02c14e1d547737eccc2"
@@ -689,14 +714,64 @@
       "sha256": "e4e2aad05a66c858da1ef43860e4dc875ea46e0ca013cd695702944321a1f642"
     },
     {
+      "path": "api-reference/research/metrics.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/metrics.mdx",
+      "sha256": "dc49bb8a716630fab9ce3a9250662132350a627830f50d1d1fea9014bc724e80"
+    },
+    {
+      "path": "api-reference/research/milestones.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/milestones.mdx",
+      "sha256": "5275e681ea467a313a649cefc6b2054c10800f430393a55b19529ef7f6ca1151"
+    },
+    {
       "path": "api-reference/research/people.mdx",
       "sourcePath": "content/docs/source/api-reference/research/people.mdx",
       "sha256": "715b7a29b9ba2ee490094857ec86492df687a956d7a009487f17932c853cd5ac"
     },
     {
+      "path": "api-reference/research/playlists.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/playlists.mdx",
+      "sha256": "ccf66be9e1a8571b4a98f7655b1e61b915058966baa60d426eea8e10fff41b19"
+    },
+    {
+      "path": "api-reference/research/profile.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/profile.mdx",
+      "sha256": "5b3222251be8b12c079d2cce7ee0d6008ecfd138a33c82cf27deb7c3c24fd9b9"
+    },
+    {
+      "path": "api-reference/research/search.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/search.mdx",
+      "sha256": "19f0b09468f793bb696c64a08e9e39b7c0bd1e28b8e227ad8a8da5d03317babd"
+    },
+    {
+      "path": "api-reference/research/similar.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/similar.mdx",
+      "sha256": "7627d112cdf6cd928e360daa89b75d10f803843079b0a3c64c49e3860fb5bfd6"
+    },
+    {
+      "path": "api-reference/research/track-playlists.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/track-playlists.mdx",
+      "sha256": "39c01b86ff4a91d8916ea2c8a7664b9d9f4c2a32f6c1b74d300f4cbb14632723"
+    },
+    {
       "path": "api-reference/research/track-stats.mdx",
       "sourcePath": "content/docs/source/api-reference/research/track-stats.mdx",
       "sha256": "8fbdffbcce0186fd8c600de575909ebbf9ba6bff6c91aef5f491cb5201b82427"
+    },
+    {
+      "path": "api-reference/research/track.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/track.mdx",
+      "sha256": "0ee02b84c1dc63c612e8c3f63d74c3595d2feab782692e87957dd1c5165420c1"
+    },
+    {
+      "path": "api-reference/research/tracks.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/tracks.mdx",
+      "sha256": "3a52bd5d8965e085b217ee1ddd8456c071246ab1c528a05f146bb03c0584f075"
+    },
+    {
+      "path": "api-reference/research/urls.mdx",
+      "sourcePath": "content/docs/source/api-reference/research/urls.mdx",
+      "sha256": "cc74196142494c9216bc1ee5b33a662154ec7fc0ad01b8573b21bc83e4786bd8"
     },
     {
       "path": "api-reference/research/web.mdx",
@@ -806,7 +881,7 @@
     {
       "path": "api-reference/sites/overview.mdx",
       "sourcePath": "content/docs/source/api-reference/sites/overview.mdx",
-      "sha256": "ee84e7935d9a5dd5310a4edc9aca7be22ee79249413c19c594e780adbe2b8124"
+      "sha256": "52604ebee8a9dc424d8275e2e15543a3ac754fed53e5390611a7336a7040d6fb"
     },
     {
       "path": "api-reference/social/scrape.mdx",
@@ -1001,7 +1076,7 @@
     {
       "path": "authentication.mdx",
       "sourcePath": "content/docs/source/authentication.mdx",
-      "sha256": "d9a4bde91dc9b25b2bdd5e2692f61cdbd095e23f4309bc66ab9b181337df8faf"
+      "sha256": "6b9d0de7ddcbc132c1425289b35684d1f1733820c22dccbfc1a688ebaa1c9e6f"
     },
     {
       "path": "claude.mdx",
@@ -1021,27 +1096,27 @@
     {
       "path": "content-agent.mdx",
       "sourcePath": "content/docs/source/content-agent.mdx",
-      "sha256": "431c32cce00ed668f3bde8868687596200fecb37ef35f631df5e7f9c44fed824"
+      "sha256": "e798777217afa8b6b8c1b5d8282468ac07bedad5953eb68f5d6f6258e1f1ff89"
     },
     {
       "path": "credits.mdx",
       "sourcePath": "content/docs/source/credits.mdx",
-      "sha256": "5522e07263888257b9dbe3a77aff1ae49a7993d90d160608b4937f5f0f378c66"
+      "sha256": "f6678646e0559209f9e39d4ed85ee1d7233144c79b2089076b2eee72ff225b4e"
     },
     {
       "path": "essentials/release-player.mdx",
       "sourcePath": "content/docs/source/essentials/release-player.mdx",
-      "sha256": "30a5b2c4c6625d6a022bb3d874fdf6bf77d57661973b388c912bc9ebf9787e8d"
+      "sha256": "e1dd369581d5044cd32e7538059d13e403c81d06e63e921b40f23e8cba5b9ad2"
     },
     {
       "path": "essentials/site-fan-connection.mdx",
       "sourcePath": "content/docs/source/essentials/site-fan-connection.mdx",
-      "sha256": "953a2e4a29d6d3bc2c57c62b3b66e3b83d2322953d81159b60302617331c5926"
+      "sha256": "6d59610ef3774b72dc1393b8b2405f0bbc930d619781e626c79ac7cc626f5836"
     },
     {
       "path": "index.mdx",
       "sourcePath": "content/docs/source/index.mdx",
-      "sha256": "cf10a8551be017bca333e390647719f353aeafdf26a12c06254e8bcd10af865d"
+      "sha256": "a5debdbc0a81917214397ad7481a211d6029b4920711eea74632f9986beea792"
     },
     {
       "path": "mcp-cimd.mdx",
@@ -1056,17 +1131,17 @@
     {
       "path": "mcp.mdx",
       "sourcePath": "content/docs/source/mcp.mdx",
-      "sha256": "7d77b5427252fb5f58e8e8933dfa68bff1aaf61a978f5cdab85cc140a98e0f94"
+      "sha256": "5e5576654c5d355bec993fd48e96bd3215c0ea0f888f02a6d0c1d32d92ec8ce7"
     },
     {
       "path": "quickstart.mdx",
       "sourcePath": "content/docs/source/quickstart.mdx",
-      "sha256": "cdef37d9ee97d5475b226d9d2f4d139f93378b73ae32cb786d3ebb9d009356f6"
+      "sha256": "f64c46496a2a8555d2aa655b9df7cd1d1598afc450f3995743dda3a1e4c81fda"
     },
     {
       "path": "research-availability.mdx",
       "sourcePath": "content/docs/source/research-availability.mdx",
-      "sha256": "38f1ef96bc7fcf4f9b4ff4fda4425e4b034a1933dd069e2b7954e109295c07ef"
+      "sha256": "da13dc1e2072ebbe97cba1e205a034c57e150ed31da39c8b9bb04456175f8a06"
     },
     {
       "path": "snippets/snippet-intro.mdx",
@@ -1084,7 +1159,7 @@
       "sha256": "df08b22bdc866daaf6adfbdfaafac47859f1281449841990d0e2af499a1e2d7d"
     }
   ],
-  "navigationSha256": "b0f0f2d32aaf2a527bff5343ff69394b9a29da1c0fd215f07cd797fea3bfc399",
+  "navigationSha256": "a3d7239d0e831858a8dd244d04dfbb0eaa1e4f14c3310025ed9652068903ff4d",
   "hostSpecific": [
     "docs.json theme, colors, navbar, footer, logo and host settings"
   ],
