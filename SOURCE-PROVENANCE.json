@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "595802e900e61c862aa4090a26e0386b3f263b97",
+  "commit": "4897009f2007af8ecac0d70535ed53950d1010d3",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -471,7 +471,7 @@
     {
       "path": "api-reference/openapi/content.json",
       "sourcePath": "content/docs/source/api-reference/openapi/content.json",
-      "sha256": "2b8d2b504107cb9ecc6ac6be97c238b34fd4a3b2056ad40e80d9c4765e35fcbc"
+      "sha256": "c573ee6a8a1cd743e93328b4e4d3246fcdad3dd52d4e2649ed5eacc771c2ff12"
     },
     {
       "path": "api-reference/openapi/context.json",
@@ -696,7 +696,7 @@
     {
       "path": "api-reference/research/insights.mdx",
       "sourcePath": "content/docs/source/api-reference/research/insights.mdx",
-      "sha256": "3628d04bd6d25ab73bf93673b1cf4b005cfd144762ce7dec14b007e73f45fb1a"
+      "sha256": "f35ce9f7ef8854891ee4ee91c4a367e553df9f83bdb7e74f0575a7a95418d9fe"
     },
     {
       "path": "api-reference/research/lookup.mdx",
@@ -1096,7 +1096,7 @@
     {
       "path": "content-agent.mdx",
       "sourcePath": "content/docs/source/content-agent.mdx",
-      "sha256": "4ed93f97971bb485b638a3a8b61823f05975689db0e465a51c9684184c4d48b5"
+      "sha256": "a2564b15034ea285873d1986f2f6897e58b4ed5b417df4299cb8e9563965c7d2"
     },
     {
       "path": "credits.mdx",
