@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "ab207ee71674498186405388019d6cda0e141b90",
+  "commit": "22ee637bac5d9f2c8a440cc2fc0d0865d916b1ee",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -1151,7 +1151,7 @@
     {
       "path": "workflows/create-artist.mdx",
       "sourcePath": "content/docs/source/workflows/create-artist.mdx",
-      "sha256": "02e99c9a2c35e16954e0aa3368722252d4a87b25bd4748b673b18affc7256412"
+      "sha256": "3d361baa68a5594ffd70aae673d20a4694b5873686a570cfcd2b48e7de84132e"
     },
     {
       "path": "workflows/generate-music-video.mdx",
