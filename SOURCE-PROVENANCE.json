@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "275a4cd367c1871ef104905c070d4b854021bcd4",
+  "commit": "ab207ee71674498186405388019d6cda0e141b90",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -1096,7 +1096,7 @@
     {
       "path": "content-agent.mdx",
       "sourcePath": "content/docs/source/content-agent.mdx",
-      "sha256": "e798777217afa8b6b8c1b5d8282468ac07bedad5953eb68f5d6f6258e1f1ff89"
+      "sha256": "4ed93f97971bb485b638a3a8b61823f05975689db0e465a51c9684184c4d48b5"
     },
     {
       "path": "credits.mdx",
@@ -1126,7 +1126,7 @@
     {
       "path": "mcp-oauth.mdx",
       "sourcePath": "content/docs/source/mcp-oauth.mdx",
-      "sha256": "a0f8addd8887a78e932786f04fc63a2cdc56550446031ddb1dfc3bfe999aab24"
+      "sha256": "2d1fb7c5749c2aa5f35995f2636e1b4f6d7ee42059972be3a6e18e2e7baf6c59"
     },
     {
       "path": "mcp.mdx",
