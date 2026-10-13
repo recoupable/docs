@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "6efe8f96364b15cbfeb74522355cd8c20ad89b66",
+  "commit": "336bad147daaa43e0dff37f682886168954702d6",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -511,7 +511,7 @@
     {
       "path": "api-reference/openapi/social.json",
       "sourcePath": "content/docs/source/api-reference/openapi/social.json",
-      "sha256": "5b3407cbb0a0ef92d1f890add426bfb625bfe1ca6077bcf7750a29fc25382cfd"
+      "sha256": "489dbe63222042edbb13a6bcfc34239576b81b28570da7280b4abbb85e3b9e9e"
     },
     {
       "path": "api-reference/openapi/templates.json",
