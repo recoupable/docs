@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "2c93aa17a2b7be601d6590937fb04df390db5b0d",
+  "commit": "13f2af830da734a17c07fdf34b14b36bb8ccdb55",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -476,7 +476,7 @@
     {
       "path": "api-reference/openapi/context.json",
       "sourcePath": "content/docs/source/api-reference/openapi/context.json",
-      "sha256": "6c6d122b8afbdc6a93fa6dadcbe5c54446508740ad298c57650fa59980e6fe9f"
+      "sha256": "de67b0fecf1759ffad99f0f32eedd2e9b33e22c7feebcebfd961e4d26d21262e"
     },
     {
       "path": "api-reference/openapi/players.json",
@@ -496,7 +496,7 @@
     {
       "path": "api-reference/openapi/research.json",
       "sourcePath": "content/docs/source/api-reference/openapi/research.json",
-      "sha256": "2671ceab80a9ff88d26053bcf27a7ac36aee0c3955a8a3dd7c91f71a27ed5b09"
+      "sha256": "e41af080333df4740bf2a217fc40c588b95ae7cf0d73728a0caaff7367f25547"
     },
     {
       "path": "api-reference/openapi/sandbox.json",
@@ -511,7 +511,7 @@
     {
       "path": "api-reference/openapi/social.json",
       "sourcePath": "content/docs/source/api-reference/openapi/social.json",
-      "sha256": "9cee87d2f36b268335f3f393b73ae97a31a0ce095fd882cdb62f771e84564b64"
+      "sha256": "2dc915ae58d1fc6d2bca1ba04401b161c5f67a91b31f93cf4d0869ef7d9d0a9d"
     },
     {
       "path": "api-reference/openapi/templates.json",
@@ -881,7 +881,7 @@
     {
       "path": "api-reference/sites/overview.mdx",
       "sourcePath": "content/docs/source/api-reference/sites/overview.mdx",
-      "sha256": "2aa1de7c95c673caa65e60e5d3452139e9763f64c2fa776d3d240d972732208c"
+      "sha256": "19c36f2fad2d795597595ee0a37ff2a0d273af2830d963cbe7761c67a0cd5c63"
     },
     {
       "path": "api-reference/social/scrape.mdx",
@@ -1086,7 +1086,7 @@
     {
       "path": "cli.mdx",
       "sourcePath": "content/docs/source/cli.mdx",
-      "sha256": "f36ad7ea7362a483b7c6539701553e1f7097d27695123bed713c6c794be53683"
+      "sha256": "960556fcd300c5216fa708db8f1ca9379ae4592788b4df57b7cfcda2f08c3eae"
     },
     {
       "path": "connectors/ownership.mdx",

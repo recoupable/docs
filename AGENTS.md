@@ -104,8 +104,8 @@ Refresh this publication through the sync script rather than editing copies here
 
 ```mdx
 ---
-title: 'List Items'
-openapi: '/api-reference/openapi/accounts.json GET /api/items'
+title: 'Get Account ID'
+openapi: '/api-reference/openapi/accounts.json GET /api/accounts/id'
 ---
 ```
 
