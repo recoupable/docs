@@ -39,9 +39,9 @@ docs/
 ├── index.mdx           # Homepage
 ├── quickstart.mdx      # Getting started guide
 ├── development.mdx     # Development setup guide
-├── api-reference/      # API endpoint documentation
+├── api-reference/      # Copied API endpoint documentation
 │   ├── introduction.mdx
-│   ├── openapi.json    # OpenAPI spec for API endpoints
+│   ├── openapi/        # Split OpenAPI specs copied from Marketing
 │   └── [category]/     # Grouped API endpoints (tasks, artists, chat, etc.)
 ├── essentials/         # Core documentation pages
 ├── ai-tools/           # AI tool integration guides
@@ -72,8 +72,8 @@ All site configuration is in `docs.json`:
 
 ## Branding
 
-Reference `Recoup-Chat` codebase for correct branding values:
-- **Primary color**: `#345A5D` (from `tailwind.config.ts` primaryGreen)
+Preserve this retained host's configured theme and branding. For platform UI
+authoring, follow Mono's `DESIGN.md`; copied documentation remains owned by Marketing.
 - **Support email**: `agent@recoupable.dev`
 - **App URL**: `https://chat.recoupable.dev`
 - **Website**: `https://recoupable.dev`
@@ -94,23 +94,26 @@ Documentation pages use MDX (Markdown + JSX). Key conventions:
 ### API Reference
 
 API endpoints are documented in `api-reference/` with:
-- OpenAPI spec in `openapi.json` for auto-generated endpoint docs
-- MDX pages in `api-reference/[category]/` that reference the OpenAPI spec
+- Split specs in `api-reference/openapi/*.json` for generated endpoint docs
+- MDX pages in `api-reference/[category]/` referencing a specific split spec
 
-**CRITICAL: API reference MDX pages should be frontmatter-only.** Do NOT add custom sections (Overview, Availability, etc.) — let Mintlify auto-generate everything from the OpenAPI spec. All descriptions, parameter docs, and response schemas belong in `openapi.json`.
+Put endpoint descriptions, parameters, response schemas and availability notes in
+the maintained Marketing split spec. Endpoint MDX wrappers should normally be
+frontmatter-only; authored overview and workflow guides are separate pages.
+Refresh this publication through the sync script rather than editing copies here.
 
 ```mdx
 ---
 title: 'List Items'
-openapi: 'GET /api/items'
+openapi: '/api-reference/openapi/accounts.json GET /api/items'
 ---
 ```
 
-This is the correct pattern. Nothing else should go in the file.
+This is the wrapper pattern; use the real owning split spec and operation.
 
 ## Code Principles
 
-From `Recoup-Chat/principles.md`:
+Apply these principles when authoring the maintained Marketing source:
 
 - **DRY**: Don't duplicate content across pages - use snippets
 - **Single Responsibility**: One concept per page
