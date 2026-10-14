@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "62cc352c4c90d4578bea4352001fc459b7566e1b",
+  "commit": "5cb01c9a09b5d4ffc68e2a8c02f4b584553a3c81",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -461,7 +461,7 @@
     {
       "path": "api-reference/openapi/accounts.json",
       "sourcePath": "content/docs/source/api-reference/openapi/accounts.json",
-      "sha256": "8bf9e1c0cbc2ebace75f5959c1a8f6c013db10c01b99a958904f16552d6379bd"
+      "sha256": "0803ba921d739f023353e7ec6807ff407542483a679ee1cf5226539637f424d7"
     },
     {
       "path": "api-reference/openapi/ai.json",
@@ -491,7 +491,7 @@
     {
       "path": "api-reference/openapi/releases.json",
       "sourcePath": "content/docs/source/api-reference/openapi/releases.json",
-      "sha256": "69da8732a457891e5d954cecdb201ed59c1d84255cd5b0edefb6e0cab2e80bd7"
+      "sha256": "a33ddb4f983e7ee24733a3443e46b51d7457805f9ef0d663e2a29e21677d129c"
     },
     {
       "path": "api-reference/openapi/research.json",
@@ -511,7 +511,7 @@
     {
       "path": "api-reference/openapi/social.json",
       "sourcePath": "content/docs/source/api-reference/openapi/social.json",
-      "sha256": "2dc915ae58d1fc6d2bca1ba04401b161c5f67a91b31f93cf4d0869ef7d9d0a9d"
+      "sha256": "2eda569b07c628ec0757d7239d2adc69454d74ef9163b9c902ce241427ed3949"
     },
     {
       "path": "api-reference/openapi/templates.json",
