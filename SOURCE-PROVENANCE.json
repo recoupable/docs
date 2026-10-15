@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "5cb01c9a09b5d4ffc68e2a8c02f4b584553a3c81",
+  "commit": "84a32dbc71b009954d967c86ee1dd82eb167f76b",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -511,7 +511,7 @@
     {
       "path": "api-reference/openapi/social.json",
       "sourcePath": "content/docs/source/api-reference/openapi/social.json",
-      "sha256": "2eda569b07c628ec0757d7239d2adc69454d74ef9163b9c902ce241427ed3949"
+      "sha256": "8d903dea3ecc0eb29c198ccc4ab23449f8929132c7c346151dd03461a828de80"
     },
     {
       "path": "api-reference/openapi/templates.json",
@@ -642,6 +642,26 @@
       "path": "api-reference/projects/task-update.mdx",
       "sourcePath": "content/docs/source/api-reference/projects/task-update.mdx",
       "sha256": "235507921f4df34cd25f82eecbce52bc99c2e36825c288af93f9cbb0af75324a"
+    },
+    {
+      "path": "api-reference/publishing/cancel.mdx",
+      "sourcePath": "content/docs/source/api-reference/publishing/cancel.mdx",
+      "sha256": "0e150847b7f144f4b31a1e87f01df37d353e0edc6cf12b4da15691afb6c37a79"
+    },
+    {
+      "path": "api-reference/publishing/create.mdx",
+      "sourcePath": "content/docs/source/api-reference/publishing/create.mdx",
+      "sha256": "4da850e72d7c36e670955dba74f0fec21c8ffae8c066f35eeb699c139c082424"
+    },
+    {
+      "path": "api-reference/publishing/get.mdx",
+      "sourcePath": "content/docs/source/api-reference/publishing/get.mdx",
+      "sha256": "747f7e812aae281d58404f260b3a71173ea1a1d5f9a270ab5420dd50aae91a09"
+    },
+    {
+      "path": "api-reference/publishing/list.mdx",
+      "sourcePath": "content/docs/source/api-reference/publishing/list.mdx",
+      "sha256": "3857ddd70fe560668d6adeffedfb8ec90af507aa82485ad196c9307430e50d5c"
     },
     {
       "path": "api-reference/pulses/list.mdx",
@@ -1159,7 +1179,7 @@
       "sha256": "df08b22bdc866daaf6adfbdfaafac47859f1281449841990d0e2af499a1e2d7d"
     }
   ],
-  "navigationSha256": "a3d7239d0e831858a8dd244d04dfbb0eaa1e4f14c3310025ed9652068903ff4d",
+  "navigationSha256": "0faa28a84d18c6828d13a875cbf4c4a1d7b88843074755c7f638d73bb57c80da",
   "hostSpecific": [
     "docs.json theme, colors, navbar, footer, logo and host settings"
   ],
