@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "84a32dbc71b009954d967c86ee1dd82eb167f76b",
+  "commit": "7febcce451499b31bee9855c25fa9207a5edeba9",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -486,12 +486,12 @@
     {
       "path": "api-reference/openapi/projects.json",
       "sourcePath": "content/docs/source/api-reference/openapi/projects.json",
-      "sha256": "4fc6dfe80102013d60d1a82d93466e41de27c35fb3f94967dc02115f431eecfc"
+      "sha256": "ccf2eea18ad384efefad04b170cfbdcbec84dc9cf29e9660064ba89cef219fc0"
     },
     {
       "path": "api-reference/openapi/releases.json",
       "sourcePath": "content/docs/source/api-reference/openapi/releases.json",
-      "sha256": "a33ddb4f983e7ee24733a3443e46b51d7457805f9ef0d663e2a29e21677d129c"
+      "sha256": "026d07948366d6498489d93fb8c809e919403d6154bd90d85aa0151d89150f3c"
     },
     {
       "path": "api-reference/openapi/research.json",
