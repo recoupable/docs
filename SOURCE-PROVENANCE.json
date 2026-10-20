@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "7ce370a43d294d66c4a0549cb3cc38bbb2338d4a",
+  "commit": "01c3ba0fc4c8d20d431cc269393f82d7a919173c",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -1176,7 +1176,7 @@
     {
       "path": "sdks.mdx",
       "sourcePath": "content/docs/source/sdks.mdx",
-      "sha256": "096ba2c2816b01a65e49c205d6996ebb55be4eb5d6b16eb1414ea3c7bda398aa"
+      "sha256": "caa732d54442c221a533e911905f5f0e4ce89fc4464d495c9098a9c69223d559"
     },
     {
       "path": "snippets/snippet-intro.mdx",
