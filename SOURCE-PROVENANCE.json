@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "742ff053ae8d880bc3554b7a1af8c5ee4dcbb20d",
+  "commit": "9b2e35f365b268eda414367f1a35ab34ef3ec26d",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -1121,7 +1121,7 @@
     {
       "path": "credits.mdx",
       "sourcePath": "content/docs/source/credits.mdx",
-      "sha256": "fff8b612ce1f638a0ad7f0298db5e218437b6190256e837f6a55812b1edba975"
+      "sha256": "4ffbdf38baef2e30cfea1250c773ebbf7f0bb12d40cd821d3ffe83aaaddebd6d"
     },
     {
       "path": "essentials/release-player.mdx",
