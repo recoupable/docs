@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "274be3e8a8dd0f990370077ebb36c0e17387db54",
+  "commit": "7c534e7bf7f4587bf2bda3abfa182df8a88ba963",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -1156,12 +1156,17 @@
     {
       "path": "quickstart.mdx",
       "sourcePath": "content/docs/source/quickstart.mdx",
-      "sha256": "f64c46496a2a8555d2aa655b9df7cd1d1598afc450f3995743dda3a1e4c81fda"
+      "sha256": "28be47623ab3cd43200a407c7d0c3e4c32eddbd18d449f777a1ed542d97d2e21"
     },
     {
       "path": "research-availability.mdx",
       "sourcePath": "content/docs/source/research-availability.mdx",
       "sha256": "da13dc1e2072ebbe97cba1e205a034c57e150ed31da39c8b9bb04456175f8a06"
+    },
+    {
+      "path": "sdks.mdx",
+      "sourcePath": "content/docs/source/sdks.mdx",
+      "sha256": "096ba2c2816b01a65e49c205d6996ebb55be4eb5d6b16eb1414ea3c7bda398aa"
     },
     {
       "path": "snippets/snippet-intro.mdx",
@@ -1179,7 +1184,7 @@
       "sha256": "df08b22bdc866daaf6adfbdfaafac47859f1281449841990d0e2af499a1e2d7d"
     }
   ],
-  "navigationSha256": "0faa28a84d18c6828d13a875cbf4c4a1d7b88843074755c7f638d73bb57c80da",
+  "navigationSha256": "dbdeeeefbb8f3b85d91654eb6477656b529c2d87fc827259ce08ca00f1b48af4",
   "hostSpecific": [
     "docs.json theme, colors, navbar, footer, logo and host settings"
   ],
