@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "01c3ba0fc4c8d20d431cc269393f82d7a919173c",
+  "commit": "9b2e35f365b268eda414367f1a35ab34ef3ec26d",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -461,7 +461,7 @@
     {
       "path": "api-reference/openapi/accounts.json",
       "sourcePath": "content/docs/source/api-reference/openapi/accounts.json",
-      "sha256": "53aca32321d20281e3ee5982aeca4ff86fe3ee06c553ac3974e77a9f1ec8787b"
+      "sha256": "b9f420adfb8b7297632d53ced154e7040b59914a73fc43f12fa21b259cf0eefa"
     },
     {
       "path": "api-reference/openapi/ai.json",
@@ -1121,7 +1121,7 @@
     {
       "path": "credits.mdx",
       "sourcePath": "content/docs/source/credits.mdx",
-      "sha256": "f6678646e0559209f9e39d4ed85ee1d7233144c79b2089076b2eee72ff225b4e"
+      "sha256": "4ffbdf38baef2e30cfea1250c773ebbf7f0bb12d40cd821d3ffe83aaaddebd6d"
     },
     {
       "path": "essentials/release-player.mdx",
