@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "872337abf19481678279d96e3766900009dab30c",
+  "commit": "408f0d265c1c08efc20723da74baa3e65b6b0df9",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -471,7 +471,7 @@
     {
       "path": "api-reference/openapi/content.json",
       "sourcePath": "content/docs/source/api-reference/openapi/content.json",
-      "sha256": "321e7572ea3e47dd668c1fe2ce6962ea47affce0f8d0eaf73ab055126c34307c"
+      "sha256": "c9ec39f40a9927d078c7b0703f254e88320bfb63bcbabe511b47952047caa408"
     },
     {
       "path": "api-reference/openapi/context.json",
@@ -1116,7 +1116,7 @@
     {
       "path": "content-agent.mdx",
       "sourcePath": "content/docs/source/content-agent.mdx",
-      "sha256": "a2564b15034ea285873d1986f2f6897e58b4ed5b417df4299cb8e9563965c7d2"
+      "sha256": "8b02c3a8557bc7819fea55095284af1bf2c5266dfe26a75780424ad273566923"
     },
     {
       "path": "credits.mdx",
@@ -1141,7 +1141,7 @@
     {
       "path": "llms.txt",
       "sourcePath": "content/docs/source/llms.txt",
-      "sha256": "7315435df6e1441f84a20730c5da9f1a56358176d28d9c109390abda068f905c"
+      "sha256": "76f0f95cdd8ae4fa74bee6363803bd1655ab6b299c2a3778007674dd89589a5c"
     },
     {
       "path": "mcp-cimd.mdx",
@@ -1156,7 +1156,7 @@
     {
       "path": "mcp.mdx",
       "sourcePath": "content/docs/source/mcp.mdx",
-      "sha256": "5e5576654c5d355bec993fd48e96bd3215c0ea0f888f02a6d0c1d32d92ec8ce7"
+      "sha256": "2866743e02dc5df1e0e916fcb16f2bcd73725ef139fe752929f20e9c65bb8969"
     },
     {
       "path": "public-website-api.mdx",
@@ -1167,6 +1167,11 @@
       "path": "quickstart.mdx",
       "sourcePath": "content/docs/source/quickstart.mdx",
       "sha256": "28be47623ab3cd43200a407c7d0c3e4c32eddbd18d449f777a1ed542d97d2e21"
+    },
+    {
+      "path": "release-packs.mdx",
+      "sourcePath": "content/docs/source/release-packs.mdx",
+      "sha256": "410433dae950b8ec0362445cbb22fc1de9a41cbc5a781815cef9197b51f0ed8e"
     },
     {
       "path": "research-availability.mdx",
@@ -1194,7 +1199,7 @@
       "sha256": "df08b22bdc866daaf6adfbdfaafac47859f1281449841990d0e2af499a1e2d7d"
     }
   ],
-  "navigationSha256": "f3abaa3e52a154ef3433fd014fc394cefc47ca3764bb1e1ef344c708df029fcc",
+  "navigationSha256": "cfbd8d5730dd04529133caa4a89d189ee0235d4c045ac96a0139658fad1d46fd",
   "hostSpecific": [
     "docs.json theme, colors, navbar, footer, logo and host settings"
   ],
