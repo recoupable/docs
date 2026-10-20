@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "20fe97b2a61c2d4bd683bbd10033f12aa2f31107",
+  "commit": "0db26059705ed52b2371ba1782e694b1bcb655ab",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -1136,7 +1136,12 @@
     {
       "path": "index.mdx",
       "sourcePath": "content/docs/source/index.mdx",
-      "sha256": "a5debdbc0a81917214397ad7481a211d6029b4920711eea74632f9986beea792"
+      "sha256": "f3d4797717a31ef5e6af920d0e14688feed316345195c54229eb6057ca381890"
+    },
+    {
+      "path": "llms.txt",
+      "sourcePath": "content/docs/source/llms.txt",
+      "sha256": "ff8f86a54071f10643424d3f9816170e023186e3766cee9f8c17f63883b94954"
     },
     {
       "path": "mcp-cimd.mdx",
@@ -1152,6 +1157,11 @@
       "path": "mcp.mdx",
       "sourcePath": "content/docs/source/mcp.mdx",
       "sha256": "5e5576654c5d355bec993fd48e96bd3215c0ea0f888f02a6d0c1d32d92ec8ce7"
+    },
+    {
+      "path": "public-website-api.mdx",
+      "sourcePath": "content/docs/source/public-website-api.mdx",
+      "sha256": "21e8c087d8cd773431d4c42b55d097414b0a22ba79dfc5ecfa3d1d6d2a3fa722"
     },
     {
       "path": "quickstart.mdx",
@@ -1184,7 +1194,7 @@
       "sha256": "df08b22bdc866daaf6adfbdfaafac47859f1281449841990d0e2af499a1e2d7d"
     }
   ],
-  "navigationSha256": "dbdeeeefbb8f3b85d91654eb6477656b529c2d87fc827259ce08ca00f1b48af4",
+  "navigationSha256": "f3abaa3e52a154ef3433fd014fc394cefc47ca3764bb1e1ef344c708df029fcc",
   "hostSpecific": [
     "docs.json theme, colors, navbar, footer, logo and host settings"
   ],
