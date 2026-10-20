@@ -1,0 +1,24 @@
+---
+title: "music-industry-research"
+description: "Use the /api/research/* endpoints for analytics, audience demographics, playlists, charts, and people search."
+---
+
+The decision tree for picking the right `/api/research/*` endpoint based on what the user actually asked. Includes a routing table from natural-language questions to specific endpoint combinations.
+
+## When to use it
+
+User asks about an artist's analytics, streaming numbers, audience demographics, playlist placements, similar artists, charts, tour or venue data, or any music industry research. Also triggers on "find me people in [function]," "tell me about [entity]," or "what does this page say."
+
+Common phrasings: "Spotify followers," "monthly listeners," "TikTok trends," "Instagram audience," "playlist pitching," "competitive analysis," "how is [artist] doing," "research [artist]," "find me [people]."
+
+## What it produces
+
+A structured research output answering the user's question — usually a synthesis across multiple `/research/*` calls (e.g. profile + metrics + audience + similar artists), formatted for either the agent's continued reasoning or direct delivery to the user.
+
+## Endpoints it uses
+
+All of [Research](/api-reference/research/search) (31 endpoints). The skill's decision tree picks the minimal set per query.
+
+## Source
+
+[`recoupable/skills/skills/music-industry-research`](https://github.com/recoupable/skills/tree/main/skills/music-industry-research)

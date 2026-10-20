@@ -1,0 +1,66 @@
+---
+title: "Skills"
+description: "Markdown playbooks that teach AI agents how to do music industry work. The other half of the agent equation."
+---
+
+*An agent asked to "help me grow my new artist past 1,000 monthly listeners" finds the `streaming-growth` skill, loads it, and follows the playbook — playlist pitching benchmarks, Spotify Showcase thresholds, decision frameworks.*
+
+The API tells an agent **how** to take action. Skills tell it **when** and **why**.
+
+A Skill is a markdown file an agent reads to get domain-specific instructions for a task. They live in a separate repo so any agent (Claude Code, Cursor, or your own) can install them without coupling to a specific platform.
+
+The sidebar lists every skill, grouped by purpose. Each docs page summarizes when the agent uses the skill, what it produces, and which API endpoints it depends on. The canonical instructions stay in the source repo on GitHub.
+
+---
+
+## Install
+
+### Claude Code
+
+```bash
+/plugin marketplace add recoupable/skills
+```
+
+### Any other agent
+
+```bash
+git clone https://github.com/recoupable/skills.git
+```
+
+Point your agent at the resulting `skills/` directory. The agent loads each `SKILL.md` and uses its `description` field to decide when the skill applies.
+
+---
+
+## How a Skill is structured
+
+Every skill is a directory with a `SKILL.md` at the root. The `description` field in the YAML frontmatter is what the agent reads to decide when to invoke the skill — write it as a trigger, not a summary.
+
+```text
+skills/
+└── my-skill/
+    ├── SKILL.md       ← required (frontmatter + instructions)
+    ├── references/    ← optional — docs the agent loads on demand
+    ├── scripts/       ← optional — executable helpers
+    └── assets/        ← optional — templates, fonts, icons
+```
+
+Minimum viable `SKILL.md`:
+
+```markdown
+---
+name: my-skill
+description: One-line trigger that tells the agent when to use this. Include the kinds of phrases users say — "playlist push," "release plan," "growth strategy."
+---
+
+# My Skill
+
+Step-by-step instructions the agent follows.
+```
+
+---
+
+## Writing your own
+
+Add a directory under `skills/` in [recoupable/skills](https://github.com/recoupable/skills), follow the structure above, and open a PR. See [contributing.md](https://github.com/recoupable/skills/blob/main/contributing.md) for the full guidelines.
+
+The bar: a skill should be specific enough that an agent would correctly invoke it without your help, and complete enough that it can finish the task without asking the user follow-ups it could have answered itself.
