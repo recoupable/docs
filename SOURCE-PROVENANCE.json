@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "548ed38b9f72a5689ca63f7c9feb87c1744408f4",
+  "commit": "13bee7c72c656eae81ea05c45274b7c29a9f80bc",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -97,6 +97,11 @@
       "path": "api-reference/admins/check.mdx",
       "sourcePath": "content/docs/source/api-reference/admins/check.mdx",
       "sha256": "76858ebc8557e9618e3498e35048cff28cd6a62750f68645daab16ce772fdfe6"
+    },
+    {
+      "path": "api-reference/admins/coding-agent-slack-authors.mdx",
+      "sourcePath": "content/docs/source/api-reference/admins/coding-agent-slack-authors.mdx",
+      "sha256": "9f80a8b5b7f105ce82416b6773d3fd4611ff792febcc81db2201eea22794c0de"
     },
     {
       "path": "api-reference/admins/coding-agent-slack-tags.mdx",
@@ -466,7 +471,7 @@
     {
       "path": "api-reference/openapi/accounts.json",
       "sourcePath": "content/docs/source/api-reference/openapi/accounts.json",
-      "sha256": "2d107a6832ac1732233580675b67a24af7d914bb2417dbaa9377e26677695341"
+      "sha256": "2dd43f5daf898995fe2072a720474b4a8d898dd2fcf35a92a6e3cb3b0cffefb0"
     },
     {
       "path": "api-reference/openapi/ai.json",
@@ -1146,7 +1151,7 @@
     {
       "path": "llms-full.txt",
       "sourcePath": "content/docs/source/llms-full.txt",
-      "sha256": "fa56e1fecb19db6aee52cded9993a930f145bfc90549ae8aff4b38e7a4c3e6ff"
+      "sha256": "ad7b424af40a4cdc227d81db1ede89f51a54cc19bad89bda17348a06b11dab07"
     },
     {
       "path": "llms.txt",
@@ -1209,7 +1214,7 @@
       "sha256": "df08b22bdc866daaf6adfbdfaafac47859f1281449841990d0e2af499a1e2d7d"
     }
   ],
-  "navigationSha256": "d1207b604b93ec0d974aab16f4b944c190d91af301115d6e1ecbf28d981d5eeb",
+  "navigationSha256": "48f6cf549dd9bceed1ccbf2eb7a8fa9da3bf48773f22f15da2ba04de9b055d09",
   "hostSpecific": [
     "docs.json theme, colors, navbar, footer, logo and host settings"
   ],
