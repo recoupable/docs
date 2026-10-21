@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "5477f219ebd9b59fdd009dbd1b3f539dfc292f73",
+  "commit": "d7665d8877ea7b87685da7d3300b92a10cd92eb4",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -86,7 +86,7 @@
     {
       "path": "api-reference/admins/agent-signups.mdx",
       "sourcePath": "content/docs/source/api-reference/admins/agent-signups.mdx",
-      "sha256": "54b0a7bf58466d9e049b76a37ec0a0a019ee60857584c695ada7b8c9562d7f80"
+      "sha256": "1964f2d32fcc6cfedbb11bbb91f84a5745f47330c808d9a4c101b5ba13759d3e"
     },
     {
       "path": "api-reference/admins/artists-pro.mdx",
@@ -454,6 +454,11 @@
       "sha256": "5b3794cdc410cc299c468187aa4e0c346703486fb1852a77f35111965fe96133"
     },
     {
+      "path": "api-reference/music/legacy.mdx",
+      "sourcePath": "content/docs/source/api-reference/music/legacy.mdx",
+      "sha256": "cc9634216ce1b8fa762f1e7c7f43b2f741fa7cb74ca84b0cb1121b56d32d7b70"
+    },
+    {
       "path": "api-reference/music/list.mdx",
       "sourcePath": "content/docs/source/api-reference/music/list.mdx",
       "sha256": "f4822c81c87cb67e89ddca33cce63fbd68d28e94d1698580311979227bf13b82"
@@ -461,7 +466,7 @@
     {
       "path": "api-reference/openapi/accounts.json",
       "sourcePath": "content/docs/source/api-reference/openapi/accounts.json",
-      "sha256": "7f0fb6a7daebc77d3da937e37a86c371fd1b15d2c068c662a9d221691e35e12d"
+      "sha256": "3c667f2d6bd457a266e41783135eacb10a7c49a979f27221c5f9ad338e2055f4"
     },
     {
       "path": "api-reference/openapi/ai.json",
@@ -471,7 +476,7 @@
     {
       "path": "api-reference/openapi/content.json",
       "sourcePath": "content/docs/source/api-reference/openapi/content.json",
-      "sha256": "b3d64cd721fc9f5ce0636258a81f5508c8b35cab43eb3a157d4241af39c9f60e"
+      "sha256": "0ea7a89887b2e6d8ab681d56d74766ecb58bf32f7d09386a1e12d8024e9b8c1c"
     },
     {
       "path": "api-reference/openapi/context.json",
@@ -491,7 +496,7 @@
     {
       "path": "api-reference/openapi/releases.json",
       "sourcePath": "content/docs/source/api-reference/openapi/releases.json",
-      "sha256": "0a9c0bb646e67595d592b31f8dac055078fcd01f8fbffee495f9af8c234a337b"
+      "sha256": "03ee4a93225a13664f4d16dd7b34d51294821a7ab14d21f2f8f654f89b80db96"
     },
     {
       "path": "api-reference/openapi/research.json",
@@ -966,7 +971,7 @@
     {
       "path": "api-reference/songs/catalog-valuations.mdx",
       "sourcePath": "content/docs/source/api-reference/songs/catalog-valuations.mdx",
-      "sha256": "1e1306043062e1ee25be4a632332d4d6fc2751302a406df8ab2abd82145f6433"
+      "sha256": "fc9ff60f8dfc026bc0128ecbe763d597e6dea288f020ae966b0b6e6295bd5288"
     },
     {
       "path": "api-reference/songs/catalogs-create.mdx",
@@ -981,7 +986,7 @@
     {
       "path": "api-reference/songs/create.mdx",
       "sourcePath": "content/docs/source/api-reference/songs/create.mdx",
-      "sha256": "c3d03a58594e8e5d36c58e620e640580e9fda29dab933763f6157692bb1db221"
+      "sha256": "db3cf00e4dcf5664ca4d7561e0f8103c39d22d784a77eda88907d6771bbd4ceb"
     },
     {
       "path": "api-reference/songs/runs.mdx",
@@ -991,7 +996,7 @@
     {
       "path": "api-reference/songs/songs.mdx",
       "sourcePath": "content/docs/source/api-reference/songs/songs.mdx",
-      "sha256": "aedc5206a0c519c36fa06a9407139d0e43039462737d6ebbb9fc62d3b77c8963"
+      "sha256": "f11ea698687b3cf399145e586c944f7deb97ff0a7712db64b376cc32ffb49a7a"
     },
     {
       "path": "api-reference/songs/update-catalog-stream-tracking.mdx",
@@ -1136,7 +1141,7 @@
     {
       "path": "index.mdx",
       "sourcePath": "content/docs/source/index.mdx",
-      "sha256": "f3d4797717a31ef5e6af920d0e14688feed316345195c54229eb6057ca381890"
+      "sha256": "386303b22293258ffd63f16319f4839243ad2d6790c62906bc8f543c9eac27b0"
     },
     {
       "path": "llms.txt",
@@ -1199,7 +1204,7 @@
       "sha256": "df08b22bdc866daaf6adfbdfaafac47859f1281449841990d0e2af499a1e2d7d"
     }
   ],
-  "navigationSha256": "cfbd8d5730dd04529133caa4a89d189ee0235d4c045ac96a0139658fad1d46fd",
+  "navigationSha256": "d1207b604b93ec0d974aab16f4b944c190d91af301115d6e1ecbf28d981d5eeb",
   "hostSpecific": [
     "docs.json theme, colors, navbar, footer, logo and host settings"
   ],
