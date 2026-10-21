@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "fbfef975ebc8be09db5a3abb9a1dfef67252bb9b",
+  "commit": "03c8475daef4afeb9f8ed0026032a8656ce7fa88",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -496,7 +496,7 @@
     {
       "path": "api-reference/openapi/releases.json",
       "sourcePath": "content/docs/source/api-reference/openapi/releases.json",
-      "sha256": "03ee4a93225a13664f4d16dd7b34d51294821a7ab14d21f2f8f654f89b80db96"
+      "sha256": "d738989d57f86e47b0c3fd0e82f8eb12494d41f8b4d593fffd8c04b9e759a9ec"
     },
     {
       "path": "api-reference/openapi/research.json",
@@ -956,7 +956,7 @@
     {
       "path": "api-reference/songs/catalog-songs.mdx",
       "sourcePath": "content/docs/source/api-reference/songs/catalog-songs.mdx",
-      "sha256": "6c3f928fba14f793758f9b317c76464b0c3a275868a346a1e75b8c44798c9a2a"
+      "sha256": "5ee9a152b3c401a7cb1db878fc0166db4653321847e88b23580df47d1a965ef5"
     },
     {
       "path": "api-reference/songs/catalog-stream-tracking.mdx",
@@ -1146,7 +1146,7 @@
     {
       "path": "llms-full.txt",
       "sourcePath": "content/docs/source/llms-full.txt",
-      "sha256": "79c0d26078e59828b6be76c17d8f4bf358bd7a9bc6318de66d951345a0226097"
+      "sha256": "c474d39ab618322135737eb71eb75fdbee1e253d956c6be72c551384588f14c7"
     },
     {
       "path": "llms.txt",
