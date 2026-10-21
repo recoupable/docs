@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "9567f55e2834bd6284e15c366e81ecb15c729e71",
+  "commit": "5477f219ebd9b59fdd009dbd1b3f539dfc292f73",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -461,7 +461,7 @@
     {
       "path": "api-reference/openapi/accounts.json",
       "sourcePath": "content/docs/source/api-reference/openapi/accounts.json",
-      "sha256": "b9f420adfb8b7297632d53ced154e7040b59914a73fc43f12fa21b259cf0eefa"
+      "sha256": "7f0fb6a7daebc77d3da937e37a86c371fd1b15d2c068c662a9d221691e35e12d"
     },
     {
       "path": "api-reference/openapi/ai.json",
@@ -491,12 +491,12 @@
     {
       "path": "api-reference/openapi/releases.json",
       "sourcePath": "content/docs/source/api-reference/openapi/releases.json",
-      "sha256": "994d992c1a4df51ee3683a20bda88f442fa617de883aa8cf4eaa26dc7fe34cb0"
+      "sha256": "0a9c0bb646e67595d592b31f8dac055078fcd01f8fbffee495f9af8c234a337b"
     },
     {
       "path": "api-reference/openapi/research.json",
       "sourcePath": "content/docs/source/api-reference/openapi/research.json",
-      "sha256": "3fcfacd89b9f4406d1df03dafae6f2cc798c00c4d72a031511ec8881c55d3107"
+      "sha256": "d5ab0abefd13b16a1337b9a4cc9c461f3cd4e96feff3d89e717f527e8d5dedc8"
     },
     {
       "path": "api-reference/openapi/sandbox.json",
@@ -511,7 +511,7 @@
     {
       "path": "api-reference/openapi/social.json",
       "sourcePath": "content/docs/source/api-reference/openapi/social.json",
-      "sha256": "41b9b89074e0ee0258f6a88e276e71e478c4a675512393cc4cd8b77fb9606398"
+      "sha256": "49c837327886827b5bc33ae4daac76f12473ecf4a6f75cc073656e9247ba73ca"
     },
     {
       "path": "api-reference/openapi/templates.json",
@@ -901,7 +901,7 @@
     {
       "path": "api-reference/sites/overview.mdx",
       "sourcePath": "content/docs/source/api-reference/sites/overview.mdx",
-      "sha256": "2ed1d428d0ec8006530e8cd2201de5ce151c0d3618ea60850730779a11d73658"
+      "sha256": "b3ff0526f1e7aee0a5bfc3e96539f8b329c3339c729c1e6c9bf9d7ff8440276f"
     },
     {
       "path": "api-reference/social/scrape.mdx",
@@ -961,7 +961,7 @@
     {
       "path": "api-reference/songs/catalog-streams.mdx",
       "sourcePath": "content/docs/source/api-reference/songs/catalog-streams.mdx",
-      "sha256": "bea177e50cfb02c535b6e55c4a5713f9bce155e6f40484fa0a78943363a7589f"
+      "sha256": "e23dd83dbb94e34e194a31c90b8494eacf6411df20b35a3604004636e3422c0f"
     },
     {
       "path": "api-reference/songs/catalog-valuations.mdx",
@@ -1121,7 +1121,7 @@
     {
       "path": "credits.mdx",
       "sourcePath": "content/docs/source/credits.mdx",
-      "sha256": "4ffbdf38baef2e30cfea1250c773ebbf7f0bb12d40cd821d3ffe83aaaddebd6d"
+      "sha256": "cfb803d4f9c4bb66ae015496f1d89de2b7c856c7949b89536945b7384bfe22c6"
     },
     {
       "path": "essentials/release-player.mdx",
