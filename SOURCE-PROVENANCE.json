@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "e1cc8eaf09c19a037e5615bffde76b3e8cc573c3",
+  "commit": "b89eb1f7df375a5de3d8131f1cbcac5406595c23",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -481,7 +481,7 @@
     {
       "path": "api-reference/openapi/context.json",
       "sourcePath": "content/docs/source/api-reference/openapi/context.json",
-      "sha256": "8a95843d8146f9ce1efa9ae17baee1564bdf7188ad6dd9d1ae5e353ad53ea8e9"
+      "sha256": "88974fecc88b833fbe0576e575f4d39bd920746661f56ebd956bd29b5af34ece"
     },
     {
       "path": "api-reference/openapi/players.json",
@@ -1146,7 +1146,7 @@
     {
       "path": "llms-full.txt",
       "sourcePath": "content/docs/source/llms-full.txt",
-      "sha256": "2b41a76827cbce851bd6ad56e5ceef6bbebc047490bd7cc1ce74c7098cb32741"
+      "sha256": "db272bfb6a4d22d98f1f1af2568b393828c15b64cb6eb8881843be265fdecb22"
     },
     {
       "path": "llms.txt",
@@ -1166,7 +1166,7 @@
     {
       "path": "mcp.mdx",
       "sourcePath": "content/docs/source/mcp.mdx",
-      "sha256": "2866743e02dc5df1e0e916fcb16f2bcd73725ef139fe752929f20e9c65bb8969"
+      "sha256": "b7582c1f31b5c2e76b790a530728a4191e1edca088f2a4994cdc6f44490575a1"
     },
     {
       "path": "public-website-api.mdx",
