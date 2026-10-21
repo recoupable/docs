@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "7b885894519b1841a64028a36a4c0533e76a19d6",
+  "commit": "8753cb5074de8d55433a0b2563aff47c0b096368",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -476,7 +476,7 @@
     {
       "path": "api-reference/openapi/content.json",
       "sourcePath": "content/docs/source/api-reference/openapi/content.json",
-      "sha256": "0ea7a89887b2e6d8ab681d56d74766ecb58bf32f7d09386a1e12d8024e9b8c1c"
+      "sha256": "d03f88ff05901d3dd5897626dd60f88b07f7bf68b0a3b09b4a17fe742f119e63"
     },
     {
       "path": "api-reference/openapi/context.json",
@@ -1121,7 +1121,7 @@
     {
       "path": "content-agent.mdx",
       "sourcePath": "content/docs/source/content-agent.mdx",
-      "sha256": "8b02c3a8557bc7819fea55095284af1bf2c5266dfe26a75780424ad273566923"
+      "sha256": "288ad738b51bb64357442aebb46e4f814a6a5813574adc6e56c0c9347bdd593a"
     },
     {
       "path": "credits.mdx",
@@ -1146,7 +1146,7 @@
     {
       "path": "llms-full.txt",
       "sourcePath": "content/docs/source/llms-full.txt",
-      "sha256": "f3c3a490deb377d058046de42fc1e813221a72a6145d02d95c09ad28a2908675"
+      "sha256": "e181fb823a60e20b1f46ee5e8069ef5ce8a5f92f8cdd6509f6fd10eda97ac062"
     },
     {
       "path": "llms.txt",
