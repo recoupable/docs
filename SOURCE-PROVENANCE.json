@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "13bee7c72c656eae81ea05c45274b7c29a9f80bc",
+  "commit": "fee753603d432290e9f49bad85de2d77a9fcee22",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -84,9 +84,14 @@
       "sha256": "fb9aa9f2fca85210e962bd1eec04d1aabd4f49ede380c56416310812e3278127"
     },
     {
+      "path": "api-reference/admins/agent-key-metadata.mdx",
+      "sourcePath": "content/docs/source/api-reference/admins/agent-key-metadata.mdx",
+      "sha256": "6d82cfebbcb25b299bb0939d9d4e937d3df61292430c91e5b6cfa34e509ab6c7"
+    },
+    {
       "path": "api-reference/admins/agent-signups.mdx",
       "sourcePath": "content/docs/source/api-reference/admins/agent-signups.mdx",
-      "sha256": "1964f2d32fcc6cfedbb11bbb91f84a5745f47330c808d9a4c101b5ba13759d3e"
+      "sha256": "a6b65f3ad1b0ead873b83cdccf2254cdd3afa1556ae94738502c9b1fc46954bc"
     },
     {
       "path": "api-reference/admins/artists-pro.mdx",
@@ -471,7 +476,7 @@
     {
       "path": "api-reference/openapi/accounts.json",
       "sourcePath": "content/docs/source/api-reference/openapi/accounts.json",
-      "sha256": "2dd43f5daf898995fe2072a720474b4a8d898dd2fcf35a92a6e3cb3b0cffefb0"
+      "sha256": "1a5a04f9ec358a15b8339b7029c9fed5fe69c6f042c8b03b6b4f03f3aafdeeed"
     },
     {
       "path": "api-reference/openapi/ai.json",
@@ -1151,7 +1156,7 @@
     {
       "path": "llms-full.txt",
       "sourcePath": "content/docs/source/llms-full.txt",
-      "sha256": "ad7b424af40a4cdc227d81db1ede89f51a54cc19bad89bda17348a06b11dab07"
+      "sha256": "594278e5d04cf8e012a9ec8468a69ce38bdfe849ac051f1091b56869027a1400"
     },
     {
       "path": "llms.txt",
@@ -1214,7 +1219,7 @@
       "sha256": "df08b22bdc866daaf6adfbdfaafac47859f1281449841990d0e2af499a1e2d7d"
     }
   ],
-  "navigationSha256": "48f6cf549dd9bceed1ccbf2eb7a8fa9da3bf48773f22f15da2ba04de9b055d09",
+  "navigationSha256": "e95868a987892fdb4fba56c0859280185a395956e32ab0c2a07d4ce05de4ae04",
   "hostSpecific": [
     "docs.json theme, colors, navbar, footer, logo and host settings"
   ],
