@@ -1,6 +1,6 @@
 {
   "repository": "recoupable/marketing",
-  "commit": "bb2b54afa2e5d5532465a7de314356fd0d30744a",
+  "commit": "62990d74a7549c9ad18120d5652d7a5e8d7cb3e0",
   "sourceDirectory": "content/docs/source",
   "files": [
     {
@@ -506,7 +506,7 @@
     {
       "path": "api-reference/openapi/releases.json",
       "sourcePath": "content/docs/source/api-reference/openapi/releases.json",
-      "sha256": "0519ab23b2bd5e8b6c87d912e7025d13d7ec801e60fa4599584890e50806fe6d"
+      "sha256": "88786303e606192c2258aacfaed89364e2b67b90347f02fbc4bd4b585cf35701"
     },
     {
       "path": "api-reference/openapi/research.json",
@@ -1156,7 +1156,7 @@
     {
       "path": "llms-full.txt",
       "sourcePath": "content/docs/source/llms-full.txt",
-      "sha256": "9b2672a1758d65646ee86fa3913893fbffd0241af17071b6e324e118e7452087"
+      "sha256": "99ea61cb80e5c550e3bf72ffb27a848f512def1ccada1f71c81b87c292eb1a5a"
     },
     {
       "path": "llms.txt",
