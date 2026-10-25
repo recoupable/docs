@@ -1,5 +1,6 @@
 """Freeze the bounded trailing-delete reference without claiming writer serialization."""
 import json
+import re
 import subprocess
 from response_contract_test_case import ResponseContractTestCase
 
@@ -21,6 +22,8 @@ class ChatTrailingContractsTest(ResponseContractTestCase):
                          'Chat has an active workflow reservation; retry after it clears')
         self.assertIn('possibly affecting zero rows', operation['description'])
         self.assertIn('Concurrent edit/resend is unsupported', operation['description'])
+        sentences = re.split(r'(?<=[.!?])\s+(?=[A-Z`])', operation['description'].strip())
+        self.assertLessEqual(len(sentences), 3, 'KISS: keep the operation description to 2-3 sentences')
 
     def test_export_reads_authored_narrative_and_examples(self):
         path = self.marketing / 'content/docs/source/api-reference/openapi/research.json'
