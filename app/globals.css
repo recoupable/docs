@@ -91,7 +91,49 @@ h4 {
 p {
   line-height: 1.6;
 }
-.docs-site-header{display:flex;align-items:center;justify-content:space-between;gap:16px;max-width:1440px;margin:0 auto;padding:18px 24px 0}
-.docs-site-header a{display:inline-flex;align-items:center;gap:10px;font-weight:600;letter-spacing:-.02em}
-.docs-site-header nav{display:flex;gap:18px;font-size:14px;color:var(--muted)}
-.docs-layout{padding-inline:24px}
+/* Theme: the docs palette (app/docs-theme.css) plus these page-level tokens. */
+:root { --surface: #fff; --chip: #f2f6f8; }
+:root[data-theme="dark"] { --paper: #0d1a1f; --paper-dark: #13242a; --ink: #e2edf1; --muted: #9bb0b8; --line: #23383f; --surface: #12232a; --chip: #1a2f36; }
+
+/* Header: Mintlify's two rows (brand + links; section tabs). */
+.docs-site-header { border-bottom: 1px solid var(--line); background: var(--paper); }
+.docs-site-header-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; max-width: 1440px; margin: 0 auto; padding: 14px 24px 10px; }
+.docs-brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -.02em; color: var(--ink); }
+.docs-brand img { height: 26px; width: auto; }
+.docs-brand span { padding-left: 10px; border-left: 1px solid var(--line); font-size: 15px; color: var(--muted); }
+:root[data-theme="dark"] .docs-brand img { filter: invert(1); }
+.docs-site-links { display: flex; align-items: center; gap: 18px; font-size: 14px; color: var(--muted); }
+.docs-site-links > a:hover { color: var(--ink); }
+.docs-dashboard-button { padding: 8px 14px; border-radius: 999px; background: var(--ink); color: var(--paper) !important; font-weight: 550; }
+.docs-tabs { display: flex; gap: 22px; max-width: 1440px; margin: 0 auto; padding: 0 24px; overflow-x: auto; scrollbar-width: none; font-size: 14px; }
+.docs-tabs::-webkit-scrollbar { display: none; }
+.docs-tabs a { flex: none; padding: 10px 0 11px; border-bottom: 2px solid transparent; color: var(--muted); white-space: nowrap; }
+.docs-tabs a:hover { color: var(--ink); }
+.docs-tabs a[aria-current="page"] { border-bottom-color: var(--ink); color: var(--ink); font-weight: 550; }
+.docs-icon-button { width: 40px; height: 40px; flex: none; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 10px; background: transparent; color: var(--muted); }
+.docs-icon-button:hover { background: var(--chip); color: var(--ink); }
+:root[data-theme="dark"] .docs-theme-moon, :root:not([data-theme="dark"]) .docs-theme-sun { display: none; }
+body .docs-layout { padding-inline: 24px; margin-top: 0; border-top: 0; }
+.docs-site-footer { max-width: 1440px; margin: 0 auto; padding: 28px 24px 40px; border-top: 1px solid var(--line); }
+.docs-site-footer nav { display: flex; gap: 20px; font-size: 13px; color: var(--muted); }
+.docs-site-footer a:hover { color: var(--ink); }
+@media (max-width: 800px) {
+  .docs-desktop-only { display: none; }
+  .docs-site-header-row, .docs-tabs, body .docs-layout, .docs-site-footer { padding-inline: 16px; }
+  .docs-site-links { gap: 8px; }
+}
+
+/* Copy page menu (Mintlify's contextual menu). */
+.docs-article-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 34px; }
+.docs-article-tools > .docs-breadcrumb { margin-bottom: 0; }
+.docs-copy-page { position: relative; display: inline-flex; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); font-size: 13px; }
+.docs-copy-page > button { display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; border: 0; background: transparent; color: var(--ink); }
+.docs-copy-page > button + button { width: 34px; padding: 0; justify-content: center; border-left: 1px solid var(--line); color: var(--muted); }
+.docs-copy-menu { position: absolute; top: calc(100% + 6px); right: 0; z-index: 10; width: 290px; padding: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 12px 32px rgba(0, 0, 0, .14); }
+.docs-copy-menu > a, .docs-copy-menu > button { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 48px; padding: 6px 8px; border: 0; border-radius: 10px; background: transparent; text-align: left; color: var(--ink); }
+.docs-copy-menu > a:hover, .docs-copy-menu > button:hover, .docs-copy-menu > a:focus-visible, .docs-copy-menu > button:focus-visible { background: var(--chip); }
+.docs-menu-icon { width: 32px; height: 32px; flex: none; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); }
+.docs-copy-menu strong { display: flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 500; }
+.docs-copy-menu small { display: block; margin-top: 1px; font-size: 12px; color: var(--muted); }
+.docs-menu-external { color: var(--muted); }
+@media (max-width: 500px) { .docs-copy-page > button { height: 44px; } .docs-copy-page > button + button { width: 44px; } }
