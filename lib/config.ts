@@ -23,4 +23,16 @@ export const siteConfig = {
   apiUrl,
   websiteUrl: "https://recoupable.dev",
   appUrl: "https://chat.recoupable.dev",
+  supportEmail: "agent@recoupable.dev",
+  /** Header anchors and footer socials, carried over from the legacy Mintlify docs.json. */
+  anchors: [
+    { label: "Recoup App", href: "https://chat.recoupable.dev" },
+    { label: "Website", href: "https://recoupable.dev" },
+    { label: "Blog", href: "https://research.recoupable.dev/" },
+  ],
+  socials: [
+    { label: "X", href: "https://x.com/recoupai" },
+    { label: "GitHub", href: "https://github.com/recoupable" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/company/recoupable" },
+  ],
 };

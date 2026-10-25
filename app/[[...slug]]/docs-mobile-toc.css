@@ -5,10 +5,10 @@
     display:block;
     margin:0 0 30px;
     padding:0 14px;
-    border:1px solid #dce8ed;
+    border:1px solid var(--docs-c-dce8ed);
     border-radius:10px;
-    background:#f6fafc;
-    color:#244653;
+    background:var(--docs-c-f6fafc);
+    color:var(--docs-c-244653);
     font-size:14px;
   }
   .docs-mobile-toc > summary {
@@ -30,19 +30,19 @@
     grid-template-columns:repeat(2,minmax(0,1fr));
     gap:0 16px;
     padding:6px 0 12px;
-    border-top:1px solid #dce8ed;
+    border-top:1px solid var(--docs-c-dce8ed);
   }
   .docs-mobile-toc nav a {
     display:flex;
     align-items:center;
     min-height:44px;
     padding:10px 0;
-    color:#0877aa;
+    color:var(--docs-c-0877aa);
     line-height:1.45;
     overflow-wrap:anywhere;
   }
   .docs-mobile-toc :is(summary,a):focus-visible {
-    outline:2px solid #087bab;
+    outline:2px solid var(--docs-c-087bab);
     outline-offset:2px;
     border-radius:4px;
   }
