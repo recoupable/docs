@@ -238,6 +238,10 @@ do not prove outstanding writers are drained. 200 means statement success, inclu
 zero affected rows, without a durable-absence or concurrent edit/resend guarantee.
 Refresh history after an unknown outcome before deciding further action.
 
+docs-site#5 shortened the operation description to three sentences. Its fixture-only
+companion API #1160 merged as `1920d3011bbdac3d5e94b5a12216d25308634598`; the inventory
+now pins that merge.
+
 The shared fixture freezes query declarations, bounded narrative and selected
 response schemas/examples. Run `python3 scripts/test_response_contracts.py` and API
 `publishedChatTrailingDelete.test.ts` with the generated fixture, along with the
