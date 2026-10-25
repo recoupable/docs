@@ -5,7 +5,6 @@ const specifications = ["./content/docs/source/api-reference/openapi/*.json"];
 
 export const nextConfig: NextConfig = {
   devIndicators: false,
-  env: { NEXT_PUBLIC_VERCEL_ENV: process.env.VERCEL_ENV ?? "development" },
   // Specifications and published text are read from disk at request time.
   outputFileTracingIncludes: {
     "/spec/*": specifications,

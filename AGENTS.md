@@ -24,8 +24,8 @@ site: Mintlify-format content rendered by our own engine (no Mintlify runtime). 
 - Documentation-driven development: the docs PR (OpenAPI operation + reference page) merges before the
   `api` PR that implements it.
 - One exported function per file in `lib/`; tests live in `__tests__/` next to the code.
-- PRs target `main`; verify on the Vercel preview (previews call the test API, production calls the
-  production API; see `lib/config.ts`).
+- PRs target `main`; verify on the Vercel preview. The playground always calls the production API
+  (`lib/config.ts`); previews are SSO-protected, use the project's automation bypass for scripted checks.
 
 ## Commands
 
