@@ -99,10 +99,33 @@ The API fixture uses source-file hashes; this avoids a circular commit dependenc
 These checks do not authorize merge or deployment.
 
 The same export freezes the guarded-file query/upload examples and resolved
-GET 200 / POST 200, 409 and 500 schemas in `guardedGitFiles`. The API's
-`publishedSandboxFiles.test.ts` checks those examples against the real validators,
-GET export and upload response builder under mocked service boundaries. This
-does not prove hosted Git writes, sandbox atomicity or adoption by existing clients.
+file/list GET 200 / upload POST 200, 409 and 500 schemas in `guardedGitFiles`.
+It preserves the default read query separately from explicit-account file/list
+queries, their optional UUID declarations and success examples. `account_id`
+is echoed only on successful explicit-target reads; omitted-target responses
+remain unchanged. Read delegation does not grant upload, replacement or deletion
+rights. Every explicit App override is read-only, and target-aware clients reject
+missing/mismatched echoes rather than falling back to a caller's repository. The API's
+`accountScopedFiles.test.ts` checks the scoped query examples and GET response
+schemas with the real authentication/access-policy/route code under mocked
+credential, membership, snapshot and repository boundaries.
+`publishedSandboxFiles.test.ts` retains the normal revision-read and guarded-upload
+validator/response checks. These do not prove hosted Git writes, sandbox atomicity
+or adoption by existing clients.
+
+For the Files account-scope release, API #1131 merged as
+`92b5f663506607bfb880f4d5f2e94cfe88b593c2` and App #2343 merged as
+`62d079d910135441bd9c8ba52a5711b14fbb35a7`; both production deployments were
+confirmed. The public reference and fixtures already reached Marketing through
+#226 and the retained Docs copy through #407. Marketing #231 now reconciles
+contributor guidance and preserves the actual API #1157 merge pin
+`e217c791d1735458b3720cebf4c923122f7df1dc`; both shared fixtures match that source.
+Preserve later merged contracts when refreshing Files documentation. This
+metadata-only reconciliation does not require a duplicate Files publication;
+future public source changes still follow the normal merged-source provenance
+workflow. Authentication, organization/administrator grants, revision/binary
+behavior and file-write APIs remain unchanged. Source tests and deployment
+receipts do not establish a signed-in hosted journey.
 
 `python3 scripts/build-contract-examples.py --api /path/to/api` freezes examples and
 important contract claims for API tests, including Context's public request union.
@@ -202,3 +225,22 @@ through the existing provenance workflow.
 ## Chat admission and reader lifecycle companions
 
 API #1128 is merged as `8f48a2a1d51264f2ae34a0f21db05bcaeed806ce`, with successful production deployment of that runtime. API #1129 is merged as `971f396bab61b86411199264073aaf436cbbee5b`; the inventory pins this actual contract merge, not a preview candidate. Marketing #230 succeeds Marketing #209 and remains subject to final checks, independent review and merge approval. Retained Docs copies wait for the actual Marketing merge. Existing failed-read and pending-Stop contracts remain intact. Scope is admission 409/retryable 503, exact-single optional query opt-in on POST and reconnect GET, retained manual recovery, and authenticated server Stop distinctions. Source/deployment evidence does not prove authenticated hosted send/reconnect/Stop or real provider cancellation; those acceptance checks and private deployment access remain separate.
+
+## Workflow trailing-message deletion
+
+API #1155 merged as `4d63f9c2248c28f0fc0974f59fb3a8f4650ee063` supplies the
+Workflow-only deletion runtime. Its fixture/test-only companion API #1157 merged as
+`e217c791d1735458b3720cebf4c923122f7df1dc`; the inventory pins this actual merge
+for Marketing publication. `DELETE /api/chats/{id}/messages/trailing` requires caller
+quiescence, rejects every observed occupied slot with 409, and deletes the inclusive
+`created_at,id` suffix within the owned chat. Null-slot and successful-Stop observations
+do not prove outstanding writers are drained. 200 means statement success, including
+zero affected rows, without a durable-absence or concurrent edit/resend guarantee.
+Refresh history after an unknown outcome before deciding further action.
+
+The shared fixture freezes query declarations, bounded narrative and selected
+response schemas/examples. Run `python3 scripts/test_response_contracts.py` and API
+`publishedChatTrailingDelete.test.ts` with the generated fixture, along with the
+existing contract suite. The runtime's existing route-builder and disposable SQL
+tests are separate evidence; this publication does not add writer fencing or close
+the stronger API #636 requirement. Retained Docs waits for Marketing's actual merge.
