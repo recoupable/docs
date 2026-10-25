@@ -88,3 +88,6 @@
 .docs-table-scroll table { min-width:520px; }
 .docs-table-scroll table:has(code) { min-width:640px; }
 .docs-table-scroll :is(th,td) code { white-space:nowrap; overflow-wrap:normal; }
+
+/* Mintlify-style field anchors land with breathing room. */
+.docs-property,.docs-schema-details{scroll-margin-top:30px}

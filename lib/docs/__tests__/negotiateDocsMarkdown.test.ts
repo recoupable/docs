@@ -53,6 +53,7 @@ describe("negotiateDocsMarkdown", () => {
     expect(negotiateDocsMarkdown("/spec/accounts.json", "text/markdown")).toBeNull();
     expect(negotiateDocsMarkdown("/api-reference", "text/markdown")).toBeNull();
     expect(negotiateDocsMarkdown("/llms.txt", "text/markdown")).toBeNull();
+    expect(negotiateDocsMarkdown("/api-reference/openapi/research.json", "text/markdown")).toBeNull();
   });
 });
 
