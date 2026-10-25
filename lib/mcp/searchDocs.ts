@@ -1,7 +1,7 @@
 import type { DocPage } from "../docs.ts";
 import { docHref } from "../docs-paths.ts";
 
-export type DocsSearchResult = { slug: string; title: string; url: string; category: string; method?: string; path?: string };
+type DocsSearchResult = { slug: string; title: string; url: string; category: string; method?: string; path?: string };
 
 /**
  * Pages whose search text contains every query word, ranked like the sidebar search:
