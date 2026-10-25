@@ -7,7 +7,7 @@ site: Mintlify-format content rendered by our own engine (no Mintlify runtime). 
 ## Layout
 
 - `content/docs/source/` is the only authored input: `docs.json` (navigation, Mintlify schema), MDX
-  pages, `api-reference/openapi/*.json` (one OpenAPI 3.1 file per domain), `llms.txt` (hand-maintained).
+  pages, `api-reference/openapi/*.json` (one OpenAPI 3.1 file per domain), `llms.txt` and `skill.md` (both hand-maintained).
 - `pnpm docs:build` compiles it into the committed `content/docs/{manifest,navigation,inventory}.json`
   and `content/docs/source/llms-full.txt`. Commit the regenerated files with the source change; the
   build-drift test fails otherwise.
@@ -15,7 +15,8 @@ site: Mintlify-format content rendered by our own engine (no Mintlify runtime). 
   (`operation-inventory.json` → `apiSourceCommit`). An operation that is documented but not yet live
   carries `x-recoup-availability: pending` and says so in its description.
 - Routes serve at the site root: `/<page>`, `/raw/<page>.md` (also `<page>.md` and
-  `Accept: text/markdown`), `/spec/<name>.json`, `/llms.txt`, `/llms-full.txt`.
+  `Accept: text/markdown`), `/spec/<name>.json`, `/llms.txt`, `/llms-full.txt`, `/mcp`. Search and agent discovery:
+  `/sitemap.xml`, `/robots.txt`, `/skill.md`, `/.well-known/{llms.txt,skills/,agent-skills/}`.
 
 ## Rules
 
