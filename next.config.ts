@@ -11,6 +11,10 @@ export const nextConfig: NextConfig = {
     "/raw/*": specifications,
     "/llms.txt": ["./content/docs/source/llms.txt"],
     "/llms-full.txt": ["./content/docs/source/llms-full.txt"],
+    "/.well-known/llms.txt": ["./content/docs/source/llms.txt"],
+    "/skill.md": ["./content/docs/source/skill.md"],
+    "/.well-known/skills/*": ["./content/docs/source/skill.md"],
+    "/.well-known/agent-skills/*": ["./content/docs/source/skill.md"],
   },
   async headers() {
     return [

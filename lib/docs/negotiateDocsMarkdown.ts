@@ -5,7 +5,7 @@
  * Markdown is served when the path ends in .md, when the client accepts
  * text/markdown at least as much as text/html, or when it prefers text/plain
  * over text/html. A q=0 type is a refusal and never selects markdown. Raw and
- * spec paths already serve machine formats, and the API reference overview has
+ * spec paths and the agent discovery files already serve machine formats, and the API reference overview has
  * no markdown source, so those never rewrite.
  */
 const quality = (accept: string, mediaType: string) =>
@@ -18,7 +18,7 @@ const quality = (accept: string, mediaType: string) =>
 
 export function negotiateDocsMarkdown(pathname: string, accept: string | null): string | null {
   const rest = pathname.replace(/^\/+/, "").replace(/\/+$/, "");
-  if (/^(raw|spec|_next|api|api-reference\/openapi)(\/|$)/.test(rest) || /^(llms(-full)?\.txt|favicon\.ico|robots\.txt|sitemap\.xml)$/.test(rest)) return null;
+  if (/^(raw|spec|_next|api|api-reference\/openapi|\.well-known)(\/|$)/.test(rest) || /^(llms(-full)?\.txt|skill\.md|favicon\.ico|robots\.txt|sitemap\.xml)$/.test(rest)) return null;
   const explicit = rest.endsWith(".md");
   const slug = (explicit ? rest.slice(0, -3) : rest) || "index";
   if (slug === "api-reference") return null;
