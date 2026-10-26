@@ -1,0 +1,55 @@
+---
+title: "Upload a public file"
+description: "Upload one supported file to public Supabase Storage under your authenticated account."
+openapi: "/api-reference/openapi/uploads.json POST /api/upload"
+---
+
+<Warning>
+  Pending coordinated API release. This reference is a planned contract, not
+  confirmation that the endpoint is deployed.
+</Warning>
+
+Use this endpoint for files intended to be publicly accessible, including public
+profile images and attachments that may be shared by URL. It accepts one file up
+to **4 MiB (4,194,304 bytes)** and returns its name, MIME type, byte size and URL.
+
+<Warning>
+  The returned URL is public. Anyone with the URL can read the file without
+  signing in. Authenticating the upload does not make the stored file private.
+  Do not use this endpoint for confidential documents or private source audio.
+</Warning>
+
+## Send a file
+
+Send exactly one credential: an API key or an existing Bearer token. The uploader
+comes from the authenticated account; do not include `account_id`, `uploaded_by`
+or another ownership override. This route requires an existing account.
+
+```bash
+curl --request POST 'https://api.recoupable.dev/api/upload' \
+  --header "x-api-key: $RECOUP_API_KEY" \
+  --form 'file=@cover.png;type=image/png'
+```
+
+Let your HTTP client set `Content-Type` and its multipart boundary. Send exactly
+one `file` part and no other form fields. The streamed request body is limited to
+**4,259,840 bytes** (4 MiB plus 64 KiB of multipart overhead); the 4 MiB limit
+applies to the file itself.
+
+Supported types are JPEG, PNG, GIF, WebP, PDF, CSV, Markdown, plain text, JSON, MP3,
+WAV, M4A and audio WebM. The OpenAPI reference lists the exact accepted MIME types.
+HTML, SVG, executables and unspecified binary types are not supported. Server
+signature, UTF-8 and JSON checks still apply even if a browser accepts the file
+locally.
+
+## Existing files and private media
+
+New uploads use Supabase Storage, not Arweave. Previously issued Arweave links
+remain readable; this endpoint does not migrate or delete existing objects.
+Private Files in `user-files` and [release-pack source audio](/release-packs)
+continue to use their separate private-storage workflows.
+
+The public response includes `success`, `fileName`, `fileType`, `fileSize` and
+`url`. A handled error includes `success: false` and `error`. A failed request
+does not establish whether a previous upload succeeded; do not treat this as an
+idempotent replacement API.

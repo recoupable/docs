@@ -206,6 +206,12 @@
             ]
           },
           {
+            "group": "Uploads",
+            "pages": [
+              "api-reference/uploads/create"
+            ]
+          },
+          {
             "group": "Content Creation",
             "pages": [
               "api-reference/content/create",

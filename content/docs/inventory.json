@@ -1,7 +1,7 @@
 {
-  "navigationPages": 230,
+  "navigationPages": 231,
   "guidePages": 25,
-  "apiPages": 217,
+  "apiPages": 218,
   "specifications": [
     "accounts.json",
     "ai.json",
@@ -15,7 +15,8 @@
     "sandbox.json",
     "sessions.json",
     "social.json",
-    "templates.json"
+    "templates.json",
+    "uploads.json"
   ],
   "additionalOperations": [
     "api-reference/complete/content/post-content-packs",

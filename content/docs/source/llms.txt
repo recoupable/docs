@@ -33,6 +33,8 @@ Use the public website tools to find music-business workflows, evaluate supplied
 - [Application proposal preflight](https://docs.recoupable.dev/api-reference/applications/validate-registration.md): Pending address validation; does not register or verify an application.
 - [Application preflight OpenAPI](https://docs.recoupable.dev/spec/applications.json)
 - [Release Packs](https://docs.recoupable.dev/release-packs.md): Inline context, complete quotes, resumable media production and selected-source upload.
+- [Public file upload](https://docs.recoupable.dev/api-reference/uploads/create.md): Pending authenticated upload of one supported file up to 4 MiB; returned URLs are public, not private storage.
+- [Uploads OpenAPI](https://docs.recoupable.dev/spec/uploads.json)
 - [Content OpenAPI](https://docs.recoupable.dev/spec/content.json)
 - [Context OpenAPI](https://docs.recoupable.dev/spec/context.json)
 - [Players OpenAPI](https://docs.recoupable.dev/spec/players.json)
