@@ -67,7 +67,7 @@ Install and use the Recoup CLI to interact with the platform from your terminal.
 
 Connect Claude to Recoup through MCP OAuth, then add optional workflow skills.
 
-[MCP Server](https://docs.recoupable.dev/mcp)
+[MCP Server](https://docs.recoupable.dev/mcp-server)
 
 Connect Recoup to AI assistants via the Model Context Protocol.
 
@@ -694,9 +694,9 @@ MCP OAuth credentials stay in Claude. A REST-only script needs a separately conf
 Start a fresh conversation and verify tool discovery and artist access again. Browser sign-in, plugin installation and token refresh are separate checks; none alone proves the complete workflow.
 
 
-# MCP
+# MCP server
 
-Source: https://docs.recoupable.dev/mcp
+Source: https://docs.recoupable.dev/mcp-server
 
 Connect an agent to Recoup through OAuth and discover its authorized tools.
 
@@ -931,7 +931,7 @@ Open [Connected agents](https://app.recoupable.dev/oauth/connections) and discon
 | `503` | Retry later; do not weaken authentication or callback checks. |
 | Write timed out | Read back the target before retrying. Artist creation is not guaranteed idempotent; an automatic retry may create a duplicate. |
 
-For clients without OAuth, [API-key authentication](https://docs.recoupable.dev/mcp) remains available. Keep keys out of model prompts and shared configuration. A stdio-only client needs a separately maintained adapter; the remote URL is not itself a stdio command.
+For clients without OAuth, [API-key authentication](https://docs.recoupable.dev/mcp-server) remains available. Keep keys out of model prompts and shared configuration. A stdio-only client needs a separately maintained adapter; the remote URL is not itself a stdio command.
 
 For help, contact [agent@recoupable.dev](mailto:agent@recoupable.dev). Include the client name, time, and error text; never include tokens, passwords, or API keys.
 
@@ -70294,7 +70294,7 @@ envelopes differ. HTTP authentication errors can use `error` or `message`, while
 handled preflight errors use `status: "error"` and `error`. MCP failures are tool
 errors or SDK input-validation errors. None confirms registration or activation.
 
-See [authentication](https://docs.recoupable.dev/authentication) and [MCP connection guidance](https://docs.recoupable.dev/mcp).
+See [authentication](https://docs.recoupable.dev/authentication) and [MCP connection guidance](https://docs.recoupable.dev/mcp-server).
 Application persistence, origin proof/reverification, provider configuration,
 fan bootstrap, suspension and quota policy require their own completed contracts.
 
