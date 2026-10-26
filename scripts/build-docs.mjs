@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import { docsHeadingPlugin } from './docs-headings.ts';
 import { docsLlmsFullText } from '../lib/docs/docsLlmsFullText.ts';
 import { siteConfig } from '../lib/config.ts';
+import { operationDescription } from '../lib/docs/operationDescription.ts';
 
 // content/docs/source is the only input. `--out <dir>` redirects the generated
 // JSON files (default content/docs) so a test can compare a fresh build against
@@ -71,9 +72,11 @@ for (const tab of nav) for (const group of tab.groups) for (const slug of group.
     if(!operation && endpoint.endsWith('/')) { operation=specs[specName]?.paths?.[endpoint.slice(0,-1)]?.[method]; if(operation) gaps.push({slug,note:`Trailing-slash source pointer resolved to ${endpoint.slice(0,-1)}`}); }
     entry.api={method:parsed[2].toUpperCase(),path:operation && !specs[specName]?.paths?.[endpoint]?.[method]?endpoint.slice(0,-1):endpoint,spec:specName||null};
     if(!operation) {entry.gap='The source documentation names this endpoint, but its operation is missing from the supplied OpenAPI specification. Contact support for the current request and response contract.';gaps.push({slug,note:entry.gap});}
-    entry.description=entry.description || operation?.summary || operation?.description?.split('\n')[0] || '';
+    entry.description=entry.description || operationDescription(operation);
+    entry.operationText=`${operation?.summary || ''} ${operation?.description || ''}`;
   }
-  entry.searchText=`${entry.title} ${entry.description} ${entry.category} ${entry.group} ${entry.api?.method || ''} ${entry.api?.path || ''} ${body.replace(/```[\s\S]*?```/g,' ').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ')}`;
+  entry.searchText=`${entry.title} ${entry.description} ${entry.operationText || ''} ${entry.category} ${entry.group} ${entry.api?.method || ''} ${entry.api?.path || ''} ${body.replace(/```[\s\S]*?```/g,' ').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ')}`;
+  delete entry.operationText;
   pages.push(entry);
 }
 const specOperations=[];
@@ -81,7 +84,7 @@ for(const [name,spec] of Object.entries(specs)) for(const [endpoint,item] of Obj
  if(!['get','post','put','patch','delete','head','options'].includes(method))continue;
  if(pages.some(p=>p.api?.spec===name && p.api.path===endpoint && p.api.method===method.toUpperCase()))continue;
  const slug=`api-reference/complete/${name.replace('.json','')}/${method}-${endpoint.replace(/^\/api\//,'').replace(/[^\w-]+/g,'-').replace(/-$/,'')}`;
- pages.push({slug,title:operation.summary||`${method.toUpperCase()} ${endpoint}`,description:operation.description?.split('\n')[0]||'',category:'Additional endpoints',group:name.replace('.json',''),source:`api-reference/openapi/${name}`,body:'',headings:[],api:{method:method.toUpperCase(),path:endpoint,spec:name},searchText:`${method.toUpperCase()} ${endpoint} ${operation.summary||''} ${operation.description||''}`});
+ pages.push({slug,title:operation.summary||`${method.toUpperCase()} ${endpoint}`,description:operationDescription(operation),category:'Additional endpoints',group:name.replace('.json',''),source:`api-reference/openapi/${name}`,body:'',headings:[],api:{method:method.toUpperCase(),path:endpoint,spec:name},searchText:`${method.toUpperCase()} ${endpoint} ${operation.summary||''} ${operation.description||''}`});
  specOperations.push(slug);
 }
 const inventory={navigationPages:nav.flatMap(t=>t.groups.flatMap(g=>g.pages)).length,guidePages:pages.filter(p=>!p.api).length,apiPages:pages.filter(p=>p.api).length,specifications:Object.keys(specs),additionalOperations:specOperations,gaps};
