@@ -11,7 +11,7 @@
           "public-website-api",
           "cli",
           "claude",
-          "mcp",
+          "mcp-server",
           "mcp-oauth",
           "mcp-cimd",
           "authentication",
