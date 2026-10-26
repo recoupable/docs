@@ -13,6 +13,22 @@ Sandbox command tools previously shown on this page are absent from the current 
 
 For an API-key MCP connection, configure `Authorization: Bearer YOUR_RECOUP_API_KEY` in the client's secret settings. The `x-api-key` header is for [REST requests](/authentication). Store credentials in the client's secret facility or environment. Never paste them into global instructions or extract host-managed OAuth tokens for REST.
 
+## Public generated files
+
+`generate_txt_file` and `create_knowledge_base` store content in public Supabase
+Storage. Anyone with a returned URL can read it without authentication. Use
+these tools only for content approved for public access, not confidential files.
+
+For TXT results, prefer `txtUrl` and `metadataUrl`. The deprecated `arweaveUrl`
+and `metadataArweave` fields remain aliases of those HTTPS URLs, not transaction
+IDs. Metadata is best-effort, so `metadataUrl` and its alias can be null.
+Knowledge entries keep their existing `url`, `name` and `type` fields.
+
+Generated and edited image results retain `imageUrl`; it can be null if storage
+fails. A successful tool envelope does not by itself establish a stored image.
+Existing Arweave links remain readable. These changes do not migrate private
+Files or [release-pack source audio](/release-packs).
+
 ## Context results
 
 The [Context reference](/api-reference/context/operate) pairs each supported action

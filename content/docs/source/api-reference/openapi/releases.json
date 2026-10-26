@@ -6599,8 +6599,8 @@
           "url": {
             "type": "string",
             "format": "uri",
-            "description": "Public URL where the knowledge content is stored",
-            "example": "https://arweave.net/abc123"
+            "description": "Public URL where the knowledge content is stored. New entries use Supabase Storage; existing legacy URLs remain readable. Anyone with the URL can read the content without authentication.",
+            "example": "https://exampleproject.supabase.co/storage/v1/object/public/public-uploads/example/knowledge.txt"
           },
           "type": {
             "type": "string",

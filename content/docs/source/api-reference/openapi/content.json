@@ -663,7 +663,7 @@
     "/api/image/generate": {
       "get": {
         "operationId": "getImageGenerate",
-        "description": "Generate high-quality images using AI models. Images are automatically stored on Arweave and include In Process moment metadata for provenance and ownership tracking.",
+        "description": "Generate an image using AI models. Generated images and related metadata use public Supabase Storage; anyone with a returned URL can read them without authentication. Existing Arweave URLs remain readable, but new image uploads do not create Arweave transactions. In Process moment creation remains best-effort.\n\nA 200 response may be partial: if storage fails after generation, imageUrl and moment are null and uploadError describes the failure. Check imageUrl before treating the result as a stored image. The deprecated arweaveResult field is always null; arweaveError is retained as an alias of uploadError when a storage error is present. This does not change private Files or release-pack source-audio storage.",
         "parameters": [
           {
             "name": "prompt",
@@ -3571,55 +3571,6 @@
           }
         }
       },
-      "ArweaveTransaction": {
-        "type": "object",
-        "description": "Arweave transaction object for the stored image",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Unique identifier for the Arweave transaction"
-          },
-          "last_tx": {
-            "type": "string",
-            "description": "Last transaction reference"
-          },
-          "owner": {
-            "type": "string",
-            "description": "Owner address of the transaction"
-          },
-          "tags": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            },
-            "description": "Tags associated with the transaction"
-          },
-          "target": {
-            "type": "string",
-            "description": "Target address (empty for data transactions)"
-          },
-          "quantity": {
-            "type": "string",
-            "description": "Amount transferred (typically '0' for data transactions)"
-          },
-          "data": {
-            "type": "string",
-            "description": "Transaction data (may be empty in response)"
-          },
-          "reward": {
-            "type": "string",
-            "description": "Mining reward for the transaction"
-          },
-          "signature": {
-            "type": "string",
-            "description": "Transaction signature"
-          },
-          "format": {
-            "type": "integer",
-            "description": "Transaction format version"
-          }
-        }
-      },
       "ContentCreateAnalyzeRequest": {
         "type": "object",
         "required": [
@@ -5037,46 +4988,57 @@
       },
       "ImageGenerationResponse": {
         "type": "object",
-        "description": "Response from the image generation endpoint, extending Experimental_GenerateImageResult from the AI SDK",
+        "description": "Image-generation result and public-storage outcome. A 200 response can retain generated image data even when storage fails; imageUrl and moment may be null.",
         "properties": {
-          "images": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GeneratedImage"
-            },
-            "description": "Array of generated image objects"
-          },
-          "warnings": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Array of warning messages, if any"
-          },
-          "responses": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ImageResponseMeta"
-            },
-            "description": "Array of response metadata from the AI provider"
-          },
-          "providerMetadata": {
-            "$ref": "#/components/schemas/ImageProviderMetadata"
-          },
           "usage": {
             "$ref": "#/components/schemas/ImageUsage"
           },
           "imageUrl": {
-            "type": "string",
-            "description": "Permanent Arweave URL where the image is stored"
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "description": "Public Supabase Storage URL of the stored image, or null when storage fails. It is not a signed private URL."
           },
           "arweaveResult": {
-            "$ref": "#/components/schemas/ArweaveTransaction"
+            "type": "null",
+            "deprecated": true,
+            "description": "Deprecated compatibility field. Always null: new uploads do not create Arweave transactions."
           },
           "moment": {
-            "$ref": "#/components/schemas/InProcessMoment"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/InProcessMoment"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Best-effort In Process result, or null when no moment was created. A stored image does not guarantee moment creation."
+          },
+          "image": {
+            "$ref": "#/components/schemas/GeneratedImage",
+            "description": "Generated image data from the model. Storage outcome is reported separately by imageUrl and uploadError."
+          },
+          "uploadError": {
+            "type": "string",
+            "description": "Present if storing the generated image fails. A partial result can still have HTTP status 200.",
+            "example": "Could not store generated image"
+          },
+          "arweaveError": {
+            "type": "string",
+            "deprecated": true,
+            "description": "Deprecated alias of uploadError, present with the same value when storage fails. It does not identify an Arweave operation."
           }
-        }
+        },
+        "required": [
+          "image",
+          "usage",
+          "imageUrl",
+          "arweaveResult",
+          "moment"
+        ]
       },
       "ImageProviderMetadata": {
         "type": "object",

@@ -710,6 +710,22 @@ Sandbox command tools previously shown on this page are absent from the current 
 
 For an API-key MCP connection, configure `Authorization: Bearer YOUR_RECOUP_API_KEY` in the client's secret settings. The `x-api-key` header is for [REST requests](https://docs.recoupable.dev/authentication). Store credentials in the client's secret facility or environment. Never paste them into global instructions or extract host-managed OAuth tokens for REST.
 
+## Public generated files
+
+`generate_txt_file` and `create_knowledge_base` store content in public Supabase
+Storage. Anyone with a returned URL can read it without authentication. Use
+these tools only for content approved for public access, not confidential files.
+
+For TXT results, prefer `txtUrl` and `metadataUrl`. The deprecated `arweaveUrl`
+and `metadataArweave` fields remain aliases of those HTTPS URLs, not transaction
+IDs. Metadata is best-effort, so `metadataUrl` and its alias can be null.
+Knowledge entries keep their existing `url`, `name` and `type` fields.
+
+Generated and edited image results retain `imageUrl`; it can be null if storage
+fails. A successful tool envelope does not by itself establish a stored image.
+Existing Arweave links remain readable. These changes do not migrate private
+Files or [release-pack source audio](https://docs.recoupable.dev/release-packs).
+
 ## Context results
 
 The [Context reference](https://docs.recoupable.dev/api-reference/context/operate) pairs each supported action
@@ -809,7 +825,7 @@ Existing limited grants do **not** expand automatically. Reconnect with `mcp:too
 
 OAuth never exposes `get_api_key`: it does not return bearer credentials to the model. Composio integrations and sandbox execution are separate from the registered Recoup MCP catalog.
 
-Email uses the same recipient restrictions as the API and checks any referenced conversation's owner. Review recipients and content before sending. `create_knowledge_base` and `generate_txt_file` publish to permanent public Arweave storage: use only content explicitly approved for that destination, never confidential material. Video generation returns an account-bound `id`; pass that entire value as `video_id` to the retrieval tools. Older raw provider video IDs cannot be used with OAuth. Task-run status requires verifiable caller ownership and returns status fields, not raw provider payloads or logs.
+Email uses the same recipient restrictions as the API and checks any referenced conversation's owner. Review recipients and content before sending. `create_knowledge_base` and `generate_txt_file` write to public Supabase Storage: anyone with a returned URL can read the content without authentication. Use only content approved for public access, never confidential material. Existing Arweave links remain readable; these tools do not create new Arweave uploads. Video generation returns an account-bound `id`; pass that entire value as `video_id` to the retrieval tools. Older raw provider video IDs cannot be used with OAuth. Task-run status requires verifiable caller ownership and returns status fields, not raw provider payloads or logs.
 
 The platform verification results below describe the original five-tool catalog unless explicitly stated otherwise. They do not establish full-catalog production verification.
 
@@ -2854,8 +2870,8 @@ The supplied specification does not declare an OpenAPI security object for this 
           "url": {
             "type": "string",
             "format": "uri",
-            "description": "Public URL where the knowledge content is stored",
-            "example": "https://arweave.net/abc123"
+            "description": "Public URL where the knowledge content is stored. New entries use Supabase Storage; existing legacy URLs remain readable. Anyone with the URL can read the content without authentication.",
+            "example": "https://exampleproject.supabase.co/storage/v1/object/public/public-uploads/example/knowledge.txt"
           },
           "type": {
             "type": "string",
@@ -3199,8 +3215,8 @@ The supplied specification does not declare an OpenAPI security object for this 
           "url": {
             "type": "string",
             "format": "uri",
-            "description": "Public URL where the knowledge content is stored",
-            "example": "https://arweave.net/abc123"
+            "description": "Public URL where the knowledge content is stored. New entries use Supabase Storage; existing legacy URLs remain readable. Anyone with the URL can read the content without authentication.",
+            "example": "https://exampleproject.supabase.co/storage/v1/object/public/public-uploads/example/knowledge.txt"
           },
           "type": {
             "type": "string",
@@ -3544,8 +3560,8 @@ The supplied specification does not declare an OpenAPI security object for this 
           "url": {
             "type": "string",
             "format": "uri",
-            "description": "Public URL where the knowledge content is stored",
-            "example": "https://arweave.net/abc123"
+            "description": "Public URL where the knowledge content is stored. New entries use Supabase Storage; existing legacy URLs remain readable. Anyone with the URL can read the content without authentication.",
+            "example": "https://exampleproject.supabase.co/storage/v1/object/public/public-uploads/example/knowledge.txt"
           },
           "type": {
             "type": "string",
@@ -30905,10 +30921,6 @@ Source: https://docs.recoupable.dev/api-reference/uploads/create
 
 Upload one supported file to public Supabase Storage under your authenticated account.
 
-> **Warning**
-> Pending coordinated API release. This reference is a planned contract, not
-> confirmation that the endpoint is deployed.
-
 Use this endpoint for files intended to be publicly accessible, including public
 profile images and attachments that may be shared by URL. It accepts one file up
 to **4 MiB (4,194,304 bytes)** and returns its name, MIME type, byte size and URL.
@@ -30971,7 +30983,7 @@ This operation requires one of the security alternatives in the specification be
   "info": {
     "title": "Recoup API - Uploads",
     "version": "1.0.0",
-    "description": "Pending authenticated public file uploads. This is not private file or release-pack audio storage."
+    "description": "Authenticated public file uploads. This is not private file or release-pack audio storage."
   },
   "servers": [
     {
@@ -30983,8 +30995,7 @@ This operation requires one of the security alternatives in the specification be
       "post": {
         "operationId": "uploadPublicFile",
         "summary": "Upload a public file",
-        "x-recoup-availability": "pending",
-        "description": "Pending coordinated API release. Upload one file of at most 4 MiB (4,194,304 bytes) to public Supabase Storage. Authenticate with exactly one x-api-key or Authorization: Bearer credential for an existing Recoup account; authentication precedes multipart parsing. The uploader is derived from that account and recorded as uploaded_by metadata, never a client-supplied account override.\n\nThe returned URL is public: anyone with it can read the file without authentication. Use only content intended for public access. This replaces the public upload destination; it does not move private user-files, release-pack source audio, or existing files. Previously issued Arweave URLs remain readable; no new Arweave write is part of this operation.\n\nSend multipart/form-data with exactly one file field and let your HTTP client set the multipart boundary. Supported MIME types are `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `application/pdf`, `text/csv`, `text/markdown`, `text/x-markdown`, `text/plain`, `application/json`, `audio/mpeg`, `audio/wav`, `audio/x-m4a`, `audio/webm`. The server checks binary signatures, UTF-8 text and JSON syntax as appropriate; a filename extension or MIME declaration alone does not establish a valid file. HTML, SVG, executable files and unspecified binary types are not supported. The streamed request body is limited to 4,259,840 bytes (4 MiB plus 64 KiB); the file itself remains limited to 4 MiB.",
+        "description": "Upload one file of at most 4 MiB (4,194,304 bytes) to public Supabase Storage. Authenticate with exactly one x-api-key or Authorization: Bearer credential for an existing Recoup account; authentication precedes multipart parsing. The uploader is derived from that account and recorded as uploaded_by metadata, never a client-supplied account override.\n\nThe returned URL is public: anyone with it can read the file without authentication. Use only content intended for public access. This replaces the public upload destination; it does not move private user-files, release-pack source audio, or existing files. Previously issued Arweave URLs remain readable; no new Arweave write is part of this operation.\n\nSend multipart/form-data with exactly one file field and let your HTTP client set the multipart boundary. Supported MIME types are `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `application/pdf`, `text/csv`, `text/markdown`, `text/x-markdown`, `text/plain`, `application/json`, `audio/mpeg`, `audio/wav`, `audio/x-m4a`, `audio/webm`. The server checks binary signatures, UTF-8 text and JSON syntax as appropriate; a filename extension or MIME declaration alone does not establish a valid file. HTML, SVG, executable files and unspecified binary types are not supported. The streamed request body is limited to 4,259,840 bytes (4 MiB plus 64 KiB); the file itself remains limited to 4 MiB.",
         "security": [
           {
             "apiKeyAuth": []
@@ -34110,7 +34121,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/image/generation
 
-Generate high-quality images using AI models. Images are automatically stored on Arweave and include In Process moment metadata for provenance and ownership tracking.
+Generate an image using AI models. Generated images and related metadata use public Supabase Storage; anyone with a returned URL can read them without authentication. Existing Arweave URLs remain readable, but new image uploads do not create Arweave transactions. In Process moment creation remains best-effort.
 
 ## GET /api/image/generate
 
@@ -34144,7 +34155,7 @@ The supplied specification does not declare an OpenAPI security object for this 
     "/api/image/generate": {
       "get": {
         "operationId": "getImageGenerate",
-        "description": "Generate high-quality images using AI models. Images are automatically stored on Arweave and include In Process moment metadata for provenance and ownership tracking.",
+        "description": "Generate an image using AI models. Generated images and related metadata use public Supabase Storage; anyone with a returned URL can read them without authentication. Existing Arweave URLs remain readable, but new image uploads do not create Arweave transactions. In Process moment creation remains best-effort.\n\nA 200 response may be partial: if storage fails after generation, imageUrl and moment are null and uploadError describes the failure. Check imageUrl before treating the result as a stored image. The deprecated arweaveResult field is always null; arweaveError is retained as an alias of uploadError when a storage error is present. This does not change private Files or release-pack source-audio storage.",
         "parameters": [
           {
             "name": "prompt",
@@ -34195,46 +34206,57 @@ The supplied specification does not declare an OpenAPI security object for this 
     "schemas": {
       "ImageGenerationResponse": {
         "type": "object",
-        "description": "Response from the image generation endpoint, extending Experimental_GenerateImageResult from the AI SDK",
+        "description": "Image-generation result and public-storage outcome. A 200 response can retain generated image data even when storage fails; imageUrl and moment may be null.",
         "properties": {
-          "images": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GeneratedImage"
-            },
-            "description": "Array of generated image objects"
-          },
-          "warnings": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Array of warning messages, if any"
-          },
-          "responses": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ImageResponseMeta"
-            },
-            "description": "Array of response metadata from the AI provider"
-          },
-          "providerMetadata": {
-            "$ref": "#/components/schemas/ImageProviderMetadata"
-          },
           "usage": {
             "$ref": "#/components/schemas/ImageUsage"
           },
           "imageUrl": {
-            "type": "string",
-            "description": "Permanent Arweave URL where the image is stored"
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "description": "Public Supabase Storage URL of the stored image, or null when storage fails. It is not a signed private URL."
           },
           "arweaveResult": {
-            "$ref": "#/components/schemas/ArweaveTransaction"
+            "type": "null",
+            "deprecated": true,
+            "description": "Deprecated compatibility field. Always null: new uploads do not create Arweave transactions."
           },
           "moment": {
-            "$ref": "#/components/schemas/InProcessMoment"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/InProcessMoment"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Best-effort In Process result, or null when no moment was created. A stored image does not guarantee moment creation."
+          },
+          "image": {
+            "$ref": "#/components/schemas/GeneratedImage",
+            "description": "Generated image data from the model. Storage outcome is reported separately by imageUrl and uploadError."
+          },
+          "uploadError": {
+            "type": "string",
+            "description": "Present if storing the generated image fails. A partial result can still have HTTP status 200.",
+            "example": "Could not store generated image"
+          },
+          "arweaveError": {
+            "type": "string",
+            "deprecated": true,
+            "description": "Deprecated alias of uploadError, present with the same value when storage fails. It does not identify an Arweave operation."
           }
-        }
+        },
+        "required": [
+          "image",
+          "usage",
+          "imageUrl",
+          "arweaveResult",
+          "moment"
+        ]
       },
       "ImageGenerationErrorResponse": {
         "type": "object",
@@ -34242,51 +34264,6 @@ The supplied specification does not declare an OpenAPI security object for this 
           "error": {
             "type": "string",
             "description": "Error message describing what went wrong"
-          }
-        }
-      },
-      "GeneratedImage": {
-        "type": "object",
-        "description": "A generated image file from the AI model",
-        "properties": {
-          "base64": {
-            "type": "string",
-            "description": "Image file as a base64 encoded string"
-          },
-          "uint8Array": {
-            "type": "array",
-            "items": {
-              "type": "integer"
-            },
-            "description": "Image file as a Uint8Array (represented as array of numbers in JSON)"
-          },
-          "mediaType": {
-            "type": "string",
-            "description": "The IANA media type of the file (e.g., 'image/png', 'image/jpeg')"
-          }
-        }
-      },
-      "ImageResponseMeta": {
-        "type": "object",
-        "description": "Response metadata from the AI provider",
-        "properties": {
-          "finishReason": {
-            "type": "string",
-            "description": "Reason the generation finished (e.g., 'stop')"
-          }
-        }
-      },
-      "ImageProviderMetadata": {
-        "type": "object",
-        "description": "Metadata from the AI provider about the generation",
-        "properties": {
-          "model": {
-            "type": "string",
-            "description": "The AI model used for generation (e.g., 'dall-e-3', 'gpt-image-1')"
-          },
-          "size": {
-            "type": "string",
-            "description": "The size of the generated image (e.g., '1024x1024')"
           }
         }
       },
@@ -34305,55 +34282,6 @@ The supplied specification does not declare an OpenAPI security object for this 
           "totalTokens": {
             "type": "integer",
             "description": "Total tokens used"
-          }
-        }
-      },
-      "ArweaveTransaction": {
-        "type": "object",
-        "description": "Arweave transaction object for the stored image",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Unique identifier for the Arweave transaction"
-          },
-          "last_tx": {
-            "type": "string",
-            "description": "Last transaction reference"
-          },
-          "owner": {
-            "type": "string",
-            "description": "Owner address of the transaction"
-          },
-          "tags": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            },
-            "description": "Tags associated with the transaction"
-          },
-          "target": {
-            "type": "string",
-            "description": "Target address (empty for data transactions)"
-          },
-          "quantity": {
-            "type": "string",
-            "description": "Amount transferred (typically '0' for data transactions)"
-          },
-          "data": {
-            "type": "string",
-            "description": "Transaction data (may be empty in response)"
-          },
-          "reward": {
-            "type": "string",
-            "description": "Mining reward for the transaction"
-          },
-          "signature": {
-            "type": "string",
-            "description": "Transaction signature"
-          },
-          "format": {
-            "type": "integer",
-            "description": "Transaction format version"
           }
         }
       },
@@ -34376,6 +34304,27 @@ The supplied specification does not declare an OpenAPI security object for this 
           "chainId": {
             "type": "integer",
             "description": "Chain ID (e.g., 8453 for Base)"
+          }
+        }
+      },
+      "GeneratedImage": {
+        "type": "object",
+        "description": "A generated image file from the AI model",
+        "properties": {
+          "base64": {
+            "type": "string",
+            "description": "Image file as a base64 encoded string"
+          },
+          "uint8Array": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "Image file as a Uint8Array (represented as array of numbers in JSON)"
+          },
+          "mediaType": {
+            "type": "string",
+            "description": "The IANA media type of the file (e.g., 'image/png', 'image/jpeg')"
           }
         }
       }
