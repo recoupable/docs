@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import { docsVaryHeader } from "./lib/docs/docsVaryHeader";
+import { discoveryLinkHeader } from "./lib/agent-discovery/discoveryLinkHeader";
 
 const specifications = ["./content/docs/source/api-reference/openapi/*.json"];
 
@@ -15,6 +16,7 @@ export const nextConfig: NextConfig = {
     "/skill.md": ["./content/docs/source/skill.md"],
     "/.well-known/skills/*": ["./content/docs/source/skill.md"],
     "/.well-known/agent-skills/*": ["./content/docs/source/skill.md"],
+    "/.well-known/agent-card.json": ["./content/docs/source/skill.md"],
   },
   async headers() {
     return [
@@ -23,7 +25,7 @@ export const nextConfig: NextConfig = {
         headers: [
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          { key: "Link", value: '</llms.txt>; rel="describedby"; type="text/plain"' },
+          { key: "Link", value: discoveryLinkHeader },
           ...(process.env.VERCEL_ENV === "preview" ? [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] : []),
         ],
       },
