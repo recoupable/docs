@@ -3,7 +3,7 @@
   "info": {
     "title": "Recoup API - Uploads",
     "version": "1.0.0",
-    "description": "Pending authenticated public file uploads. This is not private file or release-pack audio storage."
+    "description": "Authenticated public file uploads. This is not private file or release-pack audio storage."
   },
   "servers": [
     {
@@ -15,8 +15,7 @@
       "post": {
         "operationId": "uploadPublicFile",
         "summary": "Upload a public file",
-        "x-recoup-availability": "pending",
-        "description": "Pending coordinated API release. Upload one file of at most 4 MiB (4,194,304 bytes) to public Supabase Storage. Authenticate with exactly one x-api-key or Authorization: Bearer credential for an existing Recoup account; authentication precedes multipart parsing. The uploader is derived from that account and recorded as uploaded_by metadata, never a client-supplied account override.\n\nThe returned URL is public: anyone with it can read the file without authentication. Use only content intended for public access. This replaces the public upload destination; it does not move private user-files, release-pack source audio, or existing files. Previously issued Arweave URLs remain readable; no new Arweave write is part of this operation.\n\nSend multipart/form-data with exactly one file field and let your HTTP client set the multipart boundary. Supported MIME types are `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `application/pdf`, `text/csv`, `text/markdown`, `text/x-markdown`, `text/plain`, `application/json`, `audio/mpeg`, `audio/wav`, `audio/x-m4a`, `audio/webm`. The server checks binary signatures, UTF-8 text and JSON syntax as appropriate; a filename extension or MIME declaration alone does not establish a valid file. HTML, SVG, executable files and unspecified binary types are not supported. The streamed request body is limited to 4,259,840 bytes (4 MiB plus 64 KiB); the file itself remains limited to 4 MiB.",
+        "description": "Upload one file of at most 4 MiB (4,194,304 bytes) to public Supabase Storage. Authenticate with exactly one x-api-key or Authorization: Bearer credential for an existing Recoup account; authentication precedes multipart parsing. The uploader is derived from that account and recorded as uploaded_by metadata, never a client-supplied account override.\n\nThe returned URL is public: anyone with it can read the file without authentication. Use only content intended for public access. This replaces the public upload destination; it does not move private user-files, release-pack source audio, or existing files. Previously issued Arweave URLs remain readable; no new Arweave write is part of this operation.\n\nSend multipart/form-data with exactly one file field and let your HTTP client set the multipart boundary. Supported MIME types are `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `application/pdf`, `text/csv`, `text/markdown`, `text/x-markdown`, `text/plain`, `application/json`, `audio/mpeg`, `audio/wav`, `audio/x-m4a`, `audio/webm`. The server checks binary signatures, UTF-8 text and JSON syntax as appropriate; a filename extension or MIME declaration alone does not establish a valid file. HTML, SVG, executable files and unspecified binary types are not supported. The streamed request body is limited to 4,259,840 bytes (4 MiB plus 64 KiB); the file itself remains limited to 4 MiB.",
         "security": [
           {
             "apiKeyAuth": []
