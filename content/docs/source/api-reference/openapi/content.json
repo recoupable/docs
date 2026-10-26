@@ -6651,7 +6651,20 @@
                   "object",
                   "null"
                 ],
-                "description": "Quote id, fingerprint, revision, expiry, complete line_items, maximum_usd, credits, piece/file/caption counts and retry policy."
+                "description": "Customer quote: maximum_usd and assets[].maximum_usd are customer charge ceilings; line_items[].usd and credits are customer charges, not measured provider expenses. Included zero-USD services have no additional customer fee. Concepts, contingency and refinements are not budgeted. Additive cost_accounting labels are pending the coordinated API release; older responses may omit them without changing these meanings.",
+                "properties": {
+                  "maximum_usd": {
+                    "type": "number",
+                    "description": "Maximum customer charge in USD for this quoted scope, not measured provider expense."
+                  },
+                  "credits": {
+                    "type": "number",
+                    "description": "Customer credit charge for this quoted scope."
+                  },
+                  "cost_accounting": {
+                    "$ref": "#/components/schemas/ReleasePackCostAccounting"
+                  }
+                }
               }
             }
           },
@@ -6975,6 +6988,50 @@
             }
           }
         ]
+      },
+      "ReleasePackCostAccounting": {
+        "type": "object",
+        "description": "Explanatory labels only. They do not change prices, configuration digests, fingerprints or approval validity. Actual provider expense requires separate measurement evidence. A fresh targeted retry quote is a new customer approval, not a funded refinement allowance.",
+        "properties": {
+          "amount_basis": {
+            "type": "string",
+            "const": "customer_charge"
+          },
+          "included_services": {
+            "type": "string",
+            "const": "no_additional_customer_charge"
+          },
+          "provider_cost_status": {
+            "type": "string",
+            "const": "not_measured"
+          },
+          "concepts": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "contingency": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "refinements": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "provider_cost_usd": {
+            "type": "null",
+            "description": "Unknown: pack receipts do not provide measured provider expenses. Zero customer line items do not establish zero provider cost."
+          }
+        },
+        "required": [
+          "amount_basis",
+          "included_services",
+          "provider_cost_status",
+          "concepts",
+          "contingency",
+          "refinements",
+          "provider_cost_usd"
+        ],
+        "additionalProperties": false
       }
     }
   }
