@@ -99,9 +99,9 @@ p {
 .docs-site-header { border-bottom: 1px solid var(--line); background: var(--paper); }
 .docs-site-header-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; max-width: 1440px; margin: 0 auto; padding: 14px 24px 10px; }
 .docs-brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -.02em; color: var(--ink); }
-.docs-brand img { height: 26px; width: auto; }
-.docs-brand span { padding-left: 10px; border-left: 1px solid var(--line); font-size: 15px; color: var(--muted); }
-:root[data-theme="dark"] .docs-brand img { filter: invert(1); }
+.docs-brand svg { width: 23px; height: 28px; flex: none; }
+.docs-brand-wordmark { font-family: var(--body); font-size: 28px; font-weight: 600; line-height: 1.2; letter-spacing: -1.1px; }
+.docs-brand-label { padding-left: 10px; border-left: 1px solid var(--line); font-size: 15px; color: var(--muted); }
 .docs-site-links { display: flex; align-items: center; gap: 18px; font-size: 14px; color: var(--muted); }
 .docs-site-links > a:hover { color: var(--ink); }
 .docs-dashboard-button { padding: 8px 14px; border-radius: 999px; background: var(--ink); color: var(--paper) !important; font-weight: 550; }
