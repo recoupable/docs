@@ -36664,7 +36664,20 @@ This operation requires one of the security alternatives in the specification be
                   "object",
                   "null"
                 ],
-                "description": "Quote id, fingerprint, revision, expiry, complete line_items, maximum_usd, credits, piece/file/caption counts and retry policy."
+                "description": "Customer quote: maximum_usd and assets[].maximum_usd are customer charge ceilings; line_items[].usd and credits are customer charges, not measured provider expenses. Included zero-USD services have no additional customer fee. Concepts, contingency and refinements are not budgeted. Additive cost_accounting labels are pending the coordinated API release; older responses may omit them without changing these meanings.",
+                "properties": {
+                  "maximum_usd": {
+                    "type": "number",
+                    "description": "Maximum customer charge in USD for this quoted scope, not measured provider expense."
+                  },
+                  "credits": {
+                    "type": "number",
+                    "description": "Customer credit charge for this quoted scope."
+                  },
+                  "cost_accounting": {
+                    "$ref": "#/components/schemas/ReleasePackCostAccounting"
+                  }
+                }
               }
             }
           },
@@ -37143,6 +37156,50 @@ This operation requires one of the security alternatives in the specification be
         },
         "additionalProperties": false
       },
+      "ReleasePackCostAccounting": {
+        "type": "object",
+        "description": "Explanatory labels only. They do not change prices, configuration digests, fingerprints or approval validity. Actual provider expense requires separate measurement evidence. A fresh targeted retry quote is a new customer approval, not a funded refinement allowance.",
+        "properties": {
+          "amount_basis": {
+            "type": "string",
+            "const": "customer_charge"
+          },
+          "included_services": {
+            "type": "string",
+            "const": "no_additional_customer_charge"
+          },
+          "provider_cost_status": {
+            "type": "string",
+            "const": "not_measured"
+          },
+          "concepts": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "contingency": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "refinements": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "provider_cost_usd": {
+            "type": "null",
+            "description": "Unknown: pack receipts do not provide measured provider expenses. Zero customer line items do not establish zero provider cost."
+          }
+        },
+        "required": [
+          "amount_basis",
+          "included_services",
+          "provider_cost_status",
+          "concepts",
+          "contingency",
+          "refinements",
+          "provider_cost_usd"
+        ],
+        "additionalProperties": false
+      },
       "ReleasePackCreativeContext": {
         "type": "object",
         "properties": {
@@ -37541,7 +37598,20 @@ This operation requires one of the security alternatives in the specification be
                   "object",
                   "null"
                 ],
-                "description": "Quote id, fingerprint, revision, expiry, complete line_items, maximum_usd, credits, piece/file/caption counts and retry policy."
+                "description": "Customer quote: maximum_usd and assets[].maximum_usd are customer charge ceilings; line_items[].usd and credits are customer charges, not measured provider expenses. Included zero-USD services have no additional customer fee. Concepts, contingency and refinements are not budgeted. Additive cost_accounting labels are pending the coordinated API release; older responses may omit them without changing these meanings.",
+                "properties": {
+                  "maximum_usd": {
+                    "type": "number",
+                    "description": "Maximum customer charge in USD for this quoted scope, not measured provider expense."
+                  },
+                  "credits": {
+                    "type": "number",
+                    "description": "Customer credit charge for this quoted scope."
+                  },
+                  "cost_accounting": {
+                    "$ref": "#/components/schemas/ReleasePackCostAccounting"
+                  }
+                }
               }
             }
           },
@@ -37766,6 +37836,50 @@ This operation requires one of the security alternatives in the specification be
             "$ref": "#/components/schemas/ReleasePackCreativeContext"
           }
         },
+        "additionalProperties": false
+      },
+      "ReleasePackCostAccounting": {
+        "type": "object",
+        "description": "Explanatory labels only. They do not change prices, configuration digests, fingerprints or approval validity. Actual provider expense requires separate measurement evidence. A fresh targeted retry quote is a new customer approval, not a funded refinement allowance.",
+        "properties": {
+          "amount_basis": {
+            "type": "string",
+            "const": "customer_charge"
+          },
+          "included_services": {
+            "type": "string",
+            "const": "no_additional_customer_charge"
+          },
+          "provider_cost_status": {
+            "type": "string",
+            "const": "not_measured"
+          },
+          "concepts": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "contingency": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "refinements": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "provider_cost_usd": {
+            "type": "null",
+            "description": "Unknown: pack receipts do not provide measured provider expenses. Zero customer line items do not establish zero provider cost."
+          }
+        },
+        "required": [
+          "amount_basis",
+          "included_services",
+          "provider_cost_status",
+          "concepts",
+          "contingency",
+          "refinements",
+          "provider_cost_usd"
+        ],
         "additionalProperties": false
       },
       "ReleasePackCreativeContext": {
@@ -38167,7 +38281,20 @@ This operation requires one of the security alternatives in the specification be
                   "object",
                   "null"
                 ],
-                "description": "Quote id, fingerprint, revision, expiry, complete line_items, maximum_usd, credits, piece/file/caption counts and retry policy."
+                "description": "Customer quote: maximum_usd and assets[].maximum_usd are customer charge ceilings; line_items[].usd and credits are customer charges, not measured provider expenses. Included zero-USD services have no additional customer fee. Concepts, contingency and refinements are not budgeted. Additive cost_accounting labels are pending the coordinated API release; older responses may omit them without changing these meanings.",
+                "properties": {
+                  "maximum_usd": {
+                    "type": "number",
+                    "description": "Maximum customer charge in USD for this quoted scope, not measured provider expense."
+                  },
+                  "credits": {
+                    "type": "number",
+                    "description": "Customer credit charge for this quoted scope."
+                  },
+                  "cost_accounting": {
+                    "$ref": "#/components/schemas/ReleasePackCostAccounting"
+                  }
+                }
               }
             }
           },
@@ -38642,6 +38769,50 @@ This operation requires one of the security alternatives in the specification be
         },
         "additionalProperties": false
       },
+      "ReleasePackCostAccounting": {
+        "type": "object",
+        "description": "Explanatory labels only. They do not change prices, configuration digests, fingerprints or approval validity. Actual provider expense requires separate measurement evidence. A fresh targeted retry quote is a new customer approval, not a funded refinement allowance.",
+        "properties": {
+          "amount_basis": {
+            "type": "string",
+            "const": "customer_charge"
+          },
+          "included_services": {
+            "type": "string",
+            "const": "no_additional_customer_charge"
+          },
+          "provider_cost_status": {
+            "type": "string",
+            "const": "not_measured"
+          },
+          "concepts": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "contingency": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "refinements": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "provider_cost_usd": {
+            "type": "null",
+            "description": "Unknown: pack receipts do not provide measured provider expenses. Zero customer line items do not establish zero provider cost."
+          }
+        },
+        "required": [
+          "amount_basis",
+          "included_services",
+          "provider_cost_status",
+          "concepts",
+          "contingency",
+          "refinements",
+          "provider_cost_usd"
+        ],
+        "additionalProperties": false
+      },
       "ReleasePackCreativeContext": {
         "type": "object",
         "properties": {
@@ -39041,7 +39212,20 @@ This operation requires one of the security alternatives in the specification be
                   "object",
                   "null"
                 ],
-                "description": "Quote id, fingerprint, revision, expiry, complete line_items, maximum_usd, credits, piece/file/caption counts and retry policy."
+                "description": "Customer quote: maximum_usd and assets[].maximum_usd are customer charge ceilings; line_items[].usd and credits are customer charges, not measured provider expenses. Included zero-USD services have no additional customer fee. Concepts, contingency and refinements are not budgeted. Additive cost_accounting labels are pending the coordinated API release; older responses may omit them without changing these meanings.",
+                "properties": {
+                  "maximum_usd": {
+                    "type": "number",
+                    "description": "Maximum customer charge in USD for this quoted scope, not measured provider expense."
+                  },
+                  "credits": {
+                    "type": "number",
+                    "description": "Customer credit charge for this quoted scope."
+                  },
+                  "cost_accounting": {
+                    "$ref": "#/components/schemas/ReleasePackCostAccounting"
+                  }
+                }
               }
             }
           },
@@ -39284,6 +39468,50 @@ This operation requires one of the security alternatives in the specification be
             "$ref": "#/components/schemas/ReleasePackCreativeContext"
           }
         },
+        "additionalProperties": false
+      },
+      "ReleasePackCostAccounting": {
+        "type": "object",
+        "description": "Explanatory labels only. They do not change prices, configuration digests, fingerprints or approval validity. Actual provider expense requires separate measurement evidence. A fresh targeted retry quote is a new customer approval, not a funded refinement allowance.",
+        "properties": {
+          "amount_basis": {
+            "type": "string",
+            "const": "customer_charge"
+          },
+          "included_services": {
+            "type": "string",
+            "const": "no_additional_customer_charge"
+          },
+          "provider_cost_status": {
+            "type": "string",
+            "const": "not_measured"
+          },
+          "concepts": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "contingency": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "refinements": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "provider_cost_usd": {
+            "type": "null",
+            "description": "Unknown: pack receipts do not provide measured provider expenses. Zero customer line items do not establish zero provider cost."
+          }
+        },
+        "required": [
+          "amount_basis",
+          "included_services",
+          "provider_cost_status",
+          "concepts",
+          "contingency",
+          "refinements",
+          "provider_cost_usd"
+        ],
         "additionalProperties": false
       },
       "ReleasePackCreativeContext": {
@@ -39685,7 +39913,20 @@ This operation requires one of the security alternatives in the specification be
                   "object",
                   "null"
                 ],
-                "description": "Quote id, fingerprint, revision, expiry, complete line_items, maximum_usd, credits, piece/file/caption counts and retry policy."
+                "description": "Customer quote: maximum_usd and assets[].maximum_usd are customer charge ceilings; line_items[].usd and credits are customer charges, not measured provider expenses. Included zero-USD services have no additional customer fee. Concepts, contingency and refinements are not budgeted. Additive cost_accounting labels are pending the coordinated API release; older responses may omit them without changing these meanings.",
+                "properties": {
+                  "maximum_usd": {
+                    "type": "number",
+                    "description": "Maximum customer charge in USD for this quoted scope, not measured provider expense."
+                  },
+                  "credits": {
+                    "type": "number",
+                    "description": "Customer credit charge for this quoted scope."
+                  },
+                  "cost_accounting": {
+                    "$ref": "#/components/schemas/ReleasePackCostAccounting"
+                  }
+                }
               }
             }
           },
@@ -39941,6 +40182,50 @@ This operation requires one of the security alternatives in the specification be
             "$ref": "#/components/schemas/ReleasePackCreativeContext"
           }
         },
+        "additionalProperties": false
+      },
+      "ReleasePackCostAccounting": {
+        "type": "object",
+        "description": "Explanatory labels only. They do not change prices, configuration digests, fingerprints or approval validity. Actual provider expense requires separate measurement evidence. A fresh targeted retry quote is a new customer approval, not a funded refinement allowance.",
+        "properties": {
+          "amount_basis": {
+            "type": "string",
+            "const": "customer_charge"
+          },
+          "included_services": {
+            "type": "string",
+            "const": "no_additional_customer_charge"
+          },
+          "provider_cost_status": {
+            "type": "string",
+            "const": "not_measured"
+          },
+          "concepts": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "contingency": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "refinements": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "provider_cost_usd": {
+            "type": "null",
+            "description": "Unknown: pack receipts do not provide measured provider expenses. Zero customer line items do not establish zero provider cost."
+          }
+        },
+        "required": [
+          "amount_basis",
+          "included_services",
+          "provider_cost_status",
+          "concepts",
+          "contingency",
+          "refinements",
+          "provider_cost_usd"
+        ],
         "additionalProperties": false
       },
       "ReleasePackCreativeContext": {
@@ -40342,7 +40627,20 @@ This operation requires one of the security alternatives in the specification be
                   "object",
                   "null"
                 ],
-                "description": "Quote id, fingerprint, revision, expiry, complete line_items, maximum_usd, credits, piece/file/caption counts and retry policy."
+                "description": "Customer quote: maximum_usd and assets[].maximum_usd are customer charge ceilings; line_items[].usd and credits are customer charges, not measured provider expenses. Included zero-USD services have no additional customer fee. Concepts, contingency and refinements are not budgeted. Additive cost_accounting labels are pending the coordinated API release; older responses may omit them without changing these meanings.",
+                "properties": {
+                  "maximum_usd": {
+                    "type": "number",
+                    "description": "Maximum customer charge in USD for this quoted scope, not measured provider expense."
+                  },
+                  "credits": {
+                    "type": "number",
+                    "description": "Customer credit charge for this quoted scope."
+                  },
+                  "cost_accounting": {
+                    "$ref": "#/components/schemas/ReleasePackCostAccounting"
+                  }
+                }
               }
             }
           },
@@ -40604,6 +40902,50 @@ This operation requires one of the security alternatives in the specification be
             "$ref": "#/components/schemas/ReleasePackCreativeContext"
           }
         },
+        "additionalProperties": false
+      },
+      "ReleasePackCostAccounting": {
+        "type": "object",
+        "description": "Explanatory labels only. They do not change prices, configuration digests, fingerprints or approval validity. Actual provider expense requires separate measurement evidence. A fresh targeted retry quote is a new customer approval, not a funded refinement allowance.",
+        "properties": {
+          "amount_basis": {
+            "type": "string",
+            "const": "customer_charge"
+          },
+          "included_services": {
+            "type": "string",
+            "const": "no_additional_customer_charge"
+          },
+          "provider_cost_status": {
+            "type": "string",
+            "const": "not_measured"
+          },
+          "concepts": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "contingency": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "refinements": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "provider_cost_usd": {
+            "type": "null",
+            "description": "Unknown: pack receipts do not provide measured provider expenses. Zero customer line items do not establish zero provider cost."
+          }
+        },
+        "required": [
+          "amount_basis",
+          "included_services",
+          "provider_cost_status",
+          "concepts",
+          "contingency",
+          "refinements",
+          "provider_cost_usd"
+        ],
         "additionalProperties": false
       },
       "ReleasePackCreativeContext": {
@@ -41151,8 +41493,20 @@ This operation requires one of the security alternatives in the specification be
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "description": "Pack manifest with signed file URLs and captions; components and format variants identified separately."
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ReleasePackResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "manifest": {
+                          "type": "object",
+                          "description": "Export manifest with job/revision identity, publishing boundary and private URL lifetime."
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -41244,6 +41598,107 @@ This operation requires one of the security alternatives in the specification be
   },
   "components": {
     "schemas": {
+      "ReleasePackResponse": {
+        "type": "object",
+        "required": [
+          "job",
+          "assets",
+          "readiness",
+          "next_action"
+        ],
+        "properties": {
+          "job": {
+            "type": "object",
+            "required": [
+              "id",
+              "revision",
+              "status",
+              "brief",
+              "deliverables"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "draft",
+                  "needs_input",
+                  "ready_to_quote",
+                  "awaiting_approval",
+                  "running",
+                  "partial",
+                  "completed",
+                  "failed",
+                  "canceled"
+                ]
+              },
+              "brief": {
+                "$ref": "#/components/schemas/ReleasePackBrief"
+              },
+              "deliverables": {
+                "type": "object"
+              },
+              "quote": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "description": "Customer quote: maximum_usd and assets[].maximum_usd are customer charge ceilings; line_items[].usd and credits are customer charges, not measured provider expenses. Included zero-USD services have no additional customer fee. Concepts, contingency and refinements are not budgeted. Additive cost_accounting labels are pending the coordinated API release; older responses may omit them without changing these meanings.",
+                "properties": {
+                  "maximum_usd": {
+                    "type": "number",
+                    "description": "Maximum customer charge in USD for this quoted scope, not measured provider expense."
+                  },
+                  "credits": {
+                    "type": "number",
+                    "description": "Customer credit charge for this quoted scope."
+                  },
+                  "cost_accounting": {
+                    "$ref": "#/components/schemas/ReleasePackCostAccounting"
+                  }
+                }
+              }
+            }
+          },
+          "assets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "description": "Owned asset state, files, caption, inspection and controlled failure information."
+            }
+          },
+          "readiness": {
+            "type": "object",
+            "properties": {
+              "ready": {
+                "type": "boolean"
+              },
+              "missing": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "assumptions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "next_action": {
+            "type": "string"
+          }
+        }
+      },
       "ReleasePackError": {
         "type": "object",
         "required": [
@@ -41263,6 +41718,404 @@ This operation requires one of the security alternatives in the specification be
             "format": "uri"
           }
         }
+      },
+      "ReleasePackBrief": {
+        "type": "object",
+        "properties": {
+          "artist_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "artist_account_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "song_title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "recording_version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "audio_url": {
+            "type": "string",
+            "maxLength": 4000,
+            "format": "uri"
+          },
+          "audio_start_seconds": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1200
+          },
+          "occasion": {
+            "type": "string",
+            "enum": [
+              "new_release",
+              "anniversary",
+              "reissue",
+              "remix",
+              "rediscovery"
+            ]
+          },
+          "original_release_date": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+          },
+          "campaign_date": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+          },
+          "primary_action": {
+            "default": "listen",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "destination_url": {
+            "type": "string",
+            "maxLength": 4000,
+            "format": "uri"
+          },
+          "audience": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "song_summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "lyrics_excerpt": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "creative_direction": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "allow_creative_defaults": {
+            "default": false,
+            "type": "boolean"
+          },
+          "reference_image_urls": {
+            "default": [],
+            "maxItems": 5,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 4000,
+              "format": "uri"
+            }
+          },
+          "constraints": {
+            "default": [],
+            "maxItems": 12,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          },
+          "platforms": {
+            "default": [
+              "instagram",
+              "tiktok"
+            ],
+            "minItems": 1,
+            "maxItems": 6,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "instagram",
+                "tiktok",
+                "youtube",
+                "facebook",
+                "linkedin",
+                "x"
+              ]
+            }
+          },
+          "context_brief_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "evidence": {
+            "default": [],
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "customer_assertion",
+                    "source_observation",
+                    "creative_proposal"
+                  ]
+                },
+                "source_url": {
+                  "type": "string",
+                  "maxLength": 4000,
+                  "format": "uri"
+                }
+              },
+              "required": [
+                "text",
+                "kind"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "creative_context": {
+            "$ref": "#/components/schemas/ReleasePackCreativeContext"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ReleasePackCostAccounting": {
+        "type": "object",
+        "description": "Explanatory labels only. They do not change prices, configuration digests, fingerprints or approval validity. Actual provider expense requires separate measurement evidence. A fresh targeted retry quote is a new customer approval, not a funded refinement allowance.",
+        "properties": {
+          "amount_basis": {
+            "type": "string",
+            "const": "customer_charge"
+          },
+          "included_services": {
+            "type": "string",
+            "const": "no_additional_customer_charge"
+          },
+          "provider_cost_status": {
+            "type": "string",
+            "const": "not_measured"
+          },
+          "concepts": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "contingency": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "refinements": {
+            "type": "string",
+            "const": "not_budgeted"
+          },
+          "provider_cost_usd": {
+            "type": "null",
+            "description": "Unknown: pack receipts do not provide measured provider expenses. Zero customer line items do not establish zero provider cost."
+          }
+        },
+        "required": [
+          "amount_basis",
+          "included_services",
+          "provider_cost_status",
+          "concepts",
+          "contingency",
+          "refinements",
+          "provider_cost_usd"
+        ],
+        "additionalProperties": false
+      },
+      "ReleasePackCreativeContext": {
+        "type": "object",
+        "properties": {
+          "starting_point": {
+            "type": "string",
+            "enum": [
+              "established",
+              "rough_idea",
+              "none"
+            ]
+          },
+          "working_mode": {
+            "default": "autonomous",
+            "type": "string",
+            "enum": [
+              "autonomous",
+              "guided"
+            ]
+          },
+          "references": {
+            "default": [],
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[A-Za-z0-9_-]+$"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "url": {
+                  "type": "string",
+                  "maxLength": 4000,
+                  "format": "uri"
+                },
+                "media_type": {
+                  "type": "string",
+                  "enum": [
+                    "image",
+                    "document",
+                    "link"
+                  ]
+                },
+                "source_kind": {
+                  "type": "string",
+                  "enum": [
+                    "recoup",
+                    "customer",
+                    "public",
+                    "generated"
+                  ]
+                },
+                "usage": {
+                  "default": "reference_only",
+                  "type": "string",
+                  "enum": [
+                    "reference_only",
+                    "production"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "url",
+                "media_type",
+                "source_kind",
+                "usage"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "directions": {
+            "default": [],
+            "maxItems": 3,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[A-Za-z0-9_-]+$"
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "concept": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1200
+                },
+                "palette": {
+                  "default": [],
+                  "maxItems": 8,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 48
+                  }
+                },
+                "typography": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "reference_ids": {
+                  "default": [],
+                  "maxItems": 20,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80,
+                    "pattern": "^[A-Za-z0-9_-]+$"
+                  }
+                },
+                "board_url": {
+                  "type": "string",
+                  "maxLength": 4000,
+                  "format": "uri"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "concept",
+                "palette",
+                "reference_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "selection": {
+            "type": "object",
+            "properties": {
+              "direction_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80,
+                "pattern": "^[A-Za-z0-9_-]+$"
+              },
+              "selected_by": {
+                "type": "string",
+                "enum": [
+                  "customer",
+                  "agent"
+                ]
+              },
+              "decision_note": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              }
+            },
+            "required": [
+              "direction_id",
+              "selected_by",
+              "decision_note"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "starting_point",
+          "working_mode",
+          "references",
+          "directions"
+        ],
+        "additionalProperties": false,
+        "description": "Optional saved creative state. Ids are unique within this brief, selections reference an existing direction, and each direction references existing manifest ids. Guided mode requires customer selection before final quote or generation. Selected production image references plus legacy reference_image_urls must contain at most five distinct URLs. Reference-only inputs never become production image inputs."
       }
     },
     "securitySchemes": {
@@ -44594,10 +45447,29 @@ The default scope is 15 creative pieces: eight video clips, four quote cards, on
 artwork, one carousel and one visualizer, with captions. A carousel is one piece;
 its slides and alternate aspect ratios are identified as components or variants.
 You can request a smaller scope. The quote must describe the actual selected work,
-including chargeable stages and any retry allowance. Current quotes charge for
+including chargeable stages. No retry allowance is funded. Current quotes charge for
 image and motion generation; captioning, audio analysis, composition and inspection
 are included without an added customer fee. The approved amount is held before
 production; unused stages are refunded. A new paid retry needs its own quote.
+
+`maximum_usd` and each asset's `maximum_usd` are **customer charge ceilings**;
+`line_items[].usd` and `credits` are customer charges. They are not measured
+provider expenses. A zero-USD included service means no added customer fee,
+not that its provider cost is zero. Actual provider cost is unknown until supported
+by measurement evidence; the pack's existing receipts do not supply that amount.
+
+Concept generation, contingency and refinement allowances are **not budgeted**.
+Do not promise that a quote funds direction boards or extra refinement rounds.
+A confirmed failed asset can receive a fresh targeted retry quote with separate
+approval; this is not an included refinement allowance.
+
+The coordinated API update adds `quote.cost_accounting` to estimates and saved-job
+read/export responses: `amount_basis: "customer_charge"`,
+`included_services: "no_additional_customer_charge"`, `provider_cost_usd: null`,
+`provider_cost_status: "not_measured"`, and `concepts`, `contingency`, `refinements`
+set to `"not_budgeted"`. These additive labels are pending that API release.
+Older responses may omit them; their absence does not imply zero provider expense.
+The labels do not change prices or invalidate an otherwise compatible approval.
 
 The older `GET /api/content/estimate` is an advisory per-video estimate. It is not
 a complete Release Packs quote. On insufficient credits the agent surfaces the
