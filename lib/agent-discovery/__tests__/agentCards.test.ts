@@ -11,14 +11,14 @@ import nextConfig from "@/next.config";
 const skill = readFileSync("content/docs/source/skill.md", "utf8");
 
 async function listedTools() {
-  const response = await handleDocsMcp(new Request("http://localhost:3000/mcp", {
+  const response = await handleDocsMcp(new Request(absoluteUrl("/mcp"), {
     method: "POST",
     headers: { "content-type": "application/json", accept: "application/json, text/event-stream", "mcp-protocol-version": "2025-06-18" },
     body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }),
   }));
   const text = await response.text();
   const payload = JSON.parse(text.startsWith("{") ? text : text.split("\n").find(line => line.startsWith("data: "))!.slice(6));
-  return payload.result.tools as { name: string; description: string; inputSchema: { required?: string[] } }[];
+  return payload.result.tools as { name: string; description: string; inputSchema: Record<string, unknown> }[];
 }
 
 describe("agent discovery cards Mintlify served", () => {
@@ -44,7 +44,7 @@ describe("agent discovery cards Mintlify served", () => {
     for (const tool of tools) {
       const carded = card.tools.find((entry: { name: string }) => entry.name === tool.name);
       expect(carded.description).toBe(tool.description);
-      expect(carded.inputSchema.required).toEqual(tool.inputSchema.required);
+      expect(carded.inputSchema).toEqual(tool.inputSchema);
       expect(carded.annotations.readOnlyHint).toBe(true);
     }
   });

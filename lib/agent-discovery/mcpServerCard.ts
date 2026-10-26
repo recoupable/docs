@@ -17,7 +17,7 @@ export function mcpServerCard() {
     tools: Object.entries(tools).map(([name, tool]) => ({
       name,
       description: tool.description,
-      inputSchema: z.toJSONSchema(tool.inputSchema),
+      inputSchema: z.toJSONSchema(tool.inputSchema, { io: "input" }),
       annotations: { title: tool.title, ...tool.annotations },
     })),
   };
