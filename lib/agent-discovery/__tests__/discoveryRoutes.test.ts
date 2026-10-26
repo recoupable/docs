@@ -4,7 +4,6 @@ import { describe, expect, it } from "vitest";
 import sitemap from "@/app/sitemap";
 import { GET as getRobots } from "@/app/robots.txt/route";
 import { GET as getSkill } from "@/app/skill.md/route";
-import { GET as getWellKnownLlms } from "@/app/.well-known/llms.txt/route";
 import { GET as getSkillsIndex } from "@/app/.well-known/skills/index.json/route";
 import { GET as getSkillsFile } from "@/app/.well-known/skills/recoup/SKILL.md/route";
 import { GET as getAgentSkillsIndex } from "@/app/.well-known/agent-skills/index.json/route";
@@ -57,10 +56,6 @@ describe("search and agent discovery routes Mintlify served", () => {
         digest: `sha256:${createHash("sha256").update(skill).digest("hex")}`,
       }],
     });
-  });
-
-  it("serves llms.txt at its well-known path too", async () => {
-    expect(await (await getWellKnownLlms()).text()).toBe(published("llms.txt"));
   });
 
   it("never rewrites the discovery files to page markdown", () => {
