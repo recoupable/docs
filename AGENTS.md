@@ -41,7 +41,7 @@ python3 scripts/refresh-contract-inventory.py --api <api checkout at the pinned 
 ## Contract notes (carried over from Marketing)
 
 
-- Source of truth: `content/docs/source` (MDX pages, `docs.json` navigation, `api-reference/openapi/*.json`). Edit there; the retired Mintlify repository (`recoupable/docs`) is not read.
+- Source of truth: `content/docs/source` (MDX pages, `docs.json` navigation, `api-reference/openapi/*.json`). Edit there; the retired Mintlify repository (`recoupable/docs-legacy`, archived) is not read.
 - After editing, run `pnpm docs:build` and commit the generated `content/docs/inventory.json`, `manifest.json`, and `navigation.json` together with the source change. `scripts/__tests__/build-docs.test.ts` fails when they drift.
 - `pnpm docs:check` validates route coverage, schema references, guide links, and request examples.
 - `scripts/build_plan_balance_contract.py` freezes the public credits/subscription response examples and guide example through the existing `build-contract-examples.py --api /path/to/api` workflow. Run the API's `publishedPlanBalances.test.ts` with the coordinated fixture; builder/example parity does not verify a real payment or current commercial offer.
