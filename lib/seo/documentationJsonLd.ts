@@ -1,8 +1,9 @@
 import type { DocPage } from "../docs.ts";
 import { docHref } from "../docs-paths.ts";
 import { absoluteUrl } from "./absoluteUrl.ts";
+import { siteConfig } from "../config.ts";
 
-/** Structured data for a page: a TechArticle (or the collection pages) and its breadcrumb trail. */
+/** Structured data for a page: the publisher and site, a TechArticle (or the collection pages) and its breadcrumb trail. */
 export function documentationJsonLd(page: DocPage | undefined, key: string) {
   const url = absoluteUrl(docHref(key));
   const title = page?.title || "API reference";
@@ -13,6 +14,15 @@ export function documentationJsonLd(page: DocPage | undefined, key: string) {
   return {
     "@context": "https://schema.org",
     "@graph": [
+      {
+        "@type": "Organization", "@id": `${siteConfig.websiteUrl}/#organization`,
+        name: siteConfig.name, url: siteConfig.websiteUrl, logo: absoluteUrl("/apple-icon"),
+      },
+      {
+        "@type": "WebSite", "@id": `${absoluteUrl("/")}#website`,
+        name: "Recoup Docs", url: absoluteUrl("/"), inLanguage: "en",
+        publisher: { "@id": `${siteConfig.websiteUrl}/#organization` },
+      },
       {
         "@type": collection ? "CollectionPage" : "TechArticle",
         "@id": collection ? url : `${url}#article`,
