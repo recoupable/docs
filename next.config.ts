@@ -15,8 +15,6 @@ export const nextConfig: NextConfig = {
     "/skill.md": ["./content/docs/source/skill.md"],
     "/.well-known/skills/*": ["./content/docs/source/skill.md"],
     "/.well-known/agent-skills/*": ["./content/docs/source/skill.md"],
-    "/og/*": ["./app/icon.svg", "./node_modules/next/dist/compiled/@vercel/og/Geist-Regular.ttf", "./node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff"],
-    "/apple-icon": ["./app/icon.svg"],
   },
   async headers() {
     return [
