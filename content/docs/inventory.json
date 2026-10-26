@@ -1,5 +1,5 @@
 {
-  "navigationPages": 231,
+  "navigationPages": 243,
   "guidePages": 25,
   "apiPages": 218,
   "specifications": [
@@ -18,19 +18,6 @@
     "templates.json",
     "uploads.json"
   ],
-  "additionalOperations": [
-    "api-reference/complete/content/post-content-packs",
-    "api-reference/complete/content/get-content-packs-id",
-    "api-reference/complete/content/patch-content-packs-id",
-    "api-reference/complete/content/post-content-packs-id-estimate",
-    "api-reference/complete/content/post-content-packs-id-generate",
-    "api-reference/complete/content/post-content-packs-id-retry",
-    "api-reference/complete/content/post-content-packs-assets",
-    "api-reference/complete/content/get-content-packs-id-export",
-    "api-reference/complete/players/get-players-public-id",
-    "api-reference/complete/players/post-players-events",
-    "api-reference/complete/players/post-players-spotify-session",
-    "api-reference/complete/players/post-players-public-id-session"
-  ],
+  "additionalOperations": [],
   "gaps": []
 }

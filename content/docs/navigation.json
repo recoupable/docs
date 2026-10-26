@@ -235,6 +235,19 @@
           "api-reference/posts/get",
           "api-reference/comments/get"
         ]
+      },
+      {
+        "group": "Release packs",
+        "pages": [
+          "api-reference/complete/content/post-content-packs",
+          "api-reference/complete/content/get-content-packs-id",
+          "api-reference/complete/content/patch-content-packs-id",
+          "api-reference/complete/content/post-content-packs-id-estimate",
+          "api-reference/complete/content/post-content-packs-id-generate",
+          "api-reference/complete/content/post-content-packs-id-retry",
+          "api-reference/complete/content/post-content-packs-assets",
+          "api-reference/complete/content/get-content-packs-id-export"
+        ]
       }
     ]
   },
@@ -511,6 +524,15 @@
           "api-reference/players/activity",
           "api-reference/players/fans",
           "api-reference/players/workspace-fans"
+        ]
+      },
+      {
+        "group": "Playback & sessions",
+        "pages": [
+          "api-reference/complete/players/get-players-public-id",
+          "api-reference/complete/players/post-players-events",
+          "api-reference/complete/players/post-players-spotify-session",
+          "api-reference/complete/players/post-players-public-id-session"
         ]
       }
     ]
