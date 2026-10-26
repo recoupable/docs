@@ -3220,8 +3220,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "description": "Pack manifest with signed file URLs and captions; components and format variants identified separately."
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ReleasePackResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "manifest": {
+                          "type": "object",
+                          "description": "Export manifest with job/revision identity, publishing boundary and private URL lifetime."
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
