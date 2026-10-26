@@ -1,0 +1,209 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup API - Uploads",
+    "version": "1.0.0",
+    "description": "Pending authenticated public file uploads. This is not private file or release-pack audio storage."
+  },
+  "servers": [
+    {
+      "url": "https://api.recoupable.dev"
+    }
+  ],
+  "paths": {
+    "/api/upload": {
+      "post": {
+        "operationId": "uploadPublicFile",
+        "summary": "Upload a public file",
+        "x-recoup-availability": "pending",
+        "description": "Pending coordinated API release. Upload one file of at most 4 MiB (4,194,304 bytes) to public Supabase Storage. Authenticate with exactly one x-api-key or Authorization: Bearer credential for an existing Recoup account; authentication precedes multipart parsing. The uploader is derived from that account and recorded as uploaded_by metadata, never a client-supplied account override.\n\nThe returned URL is public: anyone with it can read the file without authentication. Use only content intended for public access. This replaces the public upload destination; it does not move private user-files, release-pack source audio, or existing files. Previously issued Arweave URLs remain readable; no new Arweave write is part of this operation.\n\nSend multipart/form-data with exactly one file field and let your HTTP client set the multipart boundary. Supported MIME types are `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `application/pdf`, `text/csv`, `text/markdown`, `text/x-markdown`, `text/plain`, `application/json`, `audio/mpeg`, `audio/wav`, `audio/x-m4a`, `audio/webm`. The server checks binary signatures, UTF-8 text and JSON syntax as appropriate; a filename extension or MIME declaration alone does not establish a valid file. HTML, SVG, executable files and unspecified binary types are not supported. The streamed request body is limited to 4,259,840 bytes (4 MiB plus 64 KiB); the file itself remains limited to 4 MiB.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicUploadRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The file was stored in public Supabase Storage. The returned URL does not require authentication to read.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicUploadResponse"
+                },
+                "example": {
+                  "success": true,
+                  "fileName": "cover.png",
+                  "fileType": "image/png",
+                  "fileSize": 1024,
+                  "url": "https://exampleproject.supabase.co/storage/v1/object/public/public-uploads/example/cover.png"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid multipart request (including a non-multipart Content-Type), missing file, empty file, or unsupported form fields. Submit exactly one nonempty file field.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicUploadError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid or conflicting credentials, or no existing account for the credential. Authentication is checked before multipart parsing.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicUploadError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "The file exceeds 4 MiB (4,194,304 bytes), or the full streamed request exceeds 4,259,840 bytes (4 MiB plus 64 KiB of multipart overhead).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicUploadError"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Unsupported file MIME type, mismatched binary signature, invalid UTF-8 text, or invalid JSON.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicUploadError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Upload failed. The response does not expose storage-provider details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicUploadError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "PublicUploadRequest": {
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "description": "Exactly one nonempty file, at most 4 MiB (4,194,304 bytes). The MIME type must be supported; filename extensions do not override validation."
+          }
+        }
+      },
+      "PublicUploadResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "fileName",
+          "fileType",
+          "fileSize",
+          "url"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "fileName": {
+            "type": "string",
+            "description": "Name of the uploaded file."
+          },
+          "fileType": {
+            "type": "string",
+            "description": "Accepted MIME type of the uploaded file.",
+            "enum": [
+              "image/jpeg",
+              "image/png",
+              "image/gif",
+              "image/webp",
+              "application/pdf",
+              "text/csv",
+              "text/markdown",
+              "text/x-markdown",
+              "text/plain",
+              "application/json",
+              "audio/mpeg",
+              "audio/wav",
+              "audio/x-m4a",
+              "audio/webm"
+            ]
+          },
+          "fileSize": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4194304,
+            "description": "Uploaded file size in bytes."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public Supabase Storage URL. Anyone with this URL can read the object without authentication; this is not a signed private URL."
+          }
+        }
+      },
+      "PublicUploadError": {
+        "type": "object",
+        "required": [
+          "success",
+          "error"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Human-readable error. Storage-provider details are not returned."
+          }
+        }
+      }
+    }
+  }
+}
