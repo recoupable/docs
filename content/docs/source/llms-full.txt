@@ -1831,7 +1831,7 @@ A few constraints to honor:
 
 Source: https://docs.recoupable.dev/api-reference/artists/list
 
-Retrieve artists accessible to the authenticated account. The account is derived from the API key or Bearer token. When org_id is omitted, returns only the account's own artists. Pass org_id to view artists in a specific organization. Pass account_id to filter to a specific account the API key has access to.
+Retrieve artists accessible to the authenticated account. The account is derived from the API key or Bearer token.
 
 ## GET /api/artists
 
@@ -2353,7 +2353,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/artists/create
 
-Create a new artist account. When spotify_artist_id is provided and a canonical artist already exists for it, the existing artist is linked to the account instead of creating a duplicate. The artist can optionally be linked to an organization.
+Create a new artist account. When spotify_artist_id is provided and a canonical artist already exists for it, the existing artist is linked to the account…
 
 ## POST /api/artists
 
@@ -2628,7 +2628,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/artists/update
 
-Update an artist. All body fields are optional, but at least one must be provided. Use this endpoint to set basic profile (name, image, label), AI instructions, knowledge base entries, social profile URLs (mapped by platform), and pinned state for the calling account.
+Update an artist. All body fields are optional, but at least one must be provided.
 
 ## PATCH /api/artists/{id}
 
@@ -2973,7 +2973,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/artists/pin
 
-Update an artist. All body fields are optional, but at least one must be provided. Use this endpoint to set basic profile (name, image, label), AI instructions, knowledge base entries, social profile URLs (mapped by platform), and pinned state for the calling account.
+Update an artist. All body fields are optional, but at least one must be provided.
 
 ## PATCH /api/artists/{id}
 
@@ -3318,7 +3318,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/artists/unpin
 
-Update an artist. All body fields are optional, but at least one must be provided. Use this endpoint to set basic profile (name, image, label), AI instructions, knowledge base entries, social profile URLs (mapped by platform), and pinned state for the calling account.
+Update an artist. All body fields are optional, but at least one must be provided.
 
 ## PATCH /api/artists/{id}
 
@@ -3826,7 +3826,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/artists/socials
 
-Retrieve all social media profiles associated with an artist, with the latest follower counts from the most recent scrape. Call this before the Social Posts or Social Scrape endpoints to obtain the social IDs. Pass `history` to also get each profile's follower snapshots, so week-over-week movement is a read instead of something the caller has to remember.
+Retrieve all social media profiles associated with an artist, with the latest follower counts from the most recent scrape.
 
 ## GET /api/artists/{id}/socials
 
@@ -4280,7 +4280,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/fans/get
 
-Retrieve the social profiles of an artist's fans: the accounts that commented on the artist's scraped posts (Instagram today). Every Instagram scrape is followed by one batched profile run over the new commenters, which fills `avatar`, `bio`, `follower_count` and `following_count` on each fan; `region` is null unless the platform reports one. Supports pagination for large fan lists.
+Retrieve the social profiles of an artist's fans: the accounts that commented on the artist's scraped posts (Instagram today).
 
 ## GET /api/artists/{id}/fans
 
@@ -4546,7 +4546,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/chat/workflow
 
-Stream sandbox-driven chat (Vercel Workflow)
+Streams an agent loop running as a durable Vercel Workflow against the session's sandbox.
 
 ## POST /api/chat
 
@@ -4835,7 +4835,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/chat/workflow-stream
 
-Resume a chat response stream
+Reconnects to an in-progress chat response without submitting another message. POST /api/chat starts a new turn: an existing live run returns 409, while…
 
 ## GET /api/chat/{chatId}/stream
 
@@ -5062,7 +5062,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/chat/runs
 
-Start an asynchronous, headless chat-generation run on the durable agent workflow — the same engine as interactive [`POST /api/chat`](https://docs.recoupable.dev/api-reference/chat/workflow).
+Start an asynchronous, headless chat-generation run on the durable agent workflow — the same engine as interactive POST /api/chat.
 
 ## POST /api/chat/runs
 
@@ -5338,7 +5338,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/chat/runs-status
 
-Status of an asynchronous run started via [`POST /api/chat/runs`](https://docs.recoupable.dev/api-reference/chat/runs). Returns a point-in-time snapshot (**is it done?**) — not the generated content.
+Status of an asynchronous run started via POST /api/chat/runs. Returns a point-in-time snapshot (is it done?) — not the generated content.
 
 ## GET /api/chat/runs/{runId}
 
@@ -5515,7 +5515,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/chat/stop
 
-Stop the response currently being generated for a chat, freeing it to accept a new message. Idempotent — returns `stopped: false` when nothing is in progress. The chat must belong to the authenticated account.
+Stop the response currently being generated for a chat, freeing it to accept a new message. Idempotent — returns stopped: false when nothing is in progress.
 
 ## POST /api/chat/{chatId}/stop
 
@@ -5730,7 +5730,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/chat/create
 
-Create a new chat room. Optionally associate it with an artist and/or provide a client-generated chat ID. Pass accountId to create a chat on behalf of a specific account the API key has access to.
+Create a new chat room. Optionally associate it with an artist and/or provide a client-generated chat ID.
 
 ## POST /api/chats
 
@@ -5930,7 +5930,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/chat/chats
 
-Returns chats for the authenticated account. Personal Bearer tokens see only the caller's chats; org keys see chats across the org's member accounts; admin keys see all chats. Each row carries the chat id and the session id needed to build the chat URL.
+Returns chats for the authenticated account. Personal Bearer tokens see only the caller's chats; org keys see chats across the org's member accounts; admin…
 
 ## GET /api/chats
 
@@ -6751,7 +6751,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/chat/compact
 
-Compact one or more chat conversations into summarized versions. This reduces the size of chat history while preserving key information. Optionally provide a prompt to control what information gets preserved in the compacted summary.
+Compact one or more chat conversations into summarized versions. This reduces the size of chat history while preserving key information.
 
 ## POST /api/chats/compact
 
@@ -6924,7 +6924,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/ai/models
 
-Returns the catalog of language models available through the Vercel AI Gateway. Embedding models are filtered out. The full schema mirrors the Vercel AI Gateway response (`GatewayLanguageModelEntry` from `@ai-sdk/gateway`); the documented properties below are the load-bearing fields used by clients. No authentication required.
+Returns the catalog of language models available through the Vercel AI Gateway. Embedding models are filtered out.
 
 ## GET /api/ai/models
 
@@ -7299,7 +7299,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/chat/messages-copy
 
-Copy all messages from the source chat (`id` path param) to a target chat (`targetChatId` in request body). By default, existing target messages are cleared before copy.
+Copy all messages from the source chat (id path param) to a target chat (targetChatId in request body).
 
 ## POST /api/chats/{id}/messages/copy
 
@@ -7526,7 +7526,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/chat/messages-trailing-delete
 
-Delete a message in a Workflow chat and every message after it, ordered by `created_at` then `id`. Concurrent edit/resend is unsupported: stop other writers first, because an active workflow run returns `409`. `200` means the delete ran, possibly affecting zero rows; after a transport failure, refresh the chat history instead of resending.
+Delete a message in a Workflow chat and every message after it, ordered by created_at then id.
 
 ## DELETE /api/chats/{id}/messages/trailing
 
@@ -7818,7 +7818,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/research/search
 
-Search Recoup Research for artists, tracks or labels by name. Artist and track matches include an `id` when an identifier is available. Select a match and reuse that ID for detail requests. `type` accepts artists, tracks or labels, plus their singular aliases, case-insensitively. Playlist search is unavailable. Recoup defaults `limit` to 10; pagination strings are passed to the data connection and its limits apply.
+Search Recoup Research for artists, tracks or labels by name. Artist and track matches include an id when an identifier is available.
 
 ## GET /api/research
 
@@ -8132,7 +8132,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/lookup
 
-Resolve a Spotify artist URL or ID through Recoup Research. Supply `spotifyId` (22 alphanumeric characters) or a Spotify artist `url`; a nonempty `spotifyId` takes precedence. Apple Music URLs and Recoup account UUIDs are not accepted. Available artist metadata is returned; an `id` is included when the artist identifier can be resolved.
+Resolve a Spotify artist URL or ID through Recoup Research. Supply spotifyId (22 alphanumeric characters) or a Spotify artist url; a nonempty spotifyId takes…
 
 ## GET /api/research/lookup
 
@@ -8495,7 +8495,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/profile
 
-Read artist identity and available biography, links, genres and related-artist metadata. Fields depend on available research data. For current platform counts, use [Metrics](https://docs.recoupable.dev/api-reference/research/metrics).
+Read artist identity and available biography, links, genres and related-artist metadata. Fields depend on available research data.
 
 ## GET /api/research/profile
 
@@ -8854,7 +8854,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/metrics
 
-Read current artist statistics for the required platform `source`. This is a synchronous snapshot, without a historical series or refresh-pending job. A valid source does not guarantee data is available. Save dated responses to compare results over time.
+Read current artist statistics for the required platform source. This is a synchronous snapshot, without a historical series or refresh-pending job.
 
 ## GET /api/research/metrics
 
@@ -9211,7 +9211,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/audience
 
-Read available audience data for an artist and platform. The default is `instagram`; other supported data connections can include Spotify, TikTok and YouTube. Geographic and demographic coverage varies. Age and gender breakdowns are not guaranteed.
+Read available audience data for an artist and platform. The default is instagram; other supported data connections can include Spotify, TikTok and YouTube.
 
 ## GET /api/research/audience
 
@@ -9544,7 +9544,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/insights
 
-Read available artist activities under `insights`. This endpoint returns activity data; it does not generate an AI analysis or a separate insight report.
+Read available artist activities under insights. This endpoint returns activity data; it does not generate an AI analysis or a separate insight report.
 
 ## GET /api/research/insights
 
@@ -9880,7 +9880,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/career
 
-Read available dated artist activities under `career`. Career, insights and milestones use the same activity feed. This endpoint does not calculate a career stage or score, and does not guarantee a complete career history.
+Read available dated artist activities under career. Career, insights and milestones use the same activity feed.
 
 ## GET /api/research/career
 
@@ -10216,7 +10216,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/milestones
 
-Read available artist activities under `milestones`. Coverage varies; an empty result does not prove the artist has no milestones. This endpoint does not guarantee a complete history or scored career timeline.
+Read available artist activities under milestones. Coverage varies; an empty result does not prove the artist has no milestones.
 
 ## GET /api/research/milestones
 
@@ -10810,7 +10810,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/similar
 
-Read unweighted related artists. The accepted `audience`, `genre`, `mood` and `musicality` values (high/medium/low) do not currently change the ranking. No similarity score is calculated. A positive integer `limit` slices the returned list; invalid or non-positive limits are ignored.
+Read unweighted related artists. The accepted audience, genre, mood and musicality values (high/medium/low) do not currently change the ranking.
 
 ## GET /api/research/similar
 
@@ -11171,7 +11171,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/urls
 
-Read available platform URLs as `{domain, url}` entries. A missing link means no matching URL was returned; it does not prove the artist lacks an account on that platform.
+Read available platform URLs as {domain, url} entries. A missing link means no matching URL was returned; it does not prove the artist lacks an account on…
 
 ## GET /api/research/urls
 
@@ -11449,7 +11449,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/albums
 
-Read the artist catalog through the `albums` view using the `artist_id` selected from [Search](https://docs.recoupable.dev/api-reference/research/search). Results can include track-shaped catalog entries rather than distinct album objects. `is_primary` accepts true/false; filtering depends on the data connection. `limit` must be a positive integer string and `offset` a non-negative integer string.
+Read the artist catalog through the albums view using the artist_id selected from Search.
 
 ## GET /api/research/albums
 
@@ -11778,7 +11778,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/tracks
 
-Read available artist catalog entries under `tracks`. Entries can include remixes and features; completeness and fields vary. This endpoint accepts an artist identifier without catalog pagination or filtering controls.
+Read available artist catalog entries under tracks. Entries can include remixes and features; completeness and fields vary.
 
 ## GET /api/research/tracks
 
@@ -12082,7 +12082,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/track
 
-Read track details using the `id` selected from [Search](https://docs.recoupable.dev/api-reference/research/search) with `type=tracks`. Treat this ID as an opaque string, separate from a Recoup account UUID. Track metadata and available fields vary by recording.
+Read track details using the id selected from Search with type=tracks. Treat this ID as an opaque string, separate from a Recoup account UUID.
 
 ## GET /api/research/track
 
@@ -12473,7 +12473,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/track-stats
 
-Read current track statistics using exactly one of `isrc`, `spotify_track_id` or `apple_music_track_id`, plus the required platform `source`. Recoup uses stored Spotify measurements when available for an ISRC and otherwise requests current research data. Fields and coverage vary. Preserve returned `data_source` and capture timestamps; missing provenance remains unknown.
+Read current track statistics using exactly one of isrc, spotify_track_id or apple_music_track_id, plus the required platform source.
 
 ## GET /api/research/track/stats
 
@@ -12805,7 +12805,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/measurements
 
-Track measurements
+Time-series of a track's measured counts.
 
 ## GET /api/research/tracks/{id}/measurements
 
@@ -13111,7 +13111,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/album-measurements
 
-Album measurements
+Latest measured count per track on an album, from the measurement store. {id} is a Spotify album id.
 
 ## GET /api/research/albums/{id}/measurements
 
@@ -13352,7 +13352,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/measurement-jobs
 
-Create a measurement job
+Create a current capture or enqueue historical the configured research data connection backfill.
 
 ## POST /api/research/measurement-jobs
 
@@ -13673,7 +13673,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/playlists
 
-Read available playlist placements for an artist. `status=current` selects current scope; `status=past` selects all-time scope, which can include current placements. `limit` is an optional raw string with no Recoup default; supported limits and coverage depend on the data connection.
+Read available playlist placements for an artist. status=current selects current scope; status=past selects all-time scope, which can include current…
 
 ## GET /api/research/playlists
 
@@ -14002,7 +14002,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/track-playlists
 
-Read available track playlist and activity entries. Supply a selected track `id`, or a track name `q` with optional `artist`. Name resolution selects the first Spotify match and resolves its research ID; `id` takes precedence. Filtering and pagination support depend on the data connection. With no filter flags, editorial, indie, majorCurator and popularIndie default to true. Track-name resolution can add separately charged lookup calls; reuse a selected ID to avoid them.
+Read available track playlist and activity entries. Supply a selected track id, or a track name q with optional artist.
 
 ## GET /api/research/track/playlists
 
@@ -14422,7 +14422,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/web
 
-Search the web for real-time information. Returns ranked results with titles, URLs, and content snippets. Use for narrative context, press coverage, and cultural research that structured data endpoints don't cover.
+Search the web for real-time information. Returns ranked results with titles, URLs, and content snippets.
 
 ## POST /api/research/web
 
@@ -14624,7 +14624,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/deep
 
-Perform deep, comprehensive research on a topic. Browses multiple sources extensively and returns a cited report. Use for full artist deep dives, competitive analysis, and any research requiring synthesis across many sources.
+Perform deep, comprehensive research on a topic. Browses multiple sources extensively and returns a cited report.
 
 ## POST /api/research/deep
 
@@ -15008,7 +15008,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/extract
 
-Extract clean markdown content from one or more public URLs. Handles JavaScript-heavy pages and PDFs. Returns focused excerpts aligned to an objective, or full page content.
+Extract clean markdown content from one or more public URLs. Handles JavaScript-heavy pages and PDFs.
 
 ## POST /api/research/extract
 
@@ -15229,7 +15229,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/research/enrich
 
-Enrich an entity with structured data from web research. Provide a description of who or what to research and a JSON schema defining the fields to extract. Returns typed data with citations. **Important:** The `schema` object must include `"type": "object"` at the top level — requests without an explicit type will be rejected.
+Enrich an entity with structured data from web research. Provide a description of who or what to research and a JSON schema defining the fields to extract.
 
 ## POST /api/research/enrich
 
@@ -15442,7 +15442,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/songs/songs
 
-Retrieve songs from the database with optional filtering by ISRC (International Standard Recording Code) or artist account. This endpoint joins the songs table with song_artists and accounts tables to provide comprehensive song information.
+Retrieve songs from the database with optional filtering by ISRC (International Standard Recording Code) or artist account.
 
 ## GET /api/songs
 
@@ -15688,7 +15688,7 @@ an unrelated catalog to make a write succeed.
 
 Source: https://docs.recoupable.dev/api-reference/songs/analyze
 
-Analyze music using a state-of-the-art Audio Language Model ([Music Flamingo](https://www.universalmusic.com/universal-music-group-to-transform-music-experience-for-billions-of-fans-with-nvidia-ai/)) that listens directly to the audio waveform.
+Analyze music using a state-of-the-art Audio Language Model (Music Flamingo) that listens directly to the audio waveform.
 
 ## POST /api/songs/analyze
 
@@ -16020,7 +16020,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/songs/analyze-presets
 
-Lists all available music analysis presets. Each preset is a curated prompt with optimized generation parameters for a specific use case (e.g. catalog metadata enrichment, sync licensing analysis, audience profiling). Requires authentication via API key or Bearer token.
+Lists all available music analysis presets. Each preset is a curated prompt with optimized generation parameters for a specific use case (e.g. catalog…
 
 ## GET /api/songs/analyze/presets
 
@@ -16176,7 +16176,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/songs/catalogs
 
-Retrieve the catalogs visible to a specific account. Returns the catalogs the account owns directly, plus the catalogs owned by any organization the account belongs to - so every member of an organization sees that organization's catalogs without passing the organization's id. A catalog owned both directly and through an organization is returned once. An account that belongs to no organization receives only its own catalogs. Create an organization-owned catalog with [Create catalog](https://docs.recoupable.dev/api-reference/songs/catalogs-create) or [Run valuation](https://docs.recoupable.dev/api-reference/songs/valuation-run).
+Retrieve the catalogs visible to a specific account. Returns the catalogs the account owns directly, plus the catalogs owned by any organization the account…
 
 ## GET /api/accounts/{id}/catalogs
 
@@ -16442,7 +16442,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/songs/catalogs-create
 
-Create a catalog, owned by the calling account or - with organization_id - by one of the caller's organizations, in which case every member of that organization sees it via [Get Catalogs](https://docs.recoupable.dev/api-reference/songs/catalogs). When materializing from a valuation snapshot, the endpoint also attaches the snapshot's canonical artist to the caller's roster: the measured songs' existing song-artist links are resolved to the dominant artist account, which is added to the caller's roster if not already present. The attach also runs on idempotent re-claims of an already-materialized snapshot. The roster attach always targets the calling account, even when the catalog is owned by an organization.
+Create a catalog, owned by the calling account or - with organization_id - by one of the caller's organizations, in which case every member of that…
 
 ## POST /api/catalogs
 
@@ -16661,7 +16661,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/songs/catalog-rename
 
-Rename a catalog. The only mutable field is the display name — catalog membership is managed through [Add catalog songs](https://docs.recoupable.dev/api-reference/songs/catalog-songs-add) and [Remove catalog songs](https://docs.recoupable.dev/api-reference/songs/catalog-songs-delete).
+Rename a catalog. The only mutable field is the display name — catalog membership is managed through Add catalog songs and Remove catalog songs.
 
 ## PATCH /api/catalogs/{catalogId}
 
@@ -16881,7 +16881,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/songs/catalog-delete
 
-Delete a catalog. Removes the catalog, its song membership (catalog_songs), its ownership links (account_catalogs) and its stored valuation history (catalog_valuations).
+Delete a catalog. Removes the catalog, its song membership (catalog_songs), its ownership links (account_catalogs) and its stored valuation history…
 
 ## DELETE /api/catalogs/{catalogId}
 
@@ -17062,7 +17062,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/songs/valuation-run
 
-Run valuation
+Generate a catalog from a Spotify artist in one call. Resolves the artist's releases, captures current Spotify play counts (spending the account's credits)…
 
 ## POST /api/valuation
 
@@ -17325,7 +17325,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/songs/runs
 
-Get runs
+Get background runs, newest first. A run is the generic status resource for long-running work. kind selects the run type (valuation and music today); future…
 
 ## GET /api/runs
 
@@ -17603,7 +17603,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/songs/catalog-measurements
 
-Get the latest play counts and a derived valuation band for a catalog. Measurements are captured by [Create measurement job](https://docs.recoupable.dev/api-reference/research/measurement-jobs) runs; the band is computed at read time from the latest capture per song.
+Get the latest play counts and a derived valuation band for a catalog. Measurements are captured by Create measurement job runs; the band is computed at read…
 
 ## GET /api/catalogs/{catalogId}/measurements
 
@@ -17899,7 +17899,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/songs/catalog-playcount-history
 
-Read catalog playcount history and period comparisons
+Read-only, store-backed public Spotify observations for current catalog membership, including unmeasured recordings.
 
 ## GET /api/catalogs/{catalogId}/playcount-history
 
@@ -18316,7 +18316,7 @@ valuation solely to try to recover an unconfirmed save.
 
 Source: https://docs.recoupable.dev/api-reference/songs/catalog-songs
 
-Retrieve songs in an accessible catalog with pagination. When a nonempty artistName is supplied, only songs with a matching artist name contribute to the results and total count. Without that filter, songs without a linked artist remain eligible. A successful query with no matching songs returns HTTP 200 with songs: [] and pagination.total_count: 0.
+Retrieve songs in an accessible catalog with pagination. When a nonempty artistName is supplied, only songs with a matching artist name contribute to the…
 
 > **Note**
 > This endpoint supports pagination. The Catalog Songs API also supports POST for adding songs and DELETE for removing songs. See the [Add Catalog Songs](https://docs.recoupable.dev/api-reference/songs/catalog-songs-add) and [Remove Catalog Songs](https://docs.recoupable.dev/api-reference/songs/catalog-songs-delete) endpoints.
@@ -18641,7 +18641,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/songs/catalog-songs-add
 
-Batch add songs to a catalog by ISRC. For each song, the API attempts to look up metadata via internal search. If no data is found, optional fallback fields (name, album, notes, artists) are used.
+Batch add songs to a catalog by ISRC. For each song, the API attempts to look up metadata via internal search.
 
 > **Note**
 > For each song, the API attempts to look up metadata via internal search. If no data is found, optional fallback fields (name, album, notes, artists) are used.
@@ -19232,7 +19232,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/songs/catalog-streams
 
-Read daily catalog streams
+Saved Luminate worldwide aggregate calendar-day streams across reporting DSPs, not Spotify-only or royalty statements.
 
 ## Date range and coverage
 
@@ -19701,7 +19701,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/songs/catalog-stream-tracking
 
-Inspect daily catalog tracking
+Read enabled state and latest run coverage without starting provider work. Standard MCP manage_catalog_stream_tracking with action=status.
 
 ## GET /api/catalogs/{catalogId}/stream-tracking
 
@@ -20004,7 +20004,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/songs/update-catalog-stream-tracking
 
-Control daily catalog tracking
+Enable starts initial 62-day backfill and daily refresh at 09:00 UTC. Source window ends two UTC dates before the run date to allow reporting lag; source…
 
 ## POST /api/catalogs/{catalogId}/stream-tracking
 
@@ -20337,7 +20337,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/context/operate
 
-Ingest, read, or compile context briefs
+Save and reuse evidence in an authorized Recoup workspace. Preview: this reference is verified against API source, not a completed hosted acceptance test.
 
 ## POST /api/context
 
@@ -30327,7 +30327,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/context/guest-start
 
-Start guest context extraction
+Feature-flagged metadata pilot. Saves a Spotify track URL in a temporary workspace before signup. Uses an HttpOnly seven-day cookie; only its hash is stored.
 
 ## POST /api/context/guest
 
@@ -30432,7 +30432,7 @@ This operation's specification permits a request without authentication.
 
 Source: https://docs.recoupable.dev/api-reference/context/guest-read
 
-Read guest context
+Returns metadata and status for the current unclaimed, unexpired guest session. Guest access ends when claimed. Unclaimed work expires after seven days.
 
 ## GET /api/context/guest
 
@@ -30509,7 +30509,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/context/guest-claim
 
-Claim guest context after sign-in
+Requires the original guest cookie plus verified account authentication. Optionally claims into an authorized organization.
 
 ## POST /api/context/guest/claim
 
@@ -31193,7 +31193,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/content/create
 
-Trigger the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden via `songs` URLs or `images`, then triggers a background task that generates a short-form video. Returns `runIds` — an array of run IDs that can each be polled via [GET /api/tasks/runs](https://docs.recoupable.dev/api-reference/tasks/runs).
+Trigger the content creation pipeline for an artist. Provide artist_account_id to identify the target artist.
 
 ## POST /api/content/create
 
@@ -31528,7 +31528,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/content/generate-image
 
-Generate an image from a text prompt. Pass `image_urls` to edit those images with the prompt instead of generating a new one. Returns the image URL.
+Generate an image from a text prompt. Pass image_urls to edit those images with the prompt instead of generating a new one. Returns the image URL.
 
 ## POST /api/content/image
 
@@ -31776,7 +31776,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/content/generate-video
 
-Generate a video from a text prompt, optionally animating a still image (`image_url`) or transitioning between two images (`image_url` + `end_image_url`).
+Generate a video from a text prompt, optionally animating a still image (image_url) or transitioning between two images (image_url + end_image_url).
 
 ## POST /api/content/video
 
@@ -32205,7 +32205,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/content/transcribe-audio
 
-Transcribe audio into text with word-level timestamps. Pass one or more audio file URLs in `audio_urls`. Returns the full transcript and an array of timed segments.
+Transcribe audio into text with word-level timestamps. Pass one or more audio file URLs in audio_urls.
 
 ## POST /api/content/transcribe
 
@@ -32434,7 +32434,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/content/edit
 
-Apply ffmpeg edits to a video — trim, crop, resize, or overlay text. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array.
+Apply ffmpeg edits to a video — trim, crop, resize, or overlay text. Pass a template for a preset edit pipeline, or build your own with an operations array.
 
 ## PATCH /api/content
 
@@ -32877,7 +32877,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/content/analyze-video
 
-Analyze a video and answer questions about it. Pass a video URL and a text prompt — for example, "Describe what happens" or "Rate the visual quality 1-10." Returns the generated text.
+Analyze a video and answer questions about it. Pass a video URL and a text prompt — for example, "Describe what happens" or "Rate the visual quality 1-10."…
 
 ## POST /api/content/analyze
 
@@ -33076,7 +33076,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/content/templates
 
-List all available content creation templates. Templates are optional — every content primitive works without one. When you do use a template, it provides a complete creative recipe: image prompts, video motion config, caption style rules, and edit operations. Returns template ID and description only — enough to pick the right one.
+List all available content creation templates. Templates are optional — every content primitive works without one.
 
 ## GET /api/content/templates
 
@@ -33216,7 +33216,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/content/template-detail
 
-Get the full configuration for a specific content creation template. Returns the complete creative recipe including image prompts, video motion config, caption style rules, and edit operations.
+Get the full configuration for a specific content creation template. Returns the complete creative recipe including image prompts, video motion config…
 
 ## GET /api/content/templates/{id}
 
@@ -33539,7 +33539,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/content/validate
 
-Check whether an artist has all the required files to run the content creation pipeline. Returns a structured report of each required and recommended file with its status. Required files must be present or the pipeline will fail. Recommended files improve output quality but are not strictly necessary. Provide `artist_account_id` as a query parameter.
+Check whether an artist has all the required files to run the content creation pipeline.
 
 ## GET /api/content/validate
 
@@ -33809,7 +33809,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/content/estimate
 
-Estimate the cost of running the content creation pipeline. Calculates per-step and per-video costs based on current pricing. Supports comparing multiple workflow profiles (e.g., premium vs. budget) and projecting batch costs. This endpoint is informational only — it does not trigger any pipeline execution or spend credits.
+Estimate the cost of running the content creation pipeline. Calculates per-step and per-video costs based on current pricing.
 
 ## GET /api/content/estimate
 
@@ -34121,7 +34121,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/image/generation
 
-Generate an image using AI models. Generated images and related metadata use public Supabase Storage; anyone with a returned URL can read them without authentication. Existing Arweave URLs remain readable, but new image uploads do not create Arweave transactions. In Process moment creation remains best-effort.
+Generate an image using AI models. Generated images and related metadata use public Supabase Storage; anyone with a returned URL can read them without…
 
 ## GET /api/image/generate
 
@@ -34338,7 +34338,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/transcribe/audio
 
-Transcribe audio files using OpenAI Whisper. The API saves both the original audio file and the generated markdown transcript to the customer's files in Supabase Storage. The owner account is derived from your credentials; you must have access to the specified artist_account_id.
+Transcribe audio files using OpenAI Whisper. The API saves both the original audio file and the generated markdown transcript to the customer's files in…
 
 ## POST /api/transcribe
 
@@ -34589,7 +34589,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/content/lipsync
 
-Generate audio-driven video (release pending)
+Available after the coordinated API and Tasks release for mono#348. Not verified on the deployed baseline.
 
 ## POST /api/content/lipsync
 
@@ -34801,7 +34801,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/music/generate
 
-Generate music
+Start a song generation with MiniMax Music 3. Generation runs in the background and takes roughly one to two minutes, so this returns 202 immediately with a…
 
 ## POST /api/music
 
@@ -35116,7 +35116,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/music/list
 
-List music generations
+The calling account's music generations, newest first. Scope follows the standard account override: with no account_id you get your own personal and…
 
 ## GET /api/music
 
@@ -35407,7 +35407,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/music/get
 
-Get music generation
+One generation, including the seed the model used and its logs progress, both read live from the provider rather than stored.
 
 ## GET /api/music/{generationId}
 
@@ -35761,7 +35761,7 @@ performed to make these availability statements.
 
 Source: https://docs.recoupable.dev/api-reference/posts/get
 
-Retrieve all social media posts from an artist across all platforms. This endpoint aggregates posts from all connected social media profiles for the specified artist, newest first. Engagement counts (`views`, `likes`, `comments`, `reposts`) are the values captured by the most recent scrape of that profile; they are null on platforms that do not report them and on posts stored before engagement capture. Supports pagination for large post collections.
+Retrieve all social media posts from an artist across all platforms. This endpoint aggregates posts from all connected social media profiles for the specified…
 
 ## GET /api/artists/{id}/posts
 
@@ -36034,7 +36034,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/comments/get
 
-Read saved comments on an authorized creator’s linked posts
+Read existing stored comments on posts linked to a creator the caller can access. Authenticate with exactly one x-api-key or Authorization: Bearer credential.
 
 ## GET /api/comments
 
@@ -36481,7 +36481,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/social/scrape
 
-Trigger a scrape of one social profile. Use [Get Artist Socials](https://docs.recoupable.dev/api-reference/artists/socials) first to get the social `id`. The response contains scraper run metadata; poll it with the [Scraper Results API](https://docs.recoupable.dev/api-reference/apify/scraper).
+Trigger a scrape of one social profile. Use Get Artist Socials first to get the social id.
 
 ## POST /api/socials/{id}/scrape
 
@@ -36758,7 +36758,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/artist/socials-scrape
 
-Trigger scrape jobs for all social profiles linked to an artist. Returns a runId per social profile that you can poll for status and results via the [Scraper Results API](https://docs.recoupable.dev/api-reference/apify/scraper).
+Trigger scrape jobs for all social profiles linked to an artist. Returns a runId per social profile that you can poll for status and results via the Scraper…
 
 ## POST /api/artist/socials/scrape
 
@@ -38660,7 +38660,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/apple/songs
 
-Look up recordings in the Apple Music catalog by ISRC. Accepts up to 25 comma-separated ISRCs per request and returns one row per **requested** ISRC, so a recording that Apple does not carry comes back explicitly as `found: false` rather than being omitted. Complements `GET /api/spotify/search`, which reaches ISRCs only through a fuzzy `isrc:` search query; Apple matches the identifier exactly and additionally returns release-level rights metadata (`upc`, `record_label`, `copyright`) that Spotify does not expose.
+Look up recordings in the Apple Music catalog by ISRC. Accepts up to 25 comma-separated ISRCs per request and returns one row per requested ISRC, so a…
 
 ## GET /api/apple/songs
 
@@ -39030,7 +39030,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/apify/scraper
 
-Check the status and retrieve results from Apify scraper runs. This endpoint uses the Apify API Client to fetch the current status of a scraper run and its results if available. Use the runId returned from endpoints like Instagram Comments, Instagram Profiles, Social Scrape, or Artist Socials Scrape to poll for results.
+Check the status and retrieve results from Apify scraper runs. This endpoint uses the Apify API Client to fetch the current status of a scraper run and its…
 
 ## GET /api/apify/runs/{runId}
 
@@ -39250,7 +39250,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/agents/signup
 
-Register an agent. For new agent+ emails, returns an API key immediately. For all other cases, sends a verification code to the email — call [POST /api/agents/verify](https://docs.recoupable.dev/api-reference/agents/verify) with the code to get your API key.
+Register an agent. For new agent+ emails, returns an API key immediately. For all other cases, sends a verification code to the email — call POST…
 
 ## POST /api/agents/signup
 
@@ -39847,7 +39847,7 @@ is disconnected or present a plan as completed media.
 
 Source: https://docs.recoupable.dev/api-reference/templates/list
 
-List templates
+Retrieve every template visible to the authenticated account. The response combines templates the account owns, public templates created by other accounts…
 
 ## GET /api/agents/templates
 
@@ -40125,7 +40125,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/templates/create
 
-Create a template
+Create a new template owned by the authenticated account. When is_private is true, the optional share_emails array grants explicit read access to the listed…
 
 ## POST /api/agents/templates
 
@@ -40469,7 +40469,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/templates/update
 
-Update a template
+Update fields on an existing template owned by the authenticated account. All body fields are optional and only the supplied fields are modified.
 
 ## PATCH /api/agents/templates/{id}
 
@@ -40839,7 +40839,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/templates/delete
 
-Delete a template
+Permanently delete an template. Only the owner of the template may perform this action.
 
 ## DELETE /api/agents/templates/{id}
 
@@ -41024,7 +41024,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/templates/favorite
 
-Toggle favorite on a template
+Mark or unmark an template as a favorite for the authenticated account. The endpoint is idempotent - calling it repeatedly with the same is_favourite value…
 
 ## PUT /api/agents/templates/{id}/favorite
 
@@ -41242,7 +41242,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/tasks/get
 
-Retrieve scheduled tasks. Each task includes `recent_runs` (last 5 runs), `upcoming` (next scheduled run times) sourced directly from the Trigger.dev API, and `owner_email` when an account email exists for the task owner. Supports filtering by id, account_id, or artist_account_id.
+Retrieve scheduled tasks. Each task includes recent_runs (last 5 runs), upcoming (next scheduled run times) sourced directly from the Trigger.dev API, and…
 
 ## GET /api/tasks
 
@@ -42029,7 +42029,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/tasks/create
 
-Create a new scheduled task that runs a prompt against an artist on a recurring cron schedule. The response matches the [GET endpoint](https://docs.recoupable.dev/api-reference/tasks/get) (a `TasksResponse` with the created task in the `tasks` array).
+Create a new scheduled task that runs a prompt against an artist on a recurring cron schedule.
 
 ## POST /api/tasks
 
@@ -42911,7 +42911,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/tasks/update
 
-Update scheduled task
+Update an existing scheduled task. Only the id field is required; any additional fields you include will be updated on the task.
 
 ## PATCH /api/tasks
 
@@ -43862,7 +43862,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/tasks/delete
 
-Delete scheduled task
+Delete an existing scheduled task by id. Returns only the delete operation status.
 
 ## DELETE /api/tasks
 
@@ -44198,7 +44198,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/tasks/runs
 
-Get task runs
+Returns task runs for the authenticated account. When runId is provided, the response contains that single run (runs length 1) or 404 if not found.
 
 ## GET /api/tasks/runs
 
@@ -44733,7 +44733,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/content-agent/webhook
 
-Webhook endpoint for the Recoup Content Agent Slack bot. Receives @mention events from Slack and triggers content generation for the mentioned artist. The bot parses the mention text for `<artist_account_id> [template] [batch=N] [lipsync]`, validates the artist, calls POST /api/content/create, and starts a background polling task that reports results back to the Slack thread.
+Webhook endpoint for the Recoup Content Agent Slack bot. Receives @mention events from Slack and triggers content generation for the mentioned artist.
 
 ## POST /api/content-agent/{platform}
 
@@ -44881,7 +44881,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/content-agent/callback
 
-Internal worker callback for a configured content agent. Requires the shared callback secret in x-callback-secret. Public content creation uses POST /api/content/create.
+Internal worker callback for a configured content agent. Requires the shared callback secret in x-callback-secret.
 
 ## POST /api/content-agent/callback
 
@@ -45342,7 +45342,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/sandboxes/list
 
-List all sandboxes associated with the authenticated account and their current statuses. Returns sandbox details including lifecycle state, timeout remaining, and creation timestamp. Authentication is handled via the x-api-key header or Authorization Bearer token.
+List all sandboxes associated with the authenticated account and their current statuses.
 
 ## GET /api/sandboxes
 
@@ -45637,7 +45637,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/sandboxes/create
 
-Create a new ephemeral sandbox environment. Optionally executes a command or an OpenCode prompt if provided. Sandboxes are isolated Linux microVMs that can be used to evaluate account-generated code, run AI agent output safely, or execute reproducible tasks. The sandbox will automatically stop after the timeout period. If no command or prompt is provided, the sandbox is created without triggering any background task. Use the prompt parameter as a shortcut to run `opencode run "<prompt>"` in the sandbox. Pass account_id to create a sandbox for a specific account the API key has access to. Authentication is handled via the x-api-key header or Authorization Bearer token.
+Create a new ephemeral sandbox environment. Optionally executes a command or an OpenCode prompt if provided.
 
 ## POST /api/sandboxes
 
@@ -45926,7 +45926,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/sandboxes/snapshot
 
-Set a custom snapshot ID for an account. By default, updates the key owner's account. Pass account_id to target a specific account the API key has access to. This allows accounts to use a specific sandbox snapshot when creating new sandboxes, enabling reproducible environments with pre-configured tools, dependencies, and files.
+Set a custom snapshot ID for an account. By default, updates the key owner's account. Pass account_id to target a specific account the API key has access to.
 
 ## PATCH /api/sandboxes
 
@@ -46106,7 +46106,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/sandboxes/delete
 
-Delete a sandbox environment for the authenticated account. This permanently deletes the associated GitHub repository and removes the account's snapshot record from the database. By default, deletes the sandbox for the key owner's account. Pass account_id to target a specific account the API key has access to. Authentication is handled via the x-api-key header or Authorization Bearer token.
+Delete a sandbox environment for the authenticated account. This permanently deletes the associated GitHub repository and removes the account's snapshot…
 
 ## DELETE /api/sandboxes
 
@@ -46299,7 +46299,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/sandboxes/setup
 
-Triggers the setup-sandbox background task to create a personal sandbox, provision a GitHub repo, take a snapshot, and shut down. By default, sets up the sandbox for the key owner's account. Pass account_id to target a specific account the API key has access to. Authentication is handled via the x-api-key header or Authorization Bearer token.
+Triggers the setup-sandbox background task to create a personal sandbox, provision a GitHub repo, take a snapshot, and shut down.
 
 ## POST /api/sandboxes/setup
 
@@ -46436,7 +46436,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/sandboxes/get-file
 
-Read a file from the authenticated account's Git-backed repository, or an explicitly authorized target account's repository, including resolved submodule paths, on `main`. The repository comes from the [account's snapshot](https://docs.recoupable.dev/api-reference/sandboxes/list). Authenticate with `x-api-key` or an Authorization Bearer token.
+Read a file from the authenticated account's Git-backed repository, or an explicitly authorized target account's repository, including resolved submodule…
 
 ## GET /api/sandboxes/file
 
@@ -46668,7 +46668,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/sandboxes/stage-file
 
-Issue a presigned upload token so the browser can upload a file directly to Vercel Blob, then call `POST /api/sandboxes/files` with the resulting blob URL to commit it to the sandbox repo. Use `upload()` from `@vercel/blob/client` rather than calling this route by hand. Max file size 100MB.
+Issue a presigned upload token so the browser can upload a file directly to Vercel Blob, then call POST /api/sandboxes/files with the resulting blob URL to…
 
 ## POST /api/sandboxes/staged-file
 
@@ -46776,7 +46776,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/sandboxes/upload-files
 
-Upload one or more files to the authenticated account's Git-backed repository. Each file URL is committed separately; paths inside a submodule resolve to that repository. Authenticate with `x-api-key` or an Authorization Bearer token.
+Upload one or more files to the authenticated account's Git-backed repository. Each file URL is committed separately; paths inside a submodule resolve to that…
 
 ## POST /api/sandboxes/files
 
@@ -47139,7 +47139,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/sessions/create
 
-Create session
+Creates a new agent session and an initial empty chat in a single transaction. The session is created in the provisioning lifecycle state — a separate…
 
 ## POST /api/sessions
 
@@ -47529,7 +47529,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/sessions/get
 
-Get session by id
+Returns a single agent session by its id.
 
 ## GET /api/sessions/{sessionId}
 
@@ -48227,7 +48227,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/sessions/list-chats
 
-List session chats
+Lists every chat in the given session as a ChatSummary (chat row plus per-account hasUnread and isStreaming flags), along with the caller's default model id.
 
 ## GET /api/sessions/{sessionId}/chats
 
@@ -48453,7 +48453,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/sessions/create-chat
 
-Create session chat
+Creates a new chat inside the given session. Callers may pass { id } to claim a deterministic chat id — useful for optimistic UI flows where the client…
 
 ## POST /api/sessions/{sessionId}/chats
 
@@ -48734,7 +48734,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/sessions/get-chat
 
-Get session chat
+Returns the chat's persisted UI message stream plus its current streaming state so callers can hydrate or refresh a chat view. messages is an array of parts…
 
 ## GET /api/sessions/{sessionId}/chats/{chatId}
 
@@ -48997,7 +48997,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/sessions/patch-chat
 
-Update session chat
+Applies a partial update to the chat. Body must include at least one of title or modelId and any provided value must be a non-empty string (whitespace is…
 
 ## PATCH /api/sessions/{sessionId}/chats/{chatId}
 
@@ -49269,7 +49269,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/sessions/delete-chat
 
-Delete session chat
+Removes the chat (cascade clears chat_messages and chat_reads). Refuses with 400 if this is the only chat in the session — sessions must always retain at…
 
 ## DELETE /api/sessions/{sessionId}/chats/{chatId}
 
@@ -49631,7 +49631,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/sandbox/create
 
-Create or restore session sandbox
+Provisions a Sandbox for the given session. If a per-org base snapshot exists, the sandbox boots from it (skipping the full repo clone, ~75s saved).
 
 ## POST /api/sandbox
 
@@ -49855,7 +49855,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/sandbox/status
 
-Get session sandbox status
+Returns the current lifecycle and runtime state for the sandbox bound to a session.
 
 ## GET /api/sandbox/status
 
@@ -50088,7 +50088,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/sandbox/reconnect
 
-Reconnect to session sandbox
+Live runtime probe for the sandbox bound to a session. Unlike GET /api/sandbox/status (DB-only read), this endpoint actually runs a quick command inside the…
 
 ## GET /api/sandbox/reconnect
 
@@ -50322,7 +50322,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/accounts/id
 
-Retrieve the ID of the authenticated account associated with the provided credentials. This is useful when you have an API key or access token but do not yet know the corresponding accountId.
+Retrieve the ID of the authenticated account associated with the provided credentials.
 
 ## GET /api/accounts/id
 
@@ -50639,7 +50639,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/accounts/create
 
-Create a new account or retrieve an existing account by email or wallet address. If an account with the provided email or wallet already exists, returns that account. Otherwise creates a new account and initializes credits.
+Create a new account or retrieve an existing account by email or wallet address.
 
 ## POST /api/accounts
 
@@ -50846,7 +50846,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/accounts/update
 
-Update an existing account's profile information including name, organization, image, instruction, job title, role type, company name, and knowledges. Requires authentication via x-api-key or Authorization Bearer token. The authenticated account may update itself or a permitted account_id override.
+Update an existing account's profile information including name, organization, image, instruction, job title, role type, company name, and knowledges.
 
 ## PATCH /api/accounts
 
@@ -51244,7 +51244,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/subscriptions/sessions-create
 
-Create a checkout session to start a subscription for the authenticated account. Returns a hosted checkout URL that the client should redirect to. `plan` picks the price: `pro` (default) is pre-configured with a 30-day trial period; `starter` is charged at checkout with no trial.
+Create a checkout session to start a subscription for the authenticated account.
 
 ## POST /api/subscriptions/sessions
 
@@ -51412,7 +51412,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/subscriptions/claim-create
 
-Attach a subscription bought through [Create Subscription Session](https://docs.recoupable.dev/api-reference/subscriptions/sessions-create) (anonymous path) to the authenticated account. Needed only when the signed-in email differs from the email typed into Stripe Checkout; when they match, the webhook already linked the subscription and this call is a no-op that returns 200.
+Attach a subscription bought through Create Subscription Session (anonymous path) to the authenticated account.
 
 ## POST /api/subscriptions/claim
 
@@ -51626,7 +51626,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/accounts/subscription-get
 
-Retrieve the subscription that confers an account's plan, directly or via an organization: `isPro`, `status`, `plan`, `source`, plus the billing fields `name`, `amountCents`, `currency`, `interval`, `collectionMethod` and `currentPeriodEnd`. Everything but `isPro` and `status` is null when `status` is `none`. `id` may be the authenticated account or an organization the caller belongs to.
+Retrieve the subscription that confers an account's plan, directly or via an organization: isPro, status, plan, source, plus the billing fields name…
 
 ## GET /api/accounts/{id}/subscription
 
@@ -51964,7 +51964,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/accounts/portal-create
 
-Create a Stripe Customer Portal session for an account. Returns a hosted URL where the customer can update the card on file, view invoices, or cancel a Starter or Pro subscription; the client should redirect the user to that URL. The portal opens on the Stripe customer that owns the account's active subscription, so accounts without an active subscription get a 400 even when a tagged customer with a card exists. `id` may be the authenticated account or an organization the caller belongs to. Enterprise (invoiced) plans are managed with your Recoup contact and the app does not offer this portal for them, but the endpoint works for any account with an active subscription.
+Create a Stripe Customer Portal session for an account. Returns a hosted URL where the customer can update the card on file, view invoices, or cancel a…
 
 ## POST /api/accounts/{id}/portal
 
@@ -52153,7 +52153,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/accounts/payment-method-get
 
-Retrieve the default payment method on file for an account. An account may be tagged on more than one Stripe customer (for example an organization whose card was saved on one customer and whose invoiced plan lives on another); the card is read from the tagged customer that holds a default payment method. Returns `card: null` when the selected customer has no supported default card, including when no tagged customer exists — the top-up dialog uses this to decide whether to show a pre-charge confirmation (card present) or route to a checkout session to collect one (`card: null`). Cards are returned even when expired; callers should compare `exp_month` / `exp_year` against the current date and warn the customer, since an off-session charge against an expired card will decline. Removing the selected card does not remove other saved cards: a later read can select a different remaining card. Auto top-up stays off after successful removal until explicitly re-enabled.
+Retrieve the default payment method on file for an account. An account may be tagged on more than one Stripe customer (for example an organization whose card…
 
 ## GET /api/accounts/{id}/payment-method
 
@@ -52349,7 +52349,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/accounts/payment-method-create
 
-Create a $0 card-on-file checkout session for an account. Stripe `setup` mode saves a payment method without charging anything or starting a subscription; the saved card becomes the account's default and is what credit purchases and auto top-up charge. The card is saved on the account's Stripe customer that already holds a default card, or the newest tagged customer; a customer is created (and tagged with the account id) if none exists yet. Returns a hosted checkout URL that the client should redirect to. `id` may be the authenticated account or an organization the caller belongs to.
+Create a $0 card-on-file checkout session for an account. Stripe setup mode saves a payment method without charging anything or starting a subscription; the…
 
 ## POST /api/accounts/{id}/payment-method
 
@@ -52550,7 +52550,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/accounts/payment-method-delete
 
-Turn off automatic credit top-ups for the authorized account, then detach its selected default card. This removes one card selected from the account's tagged Stripe customers; it does not delete every saved card. A successful request returns 204 with no response body. `id` may be the authenticated account or an organization the caller belongs to.
+Turn off automatic credit top-ups for the authorized account, then detach its selected default card.
 
 ## DELETE /api/accounts/{id}/payment-method
 
@@ -52712,7 +52712,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/accounts/payments-get
 
-List the invoices paid or owed by an account, newest first: subscription renewals, credit purchases, and invoiced enterprise plans alike. Invoices are merged across every Stripe customer tagged with the account id, so a card saved on one customer and an invoiced plan on another appear in one list. Non-draft rows carry the hosted invoice URL for the receipt; `url` is null for drafts. Returns an empty list (not 404) when the account has no tagged Stripe customer or no invoices yet. `startingAfter` is an invoice id from a previous page; the next page holds invoices created before it. `id` may be the authenticated account or an organization the caller belongs to.
+List the invoices paid or owed by an account, newest first: subscription renewals, credit purchases, and invoiced enterprise plans alike.
 
 ## GET /api/accounts/{id}/payments
 
@@ -52964,7 +52964,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/accounts/auto-top-up-get
 
-Read the auto top-up settings for an account. Auto top-up is opt-in: it is off for every account until the account turns it on and chooses both the amount to buy and the balance that triggers it. When it is on, the api charges the default card on file for `amountCents` the first time a credit deduction leaves the balance below `thresholdCents`, then grants the credits and emails a receipt. `id` may be the authenticated account or an organization the caller belongs to.
+Read the auto top-up settings for an account. Auto top-up is opt-in: it is off for every account until the account turns it on and chooses both the amount to…
 
 ## GET /api/accounts/{id}/auto-top-up
 
@@ -53142,7 +53142,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/accounts/auto-top-up-update
 
-Set the auto top-up settings for an account. All three fields are required on every call; there is no partial update. Turning it on requires a card on file (`GET /api/accounts/{id}/payment-method` returns a card), an amount between 5.00 and 1,000.00 USD, and a threshold below the amount. Turning it off keeps the last amount and threshold so the account can turn it back on without retyping them. Guardrails that apply once it is on: at most one top-up per account per 10 minutes; a card decline turns `enabled` back to `false`, records `lastError`, and emails the account instead of retrying; a successful selected-card removal turns it off before detachment, even when other saved cards remain. Removal does not cancel a charge already in progress. `id` may be the authenticated account or an organization the caller belongs to.
+Set the auto top-up settings for an account. All three fields are required on every call; there is no partial update.
 
 ## PUT /api/accounts/{id}/auto-top-up
 
@@ -53574,7 +53574,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/accounts/credits-get
 
-Retrieve the current credit balance for an account. Returns the remaining credits along with the plan-derived monthly total and used count, plus a flag indicating whether the account is on a pro plan (directly or via an organization). Credits refill monthly; the `timestamp` field reflects the last refill or balance update.
+Retrieve the current credit balance for an account. Returns the remaining credits along with the plan-derived monthly total and used count, plus a flag…
 
 ## GET /api/accounts/{id}/credits
 
@@ -53877,7 +53877,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/accounts/usage-get
 
-List the charges that consumed an account's credits: one line item per deduction from `usage_events`, newest first, over a period. Each item carries the amount as the raw ledger integer (`credits_deducted`, micro-dollars: 1,000,000 = $1.00) and the same amount formatted as a dollar string (`usd`), and the response carries the total for the whole period, not just the page. Access is the same as [`GET /api/accounts/{id}/credits`](https://docs.recoupable.dev/api-reference/accounts/credits-get): the authenticated account itself, or another account reachable through organization membership.
+List the charges that consumed an account's credits: one line item per deduction from usage_events, newest first, over a period.
 
 ## GET /api/accounts/{id}/usage
 
@@ -54473,7 +54473,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/pulses/list
 
-Retrieve pulse information for the authenticated account. If the account has access to organizations, pass account_id to filter to a specific account within those organizations.
+Retrieve pulse information for the authenticated account. If the account has access to organizations, pass account_id to filter to a specific account within…
 
 ## GET /api/pulses
 
@@ -54653,7 +54653,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/organizations/list
 
-Retrieve all organizations that the authenticated account belongs to. Pass account_id to retrieve organizations for a specific account the API key has access to.
+Retrieve all organizations that the authenticated account belongs to. Pass account_id to retrieve organizations for a specific account the API key has access…
 
 ## GET /api/organizations
 
@@ -55037,7 +55037,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/organizations/add-artist
 
-Add an artist to an organization. This allows organization members to access and manage the artist. This endpoint is idempotent - calling it multiple times with the same artistId and organizationId will not create duplicate records.
+Add an artist to an organization. This allows organization members to access and manage the artist.
 
 ## POST /api/organizations/artists
 
@@ -55781,7 +55781,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/organizations/add-domain
 
-Map an email domain to an organization for automatic membership. After mapping, any account that signs up (or signs in) with an email at this domain is automatically added to the organization. A domain can belong to at most one organization.  This endpoint is idempotent - re-adding the same domain to the same organization returns the existing mapping.
+Map an email domain to an organization for automatic membership. After mapping, any account that signs up (or signs in) with an email at this domain is…
 
 ## POST /api/organizations/domains
 
@@ -55986,7 +55986,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/organizations/remove-domain
 
-Remove an email domain mapping from an organization. New signups at this domain will no longer auto-join the organization; existing members are not affected. This endpoint is idempotent.
+Remove an email domain mapping from an organization. New signups at this domain will no longer auto-join the organization; existing members are not affected.
 
 ## DELETE /api/organizations/domains
 
@@ -56154,7 +56154,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/organizations/professionals
 
-List professional roster
+List organization-private songwriter/producer records. Names are discovery candidates, never identity proof.
 
 ## GET /api/organizations/professionals
 
@@ -56392,7 +56392,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/organizations/professionals-confirm
 
-Confirm professional roster addition
+Requires explicit operator identity confirmation and organization roster intent.
 
 ## POST /api/organizations/professionals
 
@@ -56745,7 +56745,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/admins/check
 
-Check if the authenticated account is a Recoup admin. An account is considered an admin if it is a member of the Recoup organization. No input parameters required — authentication is performed via the x-api-key or Authorization header.
+Check if the authenticated account is a Recoup admin. An account is considered an admin if it is a member of the Recoup organization.
 
 ## GET /api/admins
 
@@ -56878,7 +56878,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/admins/sandboxes
 
-Returns a list of all accounts and their sandbox usage statistics. Each item includes the account email, total number of sandboxes created, and the timestamp of the most recently created sandbox. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.
+Returns a list of all accounts and their sandbox usage statistics. Each item includes the account email, total number of sandboxes created, and the timestamp…
 
 ## GET /api/admins/sandboxes
 
@@ -57070,7 +57070,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/admins/sandboxes-orgs
 
-Returns commit statistics for each repository in the recoupable GitHub organization. Each item includes the repo name, URL, total commit count, latest 5 commit messages, earliest and latest commit timestamps, and the list of account repo URLs that include this org repo as a submodule. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.
+Returns commit statistics for each repository in the recoupable GitHub organization.
 
 ## GET /api/admins/sandboxes/orgs
 
@@ -57304,7 +57304,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/admins/emails
 
-Returns Resend emails including HTML content. Provide either account_id (returns all emails for an account) or email_id (returns a single email by Resend ID). Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token. Email response shape matches the [Resend Retrieve Email API](https://resend.com/docs/api-reference/emails/retrieve-email).
+Returns Resend emails including HTML content. Provide either account_id (returns all emails for an account) or email_id (returns a single email by Resend ID).
 
 ## GET /api/admins/emails
 
@@ -57623,7 +57623,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/admins/privy
 
-Returns Privy login statistics for a given time period. Results include counts for new accounts (created_at), active accounts (latest_verified_at), total Privy accounts across all time, and the full, unmodified Privy account objects. See [Privy User object documentation](https://docs.privy.io/api-reference/users/get-all) for the complete type definition. Defaults to period=all (no date filter). Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.
+Returns Privy login statistics for a given time period. Results include counts for new accounts (created_at), active accounts (latest_verified_at), total…
 
 ## GET /api/admins/privy
 
@@ -57811,7 +57811,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/admins/coding-agent-slack-tags
 
-Returns a list of Slack mentions of the Recoup Coding Agent bot, pulled directly from the Slack API as the source of truth. Each entry includes the tagger's information, the prompt they sent, the timestamp, the channel, and any GitHub pull request URLs opened in response. Also returns aggregate pull request statistics. Supports optional time-period filtering. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token. Optional tag filters by the exact, case-sensitive Slack author ID after trimming whitespace. Filtering happens after the existing period collection and before all totals are calculated; omission preserves the unfiltered report, and an unknown ID returns empty tags with zero totals. Empty or whitespace-only tag values return 400 after admin authentication. This is display filtering, not authorization or a reduction in Slack collection work. Collection retains its existing channel access, retention, history/thread pagination and partial-failure limits. No automatic caller, UI, polling, scheduled action or Slack send is added.
+Returns a list of Slack mentions of the Recoup Coding Agent bot, pulled directly from the Slack API as the source of truth.
 
 ## GET /api/admins/coding/slack
 
@@ -58112,7 +58112,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/admins/coding-agent-slack-authors
 
-Returns distinct authors of collected Coding Agent mentions for an admin author selector. Requires the authenticated account to be a Recoup admin, using exactly one of x-api-key or Authorization Bearer. No query parameters are defined. Each authorized request runs the existing all-period Slack collector once, then deduplicates by Slack author ID, retains the first collected profile and sorts by display name using localeCompare; identical names do not merge different IDs. The result is authors in that collected data, not a complete all-time Slack directory. Existing channel access, retention, paginated history, first-page thread replies and partial-failure limits remain; partial collection can still produce an incomplete successful result. Thrown collection failures return 500. This call is not free cached metadata: a future caller must account for scan latency and quotas. The release adds no automatic caller, UI, polling, scheduled action, new Slack scope or Slack send. Production admin access, history coverage, latency and quotas were not verified by the source contract tests.
+Returns distinct authors of collected Coding Agent mentions for an admin author selector.
 
 ## GET /api/admins/coding-agent/slack-tags
 
@@ -58354,7 +58354,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/admins/coding-pr
 
-Returns the status (open, closed, or merged) for each provided GitHub pull request URL. Accepts one or more `pull_requests` query parameters containing GitHub PR URLs. Uses the GitHub REST API to check each pull request's state. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.
+Returns the status (open, closed, or merged) for each provided GitHub pull request URL.
 
 ## GET /api/admins/coding/pr
 
@@ -58557,7 +58557,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/admins/content-slack-tags
 
-Returns a list of Slack mentions of the Recoup Content Agent bot, pulled directly from the Slack API as the source of truth. Each entry includes the tagger's information, the prompt they sent, the timestamp, the channel, and any video link responses. Also returns aggregate video statistics for measuring tag-to-video conversion. Supports optional time-period filtering. Requires the authenticated account to be a Recoup admin. Authentication via x-api-key or Authorization Bearer token.
+Returns a list of Slack mentions of the Recoup Content Agent bot, pulled directly from the Slack API as the source of truth.
 
 ## GET /api/admins/content/slack
 
@@ -58835,7 +58835,7 @@ measurements.
 
 Source: https://docs.recoupable.dev/api-reference/admins/agent-key-metadata
 
-List agent-prefixed API-key metadata (Admin)
+Read API-key record metadata associated with current account emails matching the case-insensitive agent+ prefix.
 
 ## GET /api/admins/agent-signups
 
@@ -59113,7 +59113,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/admins/artists-pro
 
-Retrieve the deduplicated list of artist IDs owned by pro accounts. An account is "pro" when its email belongs to an enterprise domain or it has an active Stripe subscription. Admin-scoped: requires an admin-flagged API key because the response identifies paying customer accounts.
+Retrieve the deduplicated list of artist IDs owned by pro accounts. An account is "pro" when its email belongs to an enterprise domain or it has an active…
 
 ## GET /api/admins/artists/pro
 
@@ -59233,7 +59233,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/admins/credits-rollup
 
-Returns the per-account rollup of credit usage over the selected period, sorted by total credits deducted descending. Each row carries the account identity (UUID + display name + primary email) and the aggregated spend so the admin dashboard can render a top-spenders table without joining client-side. Pair with [`GET /api/admins/credits/events?account_id=…&period=…`](https://docs.recoupable.dev/api-reference/admins/credits-events) to drill into the individual `usage_events` rows for a single account. Requires the authenticated account to be a Recoup admin.
+Returns the per-account rollup of credit usage over the selected period, sorted by total credits deducted descending.
 
 ## GET /api/admins/credits/rollup
 
@@ -59490,7 +59490,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/admins/credits-events
 
-Returns the raw `usage_events` rows for a single account over the selected period, sorted by `created_at` descending. Powers the drilldown view that expands when a row in the [`/api/admins/credits/rollup`](https://docs.recoupable.dev/api-reference/admins/credits-rollup) table is opened. Each event represents one debit (main agent turn, subagent step, chat completion, or research call), with token counts and `credits_deducted` matching the wallet drop on `credits_usage` for that account.
+Returns the raw usage_events rows for a single account over the selected period, sorted by created_at descending.
 
 ## GET /api/admins/credits/events
 
@@ -60154,7 +60154,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/emails/create
 
-Send an email to one or more recipients. Emails are sent from `Agent by Recoup <agent@recoupable.dev>`.
+Send an email to one or more recipients. Emails are sent from Agent by Recoup .
 
 ## POST /api/emails
 
@@ -60357,7 +60357,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 
 Source: https://docs.recoupable.dev/api-reference/projects/get
 
-Get project
+A client project and every task on it, oldest first, with the project's collaborators. This is what the project page renders.
 
 ## GET /api/projects/{projectId}
 
@@ -60692,7 +60692,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/projects/task-get
 
-Get project task
+One task with its comment feed and the project's collaborators. This is what the task detail page renders.
 
 ## GET /api/projects/{projectId}/tasks/{taskId}
 
@@ -61052,7 +61052,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/projects/task-create
 
-Create project task
+Add a task to a project. New tasks are always incomplete; set completed with the update endpoint instead.
 
 ## POST /api/projects/{projectId}/tasks
 
@@ -61383,7 +61383,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/projects/task-update
 
-Update project task
+Update a task. Send only the fields that change.
 
 ## PATCH /api/projects/{projectId}/tasks/{taskId}
 
@@ -61735,7 +61735,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/projects/task-delete
 
-Delete project task
+Permanently delete a task and every comment on it.
 
 ## DELETE /api/projects/{projectId}/tasks/{taskId}
 
@@ -61966,7 +61966,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/projects/comments-get
 
-List task comments
+Every comment on a task, oldest first.
 
 ## GET /api/projects/{projectId}/tasks/{taskId}/comments
 
@@ -62234,7 +62234,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/projects/comments-create
 
-Add task comment
+Post a comment on a task, attributed to the authenticated account. Comments are append-only plain text: there is no edit and no delete.
 
 ## POST /api/projects/{projectId}/tasks/{taskId}/comments
 
@@ -62598,7 +62598,7 @@ Endpoint request and response shapes for the re-keyed model are deliberately not
 
 Source: https://docs.recoupable.dev/api-reference/connectors/list
 
-List available connectors and their connection status. Returns all supported third-party integrations (e.g., Google Sheets, TikTok, YouTube, X (Twitter), LinkedIn) along with whether they are currently connected.
+List available connectors and their connection status. Returns all supported third-party integrations (e.g., Google Sheets, TikTok, YouTube, X (Twitter)…
 
 ## GET /api/connectors
 
@@ -63145,7 +63145,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/connectors/list-actions
 
-List the executable actions available across the authenticated account's connectors. Each action is a single tool that can be invoked via POST /api/connectors/actions — for example, the `googlesheets` connector exposes actions like `GOOGLESHEETS_WRITE_SPREADSHEET`. Actions whose parent connector is not yet connected are returned with `isConnected: false` and cannot be executed until the connector is authorized via POST /api/connectors.
+List the executable actions available across the authenticated account's connectors.
 
 ## GET /api/connectors/actions
 
@@ -63342,7 +63342,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/connectors/upload-file
 
-Stage an image into Connector file storage so it can be attached to a connector action that accepts a file_uploadable field. The returned descriptor is embedded in a file_uploadable array on [Execute Connector Action](https://docs.recoupable.dev/api-reference/connectors/execute-action).
+Stage an image into Connector file storage so it can be attached to a connector action that accepts a file_uploadable field.
 
 ## POST /api/connectors/files
 
@@ -63525,7 +63525,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/connectors/execute-action
 
-Execute a connector action with the given parameters. The `actionSlug` must come from a prior call to GET /api/connectors/actions, and `parameters` must match the `parameters` JSON Schema returned for that action. The action's parent connector must be currently connected (`isConnected: true` in the catalog) — otherwise this endpoint returns 409. The `result` field passes through whatever the underlying connector returns; its shape is action-specific. To attach an image to a `file_uploadable` parameter (e.g. `images`), first stage it with [Upload Connector File](https://docs.recoupable.dev/api-reference/connectors/upload-file) and pass the returned descriptor.
+Execute a connector action with the given parameters. The actionSlug must come from a prior call to GET /api/connectors/actions, and parameters must match the…
 
 ## POST /api/connectors/actions
 
@@ -63739,7 +63739,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/publishing/create
 
-Create post
+Publish a video with its copy to one connected social account, now or at a set time.
 
 ## POST /api/posts
 
@@ -64071,7 +64071,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/publishing/list
 
-List posts
+The account's posts, newest first, with each one's status and live URL.
 
 ## GET /api/posts
 
@@ -64456,7 +64456,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/publishing/get
 
-Get post
+One post, with its status, live post_url once posted, error_message if it failed, and text_verified once the live text has been re-read.
 
 ## GET /api/posts/{id}
 
@@ -64799,7 +64799,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/publishing/stats
 
-Get post stats
+The platform's own analytics for one post published with Create Post, read live through the same connection that published it.
 
 ## Data coverage
 
@@ -65195,7 +65195,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/publishing/cancel
 
-Cancel post
+Cancel a post that is still scheduled. It ends cancelled, nothing is sent to the platform and nothing is charged.
 
 ## DELETE /api/posts/{id}
 
@@ -66343,7 +66343,7 @@ Before promoting the link, test it on the phones and social browsers your fans u
 
 Source: https://docs.recoupable.dev/api-reference/players/create
 
-Create a release player
+Register one reusable listening page plus provider embeds. Returns player, listenUrl, spotifyEmbedUrl, appleEmbedUrl. MCP: create_release_player.
 
 ## POST /api/players
 
@@ -66746,7 +66746,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/players/list
 
-List release players
+List up to 100 players in the authenticated workspace. MCP: list_release_player.
 
 ## GET /api/players
 
@@ -67056,7 +67056,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/players/get
 
-Read a release player
+Read settings, revision and share/embed links. MCP: get_release_player.
 
 ## GET /api/players/{id}
 
@@ -67356,7 +67356,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/players/update
 
-Update a release player
+Edit branding, DSP destinations, embed origins, or enabled. Requires current revision; stale edits return 409. Artist/owner cannot change.
 
 ## PATCH /api/players/{id}
 
@@ -67751,7 +67751,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/players/activity
 
-Read player listening activity
+Private 30-day summary plus up to 100 events, newest first. Returns measurement=browser_reported_playback, dspStreams=null, periodDays, offset, limit and…
 
 ## GET /api/players/{id}/activity
 
@@ -68106,7 +68106,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/players/fans
 
-Read artist player fans
+Artist-level Spotify fan relationships across releases in the authorized workspace.
 
 ## GET /api/players/{id}/fans
 
@@ -68380,7 +68380,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/players/workspace-fans
 
-Read workspace player fans
+One contact per workspace and Spotify provider identity, with all artist relationships for that workspace.
 
 ## GET /api/players/fans
 
@@ -68660,7 +68660,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/complete/content/post-content-packs
 
-Release rollout pending; discover current host capabilities before execution. Prepare a resumable pack brief. No artist profile or GitHub repository required; no paid generation.
+Release rollout pending; discover current host capabilities before execution. Prepare a resumable pack brief.
 
 ## POST /api/content/packs
 
@@ -71026,7 +71026,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/complete/content/post-content-packs-id-estimate
 
-Release rollout pending; discover current host capabilities before execution. Quote complete scope at existing house image/video rates. Caption, inspection and composition are included at no additional customer charge.
+Release rollout pending; discover current host capabilities before execution. Quote complete scope at existing house image/video rates.
 
 ## POST /api/content/packs/{id}/estimate
 
@@ -71670,7 +71670,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/complete/content/post-content-packs-id-generate
 
-Release rollout pending; discover current host capabilities before execution. Approve the current quote and budget ceiling. Start or resume the same job without duplicate submission.
+Release rollout pending; discover current host capabilities before execution. Approve the current quote and budget ceiling.
 
 ## POST /api/content/packs/{id}/generate
 
@@ -72327,7 +72327,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/complete/content/post-content-packs-id-retry
 
-Release rollout pending; discover current host capabilities before execution. Retry only the selected failed asset within approved scope and ceiling; retain successful work.
+Release rollout pending; discover current host capabilities before execution. Retry only the selected failed asset within approved scope and ceiling; retain…
 
 ## POST /api/content/packs/{id}/retry
 
@@ -72990,7 +72990,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/complete/content/post-content-packs-assets
 
-Release rollout pending; discover current host capabilities before execution. Upload explicitly selected audio or reference artwork to owned private storage; return a temporary locator.
+Release rollout pending; discover current host capabilities before execution. Upload explicitly selected audio or reference artwork to owned private storage…
 
 ## POST /api/content/packs/assets
 
@@ -73281,7 +73281,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/complete/content/get-content-packs-id-export
 
-Release rollout pending; discover current host capabilities before execution. Retrieve an authenticated JSON manifest with captions, gaps and refreshed signed file URLs. Does not publish.
+Release rollout pending; discover current host capabilities before execution. Retrieve an authenticated JSON manifest with captions, gaps and refreshed signed…
 
 ## GET /api/content/packs/{id}/export
 
@@ -73465,7 +73465,7 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/complete/players/get-players-public-id
 
-Internal transport for the trusted Recoup browser player. Without provider, returns only public release settings. With provider, validates parent and creates or resumes a signed, provider-bound listening session. No owner, fan profile or email is exposed. The embedding website should use returned embed URLs rather than calling this API or handling credentials.
+Internal transport for the trusted Recoup browser player. Without provider, returns only public release settings.
 
 ## GET /api/players/public/{id}
 
@@ -73721,7 +73721,7 @@ This operation's specification permits a request without authentication.
 
 Source: https://docs.recoupable.dev/api-reference/complete/players/post-players-events
 
-Internal trusted Recoup player transport. Requires its Origin plus signed flow; browser-facing same-origin app proxy forwards to API. Provider and fan attribution come from the stored session. Event UUID makes retries idempotent, listenedMs is capped at 30 seconds and checked against elapsed server time. Recording failures do not stop music.
+Internal trusted Recoup player transport. Requires its Origin plus signed flow; browser-facing same-origin app proxy forwards to API.
 
 ## POST /api/players/events
 
@@ -73947,7 +73947,7 @@ This operation's specification permits a request without authentication.
 
 Source: https://docs.recoupable.dev/api-reference/complete/players/post-players-spotify-session
 
-Internal trusted Recoup player endpoint, not an external website integration. Requires a fresh Spotify listening session, PKCE code/verifier, API-configured OAuth app and required scopes. Captures Spotify-confirmed available profile/email for the registered artist/workspace. Returns provider credentials only to the trusted Recoup browser, plus player_session_id and fanCapture; no email/fan ID in the response. Tokens are not persisted in fan tables. A failed capture reports fanCapture=false while valid playback credentials remain usable. Authorization is not email marketing consent.
+Internal trusted Recoup player endpoint, not an external website integration. Requires a fresh Spotify listening session, PKCE code/verifier, API-configured…
 
 ## POST /api/players/spotify/session
 
@@ -74152,7 +74152,7 @@ This operation's specification permits a request without authentication.
 
 Source: https://docs.recoupable.dev/api-reference/complete/players/post-players-public-id-session
 
-Internal transport for the trusted Recoup browser player. Without provider, returns only public release settings. With provider, validates parent and creates or resumes a signed, provider-bound listening session. No owner, fan profile or email is exposed. The embedding website should use returned embed URLs rather than calling this API or handling credentials.
+Internal transport for the trusted Recoup browser player. Without provider, returns only public release settings.
 
 ## POST /api/players/public/{id}/session
 
