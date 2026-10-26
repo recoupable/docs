@@ -11,4 +11,4 @@ export function proxy(request: NextRequest) {
   return target ? NextResponse.rewrite(new URL(target, request.url)) : NextResponse.next();
 }
 
-export const config = { matcher: "/((?!_next/|raw/|spec/|api-reference/openapi/|mcp(?:/|$)|llms|favicon|icon).*)" };
+export const config = { matcher: "/((?!_next/|raw/|spec/|api-reference/openapi/|mcp(?:/|$)|llms|favicon|icon|apple-icon|og(?:/|$)).*)" };
