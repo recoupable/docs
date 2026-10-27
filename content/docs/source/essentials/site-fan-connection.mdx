@@ -50,7 +50,13 @@ Use the real artist's approved text, not the example unchanged. Return URL must 
 - 409: another configuration update won; reload and reconcile before retry.
 - 503: provider, billing or storage unavailable; surface the dependency.
 
-Spotify fan connection is included in an active paid Recoup subscription owned by the site's workspace. No separate add-on is required. Existing `POST /api/subscriptions/sessions` accepts `{plan: "starter" | "pro", successUrl, cancelUrl?}` and returns the customer checkout URL. Let the customer complete payment; then retry activation. Fans do not buy this feature.
+Spotify fan connection uses an existing eligible entitlement owned by the site's
+workspace. No separate add-on is required and fans do not buy this feature.
+On 402, the error is `"Fan connection is unavailable with this workspace's current entitlements."`.
+Preserve the site and configuration. Plugin workflows explain the limit without
+plan promotion, payment links, card setup or purchase. Do not retry activation
+automatically; resume only after access is independently available and the user
+asks to continue.
 
 ## Public fan journey
 
