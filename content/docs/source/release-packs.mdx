@@ -127,6 +127,31 @@ continues the agreed batch within your budget, unless you requested a preview
 checkpoint. Progress distinguishes requested, generated, inspected and delivered
 assets. A partly generated pack is reported as partial.
 
+### Saved progress summary (pending API release)
+
+The additive `progress` field on pack snapshots separates requested pieces/files,
+generated pieces/files, QA-passed pieces, usable pieces and running, failed or
+uncertain pieces. A carousel is one piece with four requested files. Counts cover
+the full saved deliverables even when the current quote is for one retry. Attempts
+and repeated reads do not add outputs. Generated files are persisted final
+composition outputs, including rejected outputs; intermediate provider images
+and submission receipts do not count as delivered files.
+
+A usable piece is completed with files, passed inspection and a nonblank caption.
+`complete` requires every requested kind/ordinal to be usable and the saved job to
+be completed. A failed or partial job's settlement timestamp is never reported as
+`full_pack_completed_at`. The first-usable timestamp is returned only with a
+currently usable piece whose saved completion timestamp matches the saved
+first-usable timestamp. Unverifiable or missing timestamps stay null. `last_exported_at` reflects the latest saved export retrieval, not publication.
+
+Blocker codes and asset IDs point to the existing readiness fields, job error or
+asset error without copying private briefs, captions or provider receipts into the
+summary. Running asset IDs identify current work. The projection does not record
+new events or reconstruct retry history. All user-wait, provider-render,
+active-processing and remaining-time fields are null because the existing
+receipts do not measure those intervals separately. No countdown or five-minute
+promise is inferred. Older deployed responses may omit `progress` until release.
+
 ## Review and delivery
 
 A finished music-bearing asset must contain the selected recording and the correct

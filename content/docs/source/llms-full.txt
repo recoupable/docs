@@ -36697,6 +36697,9 @@ This operation requires one of the security alternatives in the specification be
           },
           "next_action": {
             "type": "string"
+          },
+          "progress": {
+            "$ref": "#/components/schemas/ReleasePackProgress"
           }
         }
       },
@@ -37143,6 +37146,221 @@ This operation requires one of the security alternatives in the specification be
         },
         "additionalProperties": false
       },
+      "ReleasePackProgress": {
+        "type": "object",
+        "required": [
+          "job_id",
+          "revision",
+          "status",
+          "complete",
+          "counts",
+          "running_asset_ids",
+          "blockers",
+          "milestones",
+          "timings"
+        ],
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "complete": {
+            "type": "boolean",
+            "description": "True only when the job is completed and every requested kind/ordinal has a usable asset."
+          },
+          "counts": {
+            "type": "object",
+            "required": [
+              "requested_pieces",
+              "requested_files",
+              "generated_pieces",
+              "generated_files",
+              "qa_passed_pieces",
+              "usable_pieces",
+              "running_pieces",
+              "failed_pieces",
+              "uncertain_pieces"
+            ],
+            "properties": {
+              "requested_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "requested_files": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "generated_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "generated_files": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "qa_passed_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "usable_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "running_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "failed_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "uncertain_pieces": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "additionalProperties": false
+          },
+          "running_asset_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "blockers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "code"
+              ],
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "enum": [
+                    "brief_incomplete",
+                    "approval_required",
+                    "quote_required",
+                    "dispatch_uncertain",
+                    "asset_failed",
+                    "asset_uncertain",
+                    "asset_not_usable",
+                    "job_error",
+                    "incomplete_outputs"
+                  ]
+                },
+                "asset_id": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "milestones": {
+            "type": "object",
+            "required": [
+              "intent_at",
+              "intake_ready_at",
+              "approved_at",
+              "running_at",
+              "first_usable_asset_at",
+              "full_pack_completed_at",
+              "last_exported_at"
+            ],
+            "properties": {
+              "intent_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "intake_ready_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "approved_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "running_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "first_usable_asset_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Saved first-usable timestamp only when it exactly matches the saved completion timestamp of a currently usable asset; otherwise null."
+              },
+              "full_pack_completed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "last_exported_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              }
+            },
+            "additionalProperties": false
+          },
+          "timings": {
+            "type": "object",
+            "required": [
+              "user_wait_ms",
+              "provider_render_ms",
+              "active_processing_ms",
+              "remaining_ms"
+            ],
+            "properties": {
+              "user_wait_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "provider_render_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "active_processing_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "remaining_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false,
+        "description": "Pending API release: read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
+      },
       "ReleasePackCreativeContext": {
         "type": "object",
         "properties": {
@@ -37574,6 +37792,9 @@ This operation requires one of the security alternatives in the specification be
           },
           "next_action": {
             "type": "string"
+          },
+          "progress": {
+            "$ref": "#/components/schemas/ReleasePackProgress"
           }
         }
       },
@@ -37767,6 +37988,221 @@ This operation requires one of the security alternatives in the specification be
           }
         },
         "additionalProperties": false
+      },
+      "ReleasePackProgress": {
+        "type": "object",
+        "required": [
+          "job_id",
+          "revision",
+          "status",
+          "complete",
+          "counts",
+          "running_asset_ids",
+          "blockers",
+          "milestones",
+          "timings"
+        ],
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "complete": {
+            "type": "boolean",
+            "description": "True only when the job is completed and every requested kind/ordinal has a usable asset."
+          },
+          "counts": {
+            "type": "object",
+            "required": [
+              "requested_pieces",
+              "requested_files",
+              "generated_pieces",
+              "generated_files",
+              "qa_passed_pieces",
+              "usable_pieces",
+              "running_pieces",
+              "failed_pieces",
+              "uncertain_pieces"
+            ],
+            "properties": {
+              "requested_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "requested_files": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "generated_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "generated_files": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "qa_passed_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "usable_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "running_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "failed_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "uncertain_pieces": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "additionalProperties": false
+          },
+          "running_asset_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "blockers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "code"
+              ],
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "enum": [
+                    "brief_incomplete",
+                    "approval_required",
+                    "quote_required",
+                    "dispatch_uncertain",
+                    "asset_failed",
+                    "asset_uncertain",
+                    "asset_not_usable",
+                    "job_error",
+                    "incomplete_outputs"
+                  ]
+                },
+                "asset_id": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "milestones": {
+            "type": "object",
+            "required": [
+              "intent_at",
+              "intake_ready_at",
+              "approved_at",
+              "running_at",
+              "first_usable_asset_at",
+              "full_pack_completed_at",
+              "last_exported_at"
+            ],
+            "properties": {
+              "intent_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "intake_ready_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "approved_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "running_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "first_usable_asset_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Saved first-usable timestamp only when it exactly matches the saved completion timestamp of a currently usable asset; otherwise null."
+              },
+              "full_pack_completed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "last_exported_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              }
+            },
+            "additionalProperties": false
+          },
+          "timings": {
+            "type": "object",
+            "required": [
+              "user_wait_ms",
+              "provider_render_ms",
+              "active_processing_ms",
+              "remaining_ms"
+            ],
+            "properties": {
+              "user_wait_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "provider_render_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "active_processing_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "remaining_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false,
+        "description": "Pending API release: read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
       },
       "ReleasePackCreativeContext": {
         "type": "object",
@@ -38200,6 +38636,9 @@ This operation requires one of the security alternatives in the specification be
           },
           "next_action": {
             "type": "string"
+          },
+          "progress": {
+            "$ref": "#/components/schemas/ReleasePackProgress"
           }
         }
       },
@@ -38642,6 +39081,221 @@ This operation requires one of the security alternatives in the specification be
         },
         "additionalProperties": false
       },
+      "ReleasePackProgress": {
+        "type": "object",
+        "required": [
+          "job_id",
+          "revision",
+          "status",
+          "complete",
+          "counts",
+          "running_asset_ids",
+          "blockers",
+          "milestones",
+          "timings"
+        ],
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "complete": {
+            "type": "boolean",
+            "description": "True only when the job is completed and every requested kind/ordinal has a usable asset."
+          },
+          "counts": {
+            "type": "object",
+            "required": [
+              "requested_pieces",
+              "requested_files",
+              "generated_pieces",
+              "generated_files",
+              "qa_passed_pieces",
+              "usable_pieces",
+              "running_pieces",
+              "failed_pieces",
+              "uncertain_pieces"
+            ],
+            "properties": {
+              "requested_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "requested_files": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "generated_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "generated_files": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "qa_passed_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "usable_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "running_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "failed_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "uncertain_pieces": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "additionalProperties": false
+          },
+          "running_asset_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "blockers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "code"
+              ],
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "enum": [
+                    "brief_incomplete",
+                    "approval_required",
+                    "quote_required",
+                    "dispatch_uncertain",
+                    "asset_failed",
+                    "asset_uncertain",
+                    "asset_not_usable",
+                    "job_error",
+                    "incomplete_outputs"
+                  ]
+                },
+                "asset_id": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "milestones": {
+            "type": "object",
+            "required": [
+              "intent_at",
+              "intake_ready_at",
+              "approved_at",
+              "running_at",
+              "first_usable_asset_at",
+              "full_pack_completed_at",
+              "last_exported_at"
+            ],
+            "properties": {
+              "intent_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "intake_ready_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "approved_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "running_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "first_usable_asset_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Saved first-usable timestamp only when it exactly matches the saved completion timestamp of a currently usable asset; otherwise null."
+              },
+              "full_pack_completed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "last_exported_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              }
+            },
+            "additionalProperties": false
+          },
+          "timings": {
+            "type": "object",
+            "required": [
+              "user_wait_ms",
+              "provider_render_ms",
+              "active_processing_ms",
+              "remaining_ms"
+            ],
+            "properties": {
+              "user_wait_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "provider_render_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "active_processing_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "remaining_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false,
+        "description": "Pending API release: read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
+      },
       "ReleasePackCreativeContext": {
         "type": "object",
         "properties": {
@@ -39074,6 +39728,9 @@ This operation requires one of the security alternatives in the specification be
           },
           "next_action": {
             "type": "string"
+          },
+          "progress": {
+            "$ref": "#/components/schemas/ReleasePackProgress"
           }
         }
       },
@@ -39285,6 +39942,221 @@ This operation requires one of the security alternatives in the specification be
           }
         },
         "additionalProperties": false
+      },
+      "ReleasePackProgress": {
+        "type": "object",
+        "required": [
+          "job_id",
+          "revision",
+          "status",
+          "complete",
+          "counts",
+          "running_asset_ids",
+          "blockers",
+          "milestones",
+          "timings"
+        ],
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "complete": {
+            "type": "boolean",
+            "description": "True only when the job is completed and every requested kind/ordinal has a usable asset."
+          },
+          "counts": {
+            "type": "object",
+            "required": [
+              "requested_pieces",
+              "requested_files",
+              "generated_pieces",
+              "generated_files",
+              "qa_passed_pieces",
+              "usable_pieces",
+              "running_pieces",
+              "failed_pieces",
+              "uncertain_pieces"
+            ],
+            "properties": {
+              "requested_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "requested_files": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "generated_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "generated_files": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "qa_passed_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "usable_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "running_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "failed_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "uncertain_pieces": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "additionalProperties": false
+          },
+          "running_asset_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "blockers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "code"
+              ],
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "enum": [
+                    "brief_incomplete",
+                    "approval_required",
+                    "quote_required",
+                    "dispatch_uncertain",
+                    "asset_failed",
+                    "asset_uncertain",
+                    "asset_not_usable",
+                    "job_error",
+                    "incomplete_outputs"
+                  ]
+                },
+                "asset_id": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "milestones": {
+            "type": "object",
+            "required": [
+              "intent_at",
+              "intake_ready_at",
+              "approved_at",
+              "running_at",
+              "first_usable_asset_at",
+              "full_pack_completed_at",
+              "last_exported_at"
+            ],
+            "properties": {
+              "intent_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "intake_ready_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "approved_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "running_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "first_usable_asset_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Saved first-usable timestamp only when it exactly matches the saved completion timestamp of a currently usable asset; otherwise null."
+              },
+              "full_pack_completed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "last_exported_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              }
+            },
+            "additionalProperties": false
+          },
+          "timings": {
+            "type": "object",
+            "required": [
+              "user_wait_ms",
+              "provider_render_ms",
+              "active_processing_ms",
+              "remaining_ms"
+            ],
+            "properties": {
+              "user_wait_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "provider_render_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "active_processing_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "remaining_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false,
+        "description": "Pending API release: read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
       },
       "ReleasePackCreativeContext": {
         "type": "object",
@@ -39718,6 +40590,9 @@ This operation requires one of the security alternatives in the specification be
           },
           "next_action": {
             "type": "string"
+          },
+          "progress": {
+            "$ref": "#/components/schemas/ReleasePackProgress"
           }
         }
       },
@@ -39942,6 +40817,221 @@ This operation requires one of the security alternatives in the specification be
           }
         },
         "additionalProperties": false
+      },
+      "ReleasePackProgress": {
+        "type": "object",
+        "required": [
+          "job_id",
+          "revision",
+          "status",
+          "complete",
+          "counts",
+          "running_asset_ids",
+          "blockers",
+          "milestones",
+          "timings"
+        ],
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "complete": {
+            "type": "boolean",
+            "description": "True only when the job is completed and every requested kind/ordinal has a usable asset."
+          },
+          "counts": {
+            "type": "object",
+            "required": [
+              "requested_pieces",
+              "requested_files",
+              "generated_pieces",
+              "generated_files",
+              "qa_passed_pieces",
+              "usable_pieces",
+              "running_pieces",
+              "failed_pieces",
+              "uncertain_pieces"
+            ],
+            "properties": {
+              "requested_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "requested_files": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "generated_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "generated_files": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "qa_passed_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "usable_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "running_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "failed_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "uncertain_pieces": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "additionalProperties": false
+          },
+          "running_asset_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "blockers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "code"
+              ],
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "enum": [
+                    "brief_incomplete",
+                    "approval_required",
+                    "quote_required",
+                    "dispatch_uncertain",
+                    "asset_failed",
+                    "asset_uncertain",
+                    "asset_not_usable",
+                    "job_error",
+                    "incomplete_outputs"
+                  ]
+                },
+                "asset_id": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "milestones": {
+            "type": "object",
+            "required": [
+              "intent_at",
+              "intake_ready_at",
+              "approved_at",
+              "running_at",
+              "first_usable_asset_at",
+              "full_pack_completed_at",
+              "last_exported_at"
+            ],
+            "properties": {
+              "intent_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "intake_ready_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "approved_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "running_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "first_usable_asset_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Saved first-usable timestamp only when it exactly matches the saved completion timestamp of a currently usable asset; otherwise null."
+              },
+              "full_pack_completed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "last_exported_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              }
+            },
+            "additionalProperties": false
+          },
+          "timings": {
+            "type": "object",
+            "required": [
+              "user_wait_ms",
+              "provider_render_ms",
+              "active_processing_ms",
+              "remaining_ms"
+            ],
+            "properties": {
+              "user_wait_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "provider_render_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "active_processing_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "remaining_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false,
+        "description": "Pending API release: read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
       },
       "ReleasePackCreativeContext": {
         "type": "object",
@@ -40375,6 +41465,9 @@ This operation requires one of the security alternatives in the specification be
           },
           "next_action": {
             "type": "string"
+          },
+          "progress": {
+            "$ref": "#/components/schemas/ReleasePackProgress"
           }
         }
       },
@@ -40605,6 +41698,221 @@ This operation requires one of the security alternatives in the specification be
           }
         },
         "additionalProperties": false
+      },
+      "ReleasePackProgress": {
+        "type": "object",
+        "required": [
+          "job_id",
+          "revision",
+          "status",
+          "complete",
+          "counts",
+          "running_asset_ids",
+          "blockers",
+          "milestones",
+          "timings"
+        ],
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "complete": {
+            "type": "boolean",
+            "description": "True only when the job is completed and every requested kind/ordinal has a usable asset."
+          },
+          "counts": {
+            "type": "object",
+            "required": [
+              "requested_pieces",
+              "requested_files",
+              "generated_pieces",
+              "generated_files",
+              "qa_passed_pieces",
+              "usable_pieces",
+              "running_pieces",
+              "failed_pieces",
+              "uncertain_pieces"
+            ],
+            "properties": {
+              "requested_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "requested_files": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "generated_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "generated_files": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "qa_passed_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "usable_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "running_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "failed_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "uncertain_pieces": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "additionalProperties": false
+          },
+          "running_asset_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "blockers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "code"
+              ],
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "enum": [
+                    "brief_incomplete",
+                    "approval_required",
+                    "quote_required",
+                    "dispatch_uncertain",
+                    "asset_failed",
+                    "asset_uncertain",
+                    "asset_not_usable",
+                    "job_error",
+                    "incomplete_outputs"
+                  ]
+                },
+                "asset_id": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "milestones": {
+            "type": "object",
+            "required": [
+              "intent_at",
+              "intake_ready_at",
+              "approved_at",
+              "running_at",
+              "first_usable_asset_at",
+              "full_pack_completed_at",
+              "last_exported_at"
+            ],
+            "properties": {
+              "intent_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "intake_ready_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "approved_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "running_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "first_usable_asset_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Saved first-usable timestamp only when it exactly matches the saved completion timestamp of a currently usable asset; otherwise null."
+              },
+              "full_pack_completed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "last_exported_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              }
+            },
+            "additionalProperties": false
+          },
+          "timings": {
+            "type": "object",
+            "required": [
+              "user_wait_ms",
+              "provider_render_ms",
+              "active_processing_ms",
+              "remaining_ms"
+            ],
+            "properties": {
+              "user_wait_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "provider_render_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "active_processing_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "remaining_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false,
+        "description": "Pending API release: read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
       },
       "ReleasePackCreativeContext": {
         "type": "object",
@@ -41151,8 +42459,20 @@ This operation requires one of the security alternatives in the specification be
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "description": "Pack manifest with signed file URLs and captions; components and format variants identified separately."
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ReleasePackResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "manifest": {
+                          "type": "object",
+                          "description": "Export manifest with job/revision identity, publishing boundary and private URL lifetime."
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -41244,6 +42564,97 @@ This operation requires one of the security alternatives in the specification be
   },
   "components": {
     "schemas": {
+      "ReleasePackResponse": {
+        "type": "object",
+        "required": [
+          "job",
+          "assets",
+          "readiness",
+          "next_action"
+        ],
+        "properties": {
+          "job": {
+            "type": "object",
+            "required": [
+              "id",
+              "revision",
+              "status",
+              "brief",
+              "deliverables"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "draft",
+                  "needs_input",
+                  "ready_to_quote",
+                  "awaiting_approval",
+                  "running",
+                  "partial",
+                  "completed",
+                  "failed",
+                  "canceled"
+                ]
+              },
+              "brief": {
+                "$ref": "#/components/schemas/ReleasePackBrief"
+              },
+              "deliverables": {
+                "type": "object"
+              },
+              "quote": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "description": "Quote id, fingerprint, revision, expiry, complete line_items, maximum_usd, credits, piece/file/caption counts and retry policy."
+              }
+            }
+          },
+          "assets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "description": "Owned asset state, files, caption, inspection and controlled failure information."
+            }
+          },
+          "readiness": {
+            "type": "object",
+            "properties": {
+              "ready": {
+                "type": "boolean"
+              },
+              "missing": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "assumptions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "next_action": {
+            "type": "string"
+          },
+          "progress": {
+            "$ref": "#/components/schemas/ReleasePackProgress"
+          }
+        }
+      },
       "ReleasePackError": {
         "type": "object",
         "required": [
@@ -41263,6 +42674,575 @@ This operation requires one of the security alternatives in the specification be
             "format": "uri"
           }
         }
+      },
+      "ReleasePackBrief": {
+        "type": "object",
+        "properties": {
+          "artist_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "artist_account_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "song_title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "recording_version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "audio_url": {
+            "type": "string",
+            "maxLength": 4000,
+            "format": "uri"
+          },
+          "audio_start_seconds": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1200
+          },
+          "occasion": {
+            "type": "string",
+            "enum": [
+              "new_release",
+              "anniversary",
+              "reissue",
+              "remix",
+              "rediscovery"
+            ]
+          },
+          "original_release_date": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+          },
+          "campaign_date": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+          },
+          "primary_action": {
+            "default": "listen",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "destination_url": {
+            "type": "string",
+            "maxLength": 4000,
+            "format": "uri"
+          },
+          "audience": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "song_summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "lyrics_excerpt": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "creative_direction": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "allow_creative_defaults": {
+            "default": false,
+            "type": "boolean"
+          },
+          "reference_image_urls": {
+            "default": [],
+            "maxItems": 5,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 4000,
+              "format": "uri"
+            }
+          },
+          "constraints": {
+            "default": [],
+            "maxItems": 12,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          },
+          "platforms": {
+            "default": [
+              "instagram",
+              "tiktok"
+            ],
+            "minItems": 1,
+            "maxItems": 6,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "instagram",
+                "tiktok",
+                "youtube",
+                "facebook",
+                "linkedin",
+                "x"
+              ]
+            }
+          },
+          "context_brief_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "evidence": {
+            "default": [],
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "customer_assertion",
+                    "source_observation",
+                    "creative_proposal"
+                  ]
+                },
+                "source_url": {
+                  "type": "string",
+                  "maxLength": 4000,
+                  "format": "uri"
+                }
+              },
+              "required": [
+                "text",
+                "kind"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "creative_context": {
+            "$ref": "#/components/schemas/ReleasePackCreativeContext"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ReleasePackProgress": {
+        "type": "object",
+        "required": [
+          "job_id",
+          "revision",
+          "status",
+          "complete",
+          "counts",
+          "running_asset_ids",
+          "blockers",
+          "milestones",
+          "timings"
+        ],
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "complete": {
+            "type": "boolean",
+            "description": "True only when the job is completed and every requested kind/ordinal has a usable asset."
+          },
+          "counts": {
+            "type": "object",
+            "required": [
+              "requested_pieces",
+              "requested_files",
+              "generated_pieces",
+              "generated_files",
+              "qa_passed_pieces",
+              "usable_pieces",
+              "running_pieces",
+              "failed_pieces",
+              "uncertain_pieces"
+            ],
+            "properties": {
+              "requested_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "requested_files": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "generated_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "generated_files": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "qa_passed_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "usable_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "running_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "failed_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "uncertain_pieces": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "additionalProperties": false
+          },
+          "running_asset_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "blockers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "code"
+              ],
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "enum": [
+                    "brief_incomplete",
+                    "approval_required",
+                    "quote_required",
+                    "dispatch_uncertain",
+                    "asset_failed",
+                    "asset_uncertain",
+                    "asset_not_usable",
+                    "job_error",
+                    "incomplete_outputs"
+                  ]
+                },
+                "asset_id": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "milestones": {
+            "type": "object",
+            "required": [
+              "intent_at",
+              "intake_ready_at",
+              "approved_at",
+              "running_at",
+              "first_usable_asset_at",
+              "full_pack_completed_at",
+              "last_exported_at"
+            ],
+            "properties": {
+              "intent_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "intake_ready_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "approved_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "running_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "first_usable_asset_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "Saved first-usable timestamp only when it exactly matches the saved completion timestamp of a currently usable asset; otherwise null."
+              },
+              "full_pack_completed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "last_exported_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              }
+            },
+            "additionalProperties": false
+          },
+          "timings": {
+            "type": "object",
+            "required": [
+              "user_wait_ms",
+              "provider_render_ms",
+              "active_processing_ms",
+              "remaining_ms"
+            ],
+            "properties": {
+              "user_wait_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "provider_render_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "active_processing_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "remaining_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false,
+        "description": "Pending API release: read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
+      },
+      "ReleasePackCreativeContext": {
+        "type": "object",
+        "properties": {
+          "starting_point": {
+            "type": "string",
+            "enum": [
+              "established",
+              "rough_idea",
+              "none"
+            ]
+          },
+          "working_mode": {
+            "default": "autonomous",
+            "type": "string",
+            "enum": [
+              "autonomous",
+              "guided"
+            ]
+          },
+          "references": {
+            "default": [],
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[A-Za-z0-9_-]+$"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "url": {
+                  "type": "string",
+                  "maxLength": 4000,
+                  "format": "uri"
+                },
+                "media_type": {
+                  "type": "string",
+                  "enum": [
+                    "image",
+                    "document",
+                    "link"
+                  ]
+                },
+                "source_kind": {
+                  "type": "string",
+                  "enum": [
+                    "recoup",
+                    "customer",
+                    "public",
+                    "generated"
+                  ]
+                },
+                "usage": {
+                  "default": "reference_only",
+                  "type": "string",
+                  "enum": [
+                    "reference_only",
+                    "production"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "url",
+                "media_type",
+                "source_kind",
+                "usage"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "directions": {
+            "default": [],
+            "maxItems": 3,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[A-Za-z0-9_-]+$"
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "concept": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1200
+                },
+                "palette": {
+                  "default": [],
+                  "maxItems": 8,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 48
+                  }
+                },
+                "typography": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "reference_ids": {
+                  "default": [],
+                  "maxItems": 20,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80,
+                    "pattern": "^[A-Za-z0-9_-]+$"
+                  }
+                },
+                "board_url": {
+                  "type": "string",
+                  "maxLength": 4000,
+                  "format": "uri"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "concept",
+                "palette",
+                "reference_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "selection": {
+            "type": "object",
+            "properties": {
+              "direction_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80,
+                "pattern": "^[A-Za-z0-9_-]+$"
+              },
+              "selected_by": {
+                "type": "string",
+                "enum": [
+                  "customer",
+                  "agent"
+                ]
+              },
+              "decision_note": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              }
+            },
+            "required": [
+              "direction_id",
+              "selected_by",
+              "decision_note"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "starting_point",
+          "working_mode",
+          "references",
+          "directions"
+        ],
+        "additionalProperties": false,
+        "description": "Optional saved creative state. Ids are unique within this brief, selections reference an existing direction, and each direction references existing manifest ids. Guided mode requires customer selection before final quote or generation. Selected production image references plus legacy reference_image_urls must contain at most five distinct URLs. Reference-only inputs never become production image inputs."
       }
     },
     "securitySchemes": {
@@ -44614,6 +46594,31 @@ The first representative asset is produced and inspected early. The agent then
 continues the agreed batch within your budget, unless you requested a preview
 checkpoint. Progress distinguishes requested, generated, inspected and delivered
 assets. A partly generated pack is reported as partial.
+
+### Saved progress summary (pending API release)
+
+The additive `progress` field on pack snapshots separates requested pieces/files,
+generated pieces/files, QA-passed pieces, usable pieces and running, failed or
+uncertain pieces. A carousel is one piece with four requested files. Counts cover
+the full saved deliverables even when the current quote is for one retry. Attempts
+and repeated reads do not add outputs. Generated files are persisted final
+composition outputs, including rejected outputs; intermediate provider images
+and submission receipts do not count as delivered files.
+
+A usable piece is completed with files, passed inspection and a nonblank caption.
+`complete` requires every requested kind/ordinal to be usable and the saved job to
+be completed. A failed or partial job's settlement timestamp is never reported as
+`full_pack_completed_at`. The first-usable timestamp is returned only with a
+currently usable piece whose saved completion timestamp matches the saved
+first-usable timestamp. Unverifiable or missing timestamps stay null. `last_exported_at` reflects the latest saved export retrieval, not publication.
+
+Blocker codes and asset IDs point to the existing readiness fields, job error or
+asset error without copying private briefs, captions or provider receipts into the
+summary. Running asset IDs identify current work. The projection does not record
+new events or reconstruct retry history. All user-wait, provider-render,
+active-processing and remaining-time fields are null because the existing
+receipts do not measure those intervals separately. No countdown or five-minute
+promise is inferred. Older deployed responses may omit `progress` until release.
 
 ## Review and delivery
 
