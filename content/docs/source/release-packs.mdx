@@ -141,8 +141,8 @@ A usable piece is completed with files, passed inspection and a nonblank caption
 `complete` requires every requested kind/ordinal to be usable and the saved job to
 be completed. A failed or partial job's settlement timestamp is never reported as
 `full_pack_completed_at`. The first-usable timestamp is returned only with a
-currently usable piece and an existing saved timestamp; missing timestamps stay
-null. `last_exported_at` reflects the latest saved export retrieval, not publication.
+currently usable piece whose saved completion timestamp matches the saved
+first-usable timestamp. Unverifiable or missing timestamps stay null. `last_exported_at` reflects the latest saved export retrieval, not publication.
 
 Blocker codes and asset IDs point to the existing readiness fields, job error or
 asset error without copying private briefs, captions or provider receipts into the

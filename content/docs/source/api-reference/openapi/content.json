@@ -7154,7 +7154,8 @@
                   "string",
                   "null"
                 ],
-                "format": "date-time"
+                "format": "date-time",
+                "description": "Saved first-usable timestamp only when it exactly matches the saved completion timestamp of a currently usable asset; otherwise null."
               },
               "full_pack_completed_at": {
                 "type": [
