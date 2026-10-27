@@ -492,7 +492,7 @@
         },
         "responses": {
           "200": {
-            "description": "Handshake response from `@vercel/blob/client` — return verbatim to the library.",
+            "description": "Handshake response from `@vercel/blob/client` \u2014 return verbatim to the library.",
             "content": {
               "application/json": {
                 "schema": {
@@ -809,7 +809,7 @@
     "/api/content": {
       "patch": {
         "operationId": "patchContent",
-        "description": "Apply ffmpeg edits to a video — trim, crop, resize, or overlay text. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array.",
+        "description": "Apply ffmpeg edits to a video \u2014 trim, crop, resize, or overlay text. Pass a `template` for a preset edit pipeline, or build your own with an `operations` array.",
         "security": [
           {
             "apiKeyAuth": []
@@ -841,7 +841,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -851,7 +851,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -876,7 +876,7 @@
     "/api/content/create": {
       "post": {
         "operationId": "postContentCreate",
-        "description": "Trigger the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden via `songs` URLs or `images`, then triggers a background task that generates a short-form video. Returns `runIds` — an array of run IDs that can each be polled via [GET /api/tasks/runs](/api-reference/tasks/runs).",
+        "description": "Trigger the content creation pipeline for an artist. Provide `artist_account_id` to identify the target artist. Validates the artist has all required files (face guide, songs) unless overridden via `songs` URLs or `images`, then triggers a background task that generates a short-form video. Returns `runIds` \u2014 an array of run IDs that can each be polled via [GET /api/tasks/runs](/api-reference/tasks/runs).",
         "security": [
           {
             "apiKeyAuth": []
@@ -898,7 +898,7 @@
         },
         "responses": {
           "202": {
-            "description": "Pipeline triggered successfully. Returns `runIds` — an array of run IDs. Poll each via [GET /api/tasks/runs](/api-reference/tasks/runs) to check progress.",
+            "description": "Pipeline triggered successfully. Returns `runIds` \u2014 an array of run IDs. Poll each via [GET /api/tasks/runs](/api-reference/tasks/runs) to check progress.",
             "content": {
               "application/json": {
                 "schema": {
@@ -908,7 +908,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — missing artist identifier, artist is missing required files, or template not found",
+            "description": "Validation failed \u2014 missing artist identifier, artist is missing required files, or template not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -918,7 +918,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -928,7 +928,7 @@
             }
           },
           "404": {
-            "description": "Artist not found — the provided artist_account_id does not match any artist",
+            "description": "Artist not found \u2014 the provided artist_account_id does not match any artist",
             "content": {
               "application/json": {
                 "schema": {
@@ -943,7 +943,7 @@
     "/api/content/templates": {
       "get": {
         "operationId": "getContentTemplates",
-        "description": "List all available content creation templates. Templates are optional — every content primitive works without one. When you do use a template, it provides a complete creative recipe: image prompts, video motion config, caption style rules, and edit operations. Returns template ID and description only — enough to pick the right one.",
+        "description": "List all available content creation templates. Templates are optional \u2014 every content primitive works without one. When you do use a template, it provides a complete creative recipe: image prompts, video motion config, caption style rules, and edit operations. Returns template ID and description only \u2014 enough to pick the right one.",
         "security": [
           {
             "apiKeyAuth": []
@@ -964,7 +964,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -1012,7 +1012,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -1081,7 +1081,7 @@
             }
           },
           "400": {
-            "description": "Bad request — artist_account_id is required",
+            "description": "Bad request \u2014 artist_account_id is required",
             "content": {
               "application/json": {
                 "schema": {
@@ -1091,7 +1091,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -1101,7 +1101,7 @@
             }
           },
           "404": {
-            "description": "Artist not found — the provided artist_account_id does not match any artist",
+            "description": "Artist not found \u2014 the provided artist_account_id does not match any artist",
             "content": {
               "application/json": {
                 "schema": {
@@ -1116,7 +1116,7 @@
     "/api/content/estimate": {
       "get": {
         "operationId": "getContentEstimate",
-        "description": "Estimate the cost of running the content creation pipeline. Calculates per-step and per-video costs based on current pricing. Supports comparing multiple workflow profiles (e.g., premium vs. budget) and projecting batch costs. This endpoint is informational only — it does not trigger any pipeline execution or spend credits.",
+        "description": "Estimate the cost of running the content creation pipeline. Calculates per-step and per-video costs based on current pricing. Supports comparing multiple workflow profiles (e.g., premium vs. budget) and projecting batch costs. This endpoint is informational only \u2014 it does not trigger any pipeline execution or spend credits.",
         "security": [
           {
             "apiKeyAuth": []
@@ -1172,7 +1172,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -1227,7 +1227,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Slack Events API envelope — the shape depends on the event type"
+                "description": "Slack Events API envelope \u2014 the shape depends on the event type"
               }
             }
           }
@@ -1295,7 +1295,7 @@
     "/api/content-agent/callback": {
       "post": {
         "operationId": "postContentAgentCallback",
-        "description": "Internal worker callback for a configured content agent. Requires the shared callback secret in x-callback-secret. Public content creation uses POST /api/content/create.\n\nInternal callback endpoint for the `poll-content-run` Trigger.dev task. Receives content generation results and posts them back to the originating Slack thread. Authenticated via the `x-callback-secret` header.\n\nThis endpoint is not intended for external use — it is called automatically by the polling task when content runs complete, fail, or time out.\n\nThe receiver retains optional results[].imageUrl as a string, matching the existing videoUrl string validation; this does not add URL syntax validation. Only per-run results with status completed and a videoUrl enter media posting. An image without a completed video does not become an image-only job or still-only success. Existing video-only callbacks continue without an image read or image post.\n\nFor selected completed results, editorial images retain their per-result association and order; all editorial image posts precede all video posts, with videos also in result order. Images attach for normalized reported Content-Type image/png, image/jpeg, image/webp or image/gif. Missing or unsupported reported MIME, or failed image download, falls back to an Editorial Image URL message before video posting continues. For an attachment filename, keep the final URL path component when it contains a dot; otherwise use editorial.<reported MIME extension>, with jpg for image/jpeg. Existing dotted filenames are not rewritten to match the MIME extension. Reported MIME is not byte verification or a safety scan. Each supplied image adds a media HTTP read and a thread attachment/link post within existing outbound callback trust, buffering and upload/runtime limits. This callback does not start another generation step or change generation billing.\n\nExisting caption/video labels, failed-run summaries and terminal-thread retry skipping remain. The thread-state skip is not a concurrency-safe or exactly-once delivery guarantee. Normal image delivery requires both this receiver support and a deployed polling mapper that forwards imageUrl (API #1097 and Tasks #162). Source tests and this reference do not establish worker deployment, hosted authorization, actual Slack file rendering or end-to-end image delivery.\n\nIf the content bot is not configured, the route returns 503 with {error: \"Content agent not configured\"} before bot initialization, callback-secret handling or body parsing. For a configured bot, initialization precedes the handler; the handler checks x-callback-secret before parsing JSON or accessing a thread or media. Missing or invalid secrets return 401 with {status: \"error\", error: \"Unauthorized\"}. Invalid JSON returns 400 with {status: \"error\", error: \"Invalid JSON body\"}. Schema-validation 400 responses use status/error plus missing_fields, the first issue path containing string field names and numeric array positions (for example [\"results\", 0, \"imageUrl\"]). missing_fields is absent for malformed JSON.\n\nA normal handler acknowledgement is 200 {status: \"ok\"}; a callback for an already-terminal thread is 200 {status: \"ok\", skipped: true} without another media post. These acknowledgements do not prove a Slack file was delivered or rendered. Handler 200/400/401 responses include the existing shared CORS headers; the unconfigured-bot 503 has no shared CORS headers. Shared response headers do not promise browser preflight success: x-callback-secret is not in the shared Access-Control-Allow-Headers list, and this route exports no OPTIONS handler. No stable 500 response envelope or delivery guarantee is declared here.",
+        "description": "Internal worker callback for a configured content agent. Requires the shared callback secret in x-callback-secret. Public content creation uses POST /api/content/create.\n\nInternal callback endpoint for the `poll-content-run` Trigger.dev task. Receives content generation results and posts them back to the originating Slack thread. Authenticated via the `x-callback-secret` header.\n\nThis endpoint is not intended for external use \u2014 it is called automatically by the polling task when content runs complete, fail, or time out.\n\nThe receiver retains optional results[].imageUrl as a string, matching the existing videoUrl string validation; this does not add URL syntax validation. Only per-run results with status completed and a videoUrl enter media posting. An image without a completed video does not become an image-only job or still-only success. Existing video-only callbacks continue without an image read or image post.\n\nFor selected completed results, editorial images retain their per-result association and order; all editorial image posts precede all video posts, with videos also in result order. Images attach for normalized reported Content-Type image/png, image/jpeg, image/webp or image/gif. Missing or unsupported reported MIME, or failed image download, falls back to an Editorial Image URL message before video posting continues. For an attachment filename, keep the final URL path component when it contains a dot; otherwise use editorial.<reported MIME extension>, with jpg for image/jpeg. Existing dotted filenames are not rewritten to match the MIME extension. Reported MIME is not byte verification or a safety scan. Each supplied image adds a media HTTP read and a thread attachment/link post within existing outbound callback trust, buffering and upload/runtime limits. This callback does not start another generation step or change generation billing.\n\nExisting caption/video labels, failed-run summaries and terminal-thread retry skipping remain. The thread-state skip is not a concurrency-safe or exactly-once delivery guarantee. Normal image delivery requires both this receiver support and a deployed polling mapper that forwards imageUrl (API #1097 and Tasks #162). Source tests and this reference do not establish worker deployment, hosted authorization, actual Slack file rendering or end-to-end image delivery.\n\nIf the content bot is not configured, the route returns 503 with {error: \"Content agent not configured\"} before bot initialization, callback-secret handling or body parsing. For a configured bot, initialization precedes the handler; the handler checks x-callback-secret before parsing JSON or accessing a thread or media. Missing or invalid secrets return 401 with {status: \"error\", error: \"Unauthorized\"}. Invalid JSON returns 400 with {status: \"error\", error: \"Invalid JSON body\"}. Schema-validation 400 responses use status/error plus missing_fields, the first issue path containing string field names and numeric array positions (for example [\"results\", 0, \"imageUrl\"]). missing_fields is absent for malformed JSON.\n\nA normal handler acknowledgement is 200 {status: \"ok\"}; a callback for an already-terminal thread is 200 {status: \"ok\", skipped: true} without another media post. These acknowledgements do not prove a Slack file was delivered or rendered. Handler 200/400/401 responses include the existing shared CORS headers; the unconfigured-bot 503 has no shared CORS headers. Shared response headers do not promise browser preflight success: x-callback-secret is not in the shared Access-Control-Allow-Headers list, and this route exports no OPTIONS handler. No stable 500 response envelope or delivery guarantee is declared here.",
         "requestBody": {
           "description": "Content generation results from the polling task",
           "required": true,
@@ -1686,7 +1686,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -1696,7 +1696,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -1721,7 +1721,7 @@
     "/api/content/analyze": {
       "post": {
         "operationId": "postContentAnalyze",
-        "description": "Analyze a video and answer questions about it. Pass a video URL and a text prompt — for example, \"Describe what happens\" or \"Rate the visual quality 1-10.\" Returns the generated text.",
+        "description": "Analyze a video and answer questions about it. Pass a video URL and a text prompt \u2014 for example, \"Describe what happens\" or \"Rate the visual quality 1-10.\" Returns the generated text.",
         "security": [
           {
             "apiKeyAuth": []
@@ -1753,7 +1753,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -1763,7 +1763,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -1820,7 +1820,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -1830,7 +1830,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -1887,7 +1887,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -1897,7 +1897,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -1964,7 +1964,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -1974,7 +1974,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -2041,7 +2041,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -2051,7 +2051,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -2420,7 +2420,7 @@
             }
           },
           "400": {
-            "description": "Validation failed — invalid or missing request body fields",
+            "description": "Validation failed \u2014 invalid or missing request body fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -2430,7 +2430,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized — invalid or missing API key",
+            "description": "Unauthorized \u2014 invalid or missing API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -3220,8 +3220,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "description": "Pack manifest with signed file URLs and captions; components and format variants identified separately."
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ReleasePackResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "manifest": {
+                          "type": "object",
+                          "description": "Export manifest with job/revision identity, publishing boundary and private URL lifetime."
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -4037,7 +4049,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Optional list of song slugs or public URLs to use for the audio track. Song slugs match filenames without extension from the artist's `songs/` directory (e.g. `\"hiccups\"` for `hiccups.mp3`). Public URLs (e.g. `\"https://example.com/my-song.mp3\"`) are downloaded, transcribed, and clipped directly — bypassing the Git repo. When omitted, all songs in the artist's repo are eligible.",
+            "description": "Optional list of song slugs or public URLs to use for the audio track. Song slugs match filenames without extension from the artist's `songs/` directory (e.g. `\"hiccups\"` for `hiccups.mp3`). Public URLs (e.g. `\"https://example.com/my-song.mp3\"`) are downloaded, transcribed, and clipped directly \u2014 bypassing the Git repo. When omitted, all songs in the artist's repo are eligible.",
             "example": [
               "hiccups",
               "https://example.com/unreleased-track.mp3"
@@ -4066,7 +4078,7 @@
           "status",
           "artist_account_id"
         ],
-        "description": "Confirmation that the content creation pipeline has been triggered. Always returns `runIds` as an array — even for a single run, it contains one element.",
+        "description": "Confirmation that the content creation pipeline has been triggered. Always returns `runIds` as an array \u2014 even for a single run, it contains one element.",
         "properties": {
           "runIds": {
             "type": "array",
@@ -4492,7 +4504,7 @@
           "id",
           "description"
         ],
-        "description": "A content creation template — a complete creative recipe defining visual style, composition, caption rules, and edit operations. Templates are optional; all primitives work without one.",
+        "description": "A content creation template \u2014 a complete creative recipe defining visual style, composition, caption rules, and edit operations. Templates are optional; all primitives work without one.",
         "properties": {
           "id": {
             "type": "string",
@@ -6684,6 +6696,9 @@
           },
           "next_action": {
             "type": "string"
+          },
+          "progress": {
+            "$ref": "#/components/schemas/ReleasePackProgress"
           }
         }
       },
@@ -6975,6 +6990,220 @@
             }
           }
         ]
+      },
+      "ReleasePackProgress": {
+        "type": "object",
+        "required": [
+          "job_id",
+          "revision",
+          "status",
+          "complete",
+          "counts",
+          "running_asset_ids",
+          "blockers",
+          "milestones",
+          "timings"
+        ],
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "complete": {
+            "type": "boolean",
+            "description": "True only when the job is completed and every requested kind/ordinal has a usable asset."
+          },
+          "counts": {
+            "type": "object",
+            "required": [
+              "requested_pieces",
+              "requested_files",
+              "generated_pieces",
+              "generated_files",
+              "qa_passed_pieces",
+              "usable_pieces",
+              "running_pieces",
+              "failed_pieces",
+              "uncertain_pieces"
+            ],
+            "properties": {
+              "requested_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "requested_files": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "generated_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "generated_files": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "qa_passed_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "usable_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "running_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "failed_pieces": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "uncertain_pieces": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "additionalProperties": false
+          },
+          "running_asset_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "blockers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "code"
+              ],
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "enum": [
+                    "brief_incomplete",
+                    "approval_required",
+                    "quote_required",
+                    "dispatch_uncertain",
+                    "asset_failed",
+                    "asset_uncertain",
+                    "asset_not_usable",
+                    "job_error",
+                    "incomplete_outputs"
+                  ]
+                },
+                "asset_id": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "milestones": {
+            "type": "object",
+            "required": [
+              "intent_at",
+              "intake_ready_at",
+              "approved_at",
+              "running_at",
+              "first_usable_asset_at",
+              "full_pack_completed_at",
+              "last_exported_at"
+            ],
+            "properties": {
+              "intent_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "intake_ready_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "approved_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "running_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "first_usable_asset_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "full_pack_completed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "last_exported_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              }
+            },
+            "additionalProperties": false
+          },
+          "timings": {
+            "type": "object",
+            "required": [
+              "user_wait_ms",
+              "provider_render_ms",
+              "active_processing_ms",
+              "remaining_ms"
+            ],
+            "properties": {
+              "user_wait_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "provider_render_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "active_processing_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              },
+              "remaining_ms": {
+                "type": "null",
+                "description": "Unmeasured; existing saved receipts do not establish this duration."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false,
+        "description": "Pending API release: read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
       }
     }
   }
