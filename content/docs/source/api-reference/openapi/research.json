@@ -1944,7 +1944,7 @@
             }
           },
           "402": {
-            "description": "Historical backfill requires a saved payment method. Unlike the ordinary research credit gate, this gate creates a card-setup Checkout Session per denied request and returns checkoutUrl; do not repeatedly submit to poll this error.",
+            "description": "Historical backfill requires an existing saved payment method. If unavailable, returns a neutral entitlement error without creating a card-setup or checkout session. Preserve the job request; do not retry automatically.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1952,7 +1952,7 @@
                   "required": [
                     "status",
                     "error",
-                    "checkoutUrl"
+                    "message"
                   ],
                   "properties": {
                     "status": {
@@ -1962,14 +1962,14 @@
                       ]
                     },
                     "error": {
-                      "type": "string"
+                      "type": "string",
+                      "enum": [
+                        "payment_method_required"
+                      ]
                     },
-                    "checkoutUrl": {
-                      "type": [
-                        "string",
-                        "null"
-                      ],
-                      "description": "Card-setup checkout URL returned by Stripe. Distinct from the static billingUrl used by ordinary research credit errors."
+                    "message": {
+                      "type": "string",
+                      "description": "Neutral explanation that the feature is unavailable with current account entitlements."
                     }
                   }
                 }
