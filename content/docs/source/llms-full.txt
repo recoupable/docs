@@ -1,6 +1,6 @@
 # Recoup developer documentation
 
-# Recoup API Documentation
+# Recoup API documentation
 
 Source: https://docs.recoupable.dev/
 
@@ -10,6 +10,17 @@ These guides cover the authenticated music-platform API. For anonymous search,
 reading, and website tools, use the separate [public website API](https://docs.recoupable.dev/public-website-api)
 and its [OpenAPI specification](https://recoupable.dev/openapi.json).
 
+## Choose a starting point
+
+| What you want to do | Start here |
+| --- | --- |
+| Make your first API request | [Quickstart](https://docs.recoupable.dev/quickstart) |
+| Build with Go or Python | [SDKs](https://docs.recoupable.dev/sdks) |
+| Work from a terminal | [CLI](https://docs.recoupable.dev/cli) |
+| Connect an AI assistant | [MCP](https://docs.recoupable.dev/mcp) and [Connect an agent](https://docs.recoupable.dev/mcp-oauth) |
+| Search or read the public website without an account | [Website API](https://docs.recoupable.dev/public-website-api) |
+| Find an endpoint and its request format | [API overview](https://docs.recoupable.dev/api-reference) |
+
 ## Connect your account
 
 For an AI host, start with [MCP OAuth](https://docs.recoupable.dev/mcp-oauth): sign in to your real account,
@@ -17,12 +28,6 @@ approve the intended scope and verify access with a read. For REST integrations,
 create an API key in your [account settings](https://chat.recoupable.dev/keys), or
 follow the [verified email/PIN flow](https://docs.recoupable.dev/agents). Keep credentials in a secret facility.
 An empty roster can be valid; do not create a disposable account to recover access.
-
-## What is Recoup?
-
-Recoup is an AI agent platform for smarter song rollouts, unforgettable fan experiences, and lasting artist growth. Empowering music executives with actionable insights and next-gen tools.
-
-This is where record labels, musicians, and managers start to build on Recoup AI technology like chat, tasks, agents, and more.
 
 ## Platform base URL
 
@@ -34,7 +39,7 @@ https://api.recoupable.dev/api
 
 ## Authentication
 
-Most API endpoints are authenticated using an API key passed in the `x-api-key` header. The only exceptions are the [agent onboarding](https://docs.recoupable.dev/agents) endpoints — [`POST /api/agents/signup`](https://docs.recoupable.dev/api-reference/agents/signup) and [`POST /api/agents/verify`](https://docs.recoupable.dev/api-reference/agents/verify) — which are intentionally unauthenticated so agents can obtain their first API key.
+For API-key requests, pass your key in the `x-api-key` header. Read [Authentication](https://docs.recoupable.dev/authentication) for supported credentials and follow each endpoint’s authentication requirements. [Agent signup](https://docs.recoupable.dev/api-reference/agents/signup) and [email verification](https://docs.recoupable.dev/api-reference/agents/verify) are unauthenticated onboarding operations.
 
 1. Navigate to the [API Keys Management Page](https://chat.recoupable.dev/keys)
 2. Sign in with your account
@@ -49,9 +54,9 @@ curl -X GET "https://api.recoupable.dev/api/artists?accountId=YOUR_ACCOUNT_ID" \
 > **Warning**
 > Keep your API key secure. Do not share it publicly or commit it to version control.
 
-## Get Started
+## Tools & clients
 
-[Agent Signup](https://docs.recoupable.dev/agents)
+[Agent signup](https://docs.recoupable.dev/agents)
 
 Verify your email and obtain a separate REST API key.
 
@@ -67,11 +72,11 @@ Install and use the Recoup CLI to interact with the platform from your terminal.
 
 Connect Claude to Recoup through MCP OAuth, then add optional workflow skills.
 
-[MCP Server](https://docs.recoupable.dev/mcp)
+[MCP](https://docs.recoupable.dev/mcp)
 
 Connect Recoup to AI assistants via the Model Context Protocol.
 
-## API Sections
+## Explore the API
 
 The API includes these major sections. Use these links to jump to the right area.
 
@@ -79,7 +84,7 @@ The API includes these major sections. Use these links to jump to the right area
 
 Recoup artist and track discovery, current metrics, activities and playlists; web research, upcoming events, and stored play-count measurements.
 
-[Content Creation](https://docs.recoupable.dev/api-reference/content/create)
+[Content creation](https://docs.recoupable.dev/api-reference/content/create)
 
 Generate images, videos, and captions. Transcribe audio, edit content, upscale media, analyze videos, manage templates, and estimate costs.
 
@@ -87,19 +92,19 @@ Generate images, videos, and captions. Transcribe audio, edit content, upscale m
 
 Conversations with artist context. Create, stream, and generate messages. Copy messages, delete trailing messages, and manage chat history.
 
-[Social Media](https://docs.recoupable.dev/api-reference/connectors/list)
+[Social media](https://docs.recoupable.dev/api-reference/social/scrape)
 
 Spotify, Instagram, X (Twitter), and generic social scraping. Search artists, scrape profiles and comments, track trends, and manage OAuth connectors.
 
-[Releases](https://docs.recoupable.dev/api-reference/songs/songs)
+[Catalog](https://docs.recoupable.dev/api-reference/songs/songs)
 
 Songs, catalogs, and task management. Analyze songs, manage catalog collections, and schedule recurring tasks with cron-based automation.
 
-[Accounts](https://docs.recoupable.dev/api-reference/pulses/update)
+[Accounts](https://docs.recoupable.dev/api-reference/accounts/get)
 
 Accounts, organizations, subscriptions, pulses, notifications, sandboxes, and admin tools.
 
-[Release Players](https://docs.recoupable.dev/essentials/release-player)
+[Release players](https://docs.recoupable.dev/essentials/release-player)
 
 Hosted listening pages, embeddable players, event reporting and fan connections.
 
@@ -113,34 +118,20 @@ Content creation agent accessible via Slack. Generates images, videos, and capti
 
 API key authentication, account-scoped access, and organization-level permissions.
 
-## Quick Reference for LLMs
+## Read with an agent
 
-If you are an LLM navigating these docs, here is a summary of the endpoint structure:
+- [Documentation index](https://docs.recoupable.dev/llms.txt): all guides and endpoints, grouped by topic, with links to Markdown.
+- [Full documentation](https://docs.recoupable.dev/llms-full.txt): the complete documentation and operation schemas in one text file.
+- [API overview](https://docs.recoupable.dev/api-reference): browse endpoints by topic. Each reference includes its method, path, authentication, request, responses, and specification.
+- **Page Markdown:** use **Copy page** or **View as Markdown** on any page. You can also append `.md` to a page URL, or request it with `Accept: text/markdown`.
 
-- **`/api/artists/*`** — Artist management (list, create, socials, socials-scrape, profile)
-- **`/api/research/*`** — Artist and track search, lookup, profile, current metrics, audience, related artists, URLs, playlists, catalog entries and activities; track statistics and measurements; web, deep and people research, extraction, enrichment and events. See each operation's contract for provider mapping and coverage limits.
-- **`/api/content/*`** — Content creation (create, generate-image, generate-video, generate-caption, transcribe-audio, edit, upscale, analyze-video, templates, validate, estimate)
-- **`/api/chat/*`** — Chat (chats, artist, messages, messages-copy, messages-trailing-delete, create, update, delete, runs, runs-status, stream, compact)
-- **Songs and catalogs** — Read songs with `/api/songs`; import songs into an accessible catalog with `/api/catalogs/songs`. Analysis, catalog management and catalog-song reads/deletes have their own references. [Standalone song creation is not available](https://docs.recoupable.dev/api-reference/songs/create).
-- **`/api/tasks/*`** — Task automation (get, create, update, delete, runs)
-- **`/api/spotify/*`** — Spotify (search, artist, artist-albums, artist-top-tracks, album)
-- **`/api/instagram/*`** — Instagram (comments, profiles)
-- **`/api/x/*`** — X/Twitter (search, trends)
-- **`/api/connectors/*`** — OAuth connectors (list, authorize, disconnect)
-- **`/api/accounts/*`** — Accounts (get, id, create, update, add-artist)
-- **`/api/organizations/*`** — Organizations (list, create, add-artist)
-- **`/api/sandboxes/*`** — Sandboxes (list, create, snapshot, delete, setup, file, upload)
-- **`/api/players/*`** — Release Players (list, create, update, activity and fans)
-- **`/api/content-agent/*`** — Content agent webhooks (webhook, callback)
-- **`/api/agents/*`** — Agent onboarding (signup, verify) — no auth required
+Use the exact method and path in the endpoint reference; navigation labels are summaries.
+Check availability notes before calling an operation. A pending or unavailable feature is
+not a callable endpoint. Keep anonymous website tools separate from authenticated account operations.
 
-Base URL: `https://api.recoupable.dev/api`
+## Need help?
 
-[OpenAPI Specification](https://github.com/recoupable/marketing/tree/main/content/docs/source/api-reference/openapi)
-
-## Need Help?
-
-[Contact Support](mailto:agent@recoupable.dev)
+[Contact support](mailto:agent@recoupable.dev)
 
 Reach out to our team at [agent@recoupable.dev](mailto:agent@recoupable.dev) for assistance with the Recoup API.
 
@@ -297,692 +288,6 @@ Schedule and automate recurring tasks.
 ## Support
 
 If you need help or have questions about the API, please contact our support team at [agent@recoupable.dev](mailto:agent@recoupable.dev).
-
-
-# Recoup SDKs: Go and Python clients for the music API
-
-Source: https://docs.recoupable.dev/sdks
-
-Install the official Recoup Python SDK from PyPI, the Go SDK from its module registry, and the Node CLI from npm. Includes authentication, response handling, and package links.
-
-Use the official Recoup clients to call the platform's JSON API from your application.
-Both SDKs support an API key or an existing Bearer token, bounded responses,
-structured HTTP errors, and an account-identity helper. Their licenses are MIT.
-
-## Packages
-
-| Language | Package | Availability |
-| --- | --- | --- |
-| Go 1.23+ | [github.com/recoupable/marketing/sdk/go](https://pkg.go.dev/github.com/recoupable/marketing/sdk/go@v0.1.0) | Version `v0.1.0` is published and indexed. |
-| Python 3.10+ | [recoupable on PyPI](https://pypi.org/project/recoupable/0.1.0/) | Version `0.1.0` is published. |
-| Node.js CLI | [@recoupable/cli on npm](https://www.npmjs.com/package/@recoupable/cli) | The terminal client is published. See the [CLI guide](https://docs.recoupable.dev/cli) for supported commands. |
-
-The Go and Python SDKs handle JSON endpoints. They do not implement streaming,
-multipart uploads, OAuth login, automatic pagination, or generated methods for
-every endpoint. Use each endpoint's reference to check its availability, required
-permissions, request shape, and response type. A package installation does not
-grant account access.
-
-## Go
-
-Install the published version:
-
-```sh
-go get github.com/recoupable/marketing/sdk/go@v0.1.0
-```
-
-Read an existing API key from your application's secret environment:
-
-```go
-package main
-
-import (
-    "context"
-    "log"
-    "os"
-
-    recoupable "github.com/recoupable/marketing/sdk/go"
-)
-
-func main() {
-    client, err := recoupable.New(recoupable.Options{
-        APIKey: os.Getenv("RECOUP_API_KEY"),
-    })
-    if err != nil { log.Fatal(err) }
-    account, err := client.GetAccountID(context.Background())
-    if err != nil { log.Fatal(err) }
-    log.Print(account.AccountID)
-}
-```
-
-Use `Options{AccessToken: ...}` for an existing Bearer token. The generic
-`Request(ctx, method, path, query, body, out)` method supports other documented
-JSON endpoints. Pass query parameters as `url.Values` and an unencoded `/api/` path.
-See the [Go package reference](https://pkg.go.dev/github.com/recoupable/marketing/sdk/go@v0.1.0)
-for method signatures and error types.
-
-## Python
-
-Install the published version:
-
-```sh
-python -m pip install recoupable==0.1.0
-```
-
-```python
-import os
-from recoupable import Client
-
-client = Client(api_key=os.environ["RECOUP_API_KEY"])
-account = client.get_account_id()
-print(account["accountId"])
-```
-
-Use `Client(access_token=...)` for an existing Bearer token. The generic
-`request(method, path, query=..., body=...)` method returns decoded JSON or `None`
-for an empty successful response. Read the [Python client reference](https://github.com/recoupable/marketing/tree/main/sdk/python)
-for configuration and error handling.
-
-## Authentication and response handling
-
-Supply exactly one credential. Create a key in [Recoup account settings](https://chat.recoupable.dev/keys),
-or follow the [authentication guide](https://docs.recoupable.dev/authentication) for supported access methods.
-The default API origin is `https://api.recoupable.dev`. A custom HTTPS origin is
-an explicit destination for your credential. Redirects are not followed.
-
-Both clients cap responses at 16 MiB by default and accept empty successful
-responses. Python uses a 30-second timeout per blocking socket operation; Go
-uses a 30-second total request deadline and supports earlier context deadlines.
-These limits are configurable.
-
-HTTP errors retain their status and headers, including `Retry-After`; oversized
-error bodies are truncated. Inspect the error's fields when deciding what to do.
-Error messages omit credentials and response bodies. Treat a response body as
-potentially private if you log it.
-
-The SDKs add no retry loop. Go's standard HTTP transport may retry an idempotent
-request on a reused connection. A transport failure can occur after a write has
-completed; check the operation's outcome before repeating it.
-
-
-# Recoup public website API
-
-Source: https://docs.recoupable.dev/public-website-api
-
-Search and read public Recoup content, use bounded website tools, and batch independent operations without an account.
-
-The public website API searches and reads published Recoup pages, calculates
-workflow scenarios from supplied inputs, and prepares unsubmitted project briefs.
-It is free and requires no account, API key, or payment method.
-
-Music-platform operations use the separate authenticated
-[platform API](https://docs.recoupable.dev/quickstart) and [platform MCP](https://docs.recoupable.dev/mcp-oauth). Website tools cannot
-read account data, manage artists, publish content, or send an inquiry.
-
-## Specification and first request
-
-The [website OpenAPI specification](https://recoupable.dev/openapi.json) defines
-every HTTP operation, its input and response schemas, and typed errors.
-The [API catalog](https://recoupable.dev/.well-known/api-catalog) links this
-specification alongside the platform specifications.
-
-```bash
-curl -i 'https://recoupable.dev/agent-api/v1/search?query=royalty&limit=1'
-```
-
-The response contains `results`, `total`, and `nextCursor`. An empty result list
-is a successful search. Use a returned content ID with
-`GET /agent-api/v1/read?id=CONTENT_ID`; continue at the returned `nextOffset`
-until it is null. The reader accepts registry IDs, never arbitrary private URLs.
-
-Use `GET /agent-api/v1/markdown?path=/blog` for a complete public page as Markdown.
-The [website agent guide](https://recoupable.dev/agents.md) explains all five tools,
-pagination, draft behavior, and the browser interface.
-
-## Batch independent operations
-
-`POST https://recoupable.dev/agent-api/v1/batch` accepts one to ten operations.
-
-```bash
-curl 'https://recoupable.dev/agent-api/v1/batch' \
-  -H 'Content-Type: application/json' \
-  --data '{"operations":[{"name":"search_recoup","arguments":{"query":"royalty","limit":1}},{"name":"read_recoup_page","arguments":{"id":"page:/services","maxLength":500}}]}'
-```
-
-The `results` array preserves input order. Each entry has its own `status` and
-`result` or `error`. An individual failure does not cancel successful reads.
-The batch is not a transaction. Its entire request body must fit within 16 KB.
-Draft operations return `submitted: false`; nothing is sent or saved as a lead.
-
-## Hosted quotas and errors
-
-HTTP and MCP website tools share a limit of 120 requests per 60-second fixed
-window, per IP address and serving region. A batch counts as one request.
-`RateLimit-Limit` and `RateLimit-Policy` describe that enforced policy on live
-responses. Regional counters are not a global account allowance.
-
-On HTTP 429, wait the `Retry-After` duration before retrying. HTTP 503 means the
-request could not be completed; retry later. JSON tool endpoints return structured
-errors with a code, message, and recovery guidance for invalid arguments or missing content.
-Local development does not enforce the hosted quota.
-
-## Versioning and deprecation
-
-Website HTTP operations use `/agent-api/v1`. Additive response fields are
-compatible; clients should ignore fields they do not recognize. Incompatible
-changes require a new major URL version.
-
-No v1 deprecation or sunset is scheduled. A future retirement will be announced
-in the [agent guide](https://recoupable.dev/agents.md) with a migration guide and
-`Deprecation`, `Sunset`, and `Link` response headers when dates are known.
-This policy applies to the public website API.
-
-## MCP connection
-
-Connect to `https://recoupable.dev/mcp` over Streamable HTTP without credentials.
-The [public manifest](https://recoupable.dev/.well-known/mcp.json) identifies
-the server. Its five tools share the website HTTP capabilities and hosted quota.
-To use your music-platform account, follow [MCP OAuth](https://docs.recoupable.dev/mcp-oauth) instead.
-
-
-# CLI
-
-Source: https://docs.recoupable.dev/cli
-
-Install the Recoup CLI and interact with the platform from your terminal.
-
-The Recoup CLI (`@recoupable/cli`) wraps the Recoup API for terminal-first workflows. It's available as a global npm package and comes pre-installed in sandbox environments.
-
-> **Note**
-> **The CLI is in beta.** The reference below follows the v0.1.15 source command set. Check `recoup --version` and `--help` for the package installed in your environment. For research workflows and most content operations, call the [REST API](https://docs.recoupable.dev/api-reference) directly — the CLI is gradually catching up.
->
-> **Agents:** if a command isn't listed below, don't retry — fall back to the corresponding REST endpoint linked under each command.
-
-## Install
-
-```bash
-npm install -g @recoupable/cli
-```
-
-## Authenticate
-
-Set your API key as an environment variable:
-
-```bash
-export RECOUP_API_KEY=your-api-key
-```
-
-Verify it works:
-
-```bash
-recoup whoami
-```
-
-> **Tip**
-> Get an API key from the [API Keys page](https://chat.recoupable.dev/keys) or use the [agent signup](https://docs.recoupable.dev/agents) for instant key generation.
-
-## Configuration
-
-| Variable | Required | Default | Description |
-| --- | --- | --- | --- |
-| `RECOUP_API_KEY` | Yes | — | Your Recoup API key |
-| `RECOUP_API_URL` | No | `https://recoup-api.vercel.app` | API base URL override; set `https://api.recoupable.dev` to use the canonical API domain |
-
-All commands support `--json` for machine-readable output and `--help` for usage info.
-
----
-
-## Commands
-
-### whoami
-
-Show the authenticated account. See [`GET /api/accounts/id`](https://docs.recoupable.dev/api-reference/accounts/id).
-
-```bash
-recoup whoami
-recoup whoami --json
-```
-
-### orgs
-
-List organizations. See [`GET /api/organizations`](https://docs.recoupable.dev/api-reference/organizations/list).
-
-```bash
-recoup orgs list
-recoup orgs list --account <accountId>
-```
-
-### artists
-
-List artists. See [`GET /api/artists`](https://docs.recoupable.dev/api-reference/artists/list).
-
-```bash
-recoup artists list
-recoup artists list --org <orgId>
-recoup artists list --account <accountId>
-```
-
-### emails
-
-Send an email to the authenticated account. See [`POST /api/emails`](https://docs.recoupable.dev/api-reference/emails/create).
-
-```bash
-recoup emails --subject "Pulse Report" --text "Here's your weekly summary."
-recoup emails --subject "Update" --html "<h1>Report</h1><p>Details here.</p>"
-```
-
-| Flag | Required | Description |
-| --- | --- | --- |
-| `--subject <text>` | No | Email subject line; defaults from the body when omitted |
-| `--text <body>` | No | Plain text or Markdown body |
-| `--html <body>` | No | Raw HTML body (takes precedence over `--text`) |
-| `--cc <email>` | No | CC recipient (repeatable) |
-| `--chat-id <id>` | No | Chat ID for a chat link in the email footer |
-| `--account <accountId>` | No | Send to a specific account (org keys only) |
-
-### chats
-
-Manage chats. See [`GET /api/chats`](https://docs.recoupable.dev/api-reference/chat/chats) and [`POST /api/chats`](https://docs.recoupable.dev/api-reference/chat/create).
-
-```bash
-recoup chats list
-recoup chats create --name "My Topic"
-recoup chats create --name "My Topic" --artist <artistId>
-```
-
-### sandboxes
-
-Manage sandboxes. See [`GET /api/sandboxes`](https://docs.recoupable.dev/api-reference/sandboxes/list) and [`POST /api/sandboxes`](https://docs.recoupable.dev/api-reference/sandboxes/create).
-
-```bash
-recoup sandboxes list
-recoup sandboxes create
-recoup sandboxes create --command "ls -la"
-```
-
-### tasks
-
-Check background task status. See [`GET /api/tasks/runs`](https://docs.recoupable.dev/api-reference/tasks/runs).
-
-```bash
-recoup tasks status --run <runId>
-```
-
-### songs
-
-Run AI music analysis. See [`POST /api/songs/analyze`](https://docs.recoupable.dev/api-reference/songs/analyze) and [`GET /api/songs/analyze/presets`](https://docs.recoupable.dev/api-reference/songs/analyze-presets).
-
-```bash
-recoup songs presets
-recoup songs analyze --preset catalog_metadata --audio https://example.com/track.mp3
-recoup songs analyze --prompt "Describe the production style" --audio https://example.com/track.mp3
-```
-
-Exactly one of `--preset` or `--prompt` is required, together with `--audio`. The API rejects both selectors together and verifies the audio URL before inference. The coordinated CLI validation fix reports these errors before sending a request; older installed packages may send them to the API.
-
-| Flag | Required | Description |
-| --- | --- | --- |
-| `--preset <name>` | Conditional | Curated analysis preset. Required when `--prompt` is omitted. |
-| `--prompt <text>` | Conditional | Custom text prompt. Required when `--preset` is omitted. |
-| `--audio <url>` | Yes | Public URL to an audio file (MP3, WAV, FLAC), required for every preset and custom prompt. Metadata-only analysis is not supported. |
-| `--max-tokens <n>` | No | Max tokens to generate (default 512). |
-
----
-
-## content
-
-Content creation pipeline — generate AI-powered social videos for artists.
-
-### List templates
-
-```bash
-recoup content templates
-```
-
-### Validate an artist
-
-Check that an artist has the required assets before creating content. See [`GET /api/content/validate`](https://docs.recoupable.dev/api-reference/content/validate).
-
-```bash
-recoup content validate --artist <artistAccountId>
-```
-
-### Estimate cost
-
-Preview estimated cost and duration before kicking off the pipeline. See [`GET /api/content/estimate`](https://docs.recoupable.dev/api-reference/content/estimate).
-
-```bash
-recoup content estimate
-recoup content estimate --lipsync --batch 2 --compare
-```
-
-### Create content
-
-Run the full content-creation pipeline for an artist. See [`POST /api/content/create`](https://docs.recoupable.dev/api-reference/content/create).
-
-```bash
-recoup content create --artist <artistAccountId>
-recoup content create --artist <artistAccountId> --template <name> --lipsync --upscale
-```
-
-| Flag | Required | Description |
-| --- | --- | --- |
-| `--artist <id>` | Yes | Artist account ID |
-| `--template <name>` | No | Template name (default: random) |
-| `--lipsync` | No | Enable lipsync mode |
-| `--upscale` | No | Enable upscaling |
-| `--caption-length <n>` | No | Max caption length in characters |
-
-> **Tip**
-> For finer-grained control (individual image, video, caption, transcription, edit, upscale, or analyze operations), call the [content REST endpoints](https://docs.recoupable.dev/api-reference/content/generate-image) directly. Those primitives aren't yet exposed as individual CLI subcommands.
-
-
-# Claude
-
-Source: https://docs.recoupable.dev/claude
-
-Connect Claude to Recoup and install optional workflow instructions.
-
-Add `https://api.recoupable.dev/mcp` in Claude's remote connector controls and complete browser OAuth using your real Recoup account. See [MCP OAuth](https://docs.recoupable.dev/mcp-oauth) for the dated client verification record and troubleshooting.
-
-After connecting, refresh tools and call the discovered `list_artists` tool. Report success after that read succeeds; a legitimate empty roster does not require creating another account.
-
-For workflow instructions, install the consolidated Recoup package from the [Recoup marketplace](https://github.com/recoupable/marketplace), using the manifest/package name shown there. Skills-only installation with `npx skills add recoupable/skills` does not configure MCP or create credentials. Standalone platform/content/research packages remain separate distributions; their installed versions may contain older instructions until their reconciliation release is installed.
-
-MCP OAuth credentials stay in Claude. A REST-only script needs a separately configured API key or application-provided access token. Use a supported secret facility or a user-approved environment file; never paste keys into Profile or Global instructions. Do not register a disposable account to recover customer access.
-
-Start a fresh conversation and verify tool discovery and artist access again. Browser sign-in, plugin installation and token refresh are separate checks; none alone proves the complete workflow.
-
-
-# MCP
-
-Source: https://docs.recoupable.dev/mcp
-
-Connect an agent to Recoup through OAuth and discover its authorized tools.
-
-Connect your host to `https://api.recoupable.dev/mcp` using OAuth. Sign in to your real Recoup account and approve the requested scope. Follow the [OAuth setup guide](https://docs.recoupable.dev/mcp-oauth).
-
-Use `tools/list` after connection and after changing consent. The catalog depends on the grant, credential type and deployed server. A fixed count is not a compatibility contract. For example, discover `list_artists` and call it with its returned schema to verify access. An empty roster is a valid result.
-
-`mcp:tools` grants the business catalog, including writes and paid generation. Narrow grants remain restricted until broader consent is approved. Account membership determines accessible personal and organization data; OAuth consent does not create organization access.
-
-Sandbox command tools previously shown on this page are absent from the current registry. Do not call `prompt_sandbox`, `run_sandbox_command`, or infer that every REST endpoint is exposed as MCP. Use documented [REST sandbox operations](https://docs.recoupable.dev/api-reference/sandboxes/create) with a separate authorized credential when required.
-
-For an API-key MCP connection, configure `Authorization: Bearer YOUR_RECOUP_API_KEY` in the client's secret settings. The `x-api-key` header is for [REST requests](https://docs.recoupable.dev/authentication). Store credentials in the client's secret facility or environment. Never paste them into global instructions or extract host-managed OAuth tokens for REST.
-
-## Public generated files
-
-`generate_txt_file` and `create_knowledge_base` store content in public Supabase
-Storage. Anyone with a returned URL can read it without authentication. Use
-these tools only for content approved for public access, not confidential files.
-
-For TXT results, prefer `txtUrl` and `metadataUrl`. The deprecated `arweaveUrl`
-and `metadataArweave` fields remain aliases of those HTTPS URLs, not transaction
-IDs. Metadata is best-effort, so `metadataUrl` and its alias can be null.
-Knowledge entries keep their existing `url`, `name` and `type` fields.
-
-Generated and edited image results retain `imageUrl`; it can be null if storage
-fails. A successful tool envelope does not by itself establish a stored image.
-Existing Arweave links remain readable. These changes do not migrate private
-Files or [release-pack source audio](https://docs.recoupable.dev/release-packs).
-
-## Context results
-
-The [Context reference](https://docs.recoupable.dev/api-reference/context/operate) pairs each supported action
-with its success status, response model and synthetic request/result examples.
-Use the status declared for that action: `ingest` returns 202, while the specific
-catalog, artist, release and text ingestion actions return 200. A 202 verification
-receipt means queued after existing readiness checks, not completed work.
-HTTP/standard MCP `read` may include a metadata-only `material_evidence` receipt;
-delegated OAuth omits it. The examples do not verify hosted access or enable collection.
-
-## Plan a catalog lookup
-
-A catalog manager with an existing catalog Context request can plan a lookup for
-its current expanded recording members. Standard MCP uses `context` with
-`action: plan_catalog_members`; delegated OAuth uses `plan_music_catalog_research`
-with the same input fields and no `action`. Discover the tool in the connected
-client before use; this source mapping does not prove hosted availability.
-
-Choose `recording_candidates`, `recording_work_candidates` or `platform_metadata`.
-These plan possible recording matches, linked works or platform track information.
-The response preserves the existing module values and node IDs, returns each node
-blocked and has `collectionPermitted: false`. It does not fetch data, verify rights,
-start collection or grant spending permission. The [Context reference](https://docs.recoupable.dev/api-reference/context/operate)
-lists all accepted compatibility values, required IDs, page cursors and the complete response.
-
-## Continue a catalog case
-
-The source contract adds `save_catalog_case`, `read_catalog_case` and
-`list_catalog_cases` to standard MCP; delegated OAuth excludes them. Discover the
-tools in the connected host before using them. They also use the `context` tool
-with the corresponding `action`. The catalog-case database and API release must
-be deployed before this source contract is available.
-
-A case keeps versioned sources, assessments, findings, proposed actions, attempts
-and outcomes for the authorized workspace. No artist or ingestion request is
-required. The stored snapshot is `customer_assertion` evidence and always returns
-`external_actions: unsupported`: saving a record does not submit a registration,
-send a claim, confirm a provider decision or verify a bank receipt.
-
-For a new case, save with `expected_revision: 0` and `snapshot.revision: 0`.
-For subsequent saves, use the current revision. Supply a unique idempotency key
-for each new save. After an uncertain response, retry the unchanged payload with
-the same key and expected revision.
-Reads can withhold withdrawn evidence and its dependent records; explicitly
-reassemble a partial snapshot before another save. The [Context reference](https://docs.recoupable.dev/api-reference/context/operate)
-defines the complete bounded schema, historical-source rules, revision conflicts,
-response fields and list pagination.
-
-## Check an application proposal
-
-The pending standard MCP tool `validate_application_registration` checks an
-authorized workspace's proposed name, environment, exact origins and return URLs.
-It returns `persisted: false` and `origins_verified: false`; it does not register
-an application, prove domain ownership or issue application credentials.
-Delegated OAuth excludes this tool, including grants with `mcp:tools`. Discover
-it in a standard connection before use. See the [proposal preflight reference](https://docs.recoupable.dev/api-reference/applications/validate-registration)
-for inputs, normal authentication effects and the limits of a successful result.
-
-## Release Packs
-
-When deployed and exposed by the current grant, the pack catalog includes
-`prepare_release_pack`, `get_release_pack`, `estimate_release_pack`,
-`generate_release_pack`, `retry_release_pack`, `upload_release_pack_asset` and
-`export_release_pack`. These use the same account ownership, brief revisions,
-complete quotes and budget limits as REST. No existing artist or GitHub workspace
-is required. Use returned schemas and identifiers; preparation does not authorize
-paid generation. See [Release Packs](https://docs.recoupable.dev/release-packs) for first use and upload limits.
-
-
-# Connect an agent
-
-Source: https://docs.recoupable.dev/mcp-oauth
-
-Connect an MCP client to Recoup with OAuth and account-authorized tools.
-
-Use this URL in your agent's remote MCP settings:
-
-```text
-https://api.recoupable.dev/mcp
-```
-
-Select **OAuth**. Recoup supports [published client metadata (CIMD)](https://docs.recoupable.dev/mcp-cimd) and **automatic registration** (also called Dynamic Client Registration or DCR). Sign in to your existing Recoup account and allow the requested access. No API key or client secret needs to be copied.
-
-## What your agent can do
-
-Request **`mcp:tools`** for the full catalog: a scope-dependent catalog covering artists and socials, catalogs, chats, scheduled tasks, research/search, Spotify, YouTube revenue, image/audio/video operations, files, Context, Sites, email and support.
-
-The consent screen explains that this permission includes reading, creating, editing and deleting data, sending messages, publishing content, and using paid generation tools. It covers personal and organization workspaces your account can access. Resource ownership is checked on each call. Private conversations and scheduled tasks remain account-bound.
-
-| Permission | Access |
-| --- | --- |
-| `mcp:tools` | Full business-tool catalog across accessible workspaces |
-| `mcp:read` | Original personal-only `list_artists`, `get_artist_socials`, `get_chats` |
-| `mcp:write` | Original personal-only `create_new_artist`, `update_account_info` |
-
-Existing limited grants do **not** expand automatically. Reconnect with `mcp:tools`, review the broader permission, and refresh your client's tool catalog. Clients requesting the `mcp:read` + `mcp:write` pair keep the five-tool experience.
-
-OAuth never exposes `get_api_key`: it does not return bearer credentials to the model. Composio integrations and sandbox execution are separate from the registered Recoup MCP catalog.
-
-Email uses the same recipient restrictions as the API and checks any referenced conversation's owner. Review recipients and content before sending. `create_knowledge_base` and `generate_txt_file` write to public Supabase Storage: anyone with a returned URL can read the content without authentication. Use only content approved for public access, never confidential material. Existing Arweave links remain readable; these tools do not create new Arweave uploads. Video generation returns an account-bound `id`; pass that entire value as `video_id` to the retrieval tools. Older raw provider video IDs cannot be used with OAuth. Task-run status requires verifiable caller ownership and returns status fields, not raw provider payloads or logs.
-
-The platform verification results below describe the original five-tool catalog unless explicitly stated otherwise. They do not establish full-catalog production verification.
-
-New connections stay authorized until you disconnect them, including when inactive. Five-minute access tokens renew through rotating refresh tokens. Disconnect an agent from [Connected agents](https://app.recoupable.dev/oauth/connections) to revoke its access and refresh tokens immediately.
-
-Connections approved under the previous 30-day policy keep their original expiration. Reconnect once to approve access until disconnected.
-
-## Claude
-
-1. Open **Customize → Connectors → Add custom connector**.
-2. Name it **Recoup** and enter the MCP URL above.
-3. Choose **Sign in now**. **Register automatically** uses DCR; **published identity** uses CIMD. The production client tests below used DCR.
-4. Connect, sign in to Recoup, and select **Allow access**.
-5. In a new chat, ask Claude to list your Recoup artists. Review individual tool-use approvals when prompted.
-
-Claude web was tested against production on October 7, 2026: connection, five-tool discovery, artist read, temporary artist creation/update/readback, artist socials, and another read after access-token expiry passed. The temporary artist was removed afterward.
-
-Claude Desktop 2.26454.0 was also tested on October 7, 2026 using the same authorized connector: tool discovery, artist listing, temporary artist creation/update/readback passed. The test artist was removed afterward. Separate disconnect/reconnect checks are still pending. Local stdio configuration is a different transport. See [Claude's remote connector guide](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp).
-
-## ChatGPT
-
-In the interface tested on October 7, 2026:
-
-1. Open **Plugins → Add → Add custom MCP server**.
-2. Enter **Recoup**, the MCP URL, and **OAuth**.
-3. Under advanced OAuth settings, confirm **Dynamic Client Registration (DCR)** and request `mcp:tools` for full access.
-4. Create the plugin, connect it, and complete Recoup consent.
-5. Start a chat with Recoup enabled and request an artist list.
-
-ChatGPT web was tested against production on October 7, 2026: OAuth login, artist listing, and temporary artist creation/update/readback passed. The temporary artist was removed afterward. Refresh and disconnect/reconnect checks are pending. Workspace policy and account access may limit custom integrations. UI labels can differ; see [OpenAI's MCP setup documentation](https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt).
-
-## Codex
-
-```bash
-codex mcp add recoup --url https://api.recoupable.dev/mcp
-codex mcp login recoup --scopes mcp:tools
-```
-
-Complete the browser sign-in and consent, then ask Codex to list your Recoup artists. Codex CLI 0.161.0 passed production OAuth login and an actual `list_artists` call on October 7, 2026. Version 0.145.0 failed issuer-response validation; upgrade if using that version. Writes, refresh, and disconnect/reconnect remain unverified in Codex. Desktop and IDE surfaces must be verified separately. See [Codex MCP configuration](https://developers.openai.com/codex/mcp).
-
-## Cursor
-
-Add a remote server to your project's `.cursor/mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "recoup": {
-      "url": "https://api.recoupable.dev/mcp"
-    }
-  }
-}
-```
-
-Open Cursor's MCP settings and authenticate. Cursor Desktop passed production OAuth connection, five-tool discovery, and an actual `list_artists` call on October 7, 2026. Writes, refresh, disconnect/reconnect, and Cursor web/agent journeys remain unverified. See [Cursor's MCP guide](https://cursor.com/docs/mcp) for the current setup and workspace restrictions.
-
-## Other agents and callbacks
-
-Use a remote Streamable HTTP MCP client supporting OAuth discovery, authorization code flow with PKCE S256, and DCR. Recoup publishes:
-
-- Resource metadata: `https://api.recoupable.dev/.well-known/oauth-protected-resource/mcp`
-- Authorization-server metadata: `https://api.recoupable.dev/.well-known/oauth-authorization-server/api/oauth`
-- Resource: `https://api.recoupable.dev/mcp`
-
-Register the exact callback used by your client. Registration binds callbacks to that client; there is no shared wildcard callback list. Hosted callbacks use HTTPS. Native clients use validated loopback callbacks. Do not substitute `localhost` for `127.0.0.1` or edit a callback after registration.
-
-A generic MCP SDK client has passed production reads, writes, refresh rotation, and revocation. That does not prove every agent surface. CIMD uses the same consent and permissions; see [CIMD requirements and verification status](https://docs.recoupable.dev/mcp-cimd). Full-tool consent includes accessible organization workspaces; the original limited grants remain personal-only.
-
-### Additional client setup paths
-
-The following paths were reviewed in official client documentation on October 7, 2026. **They have not been tested end to end against Recoup.** Use automatic registration and request `mcp:tools` for full access, or `mcp:read` / `mcp:write` for the limited personal tools. The client registers its callback; you do not need a Recoup platform-specific callback allowlist.
-
-| Client | Setup and callback guidance |
-| --- | --- |
-| [Perplexity](https://www.perplexity.ai/help-center/en/articles/13915507-adding-custom-remote-connectors) | Add a custom remote connector with OAuth and DCR. Use per-user authentication. Documented callbacks are `https://www.perplexity.ai/rest/connections/oauth_callback` and, for enterprise, `https://enterprise.perplexity.ai/rest/connections/oauth_callback`. |
-| [Claude Code](https://code.claude.com/docs/en/mcp) | Add Recoup as an HTTP server and authenticate through `/mcp` inside Claude Code. Automatic registration uses a localhost callback; `--callback-port` can fix its port when required. |
-| [VS Code](https://code.visualstudio.com/api/extension-guides/ai/mcp#authorization) | Add an HTTP server in `.vscode/mcp.json`. OAuth supports DCR; documented callbacks include `http://127.0.0.1:33418` and `https://vscode.dev/redirect`. Preserve the callback supplied by your VS Code surface. |
-| [Gemini CLI](https://geminicli.com/docs/tools/mcp-server/) | Configure the MCP URL as `httpUrl` and authenticate with `/mcp auth recoup` inside the Gemini CLI chat. DCR uses `http://localhost:<random-port>/oauth/callback` unless configured otherwise. |
-| [OpenCode](https://opencode.ai/docs/mcp-servers/) | Add a remote MCP server and run `opencode mcp auth recoup`. OAuth supports automatic registration. Let the client supply its callback. |
-| [Kiro](https://kiro.dev/docs/mcp/configuration/) | Add the remote MCP URL and use DCR. Set `oauth.oauthScopes` to Recoup's scopes; the default identity scopes do not grant Recoup tool access. Use the client's loopback callback. |
-| [n8n](https://docs.n8n.io/integrations/builtin/credentials/mcp/) | Create an MCP OAuth credential with **Use Dynamic Client Registration** enabled. Use the exact callback shown by your n8n instance. |
-| [Copilot Studio](https://learn.microsoft.com/en-us/microsoft-copilot-studio/mcp-add-existing-server-to-agent) | Add an MCP tool using Streamable HTTP and OAuth dynamic discovery/registration. If setup asks for a callback, use the exact URL shown by Copilot Studio. |
-
-Documented compatibility is a setup starting point. A successful connection still needs an actual tool call before it can be considered verified. Refresh and disconnect/reconnect should be checked before relying on unattended access.
-
-## Disconnect
-
-Open [Connected agents](https://app.recoupable.dev/oauth/connections) and disconnect the selected agent. Future requests and refreshes stop; already completed changes remain. Other connections are independent. Reconnect from the agent when you want to grant access again.
-
-## Troubleshooting
-
-| Symptom | What to do |
-| --- | --- |
-| Custom connector option missing | Check your client's plan and workspace-admin permissions. |
-| Published identity / CIMD unavailable or fails | Check the [metadata requirements](https://docs.recoupable.dev/mcp-cimd), or choose automatic registration / DCR if your client offers it. |
-| Connection request expired | Restart Connect from the client; do not reuse an old consent URL. |
-| Wrong Recoup account | Use Switch before approving. |
-| Still seeing only five tools | Reconnect requesting `mcp:tools`, approve full access, then refresh the client tool catalog. |
-| Connected but no tool access | Check selected scopes, individual tool approvals, and whether the grant expired or was revoked. |
-| Organization artist missing | Reconnect with `mcp:tools` and verify your organization membership. |
-| `401` after disconnect | Expected: reconnect and approve a new grant. |
-| `429` | Respect `Retry-After`; avoid repeated registration attempts. |
-| `503` | Retry later; do not weaken authentication or callback checks. |
-| Write timed out | Read back the target before retrying. Artist creation is not guaranteed idempotent; an automatic retry may create a duplicate. |
-
-For clients without OAuth, [API-key authentication](https://docs.recoupable.dev/mcp) remains available. Keep keys out of model prompts and shared configuration. A stdio-only client needs a separately maintained adapter; the remote URL is not itself a stdio command.
-
-For help, contact [agent@recoupable.dev](mailto:agent@recoupable.dev). Include the client name, time, and error text; never include tokens, passwords, or API keys.
-
-Full OAuth MCP calls currently share account-level limits of 120 calls per minute
-and 30 calls per tool per minute across connected clients. See the
-[pinned rate-limit implementation](https://github.com/recoupable/api/blob/c25715ea1b5e31ac31d0079955b90dc1ce2f1631/lib/mcp/oauth/checkFullOAuthRateLimit.ts).
-The `compact_chats` MCP tool accepts up to 50 chats per call under the
-[pinned MCP guard](https://github.com/recoupable/api/blob/c25715ea1b5e31ac31d0079955b90dc1ce2f1631/lib/mcp/oauth/prepareFullOAuthTool.ts);
-this is an MCP limit, not a claimed REST request limit.
-
-
-# Published client metadata (CIMD)
-
-Source: https://docs.recoupable.dev/mcp-cimd
-
-Connect using an HTTPS client identity without dynamic registration.
-
-Recoup supports Client ID Metadata Documents (CIMD) alongside Dynamic Client Registration (DCR). A CIMD client uses the HTTPS URL of its public metadata document as its OAuth `client_id`. Recoup retrieves that document and validates the client's callbacks before asking you to approve access.
-
-Use the same MCP server URL: `https://api.recoupable.dev/mcp`. A compatible client can discover CIMD through `client_id_metadata_document_supported: true` in Recoup's [authorization-server metadata](https://api.recoupable.dev/.well-known/oauth-authorization-server/api/oauth). No vendor-specific registration or callback allowlist is needed.
-
-## Access and trust
-
-CIMD uses the same [permissions and consent](https://docs.recoupable.dev/mcp-oauth) as DCR. It does not bypass sign-in, PKCE, tool scope checks, grant expiry, or disconnection. Existing DCR connections continue to work.
-
-A client name or logo is self-declared metadata, not proof of vendor endorsement. Check the client identity and requested permissions before allowing access. Publishing a document does not authorize its client to access your account.
-
-## Client requirements
-
-- Serve JSON with HTTP 200 over public HTTPS on port 443. Redirects are rejected.
-- Set `client_id` to the exact document URL and include `client_name` and `redirect_uris`.
-- Use a document URL with an explicit path and without credentials, fragments, or dot path segments.
-- Use authorization code flow with PKCE S256 and `mcp:tools` for the full Recoup catalog, or `mcp:read` / `mcp:write` for the original limited personal tools.
-- Public clients should set `token_endpoint_auth_method` to `none`. Never publish client secrets or private keys.
-- Register exact callbacks. Hosted HTTP callbacks are rejected; native loopback callbacks support dynamic ports. `localhost` and `127.0.0.1` remain different hosts.
-
-Recoup limits each metadata/JWKS response to 16 KiB and each fetch to 2.5 seconds, including DNS resolution and body transfer. It rejects private, loopback, reserved, and mixed public/private DNS results and pins connections to a validated address. Remote JWKS retrieval follows the same network policy.
-
-Metadata caching respects freshness headers up to five minutes. `no-store`, `no-cache`, absent freshness information, or expired freshness causes a new fetch. A failed refresh does not reuse expired metadata.
-
-## Verification status
-
-The implementation has passed local production-provider tests for CIMD discovery, consent, token exchange, MCP access, refresh rotation, and revoked access. Network tests cover unsafe destinations, redirects, timeouts, response sizes, and concurrency limits.
-
-A local smoke test also retrieved the official Claude and Claude Code documents over real DNS/TLS, resolved them using the production provider, and checked Claude Code's dynamic loopback ports. This is metadata compatibility evidence, not a completed production user login through CIMD. The client-specific production results on [Connect an agent](https://docs.recoupable.dev/mcp-oauth) were obtained using DCR.
-
-Production verification on October 7, 2026 confirmed CIMD discovery with DCR still available and successfully started OAuth authorization interactions using the official Claude and Claude Code client IDs, including a dynamic localhost callback port. Completing user sign-in and a tool call through CIMD in production remains unverified.
-
-If a metadata host is unavailable or blocks server requests, CIMD fails closed. Use DCR if the client offers that choice, or retry after its metadata endpoint is restored.
-
-See the [MCP authorization specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization) and [CIMD draft 02](https://www.ietf.org/archive/id/draft-ietf-oauth-client-id-metadata-document-02.html). CIMD remains a draft specification; Recoup's provider currently implements draft 02.
 
 
 # Authentication
@@ -1362,6 +667,692 @@ Top-ups require `successUrl` on every request and a positive whole-cent multiple
 Scheduled task creation and updates can return a plan-limit 402; task reads do not run that gate. Free/Starter/Pro are technical entitlement values. Platform/Advisory/Build/Enterprise marketing offers describe commercial services; they are not interchangeable names.
 
 
+# Recoup SDKs: Go and Python clients for the music API
+
+Source: https://docs.recoupable.dev/sdks
+
+Install the official Recoup Python SDK from PyPI, the Go SDK from its module registry, and the Node CLI from npm. Includes authentication, response handling, and package links.
+
+Use the official Recoup clients to call the platform's JSON API from your application.
+Both SDKs support an API key or an existing Bearer token, bounded responses,
+structured HTTP errors, and an account-identity helper. Their licenses are MIT.
+
+## Packages
+
+| Language | Package | Availability |
+| --- | --- | --- |
+| Go 1.23+ | [github.com/recoupable/marketing/sdk/go](https://pkg.go.dev/github.com/recoupable/marketing/sdk/go@v0.1.0) | Version `v0.1.0` is published and indexed. |
+| Python 3.10+ | [recoupable on PyPI](https://pypi.org/project/recoupable/0.1.0/) | Version `0.1.0` is published. |
+| Node.js CLI | [@recoupable/cli on npm](https://www.npmjs.com/package/@recoupable/cli) | The terminal client is published. See the [CLI guide](https://docs.recoupable.dev/cli) for supported commands. |
+
+The Go and Python SDKs handle JSON endpoints. They do not implement streaming,
+multipart uploads, OAuth login, automatic pagination, or generated methods for
+every endpoint. Use each endpoint's reference to check its availability, required
+permissions, request shape, and response type. A package installation does not
+grant account access.
+
+## Go
+
+Install the published version:
+
+```sh
+go get github.com/recoupable/marketing/sdk/go@v0.1.0
+```
+
+Read an existing API key from your application's secret environment:
+
+```go
+package main
+
+import (
+    "context"
+    "log"
+    "os"
+
+    recoupable "github.com/recoupable/marketing/sdk/go"
+)
+
+func main() {
+    client, err := recoupable.New(recoupable.Options{
+        APIKey: os.Getenv("RECOUP_API_KEY"),
+    })
+    if err != nil { log.Fatal(err) }
+    account, err := client.GetAccountID(context.Background())
+    if err != nil { log.Fatal(err) }
+    log.Print(account.AccountID)
+}
+```
+
+Use `Options{AccessToken: ...}` for an existing Bearer token. The generic
+`Request(ctx, method, path, query, body, out)` method supports other documented
+JSON endpoints. Pass query parameters as `url.Values` and an unencoded `/api/` path.
+See the [Go package reference](https://pkg.go.dev/github.com/recoupable/marketing/sdk/go@v0.1.0)
+for method signatures and error types.
+
+## Python
+
+Install the published version:
+
+```sh
+python -m pip install recoupable==0.1.0
+```
+
+```python
+import os
+from recoupable import Client
+
+client = Client(api_key=os.environ["RECOUP_API_KEY"])
+account = client.get_account_id()
+print(account["accountId"])
+```
+
+Use `Client(access_token=...)` for an existing Bearer token. The generic
+`request(method, path, query=..., body=...)` method returns decoded JSON or `None`
+for an empty successful response. Read the [Python client reference](https://github.com/recoupable/marketing/tree/main/sdk/python)
+for configuration and error handling.
+
+## Authentication and response handling
+
+Supply exactly one credential. Create a key in [Recoup account settings](https://chat.recoupable.dev/keys),
+or follow the [authentication guide](https://docs.recoupable.dev/authentication) for supported access methods.
+The default API origin is `https://api.recoupable.dev`. A custom HTTPS origin is
+an explicit destination for your credential. Redirects are not followed.
+
+Both clients cap responses at 16 MiB by default and accept empty successful
+responses. Python uses a 30-second timeout per blocking socket operation; Go
+uses a 30-second total request deadline and supports earlier context deadlines.
+These limits are configurable.
+
+HTTP errors retain their status and headers, including `Retry-After`; oversized
+error bodies are truncated. Inspect the error's fields when deciding what to do.
+Error messages omit credentials and response bodies. Treat a response body as
+potentially private if you log it.
+
+The SDKs add no retry loop. Go's standard HTTP transport may retry an idempotent
+request on a reused connection. A transport failure can occur after a write has
+completed; check the operation's outcome before repeating it.
+
+
+# CLI
+
+Source: https://docs.recoupable.dev/cli
+
+Install the Recoup CLI and interact with the platform from your terminal.
+
+The Recoup CLI (`@recoupable/cli`) wraps the Recoup API for terminal-first workflows. It's available as a global npm package and comes pre-installed in sandbox environments.
+
+> **Note**
+> **The CLI is in beta.** The reference below follows the v0.1.15 source command set. Check `recoup --version` and `--help` for the package installed in your environment. For research workflows and most content operations, call the [REST API](https://docs.recoupable.dev/api-reference) directly — the CLI is gradually catching up.
+>
+> **Agents:** if a command isn't listed below, don't retry — fall back to the corresponding REST endpoint linked under each command.
+
+## Install
+
+```bash
+npm install -g @recoupable/cli
+```
+
+## Authenticate
+
+Set your API key as an environment variable:
+
+```bash
+export RECOUP_API_KEY=your-api-key
+```
+
+Verify it works:
+
+```bash
+recoup whoami
+```
+
+> **Tip**
+> Get an API key from the [API Keys page](https://chat.recoupable.dev/keys) or use the [agent signup](https://docs.recoupable.dev/agents) for instant key generation.
+
+## Configuration
+
+| Variable | Required | Default | Description |
+| --- | --- | --- | --- |
+| `RECOUP_API_KEY` | Yes | — | Your Recoup API key |
+| `RECOUP_API_URL` | No | `https://recoup-api.vercel.app` | API base URL override; set `https://api.recoupable.dev` to use the canonical API domain |
+
+All commands support `--json` for machine-readable output and `--help` for usage info.
+
+---
+
+## Commands
+
+### whoami
+
+Show the authenticated account. See [`GET /api/accounts/id`](https://docs.recoupable.dev/api-reference/accounts/id).
+
+```bash
+recoup whoami
+recoup whoami --json
+```
+
+### orgs
+
+List organizations. See [`GET /api/organizations`](https://docs.recoupable.dev/api-reference/organizations/list).
+
+```bash
+recoup orgs list
+recoup orgs list --account <accountId>
+```
+
+### artists
+
+List artists. See [`GET /api/artists`](https://docs.recoupable.dev/api-reference/artists/list).
+
+```bash
+recoup artists list
+recoup artists list --org <orgId>
+recoup artists list --account <accountId>
+```
+
+### emails
+
+Send an email to the authenticated account. See [`POST /api/emails`](https://docs.recoupable.dev/api-reference/emails/create).
+
+```bash
+recoup emails --subject "Pulse Report" --text "Here's your weekly summary."
+recoup emails --subject "Update" --html "<h1>Report</h1><p>Details here.</p>"
+```
+
+| Flag | Required | Description |
+| --- | --- | --- |
+| `--subject <text>` | No | Email subject line; defaults from the body when omitted |
+| `--text <body>` | No | Plain text or Markdown body |
+| `--html <body>` | No | Raw HTML body (takes precedence over `--text`) |
+| `--cc <email>` | No | CC recipient (repeatable) |
+| `--chat-id <id>` | No | Chat ID for a chat link in the email footer |
+| `--account <accountId>` | No | Send to a specific account (org keys only) |
+
+### chats
+
+Manage chats. See [`GET /api/chats`](https://docs.recoupable.dev/api-reference/chat/chats) and [`POST /api/chats`](https://docs.recoupable.dev/api-reference/chat/create).
+
+```bash
+recoup chats list
+recoup chats create --name "My Topic"
+recoup chats create --name "My Topic" --artist <artistId>
+```
+
+### sandboxes
+
+Manage sandboxes. See [`GET /api/sandboxes`](https://docs.recoupable.dev/api-reference/sandboxes/list) and [`POST /api/sandboxes`](https://docs.recoupable.dev/api-reference/sandboxes/create).
+
+```bash
+recoup sandboxes list
+recoup sandboxes create
+recoup sandboxes create --command "ls -la"
+```
+
+### tasks
+
+Check background task status. See [`GET /api/tasks/runs`](https://docs.recoupable.dev/api-reference/tasks/runs).
+
+```bash
+recoup tasks status --run <runId>
+```
+
+### songs
+
+Run AI music analysis. See [`POST /api/songs/analyze`](https://docs.recoupable.dev/api-reference/songs/analyze) and [`GET /api/songs/analyze/presets`](https://docs.recoupable.dev/api-reference/songs/analyze-presets).
+
+```bash
+recoup songs presets
+recoup songs analyze --preset catalog_metadata --audio https://example.com/track.mp3
+recoup songs analyze --prompt "Describe the production style" --audio https://example.com/track.mp3
+```
+
+Exactly one of `--preset` or `--prompt` is required, together with `--audio`. The API rejects both selectors together and verifies the audio URL before inference. The coordinated CLI validation fix reports these errors before sending a request; older installed packages may send them to the API.
+
+| Flag | Required | Description |
+| --- | --- | --- |
+| `--preset <name>` | Conditional | Curated analysis preset. Required when `--prompt` is omitted. |
+| `--prompt <text>` | Conditional | Custom text prompt. Required when `--preset` is omitted. |
+| `--audio <url>` | Yes | Public URL to an audio file (MP3, WAV, FLAC), required for every preset and custom prompt. Metadata-only analysis is not supported. |
+| `--max-tokens <n>` | No | Max tokens to generate (default 512). |
+
+---
+
+## content
+
+Content creation pipeline — generate AI-powered social videos for artists.
+
+### List templates
+
+```bash
+recoup content templates
+```
+
+### Validate an artist
+
+Check that an artist has the required assets before creating content. See [`GET /api/content/validate`](https://docs.recoupable.dev/api-reference/content/validate).
+
+```bash
+recoup content validate --artist <artistAccountId>
+```
+
+### Estimate cost
+
+Preview estimated cost and duration before kicking off the pipeline. See [`GET /api/content/estimate`](https://docs.recoupable.dev/api-reference/content/estimate).
+
+```bash
+recoup content estimate
+recoup content estimate --lipsync --batch 2 --compare
+```
+
+### Create content
+
+Run the full content-creation pipeline for an artist. See [`POST /api/content/create`](https://docs.recoupable.dev/api-reference/content/create).
+
+```bash
+recoup content create --artist <artistAccountId>
+recoup content create --artist <artistAccountId> --template <name> --lipsync --upscale
+```
+
+| Flag | Required | Description |
+| --- | --- | --- |
+| `--artist <id>` | Yes | Artist account ID |
+| `--template <name>` | No | Template name (default: random) |
+| `--lipsync` | No | Enable lipsync mode |
+| `--upscale` | No | Enable upscaling |
+| `--caption-length <n>` | No | Max caption length in characters |
+
+> **Tip**
+> For finer-grained control (individual image, video, caption, transcription, edit, upscale, or analyze operations), call the [content REST endpoints](https://docs.recoupable.dev/api-reference/content/generate-image) directly. Those primitives aren't yet exposed as individual CLI subcommands.
+
+
+# Claude
+
+Source: https://docs.recoupable.dev/claude
+
+Connect Claude to Recoup and install optional workflow instructions.
+
+Add `https://api.recoupable.dev/mcp` in Claude's remote connector controls and complete browser OAuth using your real Recoup account. See [MCP OAuth](https://docs.recoupable.dev/mcp-oauth) for the dated client verification record and troubleshooting.
+
+After connecting, refresh tools and call the discovered `list_artists` tool. Report success after that read succeeds; a legitimate empty roster does not require creating another account.
+
+For workflow instructions, install the consolidated Recoup package from the [Recoup marketplace](https://github.com/recoupable/marketplace), using the manifest/package name shown there. Skills-only installation with `npx skills add recoupable/skills` does not configure MCP or create credentials. Standalone platform/content/research packages remain separate distributions; their installed versions may contain older instructions until their reconciliation release is installed.
+
+MCP OAuth credentials stay in Claude. A REST-only script needs a separately configured API key or application-provided access token. Use a supported secret facility or a user-approved environment file; never paste keys into Profile or Global instructions. Do not register a disposable account to recover customer access.
+
+Start a fresh conversation and verify tool discovery and artist access again. Browser sign-in, plugin installation and token refresh are separate checks; none alone proves the complete workflow.
+
+
+# MCP
+
+Source: https://docs.recoupable.dev/mcp
+
+Connect an agent to Recoup through OAuth and discover its authorized tools.
+
+Connect your host to `https://api.recoupable.dev/mcp` using OAuth. Sign in to your real Recoup account and approve the requested scope. Follow the [OAuth setup guide](https://docs.recoupable.dev/mcp-oauth).
+
+Use `tools/list` after connection and after changing consent. The catalog depends on the grant, credential type and deployed server. A fixed count is not a compatibility contract. For example, discover `list_artists` and call it with its returned schema to verify access. An empty roster is a valid result.
+
+`mcp:tools` grants the business catalog, including writes and paid generation. Narrow grants remain restricted until broader consent is approved. Account membership determines accessible personal and organization data; OAuth consent does not create organization access.
+
+Sandbox command tools previously shown on this page are absent from the current registry. Do not call `prompt_sandbox`, `run_sandbox_command`, or infer that every REST endpoint is exposed as MCP. Use documented [REST sandbox operations](https://docs.recoupable.dev/api-reference/sandboxes/create) with a separate authorized credential when required.
+
+For an API-key MCP connection, configure `Authorization: Bearer YOUR_RECOUP_API_KEY` in the client's secret settings. The `x-api-key` header is for [REST requests](https://docs.recoupable.dev/authentication). Store credentials in the client's secret facility or environment. Never paste them into global instructions or extract host-managed OAuth tokens for REST.
+
+## Public generated files
+
+`generate_txt_file` and `create_knowledge_base` store content in public Supabase
+Storage. Anyone with a returned URL can read it without authentication. Use
+these tools only for content approved for public access, not confidential files.
+
+For TXT results, prefer `txtUrl` and `metadataUrl`. The deprecated `arweaveUrl`
+and `metadataArweave` fields remain aliases of those HTTPS URLs, not transaction
+IDs. Metadata is best-effort, so `metadataUrl` and its alias can be null.
+Knowledge entries keep their existing `url`, `name` and `type` fields.
+
+Generated and edited image results retain `imageUrl`; it can be null if storage
+fails. A successful tool envelope does not by itself establish a stored image.
+Existing Arweave links remain readable. These changes do not migrate private
+Files or [release-pack source audio](https://docs.recoupable.dev/release-packs).
+
+## Context results
+
+The [Context reference](https://docs.recoupable.dev/api-reference/context/operate) pairs each supported action
+with its success status, response model and synthetic request/result examples.
+Use the status declared for that action: `ingest` returns 202, while the specific
+catalog, artist, release and text ingestion actions return 200. A 202 verification
+receipt means queued after existing readiness checks, not completed work.
+HTTP/standard MCP `read` may include a metadata-only `material_evidence` receipt;
+delegated OAuth omits it. The examples do not verify hosted access or enable collection.
+
+## Plan a catalog lookup
+
+A catalog manager with an existing catalog Context request can plan a lookup for
+its current expanded recording members. Standard MCP uses `context` with
+`action: plan_catalog_members`; delegated OAuth uses `plan_music_catalog_research`
+with the same input fields and no `action`. Discover the tool in the connected
+client before use; this source mapping does not prove hosted availability.
+
+Choose `recording_candidates`, `recording_work_candidates` or `platform_metadata`.
+These plan possible recording matches, linked works or platform track information.
+The response preserves the existing module values and node IDs, returns each node
+blocked and has `collectionPermitted: false`. It does not fetch data, verify rights,
+start collection or grant spending permission. The [Context reference](https://docs.recoupable.dev/api-reference/context/operate)
+lists all accepted compatibility values, required IDs, page cursors and the complete response.
+
+## Continue a catalog case
+
+The source contract adds `save_catalog_case`, `read_catalog_case` and
+`list_catalog_cases` to standard MCP; delegated OAuth excludes them. Discover the
+tools in the connected host before using them. They also use the `context` tool
+with the corresponding `action`. The catalog-case database and API release must
+be deployed before this source contract is available.
+
+A case keeps versioned sources, assessments, findings, proposed actions, attempts
+and outcomes for the authorized workspace. No artist or ingestion request is
+required. The stored snapshot is `customer_assertion` evidence and always returns
+`external_actions: unsupported`: saving a record does not submit a registration,
+send a claim, confirm a provider decision or verify a bank receipt.
+
+For a new case, save with `expected_revision: 0` and `snapshot.revision: 0`.
+For subsequent saves, use the current revision. Supply a unique idempotency key
+for each new save. After an uncertain response, retry the unchanged payload with
+the same key and expected revision.
+Reads can withhold withdrawn evidence and its dependent records; explicitly
+reassemble a partial snapshot before another save. The [Context reference](https://docs.recoupable.dev/api-reference/context/operate)
+defines the complete bounded schema, historical-source rules, revision conflicts,
+response fields and list pagination.
+
+## Check an application proposal
+
+The pending standard MCP tool `validate_application_registration` checks an
+authorized workspace's proposed name, environment, exact origins and return URLs.
+It returns `persisted: false` and `origins_verified: false`; it does not register
+an application, prove domain ownership or issue application credentials.
+Delegated OAuth excludes this tool, including grants with `mcp:tools`. Discover
+it in a standard connection before use. See the [proposal preflight reference](https://docs.recoupable.dev/api-reference/applications/validate-registration)
+for inputs, normal authentication effects and the limits of a successful result.
+
+## Release Packs
+
+When deployed and exposed by the current grant, the pack catalog includes
+`prepare_release_pack`, `get_release_pack`, `estimate_release_pack`,
+`generate_release_pack`, `retry_release_pack`, `upload_release_pack_asset` and
+`export_release_pack`. These use the same account ownership, brief revisions,
+complete quotes and budget limits as REST. No existing artist or GitHub workspace
+is required. Use returned schemas and identifiers; preparation does not authorize
+paid generation. See [Release Packs](https://docs.recoupable.dev/release-packs) for first use and upload limits.
+
+
+# Recoup public website API
+
+Source: https://docs.recoupable.dev/public-website-api
+
+Search and read public Recoup content, use bounded website tools, and batch independent operations without an account.
+
+The public website API searches and reads published Recoup pages, calculates
+workflow scenarios from supplied inputs, and prepares unsubmitted project briefs.
+It is free and requires no account, API key, or payment method.
+
+Music-platform operations use the separate authenticated
+[platform API](https://docs.recoupable.dev/quickstart) and [platform MCP](https://docs.recoupable.dev/mcp-oauth). Website tools cannot
+read account data, manage artists, publish content, or send an inquiry.
+
+## Specification and first request
+
+The [website OpenAPI specification](https://recoupable.dev/openapi.json) defines
+every HTTP operation, its input and response schemas, and typed errors.
+The [API catalog](https://recoupable.dev/.well-known/api-catalog) links this
+specification alongside the platform specifications.
+
+```bash
+curl -i 'https://recoupable.dev/agent-api/v1/search?query=royalty&limit=1'
+```
+
+The response contains `results`, `total`, and `nextCursor`. An empty result list
+is a successful search. Use a returned content ID with
+`GET /agent-api/v1/read?id=CONTENT_ID`; continue at the returned `nextOffset`
+until it is null. The reader accepts registry IDs, never arbitrary private URLs.
+
+Use `GET /agent-api/v1/markdown?path=/blog` for a complete public page as Markdown.
+The [website agent guide](https://recoupable.dev/agents.md) explains all five tools,
+pagination, draft behavior, and the browser interface.
+
+## Batch independent operations
+
+`POST https://recoupable.dev/agent-api/v1/batch` accepts one to ten operations.
+
+```bash
+curl 'https://recoupable.dev/agent-api/v1/batch' \
+  -H 'Content-Type: application/json' \
+  --data '{"operations":[{"name":"search_recoup","arguments":{"query":"royalty","limit":1}},{"name":"read_recoup_page","arguments":{"id":"page:/services","maxLength":500}}]}'
+```
+
+The `results` array preserves input order. Each entry has its own `status` and
+`result` or `error`. An individual failure does not cancel successful reads.
+The batch is not a transaction. Its entire request body must fit within 16 KB.
+Draft operations return `submitted: false`; nothing is sent or saved as a lead.
+
+## Hosted quotas and errors
+
+HTTP and MCP website tools share a limit of 120 requests per 60-second fixed
+window, per IP address and serving region. A batch counts as one request.
+`RateLimit-Limit` and `RateLimit-Policy` describe that enforced policy on live
+responses. Regional counters are not a global account allowance.
+
+On HTTP 429, wait the `Retry-After` duration before retrying. HTTP 503 means the
+request could not be completed; retry later. JSON tool endpoints return structured
+errors with a code, message, and recovery guidance for invalid arguments or missing content.
+Local development does not enforce the hosted quota.
+
+## Versioning and deprecation
+
+Website HTTP operations use `/agent-api/v1`. Additive response fields are
+compatible; clients should ignore fields they do not recognize. Incompatible
+changes require a new major URL version.
+
+No v1 deprecation or sunset is scheduled. A future retirement will be announced
+in the [agent guide](https://recoupable.dev/agents.md) with a migration guide and
+`Deprecation`, `Sunset`, and `Link` response headers when dates are known.
+This policy applies to the public website API.
+
+## MCP connection
+
+Connect to `https://recoupable.dev/mcp` over Streamable HTTP without credentials.
+The [public manifest](https://recoupable.dev/.well-known/mcp.json) identifies
+the server. Its five tools share the website HTTP capabilities and hosted quota.
+To use your music-platform account, follow [MCP OAuth](https://docs.recoupable.dev/mcp-oauth) instead.
+
+
+# Connect an agent
+
+Source: https://docs.recoupable.dev/mcp-oauth
+
+Connect an MCP client to Recoup with OAuth and account-authorized tools.
+
+Use this URL in your agent's remote MCP settings:
+
+```text
+https://api.recoupable.dev/mcp
+```
+
+Select **OAuth**. Recoup supports [published client metadata (CIMD)](https://docs.recoupable.dev/mcp-cimd) and **automatic registration** (also called Dynamic Client Registration or DCR). Sign in to your existing Recoup account and allow the requested access. No API key or client secret needs to be copied.
+
+## What your agent can do
+
+Request **`mcp:tools`** for the full catalog: a scope-dependent catalog covering artists and socials, catalogs, chats, scheduled tasks, research/search, Spotify, YouTube revenue, image/audio/video operations, files, Context, Sites, email and support.
+
+The consent screen explains that this permission includes reading, creating, editing and deleting data, sending messages, publishing content, and using paid generation tools. It covers personal and organization workspaces your account can access. Resource ownership is checked on each call. Private conversations and scheduled tasks remain account-bound.
+
+| Permission | Access |
+| --- | --- |
+| `mcp:tools` | Full business-tool catalog across accessible workspaces |
+| `mcp:read` | Original personal-only `list_artists`, `get_artist_socials`, `get_chats` |
+| `mcp:write` | Original personal-only `create_new_artist`, `update_account_info` |
+
+Existing limited grants do **not** expand automatically. Reconnect with `mcp:tools`, review the broader permission, and refresh your client's tool catalog. Clients requesting the `mcp:read` + `mcp:write` pair keep the five-tool experience.
+
+OAuth never exposes `get_api_key`: it does not return bearer credentials to the model. Composio integrations and sandbox execution are separate from the registered Recoup MCP catalog.
+
+Email uses the same recipient restrictions as the API and checks any referenced conversation's owner. Review recipients and content before sending. `create_knowledge_base` and `generate_txt_file` write to public Supabase Storage: anyone with a returned URL can read the content without authentication. Use only content approved for public access, never confidential material. Existing Arweave links remain readable; these tools do not create new Arweave uploads. Video generation returns an account-bound `id`; pass that entire value as `video_id` to the retrieval tools. Older raw provider video IDs cannot be used with OAuth. Task-run status requires verifiable caller ownership and returns status fields, not raw provider payloads or logs.
+
+The platform verification results below describe the original five-tool catalog unless explicitly stated otherwise. They do not establish full-catalog production verification.
+
+New connections stay authorized until you disconnect them, including when inactive. Five-minute access tokens renew through rotating refresh tokens. Disconnect an agent from [Connected agents](https://app.recoupable.dev/oauth/connections) to revoke its access and refresh tokens immediately.
+
+Connections approved under the previous 30-day policy keep their original expiration. Reconnect once to approve access until disconnected.
+
+## Claude
+
+1. Open **Customize → Connectors → Add custom connector**.
+2. Name it **Recoup** and enter the MCP URL above.
+3. Choose **Sign in now**. **Register automatically** uses DCR; **published identity** uses CIMD. The production client tests below used DCR.
+4. Connect, sign in to Recoup, and select **Allow access**.
+5. In a new chat, ask Claude to list your Recoup artists. Review individual tool-use approvals when prompted.
+
+Claude web was tested against production on October 7, 2026: connection, five-tool discovery, artist read, temporary artist creation/update/readback, artist socials, and another read after access-token expiry passed. The temporary artist was removed afterward.
+
+Claude Desktop 2.26454.0 was also tested on October 7, 2026 using the same authorized connector: tool discovery, artist listing, temporary artist creation/update/readback passed. The test artist was removed afterward. Separate disconnect/reconnect checks are still pending. Local stdio configuration is a different transport. See [Claude's remote connector guide](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp).
+
+## ChatGPT
+
+In the interface tested on October 7, 2026:
+
+1. Open **Plugins → Add → Add custom MCP server**.
+2. Enter **Recoup**, the MCP URL, and **OAuth**.
+3. Under advanced OAuth settings, confirm **Dynamic Client Registration (DCR)** and request `mcp:tools` for full access.
+4. Create the plugin, connect it, and complete Recoup consent.
+5. Start a chat with Recoup enabled and request an artist list.
+
+ChatGPT web was tested against production on October 7, 2026: OAuth login, artist listing, and temporary artist creation/update/readback passed. The temporary artist was removed afterward. Refresh and disconnect/reconnect checks are pending. Workspace policy and account access may limit custom integrations. UI labels can differ; see [OpenAI's MCP setup documentation](https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt).
+
+## Codex
+
+```bash
+codex mcp add recoup --url https://api.recoupable.dev/mcp
+codex mcp login recoup --scopes mcp:tools
+```
+
+Complete the browser sign-in and consent, then ask Codex to list your Recoup artists. Codex CLI 0.161.0 passed production OAuth login and an actual `list_artists` call on October 7, 2026. Version 0.145.0 failed issuer-response validation; upgrade if using that version. Writes, refresh, and disconnect/reconnect remain unverified in Codex. Desktop and IDE surfaces must be verified separately. See [Codex MCP configuration](https://developers.openai.com/codex/mcp).
+
+## Cursor
+
+Add a remote server to your project's `.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "recoup": {
+      "url": "https://api.recoupable.dev/mcp"
+    }
+  }
+}
+```
+
+Open Cursor's MCP settings and authenticate. Cursor Desktop passed production OAuth connection, five-tool discovery, and an actual `list_artists` call on October 7, 2026. Writes, refresh, disconnect/reconnect, and Cursor web/agent journeys remain unverified. See [Cursor's MCP guide](https://cursor.com/docs/mcp) for the current setup and workspace restrictions.
+
+## Other agents and callbacks
+
+Use a remote Streamable HTTP MCP client supporting OAuth discovery, authorization code flow with PKCE S256, and DCR. Recoup publishes:
+
+- Resource metadata: `https://api.recoupable.dev/.well-known/oauth-protected-resource/mcp`
+- Authorization-server metadata: `https://api.recoupable.dev/.well-known/oauth-authorization-server/api/oauth`
+- Resource: `https://api.recoupable.dev/mcp`
+
+Register the exact callback used by your client. Registration binds callbacks to that client; there is no shared wildcard callback list. Hosted callbacks use HTTPS. Native clients use validated loopback callbacks. Do not substitute `localhost` for `127.0.0.1` or edit a callback after registration.
+
+A generic MCP SDK client has passed production reads, writes, refresh rotation, and revocation. That does not prove every agent surface. CIMD uses the same consent and permissions; see [CIMD requirements and verification status](https://docs.recoupable.dev/mcp-cimd). Full-tool consent includes accessible organization workspaces; the original limited grants remain personal-only.
+
+### Additional client setup paths
+
+The following paths were reviewed in official client documentation on October 7, 2026. **They have not been tested end to end against Recoup.** Use automatic registration and request `mcp:tools` for full access, or `mcp:read` / `mcp:write` for the limited personal tools. The client registers its callback; you do not need a Recoup platform-specific callback allowlist.
+
+| Client | Setup and callback guidance |
+| --- | --- |
+| [Perplexity](https://www.perplexity.ai/help-center/en/articles/13915507-adding-custom-remote-connectors) | Add a custom remote connector with OAuth and DCR. Use per-user authentication. Documented callbacks are `https://www.perplexity.ai/rest/connections/oauth_callback` and, for enterprise, `https://enterprise.perplexity.ai/rest/connections/oauth_callback`. |
+| [Claude Code](https://code.claude.com/docs/en/mcp) | Add Recoup as an HTTP server and authenticate through `/mcp` inside Claude Code. Automatic registration uses a localhost callback; `--callback-port` can fix its port when required. |
+| [VS Code](https://code.visualstudio.com/api/extension-guides/ai/mcp#authorization) | Add an HTTP server in `.vscode/mcp.json`. OAuth supports DCR; documented callbacks include `http://127.0.0.1:33418` and `https://vscode.dev/redirect`. Preserve the callback supplied by your VS Code surface. |
+| [Gemini CLI](https://geminicli.com/docs/tools/mcp-server/) | Configure the MCP URL as `httpUrl` and authenticate with `/mcp auth recoup` inside the Gemini CLI chat. DCR uses `http://localhost:<random-port>/oauth/callback` unless configured otherwise. |
+| [OpenCode](https://opencode.ai/docs/mcp-servers/) | Add a remote MCP server and run `opencode mcp auth recoup`. OAuth supports automatic registration. Let the client supply its callback. |
+| [Kiro](https://kiro.dev/docs/mcp/configuration/) | Add the remote MCP URL and use DCR. Set `oauth.oauthScopes` to Recoup's scopes; the default identity scopes do not grant Recoup tool access. Use the client's loopback callback. |
+| [n8n](https://docs.n8n.io/integrations/builtin/credentials/mcp/) | Create an MCP OAuth credential with **Use Dynamic Client Registration** enabled. Use the exact callback shown by your n8n instance. |
+| [Copilot Studio](https://learn.microsoft.com/en-us/microsoft-copilot-studio/mcp-add-existing-server-to-agent) | Add an MCP tool using Streamable HTTP and OAuth dynamic discovery/registration. If setup asks for a callback, use the exact URL shown by Copilot Studio. |
+
+Documented compatibility is a setup starting point. A successful connection still needs an actual tool call before it can be considered verified. Refresh and disconnect/reconnect should be checked before relying on unattended access.
+
+## Disconnect
+
+Open [Connected agents](https://app.recoupable.dev/oauth/connections) and disconnect the selected agent. Future requests and refreshes stop; already completed changes remain. Other connections are independent. Reconnect from the agent when you want to grant access again.
+
+## Troubleshooting
+
+| Symptom | What to do |
+| --- | --- |
+| Custom connector option missing | Check your client's plan and workspace-admin permissions. |
+| Published identity / CIMD unavailable or fails | Check the [metadata requirements](https://docs.recoupable.dev/mcp-cimd), or choose automatic registration / DCR if your client offers it. |
+| Connection request expired | Restart Connect from the client; do not reuse an old consent URL. |
+| Wrong Recoup account | Use Switch before approving. |
+| Still seeing only five tools | Reconnect requesting `mcp:tools`, approve full access, then refresh the client tool catalog. |
+| Connected but no tool access | Check selected scopes, individual tool approvals, and whether the grant expired or was revoked. |
+| Organization artist missing | Reconnect with `mcp:tools` and verify your organization membership. |
+| `401` after disconnect | Expected: reconnect and approve a new grant. |
+| `429` | Respect `Retry-After`; avoid repeated registration attempts. |
+| `503` | Retry later; do not weaken authentication or callback checks. |
+| Write timed out | Read back the target before retrying. Artist creation is not guaranteed idempotent; an automatic retry may create a duplicate. |
+
+For clients without OAuth, [API-key authentication](https://docs.recoupable.dev/mcp) remains available. Keep keys out of model prompts and shared configuration. A stdio-only client needs a separately maintained adapter; the remote URL is not itself a stdio command.
+
+For help, contact [agent@recoupable.dev](mailto:agent@recoupable.dev). Include the client name, time, and error text; never include tokens, passwords, or API keys.
+
+Full OAuth MCP calls currently share account-level limits of 120 calls per minute
+and 30 calls per tool per minute across connected clients. See the
+[pinned rate-limit implementation](https://github.com/recoupable/api/blob/c25715ea1b5e31ac31d0079955b90dc1ce2f1631/lib/mcp/oauth/checkFullOAuthRateLimit.ts).
+The `compact_chats` MCP tool accepts up to 50 chats per call under the
+[pinned MCP guard](https://github.com/recoupable/api/blob/c25715ea1b5e31ac31d0079955b90dc1ce2f1631/lib/mcp/oauth/prepareFullOAuthTool.ts);
+this is an MCP limit, not a claimed REST request limit.
+
+
+# Published client metadata (CIMD)
+
+Source: https://docs.recoupable.dev/mcp-cimd
+
+Connect using an HTTPS client identity without dynamic registration.
+
+Recoup supports Client ID Metadata Documents (CIMD) alongside Dynamic Client Registration (DCR). A CIMD client uses the HTTPS URL of its public metadata document as its OAuth `client_id`. Recoup retrieves that document and validates the client's callbacks before asking you to approve access.
+
+Use the same MCP server URL: `https://api.recoupable.dev/mcp`. A compatible client can discover CIMD through `client_id_metadata_document_supported: true` in Recoup's [authorization-server metadata](https://api.recoupable.dev/.well-known/oauth-authorization-server/api/oauth). No vendor-specific registration or callback allowlist is needed.
+
+## Access and trust
+
+CIMD uses the same [permissions and consent](https://docs.recoupable.dev/mcp-oauth) as DCR. It does not bypass sign-in, PKCE, tool scope checks, grant expiry, or disconnection. Existing DCR connections continue to work.
+
+A client name or logo is self-declared metadata, not proof of vendor endorsement. Check the client identity and requested permissions before allowing access. Publishing a document does not authorize its client to access your account.
+
+## Client requirements
+
+- Serve JSON with HTTP 200 over public HTTPS on port 443. Redirects are rejected.
+- Set `client_id` to the exact document URL and include `client_name` and `redirect_uris`.
+- Use a document URL with an explicit path and without credentials, fragments, or dot path segments.
+- Use authorization code flow with PKCE S256 and `mcp:tools` for the full Recoup catalog, or `mcp:read` / `mcp:write` for the original limited personal tools.
+- Public clients should set `token_endpoint_auth_method` to `none`. Never publish client secrets or private keys.
+- Register exact callbacks. Hosted HTTP callbacks are rejected; native loopback callbacks support dynamic ports. `localhost` and `127.0.0.1` remain different hosts.
+
+Recoup limits each metadata/JWKS response to 16 KiB and each fetch to 2.5 seconds, including DNS resolution and body transfer. It rejects private, loopback, reserved, and mixed public/private DNS results and pins connections to a validated address. Remote JWKS retrieval follows the same network policy.
+
+Metadata caching respects freshness headers up to five minutes. `no-store`, `no-cache`, absent freshness information, or expired freshness causes a new fetch. A failed refresh does not reuse expired metadata.
+
+## Verification status
+
+The implementation has passed local production-provider tests for CIMD discovery, consent, token exchange, MCP access, refresh rotation, and revoked access. Network tests cover unsafe destinations, redirects, timeouts, response sizes, and concurrency limits.
+
+A local smoke test also retrieved the official Claude and Claude Code documents over real DNS/TLS, resolved them using the production provider, and checked Claude Code's dynamic loopback ports. This is metadata compatibility evidence, not a completed production user login through CIMD. The client-specific production results on [Connect an agent](https://docs.recoupable.dev/mcp-oauth) were obtained using DCR.
+
+Production verification on October 7, 2026 confirmed CIMD discovery with DCR still available and successfully started OAuth authorization interactions using the official Claude and Claude Code client IDs, including a dynamic localhost callback port. Completing user sign-in and a tool call through CIMD in production remains unverified.
+
+If a metadata host is unavailable or blocks server requests, CIMD fails closed. Use DCR if the client offers that choice, or retry after its metadata endpoint is restored.
+
+See the [MCP authorization specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization) and [CIMD draft 02](https://www.ietf.org/archive/id/draft-ietf-oauth-client-id-metadata-document-02.html). CIMD remains a draft specification; Recoup's provider currently implements draft 02.
+
+
 # Research availability
 
 Source: https://docs.recoupable.dev/research-availability
@@ -1448,7 +1439,7 @@ when the request cannot be served. Recoup does not promise a `Retry-After` heade
 on these routes. Never fill a missing metric with an invented number or zero.
 
 
-# Create a New Artist
+# Create a new artist
 
 Source: https://docs.recoupable.dev/workflows/create-artist
 
@@ -1828,7 +1819,7 @@ A few constraints to honor:
 - **Treat the file as the source of truth.** If something isn't on disk, don't assume it ran.
 
 
-# Get Artists
+# Get artists
 
 Source: https://docs.recoupable.dev/api-reference/artists/list
 
@@ -2072,7 +2063,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Get Artist Profile
+# Get artist profile
 
 Source: https://docs.recoupable.dev/api-reference/artists/profile
 
@@ -2350,7 +2341,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Create Artist
+# Create artist
 
 Source: https://docs.recoupable.dev/api-reference/artists/create
 
@@ -2625,7 +2616,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Update Artist
+# Update artist
 
 Source: https://docs.recoupable.dev/api-reference/artists/update
 
@@ -2970,7 +2961,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Pin Artist
+# Pin artist
 
 Source: https://docs.recoupable.dev/api-reference/artists/pin
 
@@ -3315,7 +3306,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Unpin Artist
+# Unpin artist
 
 Source: https://docs.recoupable.dev/api-reference/artists/unpin
 
@@ -3660,7 +3651,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Delete Artist
+# Delete artist
 
 Source: https://docs.recoupable.dev/api-reference/artists/delete
 
@@ -3823,7 +3814,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Get Artist Socials
+# Get artist socials
 
 Source: https://docs.recoupable.dev/api-reference/artists/socials
 
@@ -4122,7 +4113,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Delete Artist Social
+# Delete artist social
 
 Source: https://docs.recoupable.dev/api-reference/artists/socials-delete
 
@@ -4277,7 +4268,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Get Artist Fans
+# Get artist fans
 
 Source: https://docs.recoupable.dev/api-reference/fans/get
 
@@ -4543,7 +4534,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Stream Chat
+# Stream chat
 
 Source: https://docs.recoupable.dev/api-reference/chat/workflow
 
@@ -4832,7 +4823,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Resume Chat Stream
+# Resume chat stream
 
 Source: https://docs.recoupable.dev/api-reference/chat/workflow-stream
 
@@ -5059,7 +5050,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Start Chat Run
+# Start chat run
 
 Source: https://docs.recoupable.dev/api-reference/chat/runs
 
@@ -5335,7 +5326,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Chat Run Status
+# Get chat run status
 
 Source: https://docs.recoupable.dev/api-reference/chat/runs-status
 
@@ -5512,7 +5503,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Stop Chat
+# Stop chat
 
 Source: https://docs.recoupable.dev/api-reference/chat/stop
 
@@ -5727,7 +5718,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Create Chat
+# Create chat
 
 Source: https://docs.recoupable.dev/api-reference/chat/create
 
@@ -5927,7 +5918,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Get Chats
+# Get chats
 
 Source: https://docs.recoupable.dev/api-reference/chat/chats
 
@@ -6143,7 +6134,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Get Chat Artist
+# Get chat artist
 
 Source: https://docs.recoupable.dev/api-reference/chat/artist
 
@@ -6317,7 +6308,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Update Chat
+# Update chat
 
 Source: https://docs.recoupable.dev/api-reference/chat/update
 
@@ -6549,7 +6540,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Delete Chat
+# Delete chat
 
 Source: https://docs.recoupable.dev/api-reference/chat/delete
 
@@ -6748,7 +6739,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Compact Chats
+# Compact chats
 
 Source: https://docs.recoupable.dev/api-reference/chat/compact
 
@@ -6921,7 +6912,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# List Models
+# List models
 
 Source: https://docs.recoupable.dev/api-reference/ai/models
 
@@ -7091,7 +7082,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Get Chat Messages
+# Get chat messages
 
 Source: https://docs.recoupable.dev/api-reference/chat/messages
 
@@ -7296,7 +7287,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Copy Chat Messages
+# Copy chat messages
 
 Source: https://docs.recoupable.dev/api-reference/chat/messages-copy
 
@@ -7523,7 +7514,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Delete Trailing Chat Messages
+# Delete trailing chat messages
 
 Source: https://docs.recoupable.dev/api-reference/chat/messages-trailing-delete
 
@@ -7815,7 +7806,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Research Search
+# Research search
 
 Source: https://docs.recoupable.dev/api-reference/research/search
 
@@ -8129,7 +8120,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Lookup by URL
+# Look up by URL
 
 Source: https://docs.recoupable.dev/api-reference/research/lookup
 
@@ -8492,7 +8483,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Artist Profile
+# Artist profile
 
 Source: https://docs.recoupable.dev/api-reference/research/profile
 
@@ -8851,7 +8842,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Platform Metrics
+# Platform metrics
 
 Source: https://docs.recoupable.dev/api-reference/research/metrics
 
@@ -9208,7 +9199,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Audience Demographics
+# Audience demographics
 
 Source: https://docs.recoupable.dev/api-reference/research/audience
 
@@ -9541,7 +9532,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Insights Activities
+# Artist activities
 
 Source: https://docs.recoupable.dev/api-reference/research/insights
 
@@ -9877,7 +9868,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Career Timeline
+# Career timeline
 
 Source: https://docs.recoupable.dev/api-reference/research/career
 
@@ -10549,7 +10540,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Artist Events
+# Artist events
 
 Source: https://docs.recoupable.dev/api-reference/research/events
 
@@ -10807,7 +10798,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Similar Artists
+# Similar artists
 
 Source: https://docs.recoupable.dev/api-reference/research/similar
 
@@ -12470,7 +12461,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Track Stats
+# Track statistics
 
 Source: https://docs.recoupable.dev/api-reference/research/track-stats
 
@@ -13675,7 +13666,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Playlist Placements
+# Playlist placements
 
 Source: https://docs.recoupable.dev/api-reference/research/playlists
 
@@ -14004,7 +13995,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Track Playlists
+# Track playlists
 
 Source: https://docs.recoupable.dev/api-reference/research/track-playlists
 
@@ -14424,7 +14415,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Web Search
+# Web search
 
 Source: https://docs.recoupable.dev/api-reference/research/web
 
@@ -14626,7 +14617,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Deep Research
+# Deep research
 
 Source: https://docs.recoupable.dev/api-reference/research/deep
 
@@ -14798,7 +14789,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# People Search
+# People search
 
 Source: https://docs.recoupable.dev/api-reference/research/people
 
@@ -15444,7 +15435,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Get Songs
+# Get songs
 
 Source: https://docs.recoupable.dev/api-reference/songs/songs
 
@@ -15690,7 +15681,7 @@ decision and its implementation exist. Do not omit `catalog_id` or substitute
 an unrelated catalog to make a write succeed.
 
 
-# Analyze Songs
+# Analyze songs
 
 Source: https://docs.recoupable.dev/api-reference/songs/analyze
 
@@ -16022,7 +16013,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# List Analyze Presets
+# List analysis presets
 
 Source: https://docs.recoupable.dev/api-reference/songs/analyze-presets
 
@@ -16178,7 +16169,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Catalogs
+# Get catalogs
 
 Source: https://docs.recoupable.dev/api-reference/songs/catalogs
 
@@ -16444,7 +16435,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Create Catalog
+# Create catalog
 
 Source: https://docs.recoupable.dev/api-reference/songs/catalogs-create
 
@@ -16663,7 +16654,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Rename Catalog
+# Rename catalog
 
 Source: https://docs.recoupable.dev/api-reference/songs/catalog-rename
 
@@ -16883,7 +16874,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Delete Catalog
+# Delete catalog
 
 Source: https://docs.recoupable.dev/api-reference/songs/catalog-delete
 
@@ -17064,7 +17055,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Run Valuation
+# Run valuation
 
 Source: https://docs.recoupable.dev/api-reference/songs/valuation-run
 
@@ -17327,7 +17318,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Runs
+# Get runs
 
 Source: https://docs.recoupable.dev/api-reference/songs/runs
 
@@ -17605,7 +17596,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Catalog Measurements
+# Get catalog measurements
 
 Source: https://docs.recoupable.dev/api-reference/songs/catalog-measurements
 
@@ -17901,7 +17892,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Catalog Playcount History
+# Catalog playcount history
 
 Source: https://docs.recoupable.dev/api-reference/songs/catalog-playcount-history
 
@@ -18318,7 +18309,7 @@ specification does not complete or cancel valuation history. Do not rerun a paid
 valuation solely to try to recover an unconfirmed save.
 
 
-# Get Catalog Songs
+# Get catalog songs
 
 Source: https://docs.recoupable.dev/api-reference/songs/catalog-songs
 
@@ -18643,7 +18634,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Add Catalog Songs
+# Add catalog songs
 
 Source: https://docs.recoupable.dev/api-reference/songs/catalog-songs-add
 
@@ -18948,7 +18939,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Remove Catalog Songs
+# Remove catalog songs
 
 Source: https://docs.recoupable.dev/api-reference/songs/catalog-songs-delete
 
@@ -19234,7 +19225,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Daily Catalog Streams
+# Daily catalog streams
 
 Source: https://docs.recoupable.dev/api-reference/songs/catalog-streams
 
@@ -19703,7 +19694,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Catalog Stream Tracking
+# Catalog stream tracking
 
 Source: https://docs.recoupable.dev/api-reference/songs/catalog-stream-tracking
 
@@ -20006,7 +19997,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Update Catalog Stream Tracking
+# Update catalog stream tracking
 
 Source: https://docs.recoupable.dev/api-reference/songs/update-catalog-stream-tracking
 
@@ -30639,7 +30630,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Generate a Music Video
+# Generate a music video
 
 Source: https://docs.recoupable.dev/workflows/generate-music-video
 
@@ -31195,7 +31186,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Create Content
+# Create content
 
 Source: https://docs.recoupable.dev/api-reference/content/create
 
@@ -31530,7 +31521,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Generate Image
+# Generate image
 
 Source: https://docs.recoupable.dev/api-reference/content/generate-image
 
@@ -31778,7 +31769,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Generate Video
+# Generate video
 
 Source: https://docs.recoupable.dev/api-reference/content/generate-video
 
@@ -32008,7 +31999,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Generate Caption
+# Generate caption
 
 Source: https://docs.recoupable.dev/api-reference/content/generate-caption
 
@@ -32207,7 +32198,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Transcribe Audio
+# Transcribe audio
 
 Source: https://docs.recoupable.dev/api-reference/content/transcribe-audio
 
@@ -32436,7 +32427,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Edit Content
+# Edit content
 
 Source: https://docs.recoupable.dev/api-reference/content/edit
 
@@ -32691,7 +32682,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Upscale Content
+# Upscale content
 
 Source: https://docs.recoupable.dev/api-reference/content/upscale
 
@@ -32879,7 +32870,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Analyze Video
+# Analyze video
 
 Source: https://docs.recoupable.dev/api-reference/content/analyze-video
 
@@ -33078,7 +33069,219 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# List Templates
+# Generate lipsync (release pending)
+
+Source: https://docs.recoupable.dev/api-reference/content/lipsync
+
+Available after the coordinated API and Tasks release for mono#348. Not verified on the deployed baseline.
+
+## POST /api/content/lipsync
+
+Full OpenAPI specification: https://docs.recoupable.dev/spec/content.json
+
+## Authentication
+
+This operation requires one of the security alternatives in the specification below. Security scheme definitions are included where present in the published specification.
+
+[Authentication guide](https://docs.recoupable.dev/authentication)
+
+## Operation and referenced schemas
+
+```json
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup API - Content",
+    "description": "API documentation for the Recoup platform - an AI agent platform for the music industry",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.recoupable.dev"
+    }
+  ],
+  "paths": {
+    "/api/content/lipsync": {
+      "post": {
+        "summary": "Generate audio-driven video (release pending)",
+        "description": "Available after the coordinated API and Tasks release for mono#348. Not verified on the deployed baseline. Fixed fal-ai/ltx-2-19b/audio-to-video; estimated rounded output megapixels at $0.0018 per unit, actual provider units used when supplied. The worker verifies an audio stream before final composition; presence of audio is not proof of perceptual lip alignment.",
+        "operationId": "createContentLipsync",
+        "tags": [
+          "Content"
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentCreateLipsyncRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Video generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentCreateVideoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed — invalid or missing request body fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient credits before generation. The fixed LTX audio-to-video model costs $0.0018 per rounded output megapixel (1,800 micro-dollar credits per unit); duration and frame dimensions determine the preflight estimate.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Per-account generation rate exceeded (30 requests/minute). Retry-After states seconds to wait."
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Provider returned no usable video; no Recoup generation charge is recorded."
+          },
+          "503": {
+            "description": "Shared generation throttling unavailable; no provider generation starts."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ContentCreateLipsyncRequest": {
+        "type": "object",
+        "required": [
+          "prompt",
+          "image_url",
+          "audio_url",
+          "duration"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50000
+          },
+          "image_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "audio_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public URL of the selected song window, not the full track."
+          },
+          "duration": {
+            "type": "integer",
+            "minimum": 5,
+            "maximum": 19
+          },
+          "seed": {
+            "type": "integer"
+          }
+        },
+        "description": "Release-pending fixed LTX audio-to-video primitive. 1280x720 at 25fps; bounded frame count. No arbitrary model selection.",
+        "example": {
+          "prompt": "The artist performs the supplied vocal phrase.",
+          "image_url": "https://example.com/artist.png",
+          "audio_url": "https://example.com/selected-clip.mp3",
+          "duration": 15
+        }
+      },
+      "ContentCreateVideoResponse": {
+        "type": "object",
+        "required": [
+          "videoUrl"
+        ],
+        "properties": {
+          "videoUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the generated video"
+          }
+        }
+      },
+      "ContentErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong",
+            "example": "Unauthorized"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Your Recoup API key. [Learn more](https://docs.recoupable.dev/quickstart#api-keys)."
+      },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
+```
+
+
+# List templates
 
 Source: https://docs.recoupable.dev/api-reference/content/templates
 
@@ -33218,7 +33421,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Template Detail
+# Get template detail
 
 Source: https://docs.recoupable.dev/api-reference/content/template-detail
 
@@ -33541,7 +33744,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Validate Artist
+# Validate artist
 
 Source: https://docs.recoupable.dev/api-reference/content/validate
 
@@ -33811,7 +34014,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Estimate Cost
+# Estimate cost
 
 Source: https://docs.recoupable.dev/api-reference/content/estimate
 
@@ -34123,7 +34326,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Generate Image
+# Generate image (GET)
 
 Source: https://docs.recoupable.dev/api-reference/image/generation
 
@@ -34340,7 +34543,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Transcribe Audio
+# Transcribe audio directly
 
 Source: https://docs.recoupable.dev/api-reference/transcribe/audio
 
@@ -34591,219 +34794,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Generate lipsync (release pending)
-
-Source: https://docs.recoupable.dev/api-reference/content/lipsync
-
-Available after the coordinated API and Tasks release for mono#348. Not verified on the deployed baseline.
-
-## POST /api/content/lipsync
-
-Full OpenAPI specification: https://docs.recoupable.dev/spec/content.json
-
-## Authentication
-
-This operation requires one of the security alternatives in the specification below. Security scheme definitions are included where present in the published specification.
-
-[Authentication guide](https://docs.recoupable.dev/authentication)
-
-## Operation and referenced schemas
-
-```json
-{
-  "openapi": "3.1.0",
-  "info": {
-    "title": "Recoup API - Content",
-    "description": "API documentation for the Recoup platform - an AI agent platform for the music industry",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
-  },
-  "servers": [
-    {
-      "url": "https://api.recoupable.dev"
-    }
-  ],
-  "paths": {
-    "/api/content/lipsync": {
-      "post": {
-        "summary": "Generate audio-driven video (release pending)",
-        "description": "Available after the coordinated API and Tasks release for mono#348. Not verified on the deployed baseline. Fixed fal-ai/ltx-2-19b/audio-to-video; estimated rounded output megapixels at $0.0018 per unit, actual provider units used when supplied. The worker verifies an audio stream before final composition; presence of audio is not proof of perceptual lip alignment.",
-        "operationId": "createContentLipsync",
-        "tags": [
-          "Content"
-        ],
-        "security": [
-          {
-            "apiKeyAuth": []
-          },
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ContentCreateLipsyncRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Video generated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentCreateVideoResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation failed — invalid or missing request body fields",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized — invalid or missing API key",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          },
-          "402": {
-            "description": "Insufficient credits before generation. The fixed LTX audio-to-video model costs $0.0018 per rounded output megapixel (1,800 micro-dollar credits per unit); duration and frame dimensions determine the preflight estimate.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Per-account generation rate exceeded (30 requests/minute). Retry-After states seconds to wait."
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContentErrorResponse"
-                }
-              }
-            }
-          },
-          "502": {
-            "description": "Provider returned no usable video; no Recoup generation charge is recorded."
-          },
-          "503": {
-            "description": "Shared generation throttling unavailable; no provider generation starts."
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "ContentCreateLipsyncRequest": {
-        "type": "object",
-        "required": [
-          "prompt",
-          "image_url",
-          "audio_url",
-          "duration"
-        ],
-        "additionalProperties": false,
-        "properties": {
-          "prompt": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 50000
-          },
-          "image_url": {
-            "type": "string",
-            "format": "uri"
-          },
-          "audio_url": {
-            "type": "string",
-            "format": "uri",
-            "description": "Public URL of the selected song window, not the full track."
-          },
-          "duration": {
-            "type": "integer",
-            "minimum": 5,
-            "maximum": 19
-          },
-          "seed": {
-            "type": "integer"
-          }
-        },
-        "description": "Release-pending fixed LTX audio-to-video primitive. 1280x720 at 25fps; bounded frame count. No arbitrary model selection.",
-        "example": {
-          "prompt": "The artist performs the supplied vocal phrase.",
-          "image_url": "https://example.com/artist.png",
-          "audio_url": "https://example.com/selected-clip.mp3",
-          "duration": 15
-        }
-      },
-      "ContentCreateVideoResponse": {
-        "type": "object",
-        "required": [
-          "videoUrl"
-        ],
-        "properties": {
-          "videoUrl": {
-            "type": "string",
-            "format": "uri",
-            "description": "URL of the generated video"
-          }
-        }
-      },
-      "ContentErrorResponse": {
-        "type": "object",
-        "required": [
-          "error"
-        ],
-        "properties": {
-          "error": {
-            "type": "string",
-            "description": "Error message describing what went wrong",
-            "example": "Unauthorized"
-          }
-        }
-      }
-    },
-    "securitySchemes": {
-      "apiKeyAuth": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-api-key",
-        "description": "Your Recoup API key. [Learn more](https://docs.recoupable.dev/quickstart#api-keys)."
-      },
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
-      }
-    }
-  }
-}
-```
-
-
-# Generate Music
+# Generate music
 
 Source: https://docs.recoupable.dev/api-reference/music/generate
 
@@ -35118,7 +35109,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# List Music Generations
+# List music generations
 
 Source: https://docs.recoupable.dev/api-reference/music/list
 
@@ -35409,7 +35400,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Music Generation
+# Get music generation
 
 Source: https://docs.recoupable.dev/api-reference/music/get
 
@@ -35763,7 +35754,7 @@ This is a reference correction. No provider run or audio-quality check was
 performed to make these availability statements.
 
 
-# Get Artist Posts
+# Get artist posts
 
 Source: https://docs.recoupable.dev/api-reference/posts/get
 
@@ -36036,7 +36027,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Comments
+# Get comments
 
 Source: https://docs.recoupable.dev/api-reference/comments/get
 
@@ -41288,7 +41279,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Social Scrape
+# Social scrape
 
 Source: https://docs.recoupable.dev/api-reference/social/scrape
 
@@ -41565,7 +41556,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# api-reference/artist/socials-scrape
+# Scrape artist socials
 
 Source: https://docs.recoupable.dev/api-reference/artist/socials-scrape
 
@@ -42091,7 +42082,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Get Artist
+# Get artist
 
 Source: https://docs.recoupable.dev/api-reference/spotify/artist
 
@@ -42302,7 +42293,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Get Artist Albums
+# Get artist albums
 
 Source: https://docs.recoupable.dev/api-reference/spotify/artist-albums
 
@@ -42639,7 +42630,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Get Artist Top Tracks
+# Get artist top tracks
 
 Source: https://docs.recoupable.dev/api-reference/spotify/artist-top-tracks
 
@@ -43033,7 +43024,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Get Album
+# Get album
 
 Source: https://docs.recoupable.dev/api-reference/spotify/album
 
@@ -43837,7 +43828,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Scraper Results
+# Scraper results
 
 Source: https://docs.recoupable.dev/api-reference/apify/scraper
 
@@ -44057,7 +44048,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Agent Signup
+# Agent signup
 
 Source: https://docs.recoupable.dev/api-reference/agents/signup
 
@@ -44173,7 +44164,7 @@ This operation's specification permits a request without authentication.
 ```
 
 
-# Verify Agent Email
+# Verify agent email
 
 Source: https://docs.recoupable.dev/api-reference/agents/verify
 
@@ -44492,7 +44483,7 @@ acknowledgment, then inspect the completed result or reported failure in the
 thread. Generated output still requires the inspection described above.
 
 
-# Release Packs
+# Release packs
 
 Source: https://docs.recoupable.dev/release-packs
 
@@ -44654,7 +44645,7 @@ retain the brief and explain the next step. It must not claim the entire account
 is disconnected or present a plan as completed media.
 
 
-# List Templates
+# List templates
 
 Source: https://docs.recoupable.dev/api-reference/templates/list
 
@@ -44932,7 +44923,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Create Template
+# Create template
 
 Source: https://docs.recoupable.dev/api-reference/templates/create
 
@@ -45276,7 +45267,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Update Template
+# Update template
 
 Source: https://docs.recoupable.dev/api-reference/templates/update
 
@@ -45646,7 +45637,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Delete Template
+# Delete template
 
 Source: https://docs.recoupable.dev/api-reference/templates/delete
 
@@ -45831,7 +45822,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Favorite Template
+# Favorite template
 
 Source: https://docs.recoupable.dev/api-reference/templates/favorite
 
@@ -46049,7 +46040,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Tasks
+# Get tasks
 
 Source: https://docs.recoupable.dev/api-reference/tasks/get
 
@@ -46836,7 +46827,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Create Task
+# Create task
 
 Source: https://docs.recoupable.dev/api-reference/tasks/create
 
@@ -47718,7 +47709,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Update Task
+# Update task
 
 Source: https://docs.recoupable.dev/api-reference/tasks/update
 
@@ -48669,7 +48660,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Delete Task
+# Delete task
 
 Source: https://docs.recoupable.dev/api-reference/tasks/delete
 
@@ -49005,7 +48996,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Task Runs
+# Get task runs
 
 Source: https://docs.recoupable.dev/api-reference/tasks/runs
 
@@ -49540,7 +49531,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Slack Webhook
+# Slack webhook
 
 Source: https://docs.recoupable.dev/api-reference/content-agent/webhook
 
@@ -49688,7 +49679,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Task Callback
+# Task callback
 
 Source: https://docs.recoupable.dev/api-reference/content-agent/callback
 
@@ -50149,7 +50140,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# List Sandboxes
+# List sandboxes
 
 Source: https://docs.recoupable.dev/api-reference/sandboxes/list
 
@@ -50444,7 +50435,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Create Sandbox
+# Create sandbox
 
 Source: https://docs.recoupable.dev/api-reference/sandboxes/create
 
@@ -50733,7 +50724,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Update Snapshot
+# Update snapshot
 
 Source: https://docs.recoupable.dev/api-reference/sandboxes/snapshot
 
@@ -50913,7 +50904,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Delete Sandbox
+# Delete sandbox
 
 Source: https://docs.recoupable.dev/api-reference/sandboxes/delete
 
@@ -51106,7 +51097,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Setup Sandbox
+# Set up sandbox
 
 Source: https://docs.recoupable.dev/api-reference/sandboxes/setup
 
@@ -51243,7 +51234,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Get File Contents
+# Get file contents
 
 Source: https://docs.recoupable.dev/api-reference/sandboxes/get-file
 
@@ -51475,7 +51466,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Stage File
+# Stage file
 
 Source: https://docs.recoupable.dev/api-reference/sandboxes/stage-file
 
@@ -51583,7 +51574,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Upload Files
+# Upload files
 
 Source: https://docs.recoupable.dev/api-reference/sandboxes/upload-files
 
@@ -51946,7 +51937,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Create Session
+# Create session
 
 Source: https://docs.recoupable.dev/api-reference/sessions/create
 
@@ -52336,7 +52327,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Session
+# Get session
 
 Source: https://docs.recoupable.dev/api-reference/sessions/get
 
@@ -52655,7 +52646,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Update Session
+# Update session
 
 Source: https://docs.recoupable.dev/api-reference/sessions/patch
 
@@ -53034,7 +53025,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# List Session Chats
+# List session chats
 
 Source: https://docs.recoupable.dev/api-reference/sessions/list-chats
 
@@ -53260,7 +53251,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Create Session Chat
+# Create session chat
 
 Source: https://docs.recoupable.dev/api-reference/sessions/create-chat
 
@@ -53541,7 +53532,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Session Chat
+# Get session chat
 
 Source: https://docs.recoupable.dev/api-reference/sessions/get-chat
 
@@ -53804,7 +53795,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Update Session Chat
+# Update session chat
 
 Source: https://docs.recoupable.dev/api-reference/sessions/patch-chat
 
@@ -54076,7 +54067,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Delete Session Chat
+# Delete session chat
 
 Source: https://docs.recoupable.dev/api-reference/sessions/delete-chat
 
@@ -54262,7 +54253,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Mark Chat Read
+# Mark chat read
 
 Source: https://docs.recoupable.dev/api-reference/sessions/mark-chat-read
 
@@ -55129,7 +55120,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Account ID
+# Get account ID
 
 Source: https://docs.recoupable.dev/api-reference/accounts/id
 
@@ -55263,7 +55254,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Account
+# Get account
 
 Source: https://docs.recoupable.dev/api-reference/accounts/get
 
@@ -55446,7 +55437,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Create Account
+# Create account
 
 Source: https://docs.recoupable.dev/api-reference/accounts/create
 
@@ -55653,7 +55644,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Update Account
+# Update account
 
 Source: https://docs.recoupable.dev/api-reference/accounts/update
 
@@ -55914,7 +55905,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Add Artist to Account
+# Add artist to account
 
 Source: https://docs.recoupable.dev/api-reference/accounts/add-artist
 
@@ -56051,7 +56042,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Create Subscription Session
+# Create subscription session
 
 Source: https://docs.recoupable.dev/api-reference/subscriptions/sessions-create
 
@@ -56219,7 +56210,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Claim Subscription
+# Claim subscription
 
 Source: https://docs.recoupable.dev/api-reference/subscriptions/claim-create
 
@@ -56433,7 +56424,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Account Subscription
+# Get account subscription
 
 Source: https://docs.recoupable.dev/api-reference/accounts/subscription-get
 
@@ -56771,7 +56762,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Create Billing Portal Session
+# Create billing portal session
 
 Source: https://docs.recoupable.dev/api-reference/accounts/portal-create
 
@@ -56960,7 +56951,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Default Payment Method
+# Get default payment method
 
 Source: https://docs.recoupable.dev/api-reference/accounts/payment-method-get
 
@@ -57156,7 +57147,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Save a Payment Method
+# Save a payment method
 
 Source: https://docs.recoupable.dev/api-reference/accounts/payment-method-create
 
@@ -57357,7 +57348,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Remove the Payment Method
+# Remove the payment method
 
 Source: https://docs.recoupable.dev/api-reference/accounts/payment-method-delete
 
@@ -57519,7 +57510,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# List Account Payments
+# List account payments
 
 Source: https://docs.recoupable.dev/api-reference/accounts/payments-get
 
@@ -57771,7 +57762,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Auto Top-up Settings
+# Get auto top-up settings
 
 Source: https://docs.recoupable.dev/api-reference/accounts/auto-top-up-get
 
@@ -57949,7 +57940,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Update Auto Top-up Settings
+# Update auto top-up settings
 
 Source: https://docs.recoupable.dev/api-reference/accounts/auto-top-up-update
 
@@ -58188,7 +58179,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Create Credits Top-Up Session
+# Create credits top-up session
 
 Source: https://docs.recoupable.dev/api-reference/credits/sessions-create
 
@@ -58381,7 +58372,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Account Credits
+# Get account credits
 
 Source: https://docs.recoupable.dev/api-reference/accounts/credits-get
 
@@ -58684,7 +58675,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Account Usage
+# Get account usage
 
 Source: https://docs.recoupable.dev/api-reference/accounts/usage-get
 
@@ -59106,7 +59097,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Update Pulse
+# Update pulse
 
 Source: https://docs.recoupable.dev/api-reference/pulses/update
 
@@ -59280,7 +59271,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# List Pulses
+# List pulses
 
 Source: https://docs.recoupable.dev/api-reference/pulses/list
 
@@ -59460,7 +59451,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Get Organizations
+# Get organizations
 
 Source: https://docs.recoupable.dev/api-reference/organizations/list
 
@@ -59667,7 +59658,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Create Organization
+# Create organization
 
 Source: https://docs.recoupable.dev/api-reference/organizations/create
 
@@ -59844,7 +59835,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Add Artist to Organization
+# Add artist to organization
 
 Source: https://docs.recoupable.dev/api-reference/organizations/add-artist
 
@@ -60029,7 +60020,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Add Member to Organization
+# Add member to organization
 
 Source: https://docs.recoupable.dev/api-reference/organizations/add-member
 
@@ -60222,7 +60213,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Remove Member from Organization
+# Remove member from organization
 
 Source: https://docs.recoupable.dev/api-reference/organizations/remove-member
 
@@ -60391,7 +60382,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# List Organization Domains
+# List organization domains
 
 Source: https://docs.recoupable.dev/api-reference/organizations/list-domains
 
@@ -60588,7 +60579,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Add Organization Domain
+# Add organization domain
 
 Source: https://docs.recoupable.dev/api-reference/organizations/add-domain
 
@@ -60793,7 +60784,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Remove Organization Domain
+# Remove organization domain
 
 Source: https://docs.recoupable.dev/api-reference/organizations/remove-domain
 
@@ -60961,7 +60952,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# List Professional Roster
+# List professional roster
 
 Source: https://docs.recoupable.dev/api-reference/organizations/professionals
 
@@ -61199,7 +61190,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Confirm Professional Roster Addition
+# Confirm professional roster addition
 
 Source: https://docs.recoupable.dev/api-reference/organizations/professionals-confirm
 
@@ -61552,7 +61543,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Check Admin Status
+# Check admin status
 
 Source: https://docs.recoupable.dev/api-reference/admins/check
 
@@ -61685,7 +61676,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# List Account Sandboxes (Admin)
+# List account sandboxes (admin)
 
 Source: https://docs.recoupable.dev/api-reference/admins/sandboxes
 
@@ -61877,7 +61868,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# List Org Repo Stats (Admin)
+# List org repo stats (admin)
 
 Source: https://docs.recoupable.dev/api-reference/admins/sandboxes-orgs
 
@@ -62111,7 +62102,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# List Account Emails (Admin)
+# List account emails (admin)
 
 Source: https://docs.recoupable.dev/api-reference/admins/emails
 
@@ -62430,7 +62421,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# List Privy Logins (Admin)
+# List Privy logins (admin)
 
 Source: https://docs.recoupable.dev/api-reference/admins/privy
 
@@ -62618,7 +62609,434 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# List Coding Agent Slack Tags (Admin)
+# Admin signup report availability
+
+Source: https://docs.recoupable.dev/api-reference/admins/agent-signups
+
+An admin key-metadata report is available; the former signup-report URL and broader reporting outcome remain separate.
+
+`GET /api/admins/agent/signups` is not available. The new
+[admin key-metadata report](https://docs.recoupable.dev/api-reference/admins/agent-key-metadata) uses
+`GET /api/admins/agent-signups` (a different URL).
+
+A Recoup admin can use the new report to inspect key-record IDs, names, creation
+times and matching current `agent+…` email addresses. It never returns API-key
+credentials or hashes. Its `total` counts the returned key records; several keys
+can belong to one account. It does not establish where an account signed up,
+how many unique agents signed up, which keys are active, or whether people use
+the product. Current email associations, database visibility and server row limits
+also prevent a guarantee of complete historical reporting.
+
+## Unfinished reporting outcome
+
+[Reconciliation #327](https://github.com/recoupable/mono/issues/327) retains the
+broader reporting decision. The bounded metadata route from
+[API #1095](https://github.com/recoupable/api/pull/1095) does not complete the original
+[API #428](https://github.com/recoupable/api/issues/428) customer outcome or restore
+the former URL. Follow the new route's period, admin-access and collection-limit
+notes when using it; do not treat key-record counts as signup-origin or adoption
+measurements.
+
+
+# List agent key metadata (admin)
+
+Source: https://docs.recoupable.dev/api-reference/admins/agent-key-metadata
+
+Read API-key record metadata associated with current account emails matching the case-insensitive agent+ prefix.
+
+## GET /api/admins/agent-signups
+
+Full OpenAPI specification: https://docs.recoupable.dev/spec/accounts.json
+
+## Authentication
+
+This operation requires one of the security alternatives in the specification below. Security scheme definitions are included where present in the published specification.
+
+[Authentication guide](https://docs.recoupable.dev/authentication)
+
+## Operation and referenced schemas
+
+```json
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup API - Accounts",
+    "description": "API documentation for the Recoup platform - an AI agent platform for the music industry",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.recoupable.dev"
+    }
+  ],
+  "paths": {
+    "/api/admins/agent-signups": {
+      "get": {
+        "operationId": "getAdminsAgentSignupMetadata",
+        "summary": "List agent-prefixed API-key metadata (Admin)",
+        "description": "Read API-key record metadata associated with current account emails matching the case-insensitive agent+ prefix. Authenticate with exactly one x-api-key or Authorization: Bearer credential for a Recoup admin account. Admin access is checked before query validation or metadata access.\n\nEach returned record contains only id, name, email and created_at. id identifies an API-key record, not an account or credential; no API key value or hash is selected or returned. email is the first matching current associated email, not necessarily a primary or canonical address. Multiple matching emails do not multiply a key record; multiple keys on one account remain separate records. Deleted keys are absent; expired key records are not excluded. Current email associations can change. This is a current-email metadata selection, not evidence of origin from POST /api/agents/signup, a unique-agent/account count, active-key count, usage or adoption.\n\nperiod defaults to all. Other values use inclusive midnight-UTC calendar boundaries on API-key record created_at: daily is today; weekly includes today and the preceding six calendar days; monthly includes today and the preceding 29 calendar days. Rows are ordered by key-record created_at descending. total is the length of the returned signups array, not a separate database-wide count. Existing database visibility and server row limits apply; no pagination or collection-completeness guarantee is provided. A successful empty read returns total 0 and signups []; a read failure returns a masked 500 instead.\n\nThis is GET /api/admins/agent-signups. The former GET /api/admins/agent/signups remains unavailable. The broader reporting decision in Mono #327 and original API #428 are not closed by this metadata route. Source tests use synthetic credential and storage boundaries; they do not prove production admin access, real data completeness or customer adoption. No UI, automatic caller, polling job, export or account/key creation is added.",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "description": "Optional key-record creation window, inclusive from 00:00 UTC: daily = today; weekly = 7 calendar days including today; monthly = 30 calendar days including today; all = no cutoff. Defaults to all when omitted; an explicit empty or unsupported value returns 400. This is not a rolling 24-hour window and does not filter by account or email creation time.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "all",
+                "daily",
+                "weekly",
+                "monthly"
+              ],
+              "default": "all"
+            },
+            "example": "all"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returned API-key metadata and the count of these returned records.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminAgentKeyMetadataResponse"
+                },
+                "examples": {
+                  "multipleKeys": {
+                    "summary": "Synthetic example: two key records share one current matching email; total is not unique accounts.",
+                    "value": {
+                      "status": "success",
+                      "total": 2,
+                      "signups": [
+                        {
+                          "id": "11111111-1111-4111-8111-111111111112",
+                          "name": "Second agent key",
+                          "email": "agent+fixture@example.invalid",
+                          "created_at": "2026-10-21T12:00:00Z"
+                        },
+                        {
+                          "id": "11111111-1111-4111-8111-111111111111",
+                          "name": "First agent key",
+                          "email": "agent+fixture@example.invalid",
+                          "created_at": "2026-10-20T12:00:00Z"
+                        }
+                      ]
+                    }
+                  },
+                  "noRecords": {
+                    "summary": "Successful empty metadata read, subject to existing visibility and collection limits.",
+                    "value": {
+                      "status": "success",
+                      "total": 0,
+                      "signups": []
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or explicitly empty period, after successful admin authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, simultaneous or invalid credentials; inspect error or message according to the authentication envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorEnvelope"
+                    },
+                    {
+                      "$ref": "#/components/schemas/AccountErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The authenticated account is not a Recoup admin.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Metadata read or handler failure. Generic Internal server error message; not an empty success report.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AdminAgentKeyMetadataResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "total",
+          "signups"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ]
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of key records in this returned signups array. Not a separate database-wide count or a count of unique accounts, agents, active keys or adoption."
+          },
+          "signups": {
+            "type": "array",
+            "description": "Returned metadata rows ordered by key-record created_at descending. The retained wire name does not establish signup origin. Multiple keys for one account remain separate rows.",
+            "items": {
+              "$ref": "#/components/schemas/AdminAgentKeyMetadata"
+            }
+          }
+        }
+      },
+      "ErrorEnvelope": {
+        "type": "object",
+        "required": [
+          "status",
+          "error"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "AccountErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "AdminAgentKeyMetadata": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "email",
+          "created_at"
+        ],
+        "description": "One returned API-key record and the first matching current associated email. No credential value or hash is selected or returned.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "API-key record ID, not an account ID or a credential."
+          },
+          "name": {
+            "type": "string",
+            "description": "Stored name of this API-key record."
+          },
+          "email": {
+            "type": "string",
+            "description": "First current associated email matching the case-insensitive agent+ prefix; not necessarily a primary or canonical email."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation time of the API-key record, not the account or email."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Your Recoup API key. [Learn more](https://docs.recoupable.dev/quickstart#api-keys)."
+      },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
+```
+
+
+# List pro artists (admin)
+
+Source: https://docs.recoupable.dev/api-reference/admins/artists-pro
+
+Retrieve the deduplicated list of artist IDs owned by pro accounts. An account is "pro" when its email belongs to an enterprise domain or it has an active…
+
+## GET /api/admins/artists/pro
+
+Full OpenAPI specification: https://docs.recoupable.dev/spec/accounts.json
+
+## Authentication
+
+This operation requires one of the security alternatives in the specification below. Security scheme definitions are included where present in the published specification.
+
+[Authentication guide](https://docs.recoupable.dev/authentication)
+
+## Operation and referenced schemas
+
+```json
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup API - Accounts",
+    "description": "API documentation for the Recoup platform - an AI agent platform for the music industry",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.recoupable.dev"
+    }
+  ],
+  "paths": {
+    "/api/admins/artists/pro": {
+      "get": {
+        "operationId": "getAdminsArtistsPro",
+        "description": "Retrieve the deduplicated list of artist IDs owned by pro accounts. An account is \"pro\" when its email belongs to an enterprise domain or it has an active Stripe subscription. Admin-scoped: requires an admin-flagged API key because the response identifies paying customer accounts.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pro artist IDs retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistsProResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid authentication"
+          },
+          "403": {
+            "description": "Forbidden - caller is authenticated but not admin-scoped"
+          },
+          "500": {
+            "description": "Internal server error while fetching pro artists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistsProResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ArtistsProResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "artists"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "description": "Status of the request"
+          },
+          "artists": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "List of artist IDs owned by pro accounts"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message (only present if status is 'error')"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Your Recoup API key. [Learn more](https://docs.recoupable.dev/quickstart#api-keys)."
+      }
+    }
+  }
+}
+```
+
+
+# List coding agent Slack tags (admin)
 
 Source: https://docs.recoupable.dev/api-reference/admins/coding-agent-slack-tags
 
@@ -62919,7 +63337,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# List Coding Agent Slack Authors (Admin)
+# List coding agent Slack authors (admin)
 
 Source: https://docs.recoupable.dev/api-reference/admins/coding-agent-slack-authors
 
@@ -63161,7 +63579,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Coding Agent PR Merged Status (Admin)
+# Get coding agent PR merged status (admin)
 
 Source: https://docs.recoupable.dev/api-reference/admins/coding-pr
 
@@ -63364,7 +63782,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# List Content Agent Slack Tags (Admin)
+# List Content Agent Slack tags (admin)
 
 Source: https://docs.recoupable.dev/api-reference/admins/content-slack-tags
 
@@ -63613,434 +64031,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Admin signup report availability
-
-Source: https://docs.recoupable.dev/api-reference/admins/agent-signups
-
-An admin key-metadata report is available; the former signup-report URL and broader reporting outcome remain separate.
-
-`GET /api/admins/agent/signups` is not available. The new
-[admin key-metadata report](https://docs.recoupable.dev/api-reference/admins/agent-key-metadata) uses
-`GET /api/admins/agent-signups` (a different URL).
-
-A Recoup admin can use the new report to inspect key-record IDs, names, creation
-times and matching current `agent+…` email addresses. It never returns API-key
-credentials or hashes. Its `total` counts the returned key records; several keys
-can belong to one account. It does not establish where an account signed up,
-how many unique agents signed up, which keys are active, or whether people use
-the product. Current email associations, database visibility and server row limits
-also prevent a guarantee of complete historical reporting.
-
-## Unfinished reporting outcome
-
-[Reconciliation #327](https://github.com/recoupable/mono/issues/327) retains the
-broader reporting decision. The bounded metadata route from
-[API #1095](https://github.com/recoupable/api/pull/1095) does not complete the original
-[API #428](https://github.com/recoupable/api/issues/428) customer outcome or restore
-the former URL. Follow the new route's period, admin-access and collection-limit
-notes when using it; do not treat key-record counts as signup-origin or adoption
-measurements.
-
-
-# List Agent Key Metadata (Admin)
-
-Source: https://docs.recoupable.dev/api-reference/admins/agent-key-metadata
-
-Read API-key record metadata associated with current account emails matching the case-insensitive agent+ prefix.
-
-## GET /api/admins/agent-signups
-
-Full OpenAPI specification: https://docs.recoupable.dev/spec/accounts.json
-
-## Authentication
-
-This operation requires one of the security alternatives in the specification below. Security scheme definitions are included where present in the published specification.
-
-[Authentication guide](https://docs.recoupable.dev/authentication)
-
-## Operation and referenced schemas
-
-```json
-{
-  "openapi": "3.1.0",
-  "info": {
-    "title": "Recoup API - Accounts",
-    "description": "API documentation for the Recoup platform - an AI agent platform for the music industry",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
-  },
-  "servers": [
-    {
-      "url": "https://api.recoupable.dev"
-    }
-  ],
-  "paths": {
-    "/api/admins/agent-signups": {
-      "get": {
-        "operationId": "getAdminsAgentSignupMetadata",
-        "summary": "List agent-prefixed API-key metadata (Admin)",
-        "description": "Read API-key record metadata associated with current account emails matching the case-insensitive agent+ prefix. Authenticate with exactly one x-api-key or Authorization: Bearer credential for a Recoup admin account. Admin access is checked before query validation or metadata access.\n\nEach returned record contains only id, name, email and created_at. id identifies an API-key record, not an account or credential; no API key value or hash is selected or returned. email is the first matching current associated email, not necessarily a primary or canonical address. Multiple matching emails do not multiply a key record; multiple keys on one account remain separate records. Deleted keys are absent; expired key records are not excluded. Current email associations can change. This is a current-email metadata selection, not evidence of origin from POST /api/agents/signup, a unique-agent/account count, active-key count, usage or adoption.\n\nperiod defaults to all. Other values use inclusive midnight-UTC calendar boundaries on API-key record created_at: daily is today; weekly includes today and the preceding six calendar days; monthly includes today and the preceding 29 calendar days. Rows are ordered by key-record created_at descending. total is the length of the returned signups array, not a separate database-wide count. Existing database visibility and server row limits apply; no pagination or collection-completeness guarantee is provided. A successful empty read returns total 0 and signups []; a read failure returns a masked 500 instead.\n\nThis is GET /api/admins/agent-signups. The former GET /api/admins/agent/signups remains unavailable. The broader reporting decision in Mono #327 and original API #428 are not closed by this metadata route. Source tests use synthetic credential and storage boundaries; they do not prove production admin access, real data completeness or customer adoption. No UI, automatic caller, polling job, export or account/key creation is added.",
-        "parameters": [
-          {
-            "name": "period",
-            "in": "query",
-            "required": false,
-            "description": "Optional key-record creation window, inclusive from 00:00 UTC: daily = today; weekly = 7 calendar days including today; monthly = 30 calendar days including today; all = no cutoff. Defaults to all when omitted; an explicit empty or unsupported value returns 400. This is not a rolling 24-hour window and does not filter by account or email creation time.",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "all",
-                "daily",
-                "weekly",
-                "monthly"
-              ],
-              "default": "all"
-            },
-            "example": "all"
-          }
-        ],
-        "security": [
-          {
-            "apiKeyAuth": []
-          },
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Returned API-key metadata and the count of these returned records.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AdminAgentKeyMetadataResponse"
-                },
-                "examples": {
-                  "multipleKeys": {
-                    "summary": "Synthetic example: two key records share one current matching email; total is not unique accounts.",
-                    "value": {
-                      "status": "success",
-                      "total": 2,
-                      "signups": [
-                        {
-                          "id": "11111111-1111-4111-8111-111111111112",
-                          "name": "Second agent key",
-                          "email": "agent+fixture@example.invalid",
-                          "created_at": "2026-10-21T12:00:00Z"
-                        },
-                        {
-                          "id": "11111111-1111-4111-8111-111111111111",
-                          "name": "First agent key",
-                          "email": "agent+fixture@example.invalid",
-                          "created_at": "2026-10-20T12:00:00Z"
-                        }
-                      ]
-                    }
-                  },
-                  "noRecords": {
-                    "summary": "Successful empty metadata read, subject to existing visibility and collection limits.",
-                    "value": {
-                      "status": "success",
-                      "total": 0,
-                      "signups": []
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid or explicitly empty period, after successful admin authentication.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing, simultaneous or invalid credentials; inspect error or message according to the authentication envelope.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/ErrorEnvelope"
-                    },
-                    {
-                      "$ref": "#/components/schemas/AccountErrorResponse"
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "The authenticated account is not a Recoup admin.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccountErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Metadata read or handler failure. Generic Internal server error message; not an empty success report.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccountErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "AdminAgentKeyMetadataResponse": {
-        "type": "object",
-        "required": [
-          "status",
-          "total",
-          "signups"
-        ],
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "success"
-            ]
-          },
-          "total": {
-            "type": "integer",
-            "minimum": 0,
-            "description": "Number of key records in this returned signups array. Not a separate database-wide count or a count of unique accounts, agents, active keys or adoption."
-          },
-          "signups": {
-            "type": "array",
-            "description": "Returned metadata rows ordered by key-record created_at descending. The retained wire name does not establish signup origin. Multiple keys for one account remain separate rows.",
-            "items": {
-              "$ref": "#/components/schemas/AdminAgentKeyMetadata"
-            }
-          }
-        }
-      },
-      "ErrorEnvelope": {
-        "type": "object",
-        "required": [
-          "status",
-          "error"
-        ],
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "error"
-            ],
-            "description": "Status of the request"
-          },
-          "error": {
-            "type": "string",
-            "description": "Error message describing what went wrong"
-          }
-        }
-      },
-      "AccountErrorResponse": {
-        "type": "object",
-        "required": [
-          "status",
-          "message"
-        ],
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "error"
-            ],
-            "description": "Status of the request"
-          },
-          "message": {
-            "type": "string",
-            "description": "Error message describing what went wrong"
-          }
-        }
-      },
-      "AdminAgentKeyMetadata": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "id",
-          "name",
-          "email",
-          "created_at"
-        ],
-        "description": "One returned API-key record and the first matching current associated email. No credential value or hash is selected or returned.",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "API-key record ID, not an account ID or a credential."
-          },
-          "name": {
-            "type": "string",
-            "description": "Stored name of this API-key record."
-          },
-          "email": {
-            "type": "string",
-            "description": "First current associated email matching the case-insensitive agent+ prefix; not necessarily a primary or canonical email."
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Creation time of the API-key record, not the account or email."
-          }
-        }
-      }
-    },
-    "securitySchemes": {
-      "apiKeyAuth": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-api-key",
-        "description": "Your Recoup API key. [Learn more](https://docs.recoupable.dev/quickstart#api-keys)."
-      },
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
-      }
-    }
-  }
-}
-```
-
-
-# List Pro Artists (Admin)
-
-Source: https://docs.recoupable.dev/api-reference/admins/artists-pro
-
-Retrieve the deduplicated list of artist IDs owned by pro accounts. An account is "pro" when its email belongs to an enterprise domain or it has an active…
-
-## GET /api/admins/artists/pro
-
-Full OpenAPI specification: https://docs.recoupable.dev/spec/accounts.json
-
-## Authentication
-
-This operation requires one of the security alternatives in the specification below. Security scheme definitions are included where present in the published specification.
-
-[Authentication guide](https://docs.recoupable.dev/authentication)
-
-## Operation and referenced schemas
-
-```json
-{
-  "openapi": "3.1.0",
-  "info": {
-    "title": "Recoup API - Accounts",
-    "description": "API documentation for the Recoup platform - an AI agent platform for the music industry",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
-  },
-  "servers": [
-    {
-      "url": "https://api.recoupable.dev"
-    }
-  ],
-  "paths": {
-    "/api/admins/artists/pro": {
-      "get": {
-        "operationId": "getAdminsArtistsPro",
-        "description": "Retrieve the deduplicated list of artist IDs owned by pro accounts. An account is \"pro\" when its email belongs to an enterprise domain or it has an active Stripe subscription. Admin-scoped: requires an admin-flagged API key because the response identifies paying customer accounts.",
-        "security": [
-          {
-            "apiKeyAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Pro artist IDs retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ArtistsProResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - missing or invalid authentication"
-          },
-          "403": {
-            "description": "Forbidden - caller is authenticated but not admin-scoped"
-          },
-          "500": {
-            "description": "Internal server error while fetching pro artists",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ArtistsProResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "ArtistsProResponse": {
-        "type": "object",
-        "required": [
-          "status",
-          "artists"
-        ],
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "success",
-              "error"
-            ],
-            "description": "Status of the request"
-          },
-          "artists": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "description": "List of artist IDs owned by pro accounts"
-          },
-          "error": {
-            "type": "string",
-            "description": "Error message (only present if status is 'error')"
-          }
-        }
-      }
-    },
-    "securitySchemes": {
-      "apiKeyAuth": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-api-key",
-        "description": "Your Recoup API key. [Learn more](https://docs.recoupable.dev/quickstart#api-keys)."
-      }
-    }
-  }
-}
-```
-
-
-# Credit Usage Rollup (Admin)
+# Credit usage rollup (admin)
 
 Source: https://docs.recoupable.dev/api-reference/admins/credits-rollup
 
@@ -64297,7 +64288,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Credit Usage Events (Admin)
+# Credit usage events (admin)
 
 Source: https://docs.recoupable.dev/api-reference/admins/credits-events
 
@@ -64664,7 +64655,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Grant Credits (Admin)
+# Grant credits (admin)
 
 Source: https://docs.recoupable.dev/api-reference/admins/credits-grant
 
@@ -64961,7 +64952,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Send Email
+# Send email
 
 Source: https://docs.recoupable.dev/api-reference/emails/create
 
@@ -65164,7 +65155,7 @@ The supplied specification does not declare an OpenAPI security object for this 
 ```
 
 
-# Get Project
+# Get project
 
 Source: https://docs.recoupable.dev/api-reference/projects/get
 
@@ -65499,7 +65490,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Project Task
+# Get project task
 
 Source: https://docs.recoupable.dev/api-reference/projects/task-get
 
@@ -65859,7 +65850,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Create Project Task
+# Create project task
 
 Source: https://docs.recoupable.dev/api-reference/projects/task-create
 
@@ -66190,7 +66181,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Update Project Task
+# Update project task
 
 Source: https://docs.recoupable.dev/api-reference/projects/task-update
 
@@ -66542,7 +66533,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Delete Project Task
+# Delete project task
 
 Source: https://docs.recoupable.dev/api-reference/projects/task-delete
 
@@ -66773,7 +66764,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# List Task Comments
+# List task comments
 
 Source: https://docs.recoupable.dev/api-reference/projects/comments-get
 
@@ -67041,7 +67032,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Add Task Comment
+# Add task comment
 
 Source: https://docs.recoupable.dev/api-reference/projects/comments-create
 
@@ -67339,7 +67330,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Connection Ownership
+# Connection ownership
 
 Source: https://docs.recoupable.dev/connectors/ownership
 
@@ -67405,7 +67396,7 @@ The [Connectors endpoint reference](https://docs.recoupable.dev/api-reference/co
 Endpoint request and response shapes for the re-keyed model are deliberately not documented here yet.
 
 
-# List Connectors
+# List connectors
 
 Source: https://docs.recoupable.dev/api-reference/connectors/list
 
@@ -67590,7 +67581,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Authorize Connector
+# Authorize connector
 
 Source: https://docs.recoupable.dev/api-reference/connectors/authorize
 
@@ -67781,7 +67772,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Disconnect Connector
+# Disconnect connector
 
 Source: https://docs.recoupable.dev/api-reference/connectors/disconnect
 
@@ -67952,7 +67943,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# List Connector Actions
+# List connector actions
 
 Source: https://docs.recoupable.dev/api-reference/connectors/list-actions
 
@@ -68149,7 +68140,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Upload Connector File
+# Upload connector file
 
 Source: https://docs.recoupable.dev/api-reference/connectors/upload-file
 
@@ -68332,7 +68323,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Execute Connector Action
+# Execute connector action
 
 Source: https://docs.recoupable.dev/api-reference/connectors/execute-action
 
@@ -68546,7 +68537,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Create Post
+# Create post
 
 Source: https://docs.recoupable.dev/api-reference/publishing/create
 
@@ -68878,7 +68869,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# List Posts
+# List posts
 
 Source: https://docs.recoupable.dev/api-reference/publishing/list
 
@@ -69263,7 +69254,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Post
+# Get post
 
 Source: https://docs.recoupable.dev/api-reference/publishing/get
 
@@ -69606,7 +69597,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Get Post Stats
+# Get post stats
 
 Source: https://docs.recoupable.dev/api-reference/publishing/stats
 
@@ -70002,7 +69993,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Cancel Post
+# Cancel post
 
 Source: https://docs.recoupable.dev/api-reference/publishing/cancel
 

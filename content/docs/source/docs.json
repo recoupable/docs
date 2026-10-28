@@ -18,15 +18,30 @@
             "pages": [
               "index",
               "quickstart",
+              "authentication",
+              "credits"
+            ]
+          },
+          {
+            "group": "Tools & clients",
+            "pages": [
               "sdks",
-              "public-website-api",
               "cli",
               "claude",
               "mcp",
+              "public-website-api"
+            ]
+          },
+          {
+            "group": "Agent connections",
+            "pages": [
               "mcp-oauth",
-              "mcp-cimd",
-              "authentication",
-              "credits",
+              "mcp-cimd"
+            ]
+          },
+          {
+            "group": "Availability",
+            "pages": [
               "research-availability"
             ]
           }
@@ -171,15 +186,30 @@
               "api-reference/songs/catalogs",
               "api-reference/songs/catalogs-create",
               "api-reference/songs/catalog-rename",
-              "api-reference/songs/catalog-delete",
+              "api-reference/songs/catalog-delete"
+            ]
+          },
+          {
+            "group": "Valuations & measurements",
+            "pages": [
               "api-reference/songs/valuation-run",
               "api-reference/songs/runs",
               "api-reference/songs/catalog-measurements",
               "api-reference/songs/catalog-playcount-history",
-              "api-reference/songs/catalog-valuations",
+              "api-reference/songs/catalog-valuations"
+            ]
+          },
+          {
+            "group": "Catalog songs",
+            "pages": [
               "api-reference/songs/catalog-songs",
               "api-reference/songs/catalog-songs-add",
-              "api-reference/songs/catalog-songs-delete",
+              "api-reference/songs/catalog-songs-delete"
+            ]
+          },
+          {
+            "group": "Stream tracking",
+            "pages": [
               "api-reference/songs/catalog-streams",
               "api-reference/songs/catalog-stream-tracking",
               "api-reference/songs/update-catalog-stream-tracking"
@@ -212,7 +242,7 @@
             ]
           },
           {
-            "group": "Content Creation",
+            "group": "Content creation",
             "pages": [
               "api-reference/content/create",
               "api-reference/content/generate-image",
@@ -222,13 +252,23 @@
               "api-reference/content/edit",
               "api-reference/content/upscale",
               "api-reference/content/analyze-video",
+              "api-reference/content/lipsync"
+            ]
+          },
+          {
+            "group": "Templates & estimates",
+            "pages": [
               "api-reference/content/templates",
               "api-reference/content/template-detail",
               "api-reference/content/validate",
-              "api-reference/content/estimate",
+              "api-reference/content/estimate"
+            ]
+          },
+          {
+            "group": "Direct media tools",
+            "pages": [
               "api-reference/image/generation",
-              "api-reference/transcribe/audio",
-              "api-reference/content/lipsync"
+              "api-reference/transcribe/audio"
             ]
           },
           {
@@ -241,7 +281,7 @@
             ]
           },
           {
-            "group": "Posts & Comments",
+            "group": "Posts & comments",
             "pages": [
               "api-reference/posts/get",
               "api-reference/comments/get"
@@ -263,7 +303,7 @@
         ]
       },
       {
-        "tab": "Social Media",
+        "tab": "Social media",
         "groups": [
           {
             "group": "Social",
@@ -297,10 +337,10 @@
         ]
       },
       {
-        "tab": "Agents & Sandboxes",
+        "tab": "Agents & sandboxes",
         "groups": [
           {
-            "group": "Agent Onboarding",
+            "group": "Agent onboarding",
             "pages": [
               "api-reference/agents/signup",
               "api-reference/agents/verify"
@@ -369,7 +409,7 @@
             ]
           },
           {
-            "group": "Session Sandboxes",
+            "group": "Session sandboxes",
             "pages": [
               "api-reference/sandbox/create",
               "api-reference/sandbox/status",
@@ -392,15 +432,25 @@
             ]
           },
           {
-            "group": "Billing",
+            "group": "Subscriptions",
             "pages": [
               "api-reference/subscriptions/sessions-create",
               "api-reference/subscriptions/claim-create",
               "api-reference/accounts/subscription-get",
-              "api-reference/accounts/portal-create",
+              "api-reference/accounts/portal-create"
+            ]
+          },
+          {
+            "group": "Payment methods",
+            "pages": [
               "api-reference/accounts/payment-method-get",
               "api-reference/accounts/payment-method-create",
-              "api-reference/accounts/payment-method-delete",
+              "api-reference/accounts/payment-method-delete"
+            ]
+          },
+          {
+            "group": "Credits & usage",
+            "pages": [
               "api-reference/accounts/payments-get",
               "api-reference/accounts/auto-top-up-get",
               "api-reference/accounts/auto-top-up-update",
@@ -432,20 +482,30 @@
             ]
           },
           {
-            "group": "Admins",
+            "group": "Admin accounts",
             "pages": [
               "api-reference/admins/check",
               "api-reference/admins/sandboxes",
               "api-reference/admins/sandboxes-orgs",
               "api-reference/admins/emails",
               "api-reference/admins/privy",
+              "api-reference/admins/agent-signups",
+              "api-reference/admins/agent-key-metadata",
+              "api-reference/admins/artists-pro"
+            ]
+          },
+          {
+            "group": "Admin agents",
+            "pages": [
               "api-reference/admins/coding-agent-slack-tags",
               "api-reference/admins/coding-agent-slack-authors",
               "api-reference/admins/coding-pr",
-              "api-reference/admins/content-slack-tags",
-              "api-reference/admins/agent-signups",
-              "api-reference/admins/agent-key-metadata",
-              "api-reference/admins/artists-pro",
+              "api-reference/admins/content-slack-tags"
+            ]
+          },
+          {
+            "group": "Admin credits",
+            "pages": [
               "api-reference/admins/credits-rollup",
               "api-reference/admins/credits-events",
               "api-reference/admins/credits-grant"
