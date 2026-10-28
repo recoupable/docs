@@ -66,5 +66,8 @@ Audited all 243 navigation pages. Short labels, sentence case, smaller topic gro
 and a grouped agent index are implemented on `codex/docs-navigation-readability`.
 All 144 tests, type checking, lint, and a production build passed on Node 24.
 Local browser checks verified SDK search, desktop labels, and mobile navigation.
-Page URLs and OpenAPI contracts are unchanged. Next: verify the hosted PR preview
-and review before merging; production publication is not yet verified.
+Page URLs and OpenAPI contracts are unchanged. Authenticated preview reads verified
+the short labels and grouped agent index. The shared API fixture also pins guide
+frontmatter: keep the signup-report availability guide byte-for-byte unchanged.
+See PR #24 for final CI and preview evidence. Next: review before merging;
+production publication is not yet verified.
