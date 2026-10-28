@@ -34326,7 +34326,7 @@ This operation requires one of the security alternatives in the specification be
 ```
 
 
-# Generate image via URL
+# Generate image (GET)
 
 Source: https://docs.recoupable.dev/api-reference/image/generation
 
