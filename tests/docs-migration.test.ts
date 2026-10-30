@@ -23,7 +23,7 @@ test('documentation migration covers every navigation page and every supplied AP
 });
 
 test('documentation guide links resolve locally, including repaired legacy URLs',()=>{
- const valid=new Set(['https://recoupable.dev/pricing','/','/api-reference',...pages.map((page:{slug:string})=>`/${page.slug}`)]);
+ const valid=new Set(['https://recoupable.dev/pricing','/','/api-reference','/llms.txt','/llms-full.txt',...pages.map((page:{slug:string})=>`/${page.slug}`)]);
  for(const page of pages)for(const [,url] of page.body.matchAll(/(?:href="|\]\()(\/[^"\s)]+)/g))expect(valid.has(resolveDocsHref(url).split('#')[0]), `Broken docs link ${page.slug}: ${url}`).toBeTruthy();
  expect(resolveDocsHref('/api-reference/sandboxes/file#request')).toBe('/api-reference/sandboxes/get-file#request');
  expect(resolveDocsHref('https://docs.recoupable.dev/quickstart#your-first-request')).toBe('/quickstart#your-first-request');

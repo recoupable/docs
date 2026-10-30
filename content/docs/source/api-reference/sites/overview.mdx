@@ -155,16 +155,18 @@ returns 409, and invalid or expired token access returns 404. A temporary saved-
 failure may return 503. Without `generationToken`, publication uses the saved draft;
 it does not automatically select the newest background preview.
 
-### Upgrade required
+### Entitlement required
 
 An ineligible workspace receives HTTP 402 with an error body, for example:
 
 ```json
-{"error":"An active paid Recoup subscription is required to publish a site. Subscribe in this site’s workspace, then publish again."}
+{"error":"Site publishing is unavailable with this workspace's current entitlements. The draft is preserved."}
 ```
 
-Subscribe in the site's owning workspace before retrying the intended publish.
-This response does not publish the site or create a checkout session.
+Keep the draft and explain that publishing is unavailable. Plugin workflows do
+not offer plans, link to checkout or start a purchase. Resume only after access
+is independently available and the user requests publication again. This
+response does not publish the site or create a checkout session.
 
 ### Unpublish
 

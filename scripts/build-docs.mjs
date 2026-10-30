@@ -57,6 +57,7 @@ for (const tab of nav) for (const group of tab.groups) for (const slug of group.
     const match=line.match(/^(\w+):\s*(.*)$/); if(match) meta[match[1]]=match[2].replace(/^(['"])([\s\S]*)\1$/, '$2');
   }
   const entry={slug:slug==='index'?'':slug, title:meta.title || slug, description:meta.description || '', category:tab.tab, group:group.group, source:`${slug}.mdx`, body, headings:[]};
+  if (meta.sidebarTitle) entry.sidebarTitle = meta.sidebarTitle;
   if (body.trim()) {
     let normalized = body.replace(/https:\/\/github.com\/sweetmantech\/docs\/blob\/main\/api-reference\/openapi.json/g, '/api-reference');
     // Links remain source-authored. Prefixing happens in the rendering component.
@@ -75,7 +76,7 @@ for (const tab of nav) for (const group of tab.groups) for (const slug of group.
     entry.description=entry.description || operationDescription(operation);
     entry.operationText=`${operation?.summary || ''} ${operation?.description || ''}`;
   }
-  entry.searchText=`${entry.title} ${entry.description} ${entry.operationText || ''} ${entry.category} ${entry.group} ${entry.api?.method || ''} ${entry.api?.path || ''} ${body.replace(/```[\s\S]*?```/g,' ').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ')}`;
+  entry.searchText=`${entry.title} ${entry.sidebarTitle || ''} ${entry.description} ${entry.operationText || ''} ${entry.category} ${entry.group} ${entry.api?.method || ''} ${entry.api?.path || ''} ${body.replace(/```[\s\S]*?```/g,' ').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ')}`;
   delete entry.operationText;
   pages.push(entry);
 }

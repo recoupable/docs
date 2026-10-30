@@ -25,7 +25,7 @@ test("a real MCP client lists both read-only tools, searches and reads a page", 
 
     const read = await client.callTool({ name: "read_page", arguments: { page: results[0].url } });
     const { markdown } = read.structuredContent as { markdown: string };
-    expect(markdown).toMatch(/^# Get Post Stats\n\nSource: http:\/\/localhost:3000\/api-reference\/publishing\/stats\n/);
+    expect(markdown).toMatch(/^# Get post stats\n\nSource: http:\/\/localhost:3000\/api-reference\/publishing\/stats\n/);
     expect(markdown).toContain("## GET /api/posts/{id}/stats");
 
     const missing = await client.callTool({ name: "read_page", arguments: { page: "nope/never" } });
