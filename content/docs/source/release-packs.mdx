@@ -106,10 +106,30 @@ The default scope is 15 creative pieces: eight video clips, four quote cards, on
 artwork, one carousel and one visualizer, with captions. A carousel is one piece;
 its slides and alternate aspect ratios are identified as components or variants.
 You can request a smaller scope. The quote must describe the actual selected work,
-including chargeable stages and any retry allowance. Current quotes charge for
+including chargeable stages. No retry allowance is funded. Current quotes charge for
 image and motion generation; captioning, audio analysis, composition and inspection
 are included without an added customer fee. The approved amount is held before
 production; unused stages are refunded. A new paid retry needs its own quote.
+
+`maximum_usd` and each asset's `maximum_usd` are **customer charge ceilings**;
+`line_items[].usd` and `credits` are customer charges. They are not measured
+provider expenses. A zero-USD included service means no added customer fee,
+not that its provider cost is zero. Actual provider cost is unknown until supported
+by measurement evidence; the pack's existing receipts do not supply that amount.
+
+Concept generation, contingency and refinement allowances are **not budgeted**.
+Do not promise that a quote funds direction boards or extra refinement rounds.
+A confirmed failed asset can receive a fresh targeted retry quote with separate
+approval; this is not an included refinement allowance.
+
+The coordinated API update adds `quote.cost_accounting` to estimates and saved-job
+read/export responses: `amount_basis: "customer_charge"`,
+`included_services: "no_additional_customer_charge"`, `provider_cost_usd: null`,
+`provider_cost_status: "not_measured"`, and `concepts`, `contingency`, `refinements`
+set to `"not_budgeted"`. These additive labels are pending that API release.
+Older responses may omit them; their absence does not imply zero provider expense.
+The labels do not change prices or invalidate an otherwise compatible approval.
+
 
 The older `GET /api/content/estimate` is an advisory per-video estimate. It is not
 a complete Release Packs quote. On insufficient credits the agent surfaces the
@@ -126,6 +146,31 @@ The first representative asset is produced and inspected early. The agent then
 continues the agreed batch within your budget, unless you requested a preview
 checkpoint. Progress distinguishes requested, generated, inspected and delivered
 assets. A partly generated pack is reported as partial.
+
+### Saved progress summary (pending API release)
+
+The additive `progress` field on pack snapshots separates requested pieces/files,
+generated pieces/files, QA-passed pieces, usable pieces and running, failed or
+uncertain pieces. A carousel is one piece with four requested files. Counts cover
+the full saved deliverables even when the current quote is for one retry. Attempts
+and repeated reads do not add outputs. Generated files are persisted final
+composition outputs, including rejected outputs; intermediate provider images
+and submission receipts do not count as delivered files.
+
+A usable piece is completed with files, passed inspection and a nonblank caption.
+`complete` requires every requested kind/ordinal to be usable and the saved job to
+be completed. A failed or partial job's settlement timestamp is never reported as
+`full_pack_completed_at`. The first-usable timestamp is returned only with a
+currently usable piece whose saved completion timestamp matches the saved
+first-usable timestamp. Unverifiable or missing timestamps stay null. `last_exported_at` reflects the latest saved export retrieval, not publication.
+
+Blocker codes and asset IDs point to the existing readiness fields, job error or
+asset error without copying private briefs, captions or provider receipts into the
+summary. Running asset IDs identify current work. The projection does not record
+new events or reconstruct retry history. All user-wait, provider-render,
+active-processing and remaining-time fields are null because the existing
+receipts do not measure those intervals separately. No countdown or five-minute
+promise is inferred. Older deployed responses may omit `progress` until release.
 
 ## Review and delivery
 
