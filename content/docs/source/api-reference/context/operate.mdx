@@ -17,3 +17,24 @@ The optional selected-evidence check is pending [API #1208](https://github.com/r
 </Warning>
 
 A client can ask whether selected sources still match a saved company assessment before passing them to another feature. Copy the exact saved document references and use the captured snapshot ID. The result checks the whole selection: it is available only when saved and current evidence match under current access. Otherwise the selection is unavailable; malformed requests and permission/storage failures remain errors. The check does not refresh or save evidence, grant permission, or guarantee that a later action is safe. Existing reads without a selection keep their current behavior.
+
+
+## Explain why selected evidence is unavailable — pending release
+
+<Warning>
+Optional explanations are pending [API #1209](https://github.com/recoupable/api/pull/1209). Omit `explain_evidence_validation` until the compatible API release is verified. Existing selected-evidence and retrieval-date release labels above remain unchanged.
+</Warning>
+
+When someone reopens a saved company assessment and selects evidence to reuse, the selected-evidence check may say unavailable without saying why. Set `explain_evidence_validation: true` on the same `read_brief` request, with the exact `selected_evidence` and captured snapshot ID, to request one broad reason. True without a selection is invalid input; the server enforces this rule in addition to the exported JSON Schema.
+
+| Reason | Meaning |
+| --- | --- |
+| `saved_assessment_unavailable` | The saved assessment or its request references did not qualify for this check. |
+| `selection_mismatch` | The selected references did not match the saved assessment's evidence. |
+| `current_evidence_unavailable` | Matching current evidence or usable request records could not be verified. |
+| `identity_unconfirmed` | A confirmed, unambiguous kind for the selected evidence could not be verified. |
+| `validation_limit_exceeded` | The assessment exceeded the existing bounded-read limits. |
+
+These reasons report the first failed check. They do not prove that a source was withdrawn or false. An unavailable selection remains unavailable; the reason does not repair it, grant permission or make a later action safe. See **Explain an unavailable selection** in the operation reference for exact bounds and the synthetic HTTP/MCP example pairs.
+
+Omitting the flag or setting it to false preserves the exact existing response. Available results never include a reason, including with true. Permission and storage failures remain errors. The change adds no lookups, refresh or evidence writes.
