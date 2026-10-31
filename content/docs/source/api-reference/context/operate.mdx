@@ -8,3 +8,12 @@ Evidence retrieval-date attribution is pending the [API #1003](https://github.co
 </Warning>
 
 For the pending addition, `input_manifest.freshness` records when the selected evidence was retrieved. It does not refresh evidence, enforce an age limit or verify that a claim is current. Older saved briefs may omit this metadata and remain readable; reopening a snapshot does not recompile it. See **Evidence retrieval dates** in the operation reference for exact fields and compatibility.
+
+
+## Recheck selected saved evidence — pending release
+
+<Warning>
+The optional selected-evidence check is pending [API #1208](https://github.com/recoupable/api/pull/1208). Existing `read_brief` callers should omit `selected_evidence` until the compatible API release is verified. The new schemas and examples describe reviewed source, not hosted availability.
+</Warning>
+
+A client can ask whether selected sources still match a saved company assessment before passing them to another feature. Copy the exact saved document references and use the captured snapshot ID. The result checks the whole selection: it is available only when saved and current evidence match under current access. Otherwise the selection is unavailable; malformed requests and permission/storage failures remain errors. The check does not refresh or save evidence, grant permission, or guarantee that a later action is safe. Existing reads without a selection keep their current behavior.
