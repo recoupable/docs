@@ -127,7 +127,7 @@ continues the agreed batch within your budget, unless you requested a preview
 checkpoint. Progress distinguishes requested, generated, inspected and delivered
 assets. A partly generated pack is reported as partial.
 
-### Saved progress summary (pending API release)
+### Saved progress summary
 
 The additive `progress` field on pack snapshots separates requested pieces/files,
 generated pieces/files, QA-passed pieces, usable pieces and running, failed or
@@ -150,7 +150,7 @@ summary. Running asset IDs identify current work. The projection does not record
 new events or reconstruct retry history. All user-wait, provider-render,
 active-processing and remaining-time fields are null because the existing
 receipts do not measure those intervals separately. No countdown or five-minute
-promise is inferred. Older deployed responses may omit `progress` until release.
+promise is inferred. Older saved responses may omit `progress`.
 
 ## Review and delivery
 

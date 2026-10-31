@@ -41719,7 +41719,7 @@ This operation requires one of the security alternatives in the specification be
           }
         },
         "additionalProperties": false,
-        "description": "Pending API release: read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
+        "description": "Read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
       },
       "ReleasePackCreativeContext": {
         "type": "object",
@@ -42562,7 +42562,7 @@ This operation requires one of the security alternatives in the specification be
           }
         },
         "additionalProperties": false,
-        "description": "Pending API release: read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
+        "description": "Read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
       },
       "ReleasePackCreativeContext": {
         "type": "object",
@@ -43654,7 +43654,7 @@ This operation requires one of the security alternatives in the specification be
           }
         },
         "additionalProperties": false,
-        "description": "Pending API release: read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
+        "description": "Read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
       },
       "ReleasePackCreativeContext": {
         "type": "object",
@@ -44516,7 +44516,7 @@ This operation requires one of the security alternatives in the specification be
           }
         },
         "additionalProperties": false,
-        "description": "Pending API release: read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
+        "description": "Read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
       },
       "ReleasePackCreativeContext": {
         "type": "object",
@@ -45391,7 +45391,7 @@ This operation requires one of the security alternatives in the specification be
           }
         },
         "additionalProperties": false,
-        "description": "Pending API release: read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
+        "description": "Read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
       },
       "ReleasePackCreativeContext": {
         "type": "object",
@@ -46272,7 +46272,7 @@ This operation requires one of the security alternatives in the specification be
           }
         },
         "additionalProperties": false,
-        "description": "Pending API release: read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
+        "description": "Read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
       },
       "ReleasePackCreativeContext": {
         "type": "object",
@@ -47419,7 +47419,7 @@ This operation requires one of the security alternatives in the specification be
           }
         },
         "additionalProperties": false,
-        "description": "Pending API release: read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
+        "description": "Read-only current-snapshot progress. Full requested scope comes from saved deliverables, not a targeted retry quote. Unique asset IDs count pieces; distinct owned storage keys count files. Generated means persisted final composition files, not submitted provider work or intermediate images. QA passed is separate from usable (completed with reviewed files and a nonblank caption). No new timeline events or duration measurements are recorded."
       },
       "ReleasePackCreativeContext": {
         "type": "object",
@@ -50955,7 +50955,7 @@ continues the agreed batch within your budget, unless you requested a preview
 checkpoint. Progress distinguishes requested, generated, inspected and delivered
 assets. A partly generated pack is reported as partial.
 
-### Saved progress summary (pending API release)
+### Saved progress summary
 
 The additive `progress` field on pack snapshots separates requested pieces/files,
 generated pieces/files, QA-passed pieces, usable pieces and running, failed or
@@ -50978,7 +50978,7 @@ summary. Running asset IDs identify current work. The projection does not record
 new events or reconstruct retry history. All user-wait, provider-render,
 active-processing and remaining-time fields are null because the existing
 receipts do not measure those intervals separately. No countdown or five-minute
-promise is inferred. Older deployed responses may omit `progress` until release.
+promise is inferred. Older saved responses may omit `progress`.
 
 ## Review and delivery
 
