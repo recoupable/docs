@@ -2,3 +2,9 @@
 title: "Context Engine"
 openapi: "/api-reference/openapi/context.json POST /api/context"
 ---
+
+<Warning>
+Evidence retrieval-date attribution is pending the [API #1003](https://github.com/recoupable/api/pull/1003) release. The schema and new brief/save examples describe reviewed source, not verified production availability. Other Context actions retain their existing contracts and availability.
+</Warning>
+
+For the pending addition, `input_manifest.freshness` records when the selected evidence was retrieved. It does not refresh evidence, enforce an age limit or verify that a claim is current. Older saved briefs may omit this metadata and remain readable; reopening a snapshot does not recompile it. See **Evidence retrieval dates** in the operation reference for exact fields and compatibility.
