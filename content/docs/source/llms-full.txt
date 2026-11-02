@@ -20381,7 +20381,7 @@ a completed hosted workflow or provider readiness.
 
 > **Warning**
 > Pending API release. The response addition below is bound to API #1215 at
-> `4977dce3fe6320031bf09209d83240e85b2005de`. It is not the current live response contract.
+> `4aa6ee59822e9f6369d3fcacd90d71d97b7d7c56`. It is not the current live response contract.
 > The existing Context actions, success schemas and discovery remain available.
 
 The [pending error specification](https://docs.recoupable.dev/spec/context-errors-pending.json)
