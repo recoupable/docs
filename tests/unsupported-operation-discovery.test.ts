@@ -62,3 +62,18 @@ test("existing help URLs retain unfinished outcomes and scoped alternatives", ()
     expect(music.body).toContain(path);
   }
 });
+
+
+test("valuation estimates do not advertise unfinished history persistence or readback", () => {
+  const spec = JSON.parse(readFileSync(join(source, "api-reference/openapi/releases.json"), "utf8"));
+  const description = spec.paths["/api/valuation"].post.description as string;
+  expect(description).not.toMatch(/each run.*persists|readable via \[Get Catalog Valuations\]/i);
+  expect(description).toContain("does not persist a valuation-history row");
+  expect(description).toContain("/api-reference/songs/catalog-valuations");
+  const availability = readFileSync(join(source, "api-reference/songs/catalog-valuations.mdx"), "utf8");
+  expect(availability).toContain("Saved catalog valuation history is not available");
+  expect(spec.paths["/api/catalogs/{catalogId}/valuations"]).toBeUndefined();
+  const published = readFileSync(join(source, "llms-full.txt"), "utf8");
+  expect(published).not.toContain("Each run also persists a row in the catalog's valuation history");
+  expect(published).toContain("does not persist a valuation-history row");
+});
