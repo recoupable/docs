@@ -1016,6 +1016,8 @@ Files or [release-pack source audio](https://docs.recoupable.dev/release-packs).
 
 ## Context results
 
+The [Context reference](https://docs.recoupable.dev/api-reference/context/operate#pending-spotify-recovery-guidance) also describes **pending** Spotify recovery guidance in the existing saved `request.error` string. It is distinct from an HTTP/MCP operation error envelope; current behavior and existing action discovery remain unchanged until the matching API release.
+
 The [Context reference](https://docs.recoupable.dev/api-reference/context/operate) pairs each supported action
 with its success status, response model and synthetic request/result examples.
 Use the status declared for that action: `ingest` returns 202, while the specific
@@ -20366,6 +20368,138 @@ When someone reopens a saved company assessment and selects evidence to reuse, t
 These reasons report the first failed check. They do not prove that a source was withdrawn or false. An unavailable selection remains unavailable; the reason does not repair it, grant permission or make a later action safe. See **Explain an unavailable selection** in the operation reference for exact bounds and the synthetic HTTP/MCP example pairs.
 
 Omitting the flag or setting it to false preserves the exact existing response. Available results never include a reason, including with true. Permission and storage failures remain errors. The change adds no lookups, refresh or evidence writes.
+
+## Current saved failure text
+
+The existing Context operation remains available. A failed Spotify ingestion currently
+stores this generic text in the saved request's `error` field, exposed as `request.error`
+when reading the request:
+
+```text
+Context extraction failed. Retry this request after checking provider access or identity conflicts.
+```
+
+This saved background failure is not a transport error envelope. The separate HTTP/MCP
+operation failure contract and successful response schemas are unchanged here. Historical
+requests can retain the generic text after a later release; clients must not require a
+new code prefix to read an existing request.
+
+## Pending Spotify recovery guidance
+
+> **Warning**
+> Pending API release and owning Docs acceptance. The text below is bound to API #1216 at
+> `7815162a62218142408663b2043ee32df656acbe`. Source checks do not establish live Spotify,
+> persisted database, retry or intended-account behavior. Existing Context actions and
+> discovery remain available.
+
+The pending format is `<code>: <guidance>` in the same `request.error` string. It does not
+add a structured error object, RPC, action, field, lifecycle state, job or spend path.
+The request still uses its existing `failed` state. The
+[pending text components](https://docs.recoupable.dev/spec/context-ingest-recovery-pending.json)
+define only string values, with no callable operation or server.
+
+These are the exact seven authored values from the bound source:
+
+### `unsupported_input`
+
+```text
+unsupported_input: Track ingestion requires a single Spotify track URL. Use ingest_release for an album locator; playlists and artist pages are not track inputs. YouTube ingestion is not enabled.
+```
+
+### `recording_unavailable`
+
+```text
+recording_unavailable: Spotify did not return this track for this request. Check the URL and availability before deciding whether to retry or submit a different track as a new request.
+```
+
+### `provider_outage`
+
+```text
+provider_outage: The Spotify metadata request was interrupted, unavailable or rate limited. Check saved state and wait for recovery before an authorized retry with unchanged input and the same idempotency key.
+```
+
+### `provider_rejected`
+
+```text
+provider_rejected: Spotify rejected the metadata request. Check provider access configuration and saved state before deciding whether to retry with unchanged input and the same idempotency key.
+```
+
+### `provider_response_invalid`
+
+```text
+provider_response_invalid: The Spotify response could not be validated as the requested recording metadata. Review the source and saved state before retrying; do not infer an accepted identity from this failure.
+```
+
+### `identity_conflict`
+
+```text
+identity_conflict: The returned recording or saved identity disagrees with this request. Review the conflict and saved state before retrying; do not substitute a relinked recording or guess artist identity.
+```
+
+### `unknown`
+
+```text
+unknown: The extraction outcome could not be classified. Check saved state and current workspace access before deciding whether to retry. An error does not establish whether a commit completed; do not automatically resubmit with a new key.
+```
+
+## What the failure does and does not establish
+
+A provider 404/410 means this request did not return the track; it does not prove deletion,
+permanent unavailability or prior availability. HTTP 429/5xx and standard fetch interruptions
+are classified at the Spotify fetch boundary. Provider 401/403 is a rejected provider request,
+not proof that a Recoup account lost workspace access. JSON/schema failures are classified as
+provider response errors only while parsing that response; arbitrary schema, syntax, timeout,
+authorization and storage failures elsewhere remain `unknown`.
+
+Returned or relinked track IDs that differ from the requested track are rejected before the
+identity commit. Only exact known storage-wrapped recording/artist conflict messages become
+`identity_conflict`; substring matches and unrelated commit guards remain unknown. This does
+not establish which artist or recording is correct or authorize replacing an existing identity.
+
+The existing failure RPC updates only a matching owner, request, running state and claim token.
+A `false` acknowledgment does not mean this worker persisted a failure. A lost commit response
+may follow a successful transaction, so an error cannot prove that no records were accepted.
+Owner rechecks, completed/partial/cancelled skips, claim tokens and persistence behavior are
+unchanged. Private provider bodies, exception messages, causes, identifiers and traces are
+never copied into the stored guidance; no raw logging is added.
+
+No automatic safe-retry, duplicate-paid-work or no-charge guarantee is made. Check saved state
+and current workspace access before deciding whether to retry. Existing claim and workflow
+logic still owns retry execution; guidance does not change that policy. Where retry is authorized,
+retain unchanged input and the same idempotency key. Guest failure persistence is unchanged.
+
+## Pending track URL routing messages
+
+Track ingestion already rejects non-track Spotify resources. The pending change makes its
+schema-level HTTP 400 guidance explicit:
+
+| Submitted resource | Guidance |
+| --- | --- |
+| Spotify album URL | Use the existing `ingest_release` action to save an album locator. This does not enable album collection or verification. |
+| Spotify playlist URL | Playlists are unsupported track inputs; collection semantics are not enabled. |
+| Spotify artist URL | Submit one of the artist's track URLs. An artist page is not a track. |
+
+HTTPS, credential, port and unknown-host defenses remain. Query strings, trailing slashes and
+supported `intl-xx` track URLs still normalize to the same canonical track URL and request
+fingerprint. Retaining the original submitted locator/query is a separate provenance decision;
+this change does not add that retention. The YouTube parser is unchanged and YouTube ingestion
+remains disabled. Supported legacy collection paths are not expanded by this response-text change.
+
+For example, this is an excerpt of a pending saved failure, not a complete read response:
+
+```json
+{
+  "request": {
+    "status": "failed",
+    "error": "unknown: The extraction outcome could not be classified. Check saved state and current workspace access before deciding whether to retry. An error does not establish whether a commit completed; do not automatically resubmit with a new key."
+  }
+}
+```
+
+The pending operation-level typed errors documented separately in API #1215 / Docs #31 are a
+different representation. This page addition neither releases that contract nor changes its
+source binding. Source examples do not complete the Spotify ingestion acceptance criteria or
+its identity, lifecycle and reuse prerequisites.
 
 ## POST /api/context
 

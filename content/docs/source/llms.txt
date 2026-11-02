@@ -37,6 +37,7 @@ Use the public website tools to find music-business workflows, evaluate supplied
 - [Uploads OpenAPI](https://docs.recoupable.dev/spec/uploads.json)
 - [Content OpenAPI](https://docs.recoupable.dev/spec/content.json)
 - [Context OpenAPI](https://docs.recoupable.dev/spec/context.json)
+- [Pending Spotify recovery text](https://docs.recoupable.dev/spec/context-ingest-recovery-pending.json): Source-bound saved-error string values awaiting API release; no callable operation.
 - [Players OpenAPI](https://docs.recoupable.dev/spec/players.json)
 - [Projects OpenAPI](https://docs.recoupable.dev/spec/projects.json)
 - [Releases OpenAPI](https://docs.recoupable.dev/spec/releases.json)
