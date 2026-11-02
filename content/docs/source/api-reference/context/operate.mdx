@@ -38,3 +38,111 @@ When someone reopens a saved company assessment and selects evidence to reuse, t
 These reasons report the first failed check. They do not prove that a source was withdrawn or false. An unavailable selection remains unavailable; the reason does not repair it, grant permission or make a later action safe. See **Explain an unavailable selection** in the operation reference for exact bounds and the synthetic HTTP/MCP example pairs.
 
 Omitting the flag or setting it to false preserves the exact existing response. Available results never include a reason, including with true. Permission and storage failures remain errors. The change adds no lookups, refresh or evidence writes.
+
+## Current error behavior
+
+The existing operation remains available. Its current documented operation failures use a
+blanket 409 response with an authored `error` message. HTTP input validation returns 400;
+authentication and organization checks keep their existing responses, including 401/403.
+MCP currently returns an authored generic error. These source descriptions do not establish
+a completed hosted workflow or provider readiness.
+
+## Pending typed error responses
+
+<Warning>
+Pending API release. The response addition below is bound to API #1215 at
+`4977dce3fe6320031bf09209d83240e85b2005de`. It is not the current live response contract.
+The existing Context actions, success schemas and discovery remain available.
+</Warning>
+
+The [pending error specification](https://docs.recoupable.dev/spec/context-errors-pending.json)
+contains response components and synthetic examples only: no callable endpoint or server.
+After the matching API release, operation failures return HTTP
+`{error, code, retryable, guidance}`. MCP serializes
+`{success: false, message, code, retryable, guidance}` in `content[0].text` and sets
+`isError: true`. HTTP `error` and MCP `message` contain the same authored message.
+
+| Code | HTTP | Retry guidance |
+| --- | --- | --- |
+| `permission_denied` | 403 | Check account and current organization access. |
+| `not_found` | 404 | Check record and workspace; missing and inaccessible records are not distinguished. |
+| `conflict` | 409 | Read current state and resolve the conflict before changing input. |
+| `unsupported_input` | 422 | Change unsupported input before retrying. |
+| `not_ready` | 409 | Retryable only after the required state is reached. |
+| `unavailable` | 503 | Retryable after dependency recovery or capability availability. |
+| `budget_exhausted` | 402 | Reserved, not retryable; check budget and saved state. |
+| `storage_failed` | 409 | Opaque storage failure, not recognized as transient; no automatic retry. |
+| `internal` | 500 | Unclassified failure or malformed stored data; no automatic retry. |
+
+`retryable` is true only for `not_ready` and `unavailable`. It is not a guarantee
+that repeating a request will recover. Disabled verification capabilities require availability
+before retry. No spend path produces `budget_exhausted` in this change, and its presence
+cannot establish whether paid work ran or charges occurred.
+
+Caller schema errors stay HTTP 400 and MCP SDK `InvalidParams`, outside this typed operation
+contract. Authentication responses stay unchanged. For example, a Spotify album or playlist
+URL sent to track `ingest` fails input validation with 400. A YouTube video that passes the
+track/video URL schema but is refused by the ingestion operation currently returns 409;
+the pending contract returns 422 `unsupported_input`. Unsupported album hosts or resource
+types accepted as syntactic URLs by `ingest_release` similarly become operation-level 422.
+
+Only exact known API/storage messages are classified. Malformed stored RPC fields remain
+`internal`; their paths do not prove caller conflict, readiness or absence. Generic SQL
+“query returned no rows” remains opaque `storage_failed` without lookup provenance.
+Unknown storage errors are not proof that a caller caused a conflict. Authored revision and
+fingerprint conflicts remain non-retryable even when storage uses a serialization code.
+Private exception text, causes, traces and identifiers are never returned or logged.
+Known record-unavailable responses do not reveal whether another workspace holds the record.
+
+## Request and recovery examples
+
+These are synthetic JSON examples for the existing operation, not executed requests.
+The recording ID is a format-valid placeholder. No example authorizes provider work or spending.
+
+A URL-only ingestion needs the URL and a caller-chosen key; no artist or catalog ID is needed:
+
+```json
+{
+  "action": "ingest",
+  "url": "https://open.spotify.com/track/0000000000000000000000",
+  "idempotency_key": "example-song-1"
+}
+```
+
+After a lost response, reconnect with that same idempotency key and unchanged input.
+A new key is new work. Existing RPC and execution paths own idempotency; the error formatter
+does not guarantee that every paid retry is prevented. An uncertain attachment retry keeps
+the exact source version, targets and key. An uncertain catalog save keeps its unchanged
+payload and key; read the current revision before editing.
+
+Read/list/plan/verify operations do not need a write key. Once the durable request ID is known:
+
+```json
+{
+  "action": "read",
+  "request_id": "00000000-0000-4000-8000-000000000003"
+}
+```
+
+Partial results remain successful. Inspect `request.status`, available evidence and
+`request.output.gaps`; unavailable lyrics or other media are not complete song understanding.
+Reconnecting to an already partial ingestion does not dispatch it again. Queued, running or
+failed requests can enter their existing redispatch path; this addition does not change leases,
+execution or billing. It adds no media-recovery workflow.
+
+An example pending unavailable response for a read is:
+
+```json
+{
+  "error": "A required dependency or capability is unavailable.",
+  "code": "unavailable",
+  "retryable": true,
+  "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery."
+}
+```
+
+The component-only specification includes the matching MCP body and write-specific guidance.
+Private/no-store headers, authorization checks, delegated OAuth catalog exclusions and the
+material-evidence policy remain unchanged. Guest endpoints retain their separate error behavior.
+Source/schema checks do not establish intended-account API/MCP parity, native save/denial,
+workspace acceptance or provider execution.

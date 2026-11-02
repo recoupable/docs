@@ -39,3 +39,5 @@ Keep credentials in environment variables or a secret store. Never print them.
 ## Reusable skills
 
 `npx skills add recoupable/skills` installs Recoup's maintained agent skills for these workflows.
+
+Context actions remain available under their existing contract. The [Context reference](https://docs.recoupable.dev/api-reference/context/operate) distinguishes current blanket operation errors from pending typed responses. [Pending components](https://docs.recoupable.dev/spec/context-errors-pending.json) define no callable operation and do not prove API release or hosted acceptance.

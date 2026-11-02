@@ -36,7 +36,8 @@ Use the public website tools to find music-business workflows, evaluate supplied
 - [Public file upload](https://docs.recoupable.dev/api-reference/uploads/create.md): Authenticated upload of one supported file up to 4 MiB; returned URLs are public, not private storage.
 - [Uploads OpenAPI](https://docs.recoupable.dev/spec/uploads.json)
 - [Content OpenAPI](https://docs.recoupable.dev/spec/content.json)
-- [Context OpenAPI](https://docs.recoupable.dev/spec/context.json)
+- [Context OpenAPI](https://docs.recoupable.dev/spec/context.json): Existing actions and current response contract.
+- [Pending Context error components](https://docs.recoupable.dev/spec/context-errors-pending.json): Source-only response addition awaiting API release; no callable operation.
 - [Players OpenAPI](https://docs.recoupable.dev/spec/players.json)
 - [Projects OpenAPI](https://docs.recoupable.dev/spec/projects.json)
 - [Releases OpenAPI](https://docs.recoupable.dev/spec/releases.json)
