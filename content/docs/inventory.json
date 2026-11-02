@@ -7,6 +7,7 @@
     "ai.json",
     "applications.json",
     "content.json",
+    "context-errors-pending.json",
     "context.json",
     "players.json",
     "projects.json",

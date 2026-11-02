@@ -3762,6 +3762,7 @@
     "content/docs/source/api-reference/openapi/ai.json": "678f649fff58a1c49c81002ea2cbe66636ad5da1044ea66261e6ab4084600687",
     "content/docs/source/api-reference/openapi/applications.json": "07cf7c630ca81816d73e9198b863dc0a9c8e987f4e0794375951ead06e498ad6",
     "content/docs/source/api-reference/openapi/content.json": "f790ee44d1b881709e393a65500bec23493e21a391c7b66555e0c78750f95239",
+    "content/docs/source/api-reference/openapi/context-errors-pending.json": "38a27e32491c3432d103174b77678ebfe75b2fa4f13cd530a0c2e4a2c463305b",
     "content/docs/source/api-reference/openapi/context.json": "7784ee1d8c4b6753cc47bf518f468effa58d50fb9d0289009edf0caad3d05a67",
     "content/docs/source/api-reference/openapi/players.json": "4a4c90583fe1de6487444581b293a32b1cc04622fc929965ab90f365feb8bc94",
     "content/docs/source/api-reference/openapi/projects.json": "b059cf8baa83a7f73a3c15db19f54fa56e46a3840e91bd42979b83550f543ace",

@@ -1,0 +1,375 @@
+{
+  "availability": "pending",
+  "apiSourceCommit": "4aa6ee59822e9f6369d3fcacd90d71d97b7d7c56",
+  "evidence": "Exact pure API source only; no application handlers, services, hosted calls, authentication or provider execution.",
+  "sourceHashes": {
+    "lib/context/ContextOperationError.ts": "f5681cbf4c1d46d14e83b94df52ca45395ebf02e2cdfae174c4984341484ab6f",
+    "lib/context/classifyContextOperationError.ts": "36c10e51834e42464c12e63eea4e1782573ee48fdd370d52c60b1d065f8f64c5",
+    "lib/context/formatContextOperationError.ts": "d2cbddd275d01a83199b71c66c8b662c53555cc4fb21439c8c580a50b1837f8b",
+    "lib/context/getContextFailureMessage.ts": "d793fb975813eb6ea8dd01cf5d54645d3b4d7a8ad76c3f1b251f4d3e6f42e266",
+    "lib/mcp/getCallToolResult.ts": "508f772fa23be88601699f66ee92d91c19ca6d018dad95c76f6cc71a3d1850e6",
+    "lib/mcp/tools/context/getContextToolResultError.ts": "255187e08ac81fbab896094050591ecffdfceac2b5c302f7f7e5ef14520d9430"
+  },
+  "codes": [
+    {
+      "code": "permission_denied",
+      "http": {
+        "status": 403,
+        "body": {
+          "error": "Access denied to the selected context owner.",
+          "code": "permission_denied",
+          "retryable": false,
+          "guidance": "Check the authenticated account and current organization access before retrying."
+        }
+      },
+      "mcp": {
+        "isError": true,
+        "body": {
+          "success": false,
+          "code": "permission_denied",
+          "message": "Access denied to the selected context owner.",
+          "retryable": false,
+          "guidance": "Check the authenticated account and current organization access before retrying."
+        }
+      }
+    },
+    {
+      "code": "not_found",
+      "http": {
+        "status": 404,
+        "body": {
+          "error": "Context record not found in the selected workspace.",
+          "code": "not_found",
+          "retryable": false,
+          "guidance": "Check the record ID and workspace scope. This response does not distinguish a missing record from one outside your access."
+        }
+      },
+      "mcp": {
+        "isError": true,
+        "body": {
+          "success": false,
+          "code": "not_found",
+          "message": "Context record not found in the selected workspace.",
+          "retryable": false,
+          "guidance": "Check the record ID and workspace scope. This response does not distinguish a missing record from one outside your access."
+        }
+      }
+    },
+    {
+      "code": "conflict",
+      "http": {
+        "status": 409,
+        "body": {
+          "error": "The operation conflicts with saved state.",
+          "code": "conflict",
+          "retryable": false,
+          "guidance": "Read the current record and resolve the conflict before changing input."
+        }
+      },
+      "mcp": {
+        "isError": true,
+        "body": {
+          "success": false,
+          "code": "conflict",
+          "message": "The operation conflicts with saved state.",
+          "retryable": false,
+          "guidance": "Read the current record and resolve the conflict before changing input."
+        }
+      }
+    },
+    {
+      "code": "unsupported_input",
+      "http": {
+        "status": 422,
+        "body": {
+          "error": "The input is not supported by this operation.",
+          "code": "unsupported_input",
+          "retryable": false,
+          "guidance": "Check the action's documented fields, supported sources and limits before retrying."
+        }
+      },
+      "mcp": {
+        "isError": true,
+        "body": {
+          "success": false,
+          "code": "unsupported_input",
+          "message": "The input is not supported by this operation.",
+          "retryable": false,
+          "guidance": "Check the action's documented fields, supported sources and limits before retrying."
+        }
+      }
+    },
+    {
+      "code": "not_ready",
+      "http": {
+        "status": 409,
+        "body": {
+          "error": "The context request is not ready for this action.",
+          "code": "not_ready",
+          "retryable": true,
+          "guidance": "Read the request and retry only after the required state is reached. Inspect partial results and coverage gaps before using them."
+        }
+      },
+      "mcp": {
+        "isError": true,
+        "body": {
+          "success": false,
+          "code": "not_ready",
+          "message": "The context request is not ready for this action.",
+          "retryable": true,
+          "guidance": "Read the request and retry only after the required state is reached. Inspect partial results and coverage gaps before using them."
+        }
+      }
+    },
+    {
+      "code": "unavailable",
+      "http": {
+        "status": 503,
+        "body": {
+          "error": "A required dependency or capability is unavailable.",
+          "code": "unavailable",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery."
+        }
+      },
+      "mcp": {
+        "isError": true,
+        "body": {
+          "success": false,
+          "code": "unavailable",
+          "message": "A required dependency or capability is unavailable.",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery."
+        }
+      }
+    },
+    {
+      "code": "budget_exhausted",
+      "http": {
+        "status": 402,
+        "body": {
+          "error": "The authorized budget for this operation is exhausted.",
+          "code": "budget_exhausted",
+          "retryable": false,
+          "guidance": "Check the operation's authorized budget and saved state before proceeding. This reserved code does not establish whether work has run or charges occurred."
+        }
+      },
+      "mcp": {
+        "isError": true,
+        "body": {
+          "success": false,
+          "code": "budget_exhausted",
+          "message": "The authorized budget for this operation is exhausted.",
+          "retryable": false,
+          "guidance": "Check the operation's authorized budget and saved state before proceeding. This reserved code does not establish whether work has run or charges occurred."
+        }
+      }
+    },
+    {
+      "code": "storage_failed",
+      "http": {
+        "status": 409,
+        "body": {
+          "error": "Context storage could not complete the operation.",
+          "code": "storage_failed",
+          "retryable": false,
+          "guidance": "Check the saved state before changing input. The storage failure is not recognized as transient; do not automatically retry it."
+        }
+      },
+      "mcp": {
+        "isError": true,
+        "body": {
+          "success": false,
+          "code": "storage_failed",
+          "message": "Context storage could not complete the operation.",
+          "retryable": false,
+          "guidance": "Check the saved state before changing input. The storage failure is not recognized as transient; do not automatically retry it."
+        }
+      }
+    },
+    {
+      "code": "internal",
+      "http": {
+        "status": 500,
+        "body": {
+          "error": "Context operation failed.",
+          "code": "internal",
+          "retryable": false,
+          "guidance": "Check the saved state before changing input. Do not automatically retry an unclassified failure."
+        }
+      },
+      "mcp": {
+        "isError": true,
+        "body": {
+          "success": false,
+          "code": "internal",
+          "message": "Context operation failed.",
+          "retryable": false,
+          "guidance": "Check the saved state before changing input. Do not automatically retry an unclassified failure."
+        }
+      }
+    }
+  ],
+  "actionExamples": [
+    {
+      "code": "unavailable",
+      "action": "read",
+      "http": {
+        "status": 503,
+        "body": {
+          "error": "A required dependency or capability is unavailable.",
+          "code": "unavailable",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery."
+        }
+      },
+      "mcp": {
+        "isError": true,
+        "body": {
+          "success": false,
+          "code": "unavailable",
+          "message": "A required dependency or capability is unavailable.",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery."
+        }
+      }
+    },
+    {
+      "code": "unavailable",
+      "action": "plan",
+      "http": {
+        "status": 503,
+        "body": {
+          "error": "A required dependency or capability is unavailable.",
+          "code": "unavailable",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery."
+        }
+      },
+      "mcp": {
+        "isError": true,
+        "body": {
+          "success": false,
+          "code": "unavailable",
+          "message": "A required dependency or capability is unavailable.",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery."
+        }
+      }
+    },
+    {
+      "code": "unavailable",
+      "action": "verify_release",
+      "http": {
+        "status": 503,
+        "body": {
+          "error": "A required dependency or capability is unavailable.",
+          "code": "unavailable",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery."
+        }
+      },
+      "mcp": {
+        "isError": true,
+        "body": {
+          "success": false,
+          "code": "unavailable",
+          "message": "A required dependency or capability is unavailable.",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery."
+        }
+      }
+    },
+    {
+      "code": "unavailable",
+      "action": "ingest",
+      "http": {
+        "status": 503,
+        "body": {
+          "error": "A required dependency or capability is unavailable.",
+          "code": "unavailable",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery. For an uncertain write, reuse the same idempotency key and unchanged input. Check saved state first; a new key is a new request, not a safe retry."
+        }
+      },
+      "mcp": {
+        "isError": true,
+        "body": {
+          "success": false,
+          "code": "unavailable",
+          "message": "A required dependency or capability is unavailable.",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery. For an uncertain write, reuse the same idempotency key and unchanged input. Check saved state first; a new key is a new request, not a safe retry."
+        }
+      }
+    },
+    {
+      "code": "unavailable",
+      "action": "attach_evidence",
+      "http": {
+        "status": 503,
+        "body": {
+          "error": "A required dependency or capability is unavailable.",
+          "code": "unavailable",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery. Evidence attachment could not complete. Check workspace, source retention and target access. Retry only the same source version, targets and idempotency key."
+        }
+      },
+      "mcp": {
+        "isError": true,
+        "body": {
+          "success": false,
+          "code": "unavailable",
+          "message": "A required dependency or capability is unavailable.",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery. Evidence attachment could not complete. Check workspace, source retention and target access. Retry only the same source version, targets and idempotency key."
+        }
+      }
+    },
+    {
+      "code": "unavailable",
+      "action": "save_catalog_case",
+      "http": {
+        "status": 503,
+        "body": {
+          "error": "A required dependency or capability is unavailable.",
+          "code": "unavailable",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery. Catalog case save could not complete. Check workspace, retained sources and expected revision. Retry an uncertain save only with the same idempotency key and unchanged payload; read the current revision before editing."
+        }
+      },
+      "mcp": {
+        "isError": true,
+        "body": {
+          "success": false,
+          "code": "unavailable",
+          "message": "A required dependency or capability is unavailable.",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery. Catalog case save could not complete. Check workspace, retained sources and expected revision. Retry an uncertain save only with the same idempotency key and unchanged payload; read the current revision before editing."
+        }
+      }
+    }
+  ],
+  "classificationExamples": [
+    {
+      "input": "Context request not found",
+      "code": "not_found"
+    },
+    {
+      "input": "Access denied to context owner",
+      "code": "permission_denied"
+    },
+    {
+      "input": "Context storage operation failed: query returned no rows",
+      "code": "storage_failed"
+    },
+    {
+      "input": "Context storage operation failed: Catalog revision conflict",
+      "code": "conflict"
+    },
+    {
+      "input": "private-record unavailable",
+      "code": "internal"
+    }
+  ]
+}
