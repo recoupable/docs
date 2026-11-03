@@ -77,3 +77,19 @@ test("valuation estimates do not advertise unfinished history persistence or rea
   expect(published).not.toContain("Each run also persists a row in the catalog's valuation history");
   expect(published).toContain("does not persist a valuation-history row");
 });
+
+
+test("valuation descriptions agree on the authorized effective account", () => {
+  const spec = JSON.parse(readFileSync(join(source, "api-reference/openapi/releases.json"), "utf8"));
+  const description = spec.paths["/api/valuation"].post.description as string;
+  const properties = spec.components.schemas.RunValuationRequest.properties;
+  expect(properties.account_id.description).toContain("authenticated account has access to the target account");
+  expect(description).toContain("defaults to the authenticated account");
+  expect(description).toContain("authorized account_id override");
+  for (const text of [description, properties.organization_id.description]) {
+    expect(text).toContain("effective account");
+    expect(text).not.toMatch(/never the body|every member|caller must be a member|calling account.*credits|caller's roster/i);
+  }
+  expect(properties.organization_id.description).toContain("is that organization or is a member");
+  expect(properties.organization_id.description).toContain("403");
+});
