@@ -62,3 +62,34 @@ test("existing help URLs retain unfinished outcomes and scoped alternatives", ()
     expect(music.body).toContain(path);
   }
 });
+
+
+test("valuation estimates do not advertise unfinished history persistence or readback", () => {
+  const spec = JSON.parse(readFileSync(join(source, "api-reference/openapi/releases.json"), "utf8"));
+  const description = spec.paths["/api/valuation"].post.description as string;
+  expect(description).not.toMatch(/each run.*persists|readable via \[Get Catalog Valuations\]/i);
+  expect(description).toContain("does not persist a valuation-history row");
+  expect(description).toContain("/api-reference/songs/catalog-valuations");
+  const availability = readFileSync(join(source, "api-reference/songs/catalog-valuations.mdx"), "utf8");
+  expect(availability).toContain("Saved catalog valuation history is not available");
+  expect(spec.paths["/api/catalogs/{catalogId}/valuations"]).toBeUndefined();
+  const published = readFileSync(join(source, "llms-full.txt"), "utf8");
+  expect(published).not.toContain("Each run also persists a row in the catalog's valuation history");
+  expect(published).toContain("does not persist a valuation-history row");
+});
+
+
+test("valuation descriptions agree on the authorized effective account", () => {
+  const spec = JSON.parse(readFileSync(join(source, "api-reference/openapi/releases.json"), "utf8"));
+  const description = spec.paths["/api/valuation"].post.description as string;
+  const properties = spec.components.schemas.RunValuationRequest.properties;
+  expect(properties.account_id.description).toContain("authenticated account has access to the target account");
+  expect(description).toContain("defaults to the authenticated account");
+  expect(description).toContain("authorized account_id override");
+  for (const text of [description, properties.organization_id.description]) {
+    expect(text).toContain("effective account");
+    expect(text).not.toMatch(/never the body|every member|caller must be a member|calling account.*credits|caller's roster/i);
+  }
+  expect(properties.organization_id.description).toContain("is that organization or is a member");
+  expect(properties.organization_id.description).toContain("403");
+});
