@@ -426,6 +426,8 @@ Some Recoup endpoints are billed in **credits** — primarily endpoints that hit
 | **Content generation** ([`/api/content/image`](https://docs.recoupable.dev/api-reference/content/generate-image), [`video`](https://docs.recoupable.dev/api-reference/content/generate-video), upscale, transcribe and analyze) | Yes | Model-specific generation and inference charges apply. Hosted pipelines charge their component operations; estimates are advisory. |
 | **AI Chat — streaming** ([`POST /api/chat`](https://docs.recoupable.dev/api-reference/chat/workflow)) | Yes | Variable cost based on model token usage, with a per-request minimum. |
 | **Music analysis** ([`POST /api/songs/analyze`](https://docs.recoupable.dev/api-reference/songs/analyze)) | Yes | $0.05 per model call plus $0.001166 per second of inference time; `full_report` is the sum of its 13 calls. |
+| **Music analysis batch** ([`POST /api/songs/analyze/batch`](https://docs.recoupable.dev/api-reference/songs/analyze-batch)) | Yes | $0.05 once per batch plus $0.001166 per second of the batch's inference time, however many prompts it carries. Pending release. |
+| **Song moments** ([`POST /api/songs/moments`](https://docs.recoupable.dev/api-reference/songs/moments)) | Yes | $0.01 per song measured, plus the music analysis rate for each moment described. Pending release. |
 | **Social scrape** ([`/api/socials/{id}/scrape`](https://docs.recoupable.dev/api-reference/social/scrape), [`/api/artist/socials/scrape`](https://docs.recoupable.dev/api-reference/artist/socials-scrape)) | Yes | $0.05, plus $0.01 per post requested via `posts` — per social profile scraped. |
 | **Other operations** | Consult the endpoint contract | [Artist CRUD](https://docs.recoupable.dev/api-reference/artists/list), [sandboxes](https://docs.recoupable.dev/api-reference/sandboxes/list), [sessions](https://docs.recoupable.dev/api-reference/sessions/get), [scheduled tasks](https://docs.recoupable.dev/api-reference/tasks/get), [account/org management](https://docs.recoupable.dev/api-reference/accounts/id), [agent signup](https://docs.recoupable.dev/api-reference/agents/signup), [Spotify proxies](https://docs.recoupable.dev/api-reference/spotify/search), etc. Subscription gating may still apply. |
 
@@ -657,6 +659,8 @@ Current as of this revision of the page. The authoritative source is the per-end
 | [`POST /api/research/deep`](https://docs.recoupable.dev/api-reference/research/deep) | $0.25 per call |
 | [`POST /api/image/generate`](https://docs.recoupable.dev/api-reference/image/generation) | Per-call price; see endpoint reference |
 | [`POST /api/songs/analyze`](https://docs.recoupable.dev/api-reference/songs/analyze) | `$0.05 + $0.001166 × elapsed_seconds` per model call; `full_report` = 13 calls |
+| [`POST /api/songs/analyze/batch`](https://docs.recoupable.dev/api-reference/songs/analyze-batch) | `$0.05 + $0.001166 × elapsed_seconds` once per batch, `elapsed_seconds` being the whole batch; pending release |
+| [`POST /api/songs/moments`](https://docs.recoupable.dev/api-reference/songs/moments) | `$0.01` per song measured, plus `$0.05 + $0.001166 × elapsed_seconds` per moment described; pending release |
 
 ## Billing recovery and units
 
@@ -15685,7 +15689,61 @@ an unrelated catalog to make a write succeed.
 
 Source: https://docs.recoupable.dev/api-reference/songs/analyze
 
-Analyze music using a state-of-the-art Audio Language Model (Music Flamingo) that listens directly to the audio waveform.
+Analyze music with an audio language model that listens directly to the audio waveform.
+
+## Which to use
+
+Use this endpoint for one analysis of one song: a curated `preset` such as `mood_tags` or `catalog_metadata`, `preset: "full_report"` for all 13 sections at once, or a custom `prompt` for a single free-form question.
+
+Use [`POST /api/songs/analyze/batch`](https://docs.recoupable.dev/api-reference/songs/analyze-batch) when you have many short questions about the same file. The audio is downloaded once and the base price is paid once for the whole batch instead of once per question.
+
+Use [`POST /api/songs/moments`](https://docs.recoupable.dev/api-reference/songs/moments) when you need to know when things happen and how the audio measures: the song's sections, its best short moments with 6, 15 and 30 second cuts, loudness, spectrum, key and edit points. Those times and numbers are measured from the audio, not generated.
+
+## Audio formats
+
+`audio_url` accepts MP3, WAV, FLAC, M4A, AAC, OGG and WebM. The format is read from the file extension in the URL path, so give the URL a real extension; a URL without one is treated as MP3. If the model service cannot fetch the file or cannot read it as audio, a single preset or prompt call answers `502` with `upstream_status` `422` and a `detail` beginning `audio_unreachable` or `audio_undecodable`. A `full_report` fails every section the same way and answers `502` with `failed`.
+
+## Partial full reports
+
+A `full_report` runs 13 analyses in parallel, one per report section. When some of them fail, the response is still HTTP `200`, with `status: "partial"` and the failed sections in `failed`:
+
+```json
+{
+  "status": "partial",
+  "preset": "full_report",
+  "report": {
+    "mood": { "tags": ["dreamy", "late-night", "warm"], "primary_mood": "dreamy" },
+    "lyrics": { "error": "Section failed: Music analysis failed (status 422)" },
+    "sync": { "error": "Section failed: Music analysis failed (status 422)" }
+  },
+  "elapsed_seconds": 41.6,
+  "failed": ["lyrics", "sync"]
+}
+```
+
+This example shows three of the thirteen sections for brevity. Every response carries all thirteen keys, each holding its result or the `{ "error": ... }` object. Check `status` or `failed` before you use a report; do not treat a `200` as a complete report. A failed section is not charged. To fill it in, call this endpoint again with the single preset for its key:
+
+| Report key | Preset to retry it with |
+| --- | --- |
+| `overview` | `catalog_metadata` |
+| `mood` | `mood_tags` |
+| `description` | `song_description` |
+| `lyrics` | `lyric_transcription` |
+| `content_advisory` | `content_advisory` |
+| `music_theory` | `music_theory` |
+| `mix_feedback` | `mix_feedback` |
+| `similar_artists` | `similar_artists` |
+| `sample_detection` | `sample_detection` |
+| `audience` | `audience_profile` |
+| `sync` | `sync_brief_match` |
+| `playlist_pitch` | `playlist_pitch` |
+| `development` | `artist_development_notes` |
+
+If every section fails, the response is `502` with `status: "error"`, `error: "Music analysis failed for every section"` and all thirteen keys in `failed`. Nothing is charged.
+
+## Pricing
+
+`$0.05` per model call plus `$0.001166` per second of inference time. `full_report` makes 13 calls, so its base prices add up to `$0.65`, plus the seconds each call ran. The balance must cover the base price of the request before the model runs; otherwise the response is `402` and nothing is charged. See [Credits](https://docs.recoupable.dev/credits).
 
 ## POST /api/songs/analyze
 
@@ -15719,7 +15777,7 @@ This operation requires one of the security alternatives in the specification be
     "/api/songs/analyze": {
       "post": {
         "operationId": "postSongsAnalyze",
-        "description": "Analyze music using a state-of-the-art Audio Language Model ([Music Flamingo](https://www.universalmusic.com/universal-music-group-to-transform-music-experience-for-billions-of-fans-with-nvidia-ai/)) that listens directly to the audio waveform.",
+        "description": "Analyze music with an audio language model that listens directly to the audio waveform.\n\nSend `audio_url` with exactly one of `preset` (a curated analysis, listed by [`GET /api/songs/analyze/presets`](https://docs.recoupable.dev/api-reference/songs/analyze-presets)) or `prompt` (a free-form question). `preset: \"full_report\"` runs all 13 sections and returns them together in `report`.\n\nA `full_report` response has `status: \"success\"` when every section returned and `status: \"partial\"` when some did not. A `partial` response is still HTTP `200`: `failed` lists the report keys of the sections that failed, and each of those keys holds `{ \"error\": \"Section failed: ...\" }` in place of its result. If every section failed, the response is `502` instead.\n\nPricing: `$0.05` per model call plus `$0.001166` per second of inference time. `full_report` makes 13 calls, so its base prices add up to `$0.65`. A call that fails is not charged: failed sections of a `partial` report and requests answered with `502` cost nothing for the failed work. To ask many short questions about one file, use [`POST /api/songs/analyze/batch`](https://docs.recoupable.dev/api-reference/songs/analyze-batch), which pays the base price once.",
         "security": [
           {
             "apiKeyAuth": []
@@ -15735,17 +15793,105 @@ This operation requires one of the security alternatives in the specification be
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/SongAnalyzeRequest"
+              },
+              "examples": {
+                "preset": {
+                  "summary": "One structured analysis",
+                  "value": {
+                    "preset": "mood_tags",
+                    "audio_url": "https://example.com/song.m4a"
+                  }
+                },
+                "prompt": {
+                  "summary": "A free-form question",
+                  "value": {
+                    "prompt": "Describe the genre, tempo, and mood of this track.",
+                    "audio_url": "https://example.com/song.mp3",
+                    "max_new_tokens": 512
+                  }
+                },
+                "fullReport": {
+                  "summary": "All 13 sections",
+                  "value": {
+                    "preset": "full_report",
+                    "audio_url": "https://example.com/song.mp3"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Music analysis completed successfully",
+            "description": "Music analysis completed. A single preset or custom prompt answers `success` with `response`. A `full_report` answers `success` with every section, or `partial` with `failed` naming the sections that did not return.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SongAnalyzeResponse"
+                },
+                "examples": {
+                  "preset": {
+                    "summary": "A structured preset",
+                    "value": {
+                      "status": "success",
+                      "preset": "mood_tags",
+                      "response": {
+                        "tags": [
+                          "dreamy",
+                          "late-night",
+                          "warm",
+                          "nostalgic",
+                          "mellow",
+                          "hazy",
+                          "intimate",
+                          "slow-burn"
+                        ],
+                        "primary_mood": "dreamy"
+                      },
+                      "elapsed_seconds": 2.87
+                    }
+                  },
+                  "prompt": {
+                    "summary": "A custom prompt",
+                    "value": {
+                      "status": "success",
+                      "response": "A mid-tempo indie pop track, around 96 BPM, with a warm and nostalgic mood.",
+                      "elapsed_seconds": 4.12
+                    }
+                  },
+                  "partial": {
+                    "summary": "A partial full report, shown with three of its thirteen sections (every response carries all thirteen)",
+                    "value": {
+                      "status": "partial",
+                      "preset": "full_report",
+                      "report": {
+                        "mood": {
+                          "tags": [
+                            "dreamy",
+                            "late-night",
+                            "warm",
+                            "nostalgic",
+                            "mellow",
+                            "hazy",
+                            "intimate",
+                            "slow-burn"
+                          ],
+                          "primary_mood": "dreamy"
+                        },
+                        "lyrics": {
+                          "error": "Section failed: Music analysis failed (status 422)"
+                        },
+                        "sync": {
+                          "error": "Section failed: Music analysis failed (status 422)"
+                        }
+                      },
+                      "elapsed_seconds": 41.6,
+                      "failed": [
+                        "lyrics",
+                        "sync"
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -15791,11 +15937,54 @@ This operation requires one of the security alternatives in the specification be
             }
           },
           "500": {
-            "description": "Server error — upstream model unavailable or inference failed",
+            "description": "Server error. The request failed for a reason other than a rejection from the model service, for example the model service could not be reached or answered with an unexpected body.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SongAnalyzeErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The model service could not produce the analysis. Either it rejected a single preset or custom-prompt call (`upstream_status` and `detail` say why, for example `422` with `audio_unreachable` or `audio_undecodable`), or every section of a `full_report` failed (`failed` lists them). Nothing is charged for the failed work.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongAnalyzeUpstreamErrorResponse"
+                },
+                "examples": {
+                  "rejectedCall": {
+                    "summary": "The model service could not read the audio",
+                    "value": {
+                      "status": "error",
+                      "error": "Music analysis failed (status 422)",
+                      "upstream_status": 422,
+                      "detail": "{\"detail\":\"audio_undecodable: could not decode the audio file\"}"
+                    }
+                  },
+                  "everySectionFailed": {
+                    "summary": "Every section of a full report failed",
+                    "value": {
+                      "status": "error",
+                      "error": "Music analysis failed for every section",
+                      "failed": [
+                        "overview",
+                        "mood",
+                        "description",
+                        "lyrics",
+                        "content_advisory",
+                        "music_theory",
+                        "mix_feedback",
+                        "similar_artists",
+                        "sample_detection",
+                        "audience",
+                        "sync",
+                        "playlist_pitch",
+                        "development"
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -15844,7 +16033,7 @@ This operation requires one of the security alternatives in the specification be
           "audio_url": {
             "type": "string",
             "format": "uri",
-            "description": "Public URL to an audio file (MP3, WAV, or FLAC, up to 20 minutes). Required in every mode, including a custom `prompt`. Verified before the model is called: the URL must answer a `HEAD` request (or a ranged `GET`) with 2xx within 10 seconds and an `audio/*` or `application/octet-stream` content type, else the request returns 422 and nothing is charged.",
+            "description": "Public URL to an audio file (MP3, WAV, FLAC, M4A, AAC, OGG or WebM, up to 20 minutes). Required in every mode, including a custom `prompt`. The format is read from the file extension in the URL path, so give the URL a real extension (`.m4a`, `.ogg`, ...); a URL without one is treated as MP3. Verified before the model is called: the URL must answer a `HEAD` request (or a ranged `GET`) with 2xx within 10 seconds and an `audio/*` or `application/octet-stream` content type, else the request returns 422 and nothing is charged.",
             "example": "https://example.com/song.mp3"
           },
           "max_new_tokens": {
@@ -15885,9 +16074,10 @@ This operation requires one of the security alternatives in the specification be
           "status": {
             "type": "string",
             "enum": [
-              "success"
+              "success",
+              "partial"
             ],
-            "description": "Request status"
+            "description": "`success` when the analysis completed. `partial` only for a `full_report` in which at least one section failed; the HTTP status is still `200`, and `failed` names the sections that did not return."
           },
           "preset": {
             "type": "string",
@@ -15899,12 +16089,23 @@ This operation requires one of the security alternatives in the specification be
           },
           "report": {
             "type": "object",
-            "description": "Full report payload returned only when using the `full_report` preset"
+            "description": "Full report payload, returned only for the `full_report` preset. It always has all 13 section keys: `overview`, `mood`, `description`, `lyrics`, `content_advisory`, `music_theory`, `mix_feedback`, `similar_artists`, `sample_detection`, `audience`, `sync`, `playlist_pitch` and `development`. A section that failed holds `{ \"error\": \"Section failed: ...\" }` instead of its result."
           },
           "elapsed_seconds": {
             "type": "number",
             "format": "float",
-            "description": "Inference time in seconds"
+            "description": "Inference time in seconds. For `full_report` it is the wall time of the whole report, with its sections running in parallel."
+          },
+          "failed": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Returned with `full_report` only. The report keys of the sections that failed, in report order; empty when `status` is `success`. A failed section is not charged. Retry it with the single preset that fills its key (see the report key table on the [Analyze songs](https://docs.recoupable.dev/api-reference/songs/analyze) page).",
+            "example": [
+              "lyrics",
+              "sync"
+            ]
           }
         }
       },
@@ -15920,9 +16121,12 @@ This operation requires one of the security alternatives in the specification be
           },
           "missing_fields": {
             "type": "array",
-            "description": "Path to the first invalid or missing field when validation fails",
+            "description": "Path to the first invalid or missing field when validation fails. A position inside an array appears as an integer, for example `[\"prompts\", 1, \"id\"]`.",
             "items": {
-              "type": "string"
+              "type": [
+                "string",
+                "integer"
+              ]
             }
           },
           "error": {
@@ -15948,7 +16152,7 @@ This operation requires one of the security alternatives in the specification be
           },
           "required_credits": {
             "type": "integer",
-            "description": "The base price of this request, in credits: 50000 (`$0.05`) for a single preset or custom prompt, 650000 (`$0.65`) for `full_report`. The per-second inference charge is added after the model returns.",
+            "description": "The base price of this request, in credits. Analyze: 50000 (`$0.05`) for a single preset or custom prompt, 650000 (`$0.65`) for `full_report`. Analyze batch: 50000, once for the whole batch. Song moments: 10000 (`$0.01`) plus 50000 for every moment that may be described, which is 360000 (`$0.36`) with the default `describe: true`. The per-second inference charge is added after the model returns.",
             "example": 50000
           },
           "billingUrl": {
@@ -15993,6 +16197,43 @@ This operation requires one of the security alternatives in the specification be
           "status",
           "error",
           "message"
+        ]
+      },
+      "SongAnalyzeUpstreamErrorResponse": {
+        "type": "object",
+        "description": "Returned (502) when the model service could not produce the analysis. Nothing is charged for the failed work. There are two forms. A single preset or custom prompt the model service rejected carries `upstream_status` and `detail`. A `full_report` in which every section failed carries `failed` instead.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ]
+          },
+          "error": {
+            "type": "string",
+            "description": "`Music analysis failed (status N)`, where N is `upstream_status`, for a rejected single call. `Music analysis failed for every section` for a `full_report` in which no section returned.",
+            "example": "Music analysis failed (status 422)"
+          },
+          "upstream_status": {
+            "type": "integer",
+            "description": "The HTTP status the model service answered with. `422` means it could not fetch the audio (`audio_unreachable`) or could not read the file as audio (`audio_undecodable`). Present on a rejected single call only.",
+            "example": 422
+          },
+          "detail": {
+            "type": "string",
+            "description": "The model service's error response, as text. For an audio problem it names the cause, beginning `audio_unreachable` or `audio_undecodable`, followed by a reason that varies. Present on a rejected single call only."
+          },
+          "failed": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "All 13 report keys, in report order. Present on a `full_report` in which every section failed only."
+          }
+        },
+        "required": [
+          "status",
+          "error"
         ]
       }
     },
@@ -16140,14 +16381,2178 @@ This operation requires one of the security alternatives in the specification be
           },
           "missing_fields": {
             "type": "array",
-            "description": "Path to the first invalid or missing field when validation fails",
+            "description": "Path to the first invalid or missing field when validation fails. A position inside an array appears as an integer, for example `[\"prompts\", 1, \"id\"]`.",
             "items": {
-              "type": "string"
+              "type": [
+                "string",
+                "integer"
+              ]
             }
           },
           "error": {
             "type": "string",
             "description": "Error message describing what went wrong"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Your Recoup API key. [Learn more](https://docs.recoupable.dev/quickstart#api-keys)."
+      },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
+```
+
+
+# Analyze a song with many prompts
+
+Source: https://docs.recoupable.dev/api-reference/songs/analyze-batch
+
+Ask up to 40 short questions about one audio file in a single request and pay the base price once.
+
+> **Warning**
+> Pending release. This page documents the reviewed contract ahead of the API
+> release. The endpoint is not callable on the production API until that release ships.
+
+## Which to use
+
+Use a batch when you have several short questions about the same song, for example genre, tempo, instruments and vocal style as four prompts. The audio is downloaded once and the base price is paid once, so a batch of 36 prompts costs one base price plus the seconds it runs, not 36 base prices.
+
+Use [`POST /api/songs/analyze`](https://docs.recoupable.dev/api-reference/songs/analyze) for a curated preset, for `full_report`, or for a single question. Presets are not available in a batch.
+
+Use [`POST /api/songs/moments`](https://docs.recoupable.dev/api-reference/songs/moments) when you need the song's sections, moments and measurements. Those are measured from the audio, not answered by prompt.
+
+## Limits
+
+| Limit | Value |
+| --- | --- |
+| Prompts per batch | 1 to 40 |
+| `id` | 1 to 64 characters, unique within the batch |
+| `prompt` | 1 to 4,000 characters |
+| `max_new_tokens` | 1 to 2048 per prompt, default 400 |
+| `temperature` | 0 to 2, default 0.2, for every prompt |
+| `top_p` | 0 to 1, default 1, for every prompt |
+
+Answers come back in the order the prompts were sent, each under the `id` you gave it. A batch is all or nothing: if the model service rejects it, the response is `502` and no answers are returned.
+
+## Pricing
+
+`$0.05` once per batch plus `$0.001166` per second of the batch's total inference time, which is the response's top-level `elapsed_seconds`. It is charged once, after the batch succeeds, as a single usage row. For example, a batch that runs 90 seconds costs `$0.15494`. The balance must hold `$0.05` before the model runs; otherwise the response is `402` and nothing is charged. A batch the model service rejects is not charged. See [Credits](https://docs.recoupable.dev/credits).
+
+## POST /api/songs/analyze/batch
+
+Full OpenAPI specification: https://docs.recoupable.dev/spec/releases.json
+
+## Authentication
+
+This operation requires one of the security alternatives in the specification below. Security scheme definitions are included where present in the published specification.
+
+[Authentication guide](https://docs.recoupable.dev/authentication)
+
+## Operation and referenced schemas
+
+```json
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup API - Releases",
+    "description": "API documentation for the Recoup platform - an AI agent platform for the music industry",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.recoupable.dev"
+    }
+  ],
+  "paths": {
+    "/api/songs/analyze/batch": {
+      "post": {
+        "operationId": "postSongsAnalyzeBatch",
+        "summary": "Ask many questions about one song",
+        "description": "Pending release. This operation is documented ahead of its API release and is not callable on the production API until that release ships.\n\nAsk up to 40 short questions about one audio file in a single request. The audio is downloaded once, then every prompt is answered against it, one after another, in the order sent. Use it instead of one [`POST /api/songs/analyze`](https://docs.recoupable.dev/api-reference/songs/analyze) call per question: a batch pays the per-call base price once, not once per prompt.\n\nSend `audio_url` and `prompts`, an array of `{ id, prompt, max_new_tokens }`. `id` is your key for the answer (1 to 64 characters, unique within the batch), `prompt` is 1 to 4,000 characters, and the optional `max_new_tokens` (1 to 2048, default 400) bounds that one answer. `temperature` (default 0.2), `top_p` (default 1) and `do_sample` (default false) apply to every prompt in the batch.\n\nPricing: `$0.05` once per batch plus `$0.001166` per second of the batch's total inference time (`elapsed_seconds`, audio download included), charged once after the batch succeeds, as a single usage row. A batch that runs 90 seconds costs `$0.15494`. The balance must hold `$0.05` before the model runs, otherwise the response is `402`. A batch the model service rejects is not charged.\n\nA batch is all or nothing: if the model service rejects it, the response is `502` and no answers are returned. Prompts run one after another, so a batch of many long answers can take several minutes; the request stays open until it finishes, so use a generous client timeout.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "One audio file and its prompts",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SongAnalyzeBatchRequest"
+              },
+              "examples": {
+                "twoQuestions": {
+                  "summary": "Two short questions about one file",
+                  "value": {
+                    "audio_url": "https://example.com/song.mp3",
+                    "prompts": [
+                      {
+                        "id": "genre",
+                        "prompt": "What genre is this?",
+                        "max_new_tokens": 64
+                      },
+                      {
+                        "id": "tempo",
+                        "prompt": "What is the tempo in BPM?"
+                      }
+                    ],
+                    "temperature": 0.2,
+                    "top_p": 1,
+                    "do_sample": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Every prompt was answered. `answers` holds one entry per prompt, in the order sent.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongAnalyzeBatchResponse"
+                },
+                "examples": {
+                  "twoQuestions": {
+                    "summary": "Answers to the two questions above",
+                    "value": {
+                      "status": "success",
+                      "answers": [
+                        {
+                          "id": "genre",
+                          "response": "Indie pop.",
+                          "elapsed_seconds": 1.4
+                        },
+                        {
+                          "id": "tempo",
+                          "response": "Approximately 96 BPM.",
+                          "elapsed_seconds": 0.6
+                        }
+                      ],
+                      "elapsed_seconds": 3.1,
+                      "prompts": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. The body is not valid JSON, or a field is invalid: `audio_url` missing, `prompts` empty or longer than 40, a prompt with an empty or over-long `id` or `prompt`, `max_new_tokens` outside 1 to 2048, or an `id` repeated within the batch. `missing_fields` is the path to the first invalid field.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongAnalyzeErrorResponse"
+                },
+                "examples": {
+                  "repeatedId": {
+                    "summary": "Two prompts share an id",
+                    "value": {
+                      "status": "error",
+                      "error": "prompt ids must be unique",
+                      "missing_fields": [
+                        "prompts"
+                      ]
+                    }
+                  },
+                  "tooManyPrompts": {
+                    "summary": "More than 40 prompts",
+                    "value": {
+                      "status": "error",
+                      "error": "prompts cannot contain more than 40 prompts",
+                      "missing_fields": [
+                        "prompts"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key / Bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongAnalyzeErrorResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient credits — the balance cannot cover the base price of a batch (`$0.05`). The model is not called, nothing is charged, and no Stripe object is created. The body includes a static `billingUrl`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongAnalyzeInsufficientCreditsResponse"
+                },
+                "examples": {
+                  "short": {
+                    "summary": "A balance that cannot cover a batch",
+                    "value": {
+                      "error": "insufficient_credits",
+                      "remaining_credits": 12000,
+                      "required_credits": 50000,
+                      "billingUrl": "https://app.recoupable.dev"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unverifiable audio. Before the model is called, `audio_url` is checked with a `HEAD` request (a ranged `GET` for hosts that reject `HEAD`). It must answer 2xx within 10 seconds with an `audio/*` or `application/octet-stream` content type. When it does not, the model is not called and nothing is charged.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongAnalyzeAudioUrlErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error. The request failed for a reason other than a rejection from the model service, for example the model service could not be reached or answered with an unexpected body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongAnalyzeErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The model service rejected the batch. `upstream_status` is the status it answered with and `detail` is its error text; a `422` with `audio_unreachable` or `audio_undecodable` means it could not fetch the file or could not read it as audio. No answers are returned and nothing is charged.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongAnalyzeUpstreamErrorResponse"
+                },
+                "examples": {
+                  "rejectedBatch": {
+                    "summary": "The model service could not fetch the audio",
+                    "value": {
+                      "status": "error",
+                      "error": "Music analysis failed (status 422)",
+                      "upstream_status": 422,
+                      "detail": "{\"detail\":\"audio_unreachable: could not download the audio file\"}"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-recoup-availability": "pending"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SongAnalyzeBatchRequest": {
+        "type": "object",
+        "description": "One audio file and up to 40 short prompts about it. Presets are not available in a batch; use [`POST /api/songs/analyze`](https://docs.recoupable.dev/api-reference/songs/analyze) for those.",
+        "required": [
+          "audio_url",
+          "prompts"
+        ],
+        "properties": {
+          "audio_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public URL to an audio file, with the same formats, length limit and verification as [`POST /api/songs/analyze`](https://docs.recoupable.dev/api-reference/songs/analyze): the URL must answer a `HEAD` request (or a ranged `GET`) with 2xx within 10 seconds and an `audio/*` or `application/octet-stream` content type, else the request returns 422 and nothing is charged. The file is downloaded once for the whole batch.",
+            "example": "https://example.com/song.mp3"
+          },
+          "prompts": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 40,
+            "items": {
+              "$ref": "#/components/schemas/SongAnalyzeBatchPrompt"
+            },
+            "description": "The prompts to answer, 1 to 40. Each `id` must be unique within the batch. Answers come back in this order."
+          },
+          "temperature": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 2,
+            "default": 0.2,
+            "description": "Controls output creativity for every prompt in the batch. Lower than the single endpoint's default of 1, because batched questions are usually factual.",
+            "example": 0.2
+          },
+          "top_p": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 1,
+            "description": "Nucleus sampling probability cutoff, for every prompt in the batch.",
+            "example": 1
+          },
+          "do_sample": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enable sampling for every prompt in the batch (set true when using `temperature` or `top_p`).",
+            "example": false
+          }
+        }
+      },
+      "SongAnalyzeBatchResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "answers",
+          "elapsed_seconds",
+          "prompts"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Request status."
+          },
+          "answers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SongAnalyzeBatchAnswer"
+            },
+            "description": "One answer per prompt, in the order the prompts were sent."
+          },
+          "elapsed_seconds": {
+            "type": "number",
+            "format": "float",
+            "description": "Wall time for the whole batch in seconds, audio download included. The charge is priced on this figure."
+          },
+          "prompts": {
+            "type": "integer",
+            "description": "How many prompts the batch answered."
+          }
+        }
+      },
+      "SongAnalyzeErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Error status"
+          },
+          "missing_fields": {
+            "type": "array",
+            "description": "Path to the first invalid or missing field when validation fails. A position inside an array appears as an integer, for example `[\"prompts\", 1, \"id\"]`.",
+            "items": {
+              "type": [
+                "string",
+                "integer"
+              ]
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "SongAnalyzeInsufficientCreditsResponse": {
+        "type": "object",
+        "description": "Returned (402) when the account lacks credits for the analysis. Nothing is charged and no Stripe object is created. Credits must be bought explicitly via [`POST /api/credits/sessions`](https://docs.recoupable.dev/api-reference/credits/sessions-create).",
+        "properties": {
+          "error": {
+            "type": "string",
+            "enum": [
+              "insufficient_credits"
+            ]
+          },
+          "remaining_credits": {
+            "type": "integer",
+            "description": "The account's balance, in credits (micro-dollars: 1,000,000 = `$1.00`).",
+            "example": 0
+          },
+          "required_credits": {
+            "type": "integer",
+            "description": "The base price of this request, in credits. Analyze: 50000 (`$0.05`) for a single preset or custom prompt, 650000 (`$0.65`) for `full_report`. Analyze batch: 50000, once for the whole batch. Song moments: 10000 (`$0.01`) plus 50000 for every moment that may be described, which is 360000 (`$0.36`) with the default `describe: true`. The per-second inference charge is added after the model returns.",
+            "example": 50000
+          },
+          "billingUrl": {
+            "type": "string",
+            "description": "Static link to the Recoup app, where a human can save a card and buy credits. It is a constant, not a freshly minted Stripe Checkout Session, so a credit-gated endpoint that keeps returning 402 creates nothing. To buy credits programmatically, call [`POST /api/credits/sessions`](https://docs.recoupable.dev/api-reference/credits/sessions-create).",
+            "example": "https://app.recoupable.dev"
+          }
+        },
+        "required": [
+          "error",
+          "remaining_credits",
+          "required_credits",
+          "billingUrl"
+        ]
+      },
+      "SongAnalyzeAudioUrlErrorResponse": {
+        "type": "object",
+        "description": "Returned (422) when `audio_url` could not be verified. The model is not called and nothing is charged.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ]
+          },
+          "error": {
+            "type": "string",
+            "enum": [
+              "audio_url_unreachable",
+              "audio_url_not_audio"
+            ],
+            "description": "`audio_url_unreachable`: the URL did not answer 2xx within 10 seconds. `audio_url_not_audio`: it answered, but with a content type that is not `audio/*` or `application/octet-stream`.",
+            "example": "audio_url_not_audio"
+          },
+          "message": {
+            "type": "string",
+            "description": "What the check observed, for the caller's logs.",
+            "example": "audio_url answered 200 with content type text/html"
+          }
+        },
+        "required": [
+          "status",
+          "error",
+          "message"
+        ]
+      },
+      "SongAnalyzeUpstreamErrorResponse": {
+        "type": "object",
+        "description": "Returned (502) when the model service could not produce the analysis. Nothing is charged for the failed work. There are two forms. A single preset or custom prompt the model service rejected carries `upstream_status` and `detail`. A `full_report` in which every section failed carries `failed` instead.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ]
+          },
+          "error": {
+            "type": "string",
+            "description": "`Music analysis failed (status N)`, where N is `upstream_status`, for a rejected single call. `Music analysis failed for every section` for a `full_report` in which no section returned.",
+            "example": "Music analysis failed (status 422)"
+          },
+          "upstream_status": {
+            "type": "integer",
+            "description": "The HTTP status the model service answered with. `422` means it could not fetch the audio (`audio_unreachable`) or could not read the file as audio (`audio_undecodable`). Present on a rejected single call only.",
+            "example": 422
+          },
+          "detail": {
+            "type": "string",
+            "description": "The model service's error response, as text. For an audio problem it names the cause, beginning `audio_unreachable` or `audio_undecodable`, followed by a reason that varies. Present on a rejected single call only."
+          },
+          "failed": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "All 13 report keys, in report order. Present on a `full_report` in which every section failed only."
+          }
+        },
+        "required": [
+          "status",
+          "error"
+        ]
+      },
+      "SongAnalyzeBatchPrompt": {
+        "type": "object",
+        "required": [
+          "id",
+          "prompt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Your key for this prompt's answer. Unique within the batch.",
+            "example": "genre"
+          },
+          "prompt": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000,
+            "description": "The question to ask about the audio.",
+            "example": "What genre is this?"
+          },
+          "max_new_tokens": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2048,
+            "default": 400,
+            "description": "Maximum number of tokens in this prompt's answer.",
+            "example": 64
+          }
+        }
+      },
+      "SongAnalyzeBatchAnswer": {
+        "type": "object",
+        "required": [
+          "id",
+          "response",
+          "elapsed_seconds"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The `id` you gave the prompt."
+          },
+          "response": {
+            "type": "string",
+            "description": "The model's text answer."
+          },
+          "elapsed_seconds": {
+            "type": "number",
+            "format": "float",
+            "description": "Inference time for this prompt alone, in seconds."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Your Recoup API key. [Learn more](https://docs.recoupable.dev/quickstart#api-keys)."
+      },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
+```
+
+
+# Find song moments
+
+Source: https://docs.recoupable.dev/api-reference/songs/moments
+
+Find a song's sections and best short moments, with loudness, spectrum, key, drops and edit points measured from the audio.
+
+> **Warning**
+> Pending release. This page documents the reviewed contract ahead of the API
+> release. The endpoint is not callable on the production API until that release ships.
+
+## Which to use
+
+Use this endpoint when you need to know when things happen in a song and how it measures: where the sections and best moments start and end, ready-made 6, 15 and 30 second cuts on the beat grid, loudness and peaks, the spectrum, key, and where to cut in and out. Those times and numbers come from measuring the audio, so they are repeatable.
+
+Use [`POST /api/songs/analyze`](https://docs.recoupable.dev/api-reference/songs/analyze) for judgments that need a listener: genre, mood, lyrics, mix feedback, sync fit. A single preset, `full_report` or a custom prompt answers one analysis at a time.
+
+Use [`POST /api/songs/analyze/batch`](https://docs.recoupable.dev/api-reference/songs/analyze-batch) to ask many short custom questions about one file in a single request.
+
+## Moment types
+
+A song has at most one moment of each type, and not every song has every type. When two moments overlap by more than 60%, the one that is kept lists the other in `also`.
+
+| Type | What it is |
+| --- | --- |
+| `intro` | The opening section, when it is an intro, up to 20 seconds. |
+| `vocal_hook` | The start of the first chorus, up to 15 seconds. |
+| `chorus_lift` | The loudest of the later choruses, up to 20 seconds. Needs more than one chorus. |
+| `build_up` | The strongest rise into a section: the lead-in plus a few seconds of the payoff. Only when the rise is clear. |
+| `climax` | The loudest 15 seconds of the song. |
+| `breakdown` | The longest stretch of 6 seconds or more that sits at least 4 dB under the song's median loudness, once the first chorus has started. |
+| `outro` | The end of the song, up to 20 seconds. |
+
+## Response fields
+
+The first group of fields is the base measurement: `measured_with`, `duration_seconds`, `tempo_bpm`, `loudness_lufs`, `ending`, `names_from`, `sections`, `moments`, `energy_curve` and `elapsed_seconds`. Moments that were described also carry `description`, `emotion`, `best_for` and `vocals`.
+
+The rest is the extended measurement. A result whose `measured_with` has no `+extended-` suffix was measured without these fields.
+
+| Field | Meaning |
+| --- | --- |
+| `lufs` | Integrated loudness of the stereo file, in LUFS. Same figure as `loudness_lufs`. |
+| `true_peak_dbtp`, `loudness_range_lu` | True peak and loudness range. `null` when the loudness meter could not read the file. |
+| `sample_peak_dbfs`, `crest_factor_db` | Highest sample level, and that peak minus the average level. |
+| `broadcast_ready` | `true` when the true peak is at or under -1 dBTP and the loudness is between -16 and -7 LUFS. `null` when the true peak is unknown. |
+| `stereo` | `lr_correlation` between the channels (1 is identical) and `side_to_mid` (0 is mono). |
+| `spectral_centroid_hz`, `rolloff95_hz` | Brightness: the mean centroid, and the frequency under which 95% of the energy lies. |
+| `band_profile` | Seven bands, `sub` to `air`. Each has `share_pct` of the mix's energy (the seven add up to about 100), `side_pct`, `level_pct` against a typical pop split (50 is on the reference) and `status`: `clear` within 4 dB of it, `heavy` above, `light` below. |
+| `fingerprint` | Six axes from 0 to 1: `organic_electronic`, `sparse_dense`, `dark_bright`, `intimate_anthemic`, `smooth_textured`, `slow_fast`. 0 is the left label, 1 the right. `fingerprint_inputs` holds the raw measurements. |
+| `key` | `tonic`, `mode` (`major` or `minor`) and `confidence`, a correlation up to 1. |
+| `time_signature` | `3/4` or `4/4`. |
+| `valence`, `arousal` | The measured half of mood, 0 to 1. Estimates, not listening judgments. |
+| `mute_drops` | Sudden drops in level: a `mute` is under two beats (a zero-bleed cut), a `breakdown` is two beats or more. Each has `start`, `end`, `beats`, `depth_db` and `mmss`. |
+| `chord_loop` | The most common four-bar chord cycle, `dominant_loop`, with `loop_share`, `distinct_chords` and `bars`. `confidence` is always `low`; treat it as one estimate, not a transcription. |
+| `edit_points` | Typed `in` and `out` points with a `name`, a `note` and `mmss`: the cold open, chorus entries and exits, the deepest mutes, breakdowns and their re-entry, and where a fade begins. |
+| `tempo_note` | How `tempo_bpm` was decided: the beat tracker alone, or reconciled to `tempo_hint`. |
+
+> **Note**
+> The fingerprint formulas and the band reference split were calibrated on a small
+> sample of songs. Compare numbers within one `measured_with` version; they are not norms.
+
+Store `measured_with` with every result. It changes whenever the measurement's results would change, so it tells you which stored results to rerun.
+
+## Pricing
+
+`$0.01` per song measured, plus the [analyze](https://docs.recoupable.dev/api-reference/songs/analyze) rate for each moment described: `$0.05` per model call plus `$0.001166` per second of inference time. The balance must hold `$0.01` plus `$0.05` for every moment that may be described before anything runs: `$0.36` with the default `describe: true`, `$0.01` with `describe: false`, and `$0.01` plus `$0.05` per type with a list. Otherwise the response is `402` and nothing is charged. A moment whose description fails comes back without a description and is not charged, and a failed measurement is not charged. See [Credits](https://docs.recoupable.dev/credits).
+
+## POST /api/songs/moments
+
+Full OpenAPI specification: https://docs.recoupable.dev/spec/releases.json
+
+## Authentication
+
+This operation requires one of the security alternatives in the specification below. Security scheme definitions are included where present in the published specification.
+
+[Authentication guide](https://docs.recoupable.dev/authentication)
+
+## Operation and referenced schemas
+
+```json
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Recoup API - Releases",
+    "description": "API documentation for the Recoup platform - an AI agent platform for the music industry",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.recoupable.dev"
+    }
+  ],
+  "paths": {
+    "/api/songs/moments": {
+      "post": {
+        "operationId": "postSongsMoments",
+        "summary": "Find a song's sections and moments",
+        "description": "Pending release. This operation is documented ahead of its API release and is not callable on the production API until that release ships.\n\nFinds a song's sections and its best short moments for licensing and editing, with the measurements an edit or a sync pitch needs. Times and numbers come from measuring the audio itself (the beat grid, loudness, which passages repeat), not from a language model. An audio model then listens to a clip of each moment and adds a short description.\n\nSend `audio_url` (MP3, WAV or FLAC). Optionally send `section_order`, the section headers from a lyric sheet in order, to name the sections from the sheet, and `tempo_hint`, the tempo in BPM from your metadata, to correct a beat tracker that locked onto half or double time. `describe` chooses which moments get a description: `true` (the default) for every moment, `false` for none, or a list of moment types.\n\nThe response has the song's `sections`, its `moments` with `6`, `15` and `30` second `cuts` on the beat grid, and a per-second `energy_curve`. It also carries an extended measurement: loudness and peaks (`lufs`, `true_peak_dbtp`, `broadcast_ready`), the stereo image, a seven-band spectrum (`band_profile`), a six-axis sound `fingerprint`, `key`, `time_signature`, `valence` and `arousal`, `mute_drops`, a `chord_loop` estimate and typed `edit_points`. Store `measured_with` with each result: it changes whenever the measurement's results would change. The fingerprint formulas and the band reference split were calibrated on a small sample of songs, so treat them as comparable numbers within a version, not as norms.\n\nPricing: `$0.01` per song measured, plus the [analyze](https://docs.recoupable.dev/api-reference/songs/analyze) rate (`$0.05` per model call plus `$0.001166` per second of inference time) for each moment described. The balance must hold `$0.01` plus `$0.05` for every moment that may be described before anything runs, which is `$0.36` with the default `describe: true`, otherwise the response is `402`. A moment whose description fails comes back without a description and is not charged. If the measurement itself fails, nothing is charged.\n\nA request can take a few minutes when the measurement and model services are starting cold, up to a limit of 300 seconds.",
+        "security": [
+          {
+            "apiKeyAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "The audio to measure, with optional section names, a tempo hint and the moments to describe",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SongMomentsRequest"
+              },
+              "examples": {
+                "lyricSheetAndTempo": {
+                  "summary": "With a lyric sheet's section order and a tempo hint",
+                  "value": {
+                    "audio_url": "https://example.com/song.mp3",
+                    "section_order": [
+                      "Intro",
+                      "Verse 1",
+                      "Chorus",
+                      "Verse 2",
+                      "Chorus",
+                      "Outro"
+                    ],
+                    "tempo_hint": 120
+                  }
+                },
+                "measureOnly": {
+                  "summary": "Measurements only, no descriptions",
+                  "value": {
+                    "audio_url": "https://example.com/song.mp3",
+                    "describe": false
+                  }
+                },
+                "someMoments": {
+                  "summary": "Describe two moment types",
+                  "value": {
+                    "audio_url": "https://example.com/song.mp3",
+                    "describe": [
+                      "vocal_hook",
+                      "climax"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The song was measured. Every moment named by `describe` carries `description`, `emotion`, `best_for` and `vocals`; a moment whose description failed is returned without them.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongMomentsResponse"
+                },
+                "examples": {
+                  "lyricSheetAndTempo": {
+                    "summary": "A 96-second song measured with the first request example above",
+                    "value": {
+                      "status": "success",
+                      "measured_with": "song-moments-2026-11-04+extended-2026-11-04",
+                      "duration_seconds": 96,
+                      "tempo_bpm": 120,
+                      "loudness_lufs": -9.4,
+                      "ending": "fade",
+                      "names_from": "lyrics",
+                      "sections": [
+                        {
+                          "label": "intro",
+                          "start": 0,
+                          "end": 8,
+                          "group": "A",
+                          "energy": 36
+                        },
+                        {
+                          "label": "verse",
+                          "start": 8,
+                          "end": 24,
+                          "group": "B",
+                          "energy": 53
+                        },
+                        {
+                          "label": "chorus",
+                          "start": 24,
+                          "end": 44,
+                          "group": "C",
+                          "energy": 83
+                        },
+                        {
+                          "label": "verse",
+                          "start": 44,
+                          "end": 60,
+                          "group": "B",
+                          "energy": 47
+                        },
+                        {
+                          "label": "chorus",
+                          "start": 60,
+                          "end": 84,
+                          "group": "C",
+                          "energy": 91
+                        },
+                        {
+                          "label": "outro",
+                          "start": 84,
+                          "end": 96,
+                          "group": "D",
+                          "energy": 17
+                        }
+                      ],
+                      "moments": [
+                        {
+                          "type": "intro",
+                          "start": 0,
+                          "end": 8,
+                          "section": "intro",
+                          "energy": 36,
+                          "cuts": {
+                            "6": [
+                              0,
+                              6
+                            ],
+                            "15": [
+                              0,
+                              15
+                            ],
+                            "30": [
+                              0,
+                              30
+                            ]
+                          },
+                          "description": "Sparse opening with a filtered pad and a soft kick pattern that builds toward the first verse.",
+                          "emotion": [
+                            "calm",
+                            "anticipation"
+                          ],
+                          "best_for": [
+                            "documentary",
+                            "end credits"
+                          ],
+                          "vocals": false
+                        },
+                        {
+                          "type": "vocal_hook",
+                          "start": 24,
+                          "end": 39,
+                          "section": "chorus",
+                          "energy": 87,
+                          "cuts": {
+                            "6": [
+                              24,
+                              30
+                            ],
+                            "15": [
+                              24,
+                              39
+                            ],
+                            "30": [
+                              24,
+                              54
+                            ]
+                          },
+                          "description": "The first chorus lands with a full drum kit and a layered vocal hook over a rising bass line.",
+                          "emotion": [
+                            "uplifting",
+                            "energetic",
+                            "anthemic"
+                          ],
+                          "best_for": [
+                            "ad",
+                            "social video",
+                            "TV promo"
+                          ],
+                          "vocals": true
+                        },
+                        {
+                          "type": "build_up",
+                          "start": 46,
+                          "end": 64,
+                          "section": "verse",
+                          "energy": 56,
+                          "cuts": {
+                            "6": [
+                              58,
+                              64
+                            ],
+                            "15": [
+                              49,
+                              64
+                            ],
+                            "30": [
+                              34,
+                              64
+                            ]
+                          },
+                          "description": "Drums drop out and a riser climbs as the vocal repeats a short phrase into the second chorus.",
+                          "emotion": [
+                            "tense",
+                            "driving"
+                          ],
+                          "best_for": [
+                            "film trailer",
+                            "sports"
+                          ],
+                          "vocals": true
+                        },
+                        {
+                          "type": "climax",
+                          "start": 62,
+                          "end": 77,
+                          "section": "chorus",
+                          "energy": 91,
+                          "cuts": {
+                            "6": [
+                              62,
+                              68
+                            ],
+                            "15": [
+                              62,
+                              77
+                            ],
+                            "30": [
+                              62,
+                              92
+                            ]
+                          },
+                          "also": [
+                            "chorus_lift"
+                          ],
+                          "description": "The second chorus returns at full volume with doubled vocals and a stacked harmony on the last line.",
+                          "emotion": [
+                            "triumphant",
+                            "powerful",
+                            "euphoric"
+                          ],
+                          "best_for": [
+                            "film trailer",
+                            "sports",
+                            "TV promo"
+                          ],
+                          "vocals": true
+                        },
+                        {
+                          "type": "outro",
+                          "start": 84,
+                          "end": 96,
+                          "section": "outro",
+                          "energy": 17,
+                          "cuts": {
+                            "6": [
+                              90,
+                              96
+                            ],
+                            "15": [
+                              81,
+                              96
+                            ],
+                            "30": [
+                              66,
+                              96
+                            ]
+                          },
+                          "description": "The band thins to pad and a single guitar line that fades to silence.",
+                          "emotion": [
+                            "wistful",
+                            "gentle"
+                          ],
+                          "best_for": [
+                            "end credits",
+                            "documentary"
+                          ],
+                          "vocals": false
+                        }
+                      ],
+                      "energy_curve": [
+                        24,
+                        29,
+                        29,
+                        36,
+                        37,
+                        38,
+                        45,
+                        46,
+                        52,
+                        54,
+                        51,
+                        55,
+                        53,
+                        50,
+                        54,
+                        52,
+                        52,
+                        54,
+                        51,
+                        55,
+                        53,
+                        50,
+                        54,
+                        52,
+                        86,
+                        88,
+                        85,
+                        89,
+                        87,
+                        84,
+                        88,
+                        86,
+                        86,
+                        88,
+                        85,
+                        89,
+                        87,
+                        84,
+                        88,
+                        86,
+                        86,
+                        88,
+                        85,
+                        18,
+                        56,
+                        53,
+                        57,
+                        55,
+                        55,
+                        57,
+                        54,
+                        58,
+                        22,
+                        19,
+                        23,
+                        21,
+                        55,
+                        57,
+                        54,
+                        58,
+                        91,
+                        88,
+                        92,
+                        90,
+                        90,
+                        92,
+                        89,
+                        93,
+                        91,
+                        88,
+                        92,
+                        90,
+                        90,
+                        92,
+                        89,
+                        93,
+                        91,
+                        88,
+                        92,
+                        90,
+                        90,
+                        92,
+                        89,
+                        93,
+                        31,
+                        25,
+                        27,
+                        22,
+                        20,
+                        20,
+                        14,
+                        16,
+                        11,
+                        6,
+                        8,
+                        3
+                      ],
+                      "tempo_note": "beat tracker 60 reconciled to hint 120",
+                      "lufs": -9.4,
+                      "true_peak_dbtp": -1.3,
+                      "sample_peak_dbfs": -1.62,
+                      "crest_factor_db": 9.8,
+                      "loudness_range_lu": 5.1,
+                      "broadcast_ready": true,
+                      "stereo": {
+                        "lr_correlation": 0.842,
+                        "side_to_mid": 0.31
+                      },
+                      "spectral_centroid_hz": 2410,
+                      "rolloff95_hz": 6931,
+                      "band_profile": [
+                        {
+                          "band": "sub",
+                          "lo_hz": 20,
+                          "hi_hz": 60,
+                          "share_pct": 6.5,
+                          "side_pct": 2.1,
+                          "level_pct": 32,
+                          "status": "light"
+                        },
+                        {
+                          "band": "low",
+                          "lo_hz": 60,
+                          "hi_hz": 250,
+                          "share_pct": 31,
+                          "side_pct": 3.4,
+                          "level_pct": 49,
+                          "status": "clear"
+                        },
+                        {
+                          "band": "low_mid",
+                          "lo_hz": 250,
+                          "hi_hz": 500,
+                          "share_pct": 13,
+                          "side_pct": 9.8,
+                          "level_pct": 51,
+                          "status": "clear"
+                        },
+                        {
+                          "band": "mid",
+                          "lo_hz": 500,
+                          "hi_hz": 2000,
+                          "share_pct": 21.5,
+                          "side_pct": 18.6,
+                          "level_pct": 54,
+                          "status": "clear"
+                        },
+                        {
+                          "band": "high_mid",
+                          "lo_hz": 2000,
+                          "hi_hz": 6000,
+                          "share_pct": 13.5,
+                          "side_pct": 31.2,
+                          "level_pct": 55,
+                          "status": "clear"
+                        },
+                        {
+                          "band": "high",
+                          "lo_hz": 6000,
+                          "hi_hz": 12000,
+                          "share_pct": 10.2,
+                          "side_pct": 38.7,
+                          "level_pct": 57,
+                          "status": "clear"
+                        },
+                        {
+                          "band": "air",
+                          "lo_hz": 12000,
+                          "hi_hz": 22050,
+                          "share_pct": 4.3,
+                          "side_pct": 44,
+                          "level_pct": 51,
+                          "status": "clear"
+                        }
+                      ],
+                      "fingerprint": {
+                        "organic_electronic": 0.36,
+                        "sparse_dense": 0.51,
+                        "dark_bright": 0.38,
+                        "intimate_anthemic": 0.54,
+                        "smooth_textured": 0.33,
+                        "slow_fast": 0.64
+                      },
+                      "fingerprint_inputs": {
+                        "flatness": 0.0213,
+                        "contrast_db": 20.4,
+                        "zcr_std": 0.0412,
+                        "perc_ratio": 0.318,
+                        "onsets_per_s": 4.11
+                      },
+                      "key": {
+                        "tonic": "A",
+                        "mode": "minor",
+                        "confidence": 0.81
+                      },
+                      "time_signature": "4/4",
+                      "valence": 0.37,
+                      "arousal": 0.72,
+                      "mute_drops": [
+                        {
+                          "type": "mute",
+                          "start": 43.5,
+                          "end": 44,
+                          "beats": 1,
+                          "depth_db": 14.2,
+                          "mmss": "0:43"
+                        },
+                        {
+                          "type": "breakdown",
+                          "start": 52,
+                          "end": 56,
+                          "beats": 8,
+                          "depth_db": 11.3,
+                          "mmss": "0:52"
+                        }
+                      ],
+                      "chord_loop": {
+                        "dominant_loop": "Am F C G",
+                        "loop_share": 0.52,
+                        "distinct_chords": 5,
+                        "bars": 47,
+                        "confidence": "low"
+                      },
+                      "edit_points": [
+                        {
+                          "type": "in",
+                          "time": 0,
+                          "name": "Cold open (intro)",
+                          "note": "Starts clean from the top.",
+                          "mmss": "0:00"
+                        },
+                        {
+                          "type": "in",
+                          "time": 24,
+                          "name": "Chorus drop",
+                          "note": "Full entry into the chorus after the verse.",
+                          "mmss": "0:24"
+                        },
+                        {
+                          "type": "out",
+                          "time": 43.5,
+                          "name": "Mute drop",
+                          "note": "14.2 dB dip for 1.0 beats; a zero-bleed edit.",
+                          "mmss": "0:43"
+                        },
+                        {
+                          "type": "out",
+                          "time": 44,
+                          "name": "Chorus cut point",
+                          "note": "End of the chorus before the verse; cut or dip here.",
+                          "mmss": "0:44"
+                        },
+                        {
+                          "type": "out",
+                          "time": 52,
+                          "name": "Breakdown",
+                          "note": "Band pulls back 11.3 dB for 4.0 s.",
+                          "mmss": "0:52"
+                        },
+                        {
+                          "type": "in",
+                          "time": 56,
+                          "name": "Re-entry after the breakdown",
+                          "note": "Full band returns; lands as a hit.",
+                          "mmss": "0:56"
+                        },
+                        {
+                          "type": "in",
+                          "time": 60,
+                          "name": "Chorus drop",
+                          "note": "Full entry into the chorus after the verse.",
+                          "mmss": "1:00"
+                        },
+                        {
+                          "type": "out",
+                          "time": 84,
+                          "name": "Chorus cut point",
+                          "note": "End of the chorus before the outro; cut or dip here.",
+                          "mmss": "1:24"
+                        },
+                        {
+                          "type": "out",
+                          "time": 84,
+                          "name": "Fade begins",
+                          "note": "Natural fade; needs no tail edit.",
+                          "mmss": "1:24"
+                        }
+                      ],
+                      "elapsed_seconds": 41.62
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. The body is not valid JSON, or a field is invalid: `audio_url` missing, `section_order` with more than 60 labels or a label empty or over 40 characters, `tempo_hint` outside 30 to 300, or `describe` neither a boolean nor a list of moment types. `missing_fields` is the path to the first invalid field.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongAnalyzeErrorResponse"
+                },
+                "examples": {
+                  "badTempo": {
+                    "summary": "tempo_hint out of range",
+                    "value": {
+                      "status": "error",
+                      "error": "tempo_hint must be at most 300 BPM",
+                      "missing_fields": [
+                        "tempo_hint"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — invalid or missing API key / Bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongAnalyzeErrorResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Insufficient credits — the balance cannot cover the measurement (`$0.01`) plus a model base price (`$0.05`) for every moment that may be described. Nothing runs, nothing is charged, and no Stripe object is created. The body includes a static `billingUrl`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongAnalyzeInsufficientCreditsResponse"
+                },
+                "examples": {
+                  "short": {
+                    "summary": "A balance that cannot cover the default request",
+                    "value": {
+                      "error": "insufficient_credits",
+                      "remaining_credits": 120000,
+                      "required_credits": 360000,
+                      "billingUrl": "https://app.recoupable.dev"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unverifiable audio. Before anything runs, `audio_url` is checked with a `HEAD` request (a ranged `GET` for hosts that reject `HEAD`). It must answer 2xx within 10 seconds with an `audio/*` or `application/octet-stream` content type. When it does not, nothing runs and nothing is charged.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongAnalyzeAudioUrlErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "The measurement failed, for example because the file is larger than 100 MB or cannot be decoded as audio, or the measurement service could not be reached. `error` carries the reason, such as `Song measurement failed (status 422)`. Nothing is charged.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongAnalyzeErrorResponse"
+                },
+                "examples": {
+                  "measurementFailed": {
+                    "summary": "The measurement service rejected the file",
+                    "value": {
+                      "status": "error",
+                      "error": "Song measurement failed (status 422)"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-recoup-availability": "pending"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SongMomentsRequest": {
+        "type": "object",
+        "required": [
+          "audio_url"
+        ],
+        "properties": {
+          "audio_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public URL to an audio file (MP3, WAV or FLAC). The first 15 minutes are measured, and the file can be up to 100 MB. Verified before anything runs: the URL must answer a `HEAD` request (or a ranged `GET`) with 2xx within 10 seconds and an `audio/*` or `application/octet-stream` content type, else the request returns 422 and nothing is charged.",
+            "example": "https://example.com/song.mp3"
+          },
+          "section_order": {
+            "type": "array",
+            "maxItems": 60,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 40
+            },
+            "description": "The song's section headers in order, as a lyric sheet lists them (`Intro`, `Verse 1`, `Pre-Chorus`, `Chorus`, ...). With it, sections are named from the sheet. If the sheet does not fit the recording, sections are named from the audio instead and `names_from` says `audio`. Headers the API does not recognize are ignored.",
+            "example": [
+              "Intro",
+              "Verse 1",
+              "Chorus",
+              "Verse 2",
+              "Chorus",
+              "Outro"
+            ]
+          },
+          "tempo_hint": {
+            "type": "number",
+            "minimum": 30,
+            "maximum": 300,
+            "description": "The song's tempo in BPM, from your metadata. The beat tracker often locks onto a multiple of the real tempo, so its reading, or half, double, three-quarters, four-thirds, two-thirds or one and a half times of it, is used when that lands within 8% of the hint. When none does, the hint is used. `tempo_note` in the response says which happened.",
+            "example": 120
+          },
+          "describe": {
+            "oneOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "array",
+                "maxItems": 7,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "intro",
+                    "vocal_hook",
+                    "chorus_lift",
+                    "build_up",
+                    "climax",
+                    "breakdown",
+                    "outro"
+                  ]
+                }
+              }
+            ],
+            "default": true,
+            "description": "Which moments to describe. `true` (the default) describes every moment found, `false` describes none, and a list of moment types describes only those. A described moment adds `description`, `emotion`, `best_for` and `vocals`, and each description is charged at the analyze rate.",
+            "example": [
+              "vocal_hook",
+              "climax"
+            ]
+          }
+        }
+      },
+      "SongMomentsResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "measured_with",
+          "duration_seconds",
+          "tempo_bpm",
+          "loudness_lufs",
+          "ending",
+          "names_from",
+          "sections",
+          "moments",
+          "energy_curve",
+          "elapsed_seconds"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "description": "Request status."
+          },
+          "measured_with": {
+            "type": "string",
+            "description": "The version of the measurement that produced these numbers. Store it with the result: it changes whenever the measurement's results would change, so you know which stored results to rerun. A version ending `+extended-<date>` includes the extended fields below.",
+            "example": "song-moments-2026-11-04+extended-2026-11-04"
+          },
+          "duration_seconds": {
+            "type": "number",
+            "description": "Length of the audio that was measured, in seconds (at most the first 15 minutes).",
+            "example": 96
+          },
+          "tempo_bpm": {
+            "type": "number",
+            "description": "Tempo in beats per minute, reconciled to `tempo_hint` when one was sent.",
+            "example": 120
+          },
+          "loudness_lufs": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Integrated loudness in LUFS. The same figure as `lufs`.",
+            "example": -9.4
+          },
+          "ending": {
+            "type": "string",
+            "enum": [
+              "fade",
+              "cold"
+            ],
+            "description": "`fade` when the last seconds fade out by more than 10 dB, `cold` when the song stops."
+          },
+          "names_from": {
+            "type": "string",
+            "enum": [
+              "lyrics",
+              "audio"
+            ],
+            "description": "`lyrics` when `section_order` fit the audio and named the sections, `audio` when sections were named from repetition and loudness."
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SongSection"
+            },
+            "description": "The song's sections in order, covering the whole song."
+          },
+          "moments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SongMoment"
+            },
+            "description": "The song's best short moments for licensing and editing, in order of start time."
+          },
+          "energy_curve": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "description": "Loudness for each second of the song, 0 to 100 relative to the song's own quietest and loudest seconds."
+          },
+          "tempo_note": {
+            "type": "string",
+            "description": "How `tempo_bpm` was decided: `beat tracker` alone, or reconciled to, or overruled by, `tempo_hint`.",
+            "example": "beat tracker 60 reconciled to hint 120"
+          },
+          "lufs": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Integrated loudness of the stereo file, in LUFS. When the loudness meter cannot read the file, an estimate from the mono mix is used instead.",
+            "example": -9.4
+          },
+          "true_peak_dbtp": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "True peak in dBTP. `null` when the loudness meter could not read the file.",
+            "example": -1.3
+          },
+          "sample_peak_dbfs": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Highest sample level, in dBFS.",
+            "example": -1.62
+          },
+          "crest_factor_db": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Highest sample peak minus the average (RMS) level, in decibels. A low value means a heavily compressed master.",
+            "example": 9.8
+          },
+          "loudness_range_lu": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Loudness range in LU, the spread between the quieter and louder parts. `null` when the loudness meter could not read the file.",
+            "example": 5.1
+          },
+          "broadcast_ready": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "`true` when the true peak is at or under -1 dBTP and the integrated loudness is between -16 and -7 LUFS. `null` when the true peak is unknown.",
+            "example": true
+          },
+          "stereo": {
+            "type": "object",
+            "description": "The stereo image.",
+            "properties": {
+              "lr_correlation": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Correlation between the left and right channels, -1 to 1. 1 means identical channels.",
+                "example": 0.842
+              },
+              "side_to_mid": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Side (left minus right) level over mid (left plus right) level. 0 is mono; higher is wider.",
+                "example": 0.31
+              }
+            }
+          },
+          "spectral_centroid_hz": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Mean spectral centroid in hertz, a measure of brightness.",
+            "example": 2410
+          },
+          "rolloff95_hz": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "The frequency in hertz under which 95% of the spectral energy lies.",
+            "example": 6931
+          },
+          "band_profile": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SongBand"
+            },
+            "description": "Seven frequency bands from `sub` to `air`, with each band's share of the energy, its side energy and its level against a typical pop split."
+          },
+          "fingerprint": {
+            "$ref": "#/components/schemas/SongFingerprint"
+          },
+          "fingerprint_inputs": {
+            "type": "object",
+            "description": "The raw measurements the fingerprint is built from.",
+            "properties": {
+              "flatness": {
+                "type": "number",
+                "description": "Mean spectral flatness: higher is noisier or more electronic.",
+                "example": 0.0213
+              },
+              "contrast_db": {
+                "type": "number",
+                "description": "Mean spectral contrast in decibels.",
+                "example": 20.4
+              },
+              "zcr_std": {
+                "type": "number",
+                "description": "Spread of the zero-crossing rate, a measure of textural change.",
+                "example": 0.0412
+              },
+              "perc_ratio": {
+                "type": "number",
+                "description": "Share of the energy that is percussive, 0 to 1.",
+                "example": 0.318
+              },
+              "onsets_per_s": {
+                "type": "number",
+                "description": "Note and hit onsets per second.",
+                "example": 4.11
+              }
+            }
+          },
+          "key": {
+            "type": "object",
+            "description": "The song's key.",
+            "properties": {
+              "tonic": {
+                "type": "string",
+                "enum": [
+                  "C",
+                  "C#",
+                  "D",
+                  "D#",
+                  "E",
+                  "F",
+                  "F#",
+                  "G",
+                  "G#",
+                  "A",
+                  "A#",
+                  "B"
+                ],
+                "description": "The key's root note.",
+                "example": "A"
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "major",
+                  "minor"
+                ],
+                "example": "minor"
+              },
+              "confidence": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "How closely the song's pitch content matches the chosen key, as a correlation up to 1. Higher is more certain.",
+                "example": 0.81
+              }
+            }
+          },
+          "time_signature": {
+            "type": "string",
+            "enum": [
+              "3/4",
+              "4/4"
+            ],
+            "description": "The meter, from how beat strength repeats."
+          },
+          "valence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "The measured half of mood, 0 (dark) to 1 (bright), from mode and brightness. An estimate, not a listening judgment.",
+            "example": 0.37
+          },
+          "arousal": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "How energetic the song is, 0 (calm) to 1 (intense), from loudness and tempo. An estimate, not a listening judgment.",
+            "example": 0.72
+          },
+          "mute_drops": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SongDrop"
+            },
+            "description": "Sudden drops in level, in order of start time. Local drops are found against the preceding eight beats and whole-song breakdowns against the song's median level. None start in the first eight beats, inside the fade, or in the last three seconds."
+          },
+          "chord_loop": {
+            "type": "object",
+            "description": "The most common four-bar chord cycle, from one chord per bar chosen among the key's own chords. Treat it as one estimate beside another source, not a transcription: `confidence` is always `low`.",
+            "properties": {
+              "dominant_loop": {
+                "type": "string",
+                "description": "The cycle as four chord names, for example `Am F C G`.",
+                "example": "Am F C G"
+              },
+              "loop_share": {
+                "type": "number",
+                "description": "The share of four-bar windows that match the cycle, 0 to 1.",
+                "example": 0.52
+              },
+              "distinct_chords": {
+                "type": "integer",
+                "description": "How many different chords appear.",
+                "example": 5
+              },
+              "bars": {
+                "type": "integer",
+                "description": "How many bars were analyzed.",
+                "example": 47
+              },
+              "confidence": {
+                "type": "string",
+                "enum": [
+                  "low"
+                ],
+                "description": "Always `low`."
+              }
+            }
+          },
+          "edit_points": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SongEditPoint"
+            },
+            "description": "Typed places to cut into (`in`) or out of (`out`) the song, in order of time: the cold open, chorus entries and exits, the deepest mutes, breakdowns and their re-entry, and where a fade begins."
+          },
+          "elapsed_seconds": {
+            "type": "number",
+            "format": "float",
+            "description": "Seconds the whole request took, descriptions included.",
+            "example": 41.62
+          }
+        }
+      },
+      "SongAnalyzeErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ],
+            "description": "Error status"
+          },
+          "missing_fields": {
+            "type": "array",
+            "description": "Path to the first invalid or missing field when validation fails. A position inside an array appears as an integer, for example `[\"prompts\", 1, \"id\"]`.",
+            "items": {
+              "type": [
+                "string",
+                "integer"
+              ]
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      },
+      "SongAnalyzeInsufficientCreditsResponse": {
+        "type": "object",
+        "description": "Returned (402) when the account lacks credits for the analysis. Nothing is charged and no Stripe object is created. Credits must be bought explicitly via [`POST /api/credits/sessions`](https://docs.recoupable.dev/api-reference/credits/sessions-create).",
+        "properties": {
+          "error": {
+            "type": "string",
+            "enum": [
+              "insufficient_credits"
+            ]
+          },
+          "remaining_credits": {
+            "type": "integer",
+            "description": "The account's balance, in credits (micro-dollars: 1,000,000 = `$1.00`).",
+            "example": 0
+          },
+          "required_credits": {
+            "type": "integer",
+            "description": "The base price of this request, in credits. Analyze: 50000 (`$0.05`) for a single preset or custom prompt, 650000 (`$0.65`) for `full_report`. Analyze batch: 50000, once for the whole batch. Song moments: 10000 (`$0.01`) plus 50000 for every moment that may be described, which is 360000 (`$0.36`) with the default `describe: true`. The per-second inference charge is added after the model returns.",
+            "example": 50000
+          },
+          "billingUrl": {
+            "type": "string",
+            "description": "Static link to the Recoup app, where a human can save a card and buy credits. It is a constant, not a freshly minted Stripe Checkout Session, so a credit-gated endpoint that keeps returning 402 creates nothing. To buy credits programmatically, call [`POST /api/credits/sessions`](https://docs.recoupable.dev/api-reference/credits/sessions-create).",
+            "example": "https://app.recoupable.dev"
+          }
+        },
+        "required": [
+          "error",
+          "remaining_credits",
+          "required_credits",
+          "billingUrl"
+        ]
+      },
+      "SongAnalyzeAudioUrlErrorResponse": {
+        "type": "object",
+        "description": "Returned (422) when `audio_url` could not be verified. The model is not called and nothing is charged.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "error"
+            ]
+          },
+          "error": {
+            "type": "string",
+            "enum": [
+              "audio_url_unreachable",
+              "audio_url_not_audio"
+            ],
+            "description": "`audio_url_unreachable`: the URL did not answer 2xx within 10 seconds. `audio_url_not_audio`: it answered, but with a content type that is not `audio/*` or `application/octet-stream`.",
+            "example": "audio_url_not_audio"
+          },
+          "message": {
+            "type": "string",
+            "description": "What the check observed, for the caller's logs.",
+            "example": "audio_url answered 200 with content type text/html"
+          }
+        },
+        "required": [
+          "status",
+          "error",
+          "message"
+        ]
+      },
+      "SongSection": {
+        "type": "object",
+        "required": [
+          "label",
+          "start",
+          "end",
+          "group",
+          "energy"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "The section's name: `intro`, `verse`, `pre-chorus`, `chorus`, `post-chorus`, `bridge`, `instrumental`, `drop`, `breakdown`, `outro`, or `section` when nothing fits better.",
+            "example": "chorus"
+          },
+          "start": {
+            "type": "number",
+            "description": "Start, in seconds from the beginning of the song.",
+            "example": 24
+          },
+          "end": {
+            "type": "number",
+            "description": "End, in seconds from the beginning of the song.",
+            "example": 44
+          },
+          "group": {
+            "type": "string",
+            "description": "Sections that share a letter sound alike (`A`, `B`, `A`, `C`, ...), so repeated choruses share a group.",
+            "example": "C"
+          },
+          "energy": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Average loudness of the section, 0 to 100 relative to the song's own quietest and loudest seconds.",
+            "example": 83
+          }
+        }
+      },
+      "SongMoment": {
+        "type": "object",
+        "required": [
+          "type",
+          "start",
+          "end",
+          "section",
+          "energy",
+          "cuts"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "intro",
+              "vocal_hook",
+              "chorus_lift",
+              "build_up",
+              "climax",
+              "breakdown",
+              "outro"
+            ],
+            "description": "What the moment is. A song has at most one moment of each type, and not every song has every type."
+          },
+          "start": {
+            "type": "number",
+            "description": "Start, in seconds from the beginning of the song.",
+            "example": 24
+          },
+          "end": {
+            "type": "number",
+            "description": "End, in seconds from the beginning of the song.",
+            "example": 39
+          },
+          "section": {
+            "type": "string",
+            "description": "The label of the section the moment starts in.",
+            "example": "chorus"
+          },
+          "energy": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Average loudness of the moment, 0 to 100 relative to the song's own quietest and loudest seconds.",
+            "example": 87
+          },
+          "cuts": {
+            "type": "object",
+            "description": "Edit points for each standard length that fits inside the song, keyed `6`, `15` and `30` (seconds). Each value is `[start, end]` in seconds on the beat grid. A cut starts at the moment's start, except for `build_up` and `outro`, whose cuts end at the moment's end. A cut can run past the end of a short moment.",
+            "additionalProperties": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {
+                "type": "number"
+              }
+            },
+            "example": {
+              "6": [
+                24,
+                30
+              ],
+              "15": [
+                24,
+                39
+              ],
+              "30": [
+                24,
+                54
+              ]
+            }
+          },
+          "also": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "intro",
+                "vocal_hook",
+                "chorus_lift",
+                "build_up",
+                "climax",
+                "breakdown",
+                "outro"
+              ]
+            },
+            "description": "Other moment types this one also covers. Moments that overlap by more than 60% are merged, and the one that is kept lists the others here. Present only when moments were merged.",
+            "example": [
+              "chorus_lift"
+            ]
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "One sentence on what happens musically in the moment, written after listening to a clip of just that moment. Present only on described moments (see `describe`); `null` when the reply could not be read."
+          },
+          "emotion": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Up to three lowercase mood words. Present only on described moments; empty when the reply could not be read."
+          },
+          "best_for": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Up to three uses the moment suits, such as `film trailer`, `TV promo`, `ad`, `social video`, `video game`, `sports`, `documentary` or `end credits`. Present only on described moments; empty when the reply could not be read."
+          },
+          "vocals": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Whether the moment has vocals. Present only on described moments; `null` when the reply could not be read."
+          }
+        }
+      },
+      "SongBand": {
+        "type": "object",
+        "required": [
+          "band",
+          "lo_hz",
+          "hi_hz",
+          "share_pct",
+          "side_pct",
+          "level_pct",
+          "status"
+        ],
+        "properties": {
+          "band": {
+            "type": "string",
+            "enum": [
+              "sub",
+              "low",
+              "low_mid",
+              "mid",
+              "high_mid",
+              "high",
+              "air"
+            ],
+            "description": "Band name."
+          },
+          "lo_hz": {
+            "type": "integer",
+            "description": "Lower edge of the band in hertz.",
+            "example": 60
+          },
+          "hi_hz": {
+            "type": "integer",
+            "description": "Upper edge of the band in hertz.",
+            "example": 250
+          },
+          "share_pct": {
+            "type": "number",
+            "description": "The band's share of the mix's energy, in percent. The seven shares add up to about 100.",
+            "example": 31
+          },
+          "side_pct": {
+            "type": "number",
+            "description": "Side (left minus right) energy in the band, as a percent of the band's mid energy.",
+            "example": 3.4
+          },
+          "level_pct": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "The band's level against a typical pop energy split, 0 to 100. 50 is on the reference.",
+            "example": 51
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "clear",
+              "heavy",
+              "light"
+            ],
+            "description": "`clear` when the band is within 4 dB of the reference split, `heavy` when it is more than 4 dB above, `light` when it is more than 4 dB below."
+          }
+        }
+      },
+      "SongFingerprint": {
+        "type": "object",
+        "description": "Six sound axes. Each runs from 0 at its left label to 1 at its right label.",
+        "properties": {
+          "organic_electronic": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "0 organic, 1 electronic."
+          },
+          "sparse_dense": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "0 sparse, 1 dense."
+          },
+          "dark_bright": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "0 dark, 1 bright."
+          },
+          "intimate_anthemic": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "0 intimate, 1 anthemic."
+          },
+          "smooth_textured": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "0 smooth, 1 textured."
+          },
+          "slow_fast": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "0 slow, 1 fast."
+          }
+        }
+      },
+      "SongDrop": {
+        "type": "object",
+        "required": [
+          "type",
+          "start",
+          "end",
+          "beats",
+          "depth_db",
+          "mmss"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "mute",
+              "breakdown"
+            ],
+            "description": "`mute` is a sudden drop in level shorter than two beats, a clean place for a zero-bleed cut. `breakdown` is a drop of two beats or more, the band pulling back."
+          },
+          "start": {
+            "type": "number",
+            "description": "Start, in seconds.",
+            "example": 52
+          },
+          "end": {
+            "type": "number",
+            "description": "End, in seconds.",
+            "example": 56
+          },
+          "beats": {
+            "type": "number",
+            "description": "Length in beats.",
+            "example": 8
+          },
+          "depth_db": {
+            "type": "number",
+            "description": "How far the level falls below the surrounding music, in decibels.",
+            "example": 11.3
+          },
+          "mmss": {
+            "type": "string",
+            "description": "The start as `m:ss`.",
+            "example": "0:52"
+          }
+        }
+      },
+      "SongEditPoint": {
+        "type": "object",
+        "required": [
+          "type",
+          "time",
+          "name",
+          "note",
+          "mmss"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "in",
+              "out"
+            ],
+            "description": "`in` is a place to cut into the song, `out` a place to cut out of it."
+          },
+          "time": {
+            "type": "number",
+            "description": "The point, in seconds.",
+            "example": 24
+          },
+          "name": {
+            "type": "string",
+            "description": "What the point is, for example `Chorus drop`, `Breakdown` or `Fade begins`.",
+            "example": "Chorus drop"
+          },
+          "note": {
+            "type": "string",
+            "description": "A short note on how to use the point.",
+            "example": "Full entry into the chorus after the verse."
+          },
+          "mmss": {
+            "type": "string",
+            "description": "The point as `m:ss`.",
+            "example": "0:24"
           }
         }
       }

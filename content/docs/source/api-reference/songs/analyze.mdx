@@ -2,3 +2,57 @@
 title: "Analyze songs"
 openapi: "/api-reference/openapi/releases.json POST /api/songs/analyze"
 ---
+
+## Which to use
+
+Use this endpoint for one analysis of one song: a curated `preset` such as `mood_tags` or `catalog_metadata`, `preset: "full_report"` for all 13 sections at once, or a custom `prompt` for a single free-form question.
+
+Use [`POST /api/songs/analyze/batch`](/api-reference/songs/analyze-batch) when you have many short questions about the same file. The audio is downloaded once and the base price is paid once for the whole batch instead of once per question.
+
+Use [`POST /api/songs/moments`](/api-reference/songs/moments) when you need to know when things happen and how the audio measures: the song's sections, its best short moments with 6, 15 and 30 second cuts, loudness, spectrum, key and edit points. Those times and numbers are measured from the audio, not generated.
+
+## Audio formats
+
+`audio_url` accepts MP3, WAV, FLAC, M4A, AAC, OGG and WebM. The format is read from the file extension in the URL path, so give the URL a real extension; a URL without one is treated as MP3. If the model service cannot fetch the file or cannot read it as audio, a single preset or prompt call answers `502` with `upstream_status` `422` and a `detail` beginning `audio_unreachable` or `audio_undecodable`. A `full_report` fails every section the same way and answers `502` with `failed`.
+
+## Partial full reports
+
+A `full_report` runs 13 analyses in parallel, one per report section. When some of them fail, the response is still HTTP `200`, with `status: "partial"` and the failed sections in `failed`:
+
+```json
+{
+  "status": "partial",
+  "preset": "full_report",
+  "report": {
+    "mood": { "tags": ["dreamy", "late-night", "warm"], "primary_mood": "dreamy" },
+    "lyrics": { "error": "Section failed: Music analysis failed (status 422)" },
+    "sync": { "error": "Section failed: Music analysis failed (status 422)" }
+  },
+  "elapsed_seconds": 41.6,
+  "failed": ["lyrics", "sync"]
+}
+```
+
+This example shows three of the thirteen sections for brevity. Every response carries all thirteen keys, each holding its result or the `{ "error": ... }` object. Check `status` or `failed` before you use a report; do not treat a `200` as a complete report. A failed section is not charged. To fill it in, call this endpoint again with the single preset for its key:
+
+| Report key | Preset to retry it with |
+| --- | --- |
+| `overview` | `catalog_metadata` |
+| `mood` | `mood_tags` |
+| `description` | `song_description` |
+| `lyrics` | `lyric_transcription` |
+| `content_advisory` | `content_advisory` |
+| `music_theory` | `music_theory` |
+| `mix_feedback` | `mix_feedback` |
+| `similar_artists` | `similar_artists` |
+| `sample_detection` | `sample_detection` |
+| `audience` | `audience_profile` |
+| `sync` | `sync_brief_match` |
+| `playlist_pitch` | `playlist_pitch` |
+| `development` | `artist_development_notes` |
+
+If every section fails, the response is `502` with `status: "error"`, `error: "Music analysis failed for every section"` and all thirteen keys in `failed`. Nothing is charged.
+
+## Pricing
+
+`$0.05` per model call plus `$0.001166` per second of inference time. `full_report` makes 13 calls, so its base prices add up to `$0.65`, plus the seconds each call ran. The balance must cover the base price of the request before the model runs; otherwise the response is `402` and nothing is charged. See [Credits](/credits).
