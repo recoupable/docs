@@ -14,7 +14,7 @@ Some Recoup endpoints are billed in **credits** — primarily endpoints that hit
 | **Research** ([`/api/research/*`](/api-reference/research/web)) | Yes | Each successful call deducts credits. Costs vary by endpoint and parameters (e.g. [`enrich`](/api-reference/research/enrich) charges by processor tier; [`extract`](/api-reference/research/extract) charges by URL count). |
 | **Content generation** ([`/api/content/image`](/api-reference/content/generate-image), [`video`](/api-reference/content/generate-video), upscale, transcribe and analyze) | Yes | Model-specific generation and inference charges apply. Hosted pipelines charge their component operations; estimates are advisory. |
 | **AI Chat — streaming** ([`POST /api/chat`](/api-reference/chat/workflow)) | Yes | Variable cost based on model token usage, with a per-request minimum. |
-| **Music analysis** ([`POST /api/songs/analyze`](/api-reference/songs/analyze)) | Yes | \$0.05 per model call plus \$0.001166 per second of inference time; `full_report` is the sum of its 13 calls. |
+| **Music analysis** ([`POST /api/songs/analyze`](/api-reference/songs/analyze)) | Yes | \$0.05 per model request plus \$0.001166 per second of inference time; `full_report` is one batched request for all 13 sections. |
 | **Music analysis batch** ([`POST /api/songs/analyze/batch`](/api-reference/songs/analyze-batch)) | Yes | \$0.05 once per batch plus \$0.001166 per second of the batch's inference time, however many prompts it carries. |
 | **Song moments** ([`POST /api/songs/moments`](/api-reference/songs/moments)) | Yes | \$0.01 per song measured, plus the music analysis rate for each moment described. |
 | **Social scrape** ([`/api/socials/{id}/scrape`](/api-reference/social/scrape), [`/api/artist/socials/scrape`](/api-reference/artist/socials-scrape)) | Yes | \$0.05, plus \$0.01 per post requested via `posts` — per social profile scraped. |
@@ -247,9 +247,9 @@ Current as of this revision of the page. The authoritative source is the per-end
 | [`POST /api/research/enrich`](/api-reference/research/enrich) | \$0.05 / \$0.10 / \$0.25 (base / core / ultra processor) |
 | [`POST /api/research/deep`](/api-reference/research/deep) | \$0.25 per call |
 | [`POST /api/image/generate`](/api-reference/image/generation) | Per-call price; see endpoint reference |
-| [`POST /api/songs/analyze`](/api-reference/songs/analyze) | `$0.05 + $0.001166 × elapsed_seconds` per model call; `full_report` = 13 calls |
+| [`POST /api/songs/analyze`](/api-reference/songs/analyze) | `$0.05 + $0.001166 × elapsed_seconds` per model request; `full_report` is one request |
 | [`POST /api/songs/analyze/batch`](/api-reference/songs/analyze-batch) | `$0.05 + $0.001166 × elapsed_seconds` once per batch, `elapsed_seconds` being the whole batch |
-| [`POST /api/songs/moments`](/api-reference/songs/moments) | `$0.01` per song measured, plus `$0.05 + $0.001166 × elapsed_seconds` per moment described |
+| [`POST /api/songs/moments`](/api-reference/songs/moments) | `$0.01` per song measured, plus `$0.05 + $0.001166 × elapsed_seconds` once for the moments described |
 
 ## Billing recovery and units
 
