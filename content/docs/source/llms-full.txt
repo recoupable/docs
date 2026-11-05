@@ -426,8 +426,8 @@ Some Recoup endpoints are billed in **credits** — primarily endpoints that hit
 | **Content generation** ([`/api/content/image`](https://docs.recoupable.dev/api-reference/content/generate-image), [`video`](https://docs.recoupable.dev/api-reference/content/generate-video), upscale, transcribe and analyze) | Yes | Model-specific generation and inference charges apply. Hosted pipelines charge their component operations; estimates are advisory. |
 | **AI Chat — streaming** ([`POST /api/chat`](https://docs.recoupable.dev/api-reference/chat/workflow)) | Yes | Variable cost based on model token usage, with a per-request minimum. |
 | **Music analysis** ([`POST /api/songs/analyze`](https://docs.recoupable.dev/api-reference/songs/analyze)) | Yes | $0.05 per model call plus $0.001166 per second of inference time; `full_report` is the sum of its 13 calls. |
-| **Music analysis batch** ([`POST /api/songs/analyze/batch`](https://docs.recoupable.dev/api-reference/songs/analyze-batch)) | Yes | $0.05 once per batch plus $0.001166 per second of the batch's inference time, however many prompts it carries. Pending release. |
-| **Song moments** ([`POST /api/songs/moments`](https://docs.recoupable.dev/api-reference/songs/moments)) | Yes | $0.01 per song measured, plus the music analysis rate for each moment described. Pending release. |
+| **Music analysis batch** ([`POST /api/songs/analyze/batch`](https://docs.recoupable.dev/api-reference/songs/analyze-batch)) | Yes | $0.05 once per batch plus $0.001166 per second of the batch's inference time, however many prompts it carries. |
+| **Song moments** ([`POST /api/songs/moments`](https://docs.recoupable.dev/api-reference/songs/moments)) | Yes | $0.01 per song measured, plus the music analysis rate for each moment described. |
 | **Social scrape** ([`/api/socials/{id}/scrape`](https://docs.recoupable.dev/api-reference/social/scrape), [`/api/artist/socials/scrape`](https://docs.recoupable.dev/api-reference/artist/socials-scrape)) | Yes | $0.05, plus $0.01 per post requested via `posts` — per social profile scraped. |
 | **Other operations** | Consult the endpoint contract | [Artist CRUD](https://docs.recoupable.dev/api-reference/artists/list), [sandboxes](https://docs.recoupable.dev/api-reference/sandboxes/list), [sessions](https://docs.recoupable.dev/api-reference/sessions/get), [scheduled tasks](https://docs.recoupable.dev/api-reference/tasks/get), [account/org management](https://docs.recoupable.dev/api-reference/accounts/id), [agent signup](https://docs.recoupable.dev/api-reference/agents/signup), [Spotify proxies](https://docs.recoupable.dev/api-reference/spotify/search), etc. Subscription gating may still apply. |
 
@@ -659,8 +659,8 @@ Current as of this revision of the page. The authoritative source is the per-end
 | [`POST /api/research/deep`](https://docs.recoupable.dev/api-reference/research/deep) | $0.25 per call |
 | [`POST /api/image/generate`](https://docs.recoupable.dev/api-reference/image/generation) | Per-call price; see endpoint reference |
 | [`POST /api/songs/analyze`](https://docs.recoupable.dev/api-reference/songs/analyze) | `$0.05 + $0.001166 × elapsed_seconds` per model call; `full_report` = 13 calls |
-| [`POST /api/songs/analyze/batch`](https://docs.recoupable.dev/api-reference/songs/analyze-batch) | `$0.05 + $0.001166 × elapsed_seconds` once per batch, `elapsed_seconds` being the whole batch; pending release |
-| [`POST /api/songs/moments`](https://docs.recoupable.dev/api-reference/songs/moments) | `$0.01` per song measured, plus `$0.05 + $0.001166 × elapsed_seconds` per moment described; pending release |
+| [`POST /api/songs/analyze/batch`](https://docs.recoupable.dev/api-reference/songs/analyze-batch) | `$0.05 + $0.001166 × elapsed_seconds` once per batch, `elapsed_seconds` being the whole batch |
+| [`POST /api/songs/moments`](https://docs.recoupable.dev/api-reference/songs/moments) | `$0.01` per song measured, plus `$0.05 + $0.001166 × elapsed_seconds` per moment described |
 
 ## Billing recovery and units
 
@@ -16419,10 +16419,6 @@ Source: https://docs.recoupable.dev/api-reference/songs/analyze-batch
 
 Ask up to 40 short questions about one audio file in a single request and pay the base price once.
 
-> **Warning**
-> Pending release. This page documents the reviewed contract ahead of the API
-> release. The endpoint is not callable on the production API until that release ships.
-
 ## Which to use
 
 Use a batch when you have several short questions about the same song, for example genre, tempo, instruments and vocal style as four prompts. The audio is downloaded once and the base price is paid once, so a batch of 36 prompts costs one base price plus the seconds it runs, not 36 base prices.
@@ -16481,7 +16477,7 @@ This operation requires one of the security alternatives in the specification be
       "post": {
         "operationId": "postSongsAnalyzeBatch",
         "summary": "Ask many questions about one song",
-        "description": "Pending release. This operation is documented ahead of its API release and is not callable on the production API until that release ships.\n\nAsk up to 40 short questions about one audio file in a single request. The audio is downloaded once, then every prompt is answered against it, one after another, in the order sent. Use it instead of one [`POST /api/songs/analyze`](https://docs.recoupable.dev/api-reference/songs/analyze) call per question: a batch pays the per-call base price once, not once per prompt.\n\nSend `audio_url` and `prompts`, an array of `{ id, prompt, max_new_tokens }`. `id` is your key for the answer (1 to 64 characters, unique within the batch), `prompt` is 1 to 4,000 characters, and the optional `max_new_tokens` (1 to 2048, default 400) bounds that one answer. `temperature` (default 0.2), `top_p` (default 1) and `do_sample` (default false) apply to every prompt in the batch.\n\nPricing: `$0.05` once per batch plus `$0.001166` per second of the batch's total inference time (`elapsed_seconds`, audio download included), charged once after the batch succeeds, as a single usage row. A batch that runs 90 seconds costs `$0.15494`. The balance must hold `$0.05` before the model runs, otherwise the response is `402`. A batch the model service rejects is not charged.\n\nA batch is all or nothing: if the model service rejects it, the response is `502` and no answers are returned. Prompts run one after another, so a batch of many long answers can take several minutes; the request stays open until it finishes, so use a generous client timeout.",
+        "description": "Ask up to 40 short questions about one audio file in a single request. The audio is downloaded once, then every prompt is answered against it, one after another, in the order sent. Use it instead of one [`POST /api/songs/analyze`](https://docs.recoupable.dev/api-reference/songs/analyze) call per question: a batch pays the per-call base price once, not once per prompt.\n\nSend `audio_url` and `prompts`, an array of `{ id, prompt, max_new_tokens }`. `id` is your key for the answer (1 to 64 characters, unique within the batch), `prompt` is 1 to 4,000 characters, and the optional `max_new_tokens` (1 to 2048, default 400) bounds that one answer. `temperature` (default 0.2), `top_p` (default 1) and `do_sample` (default false) apply to every prompt in the batch.\n\nPricing: `$0.05` once per batch plus `$0.001166` per second of the batch's total inference time (`elapsed_seconds`, audio download included), charged once after the batch succeeds, as a single usage row. A batch that runs 90 seconds costs `$0.15494`. The balance must hold `$0.05` before the model runs, otherwise the response is `402`. A batch the model service rejects is not charged.\n\nA batch is all or nothing: if the model service rejects it, the response is `502` and no answers are returned. Prompts run one after another, so a batch of many long answers can take several minutes; the request stays open until it finishes, so use a generous client timeout.",
         "security": [
           {
             "apiKeyAuth": []
@@ -16660,8 +16656,7 @@ This operation requires one of the security alternatives in the specification be
               }
             }
           }
-        },
-        "x-recoup-availability": "pending"
+        }
       }
     }
   },
@@ -16953,10 +16948,6 @@ Source: https://docs.recoupable.dev/api-reference/songs/moments
 
 Find a song's sections and best short moments, with loudness, spectrum, key, drops and edit points measured from the audio.
 
-> **Warning**
-> Pending release. This page documents the reviewed contract ahead of the API
-> release. The endpoint is not callable on the production API until that release ships.
-
 ## Which to use
 
 Use this endpoint when you need to know when things happen in a song and how it measures: where the sections and best moments start and end, ready-made 6, 15 and 30 second cuts on the beat grid, loudness and peaks, the spectrum, key, and where to cut in and out. Those times and numbers come from measuring the audio, so they are repeatable.
@@ -17046,7 +17037,7 @@ This operation requires one of the security alternatives in the specification be
       "post": {
         "operationId": "postSongsMoments",
         "summary": "Find a song's sections and moments",
-        "description": "Pending release. This operation is documented ahead of its API release and is not callable on the production API until that release ships.\n\nFinds a song's sections and its best short moments for licensing and editing, with the measurements an edit or a sync pitch needs. Times and numbers come from measuring the audio itself (the beat grid, loudness, which passages repeat), not from a language model. An audio model then listens to a clip of each moment and adds a short description.\n\nSend `audio_url` (MP3, WAV or FLAC). Optionally send `section_order`, the section headers from a lyric sheet in order, to name the sections from the sheet, and `tempo_hint`, the tempo in BPM from your metadata, to correct a beat tracker that locked onto half or double time. `describe` chooses which moments get a description: `true` (the default) for every moment, `false` for none, or a list of moment types.\n\nThe response has the song's `sections`, its `moments` with `6`, `15` and `30` second `cuts` on the beat grid, and a per-second `energy_curve`. It also carries an extended measurement: loudness and peaks (`lufs`, `true_peak_dbtp`, `broadcast_ready`), the stereo image, a seven-band spectrum (`band_profile`), a six-axis sound `fingerprint`, `key`, `time_signature`, `valence` and `arousal`, `mute_drops`, a `chord_loop` estimate and typed `edit_points`. Store `measured_with` with each result: it changes whenever the measurement's results would change. The fingerprint formulas and the band reference split were calibrated on a small sample of songs, so treat them as comparable numbers within a version, not as norms.\n\nPricing: `$0.01` per song measured, plus the [analyze](https://docs.recoupable.dev/api-reference/songs/analyze) rate (`$0.05` per model call plus `$0.001166` per second of inference time) for each moment described. The balance must hold `$0.01` plus `$0.05` for every moment that may be described before anything runs, which is `$0.36` with the default `describe: true`, otherwise the response is `402`. A moment whose description fails comes back without a description and is not charged. If the measurement itself fails, nothing is charged.\n\nA request can take a few minutes when the measurement and model services are starting cold, up to a limit of 300 seconds.",
+        "description": "Finds a song's sections and its best short moments for licensing and editing, with the measurements an edit or a sync pitch needs. Times and numbers come from measuring the audio itself (the beat grid, loudness, which passages repeat), not from a language model. An audio model then listens to a clip of each moment and adds a short description.\n\nSend `audio_url` (MP3, WAV or FLAC). Optionally send `section_order`, the section headers from a lyric sheet in order, to name the sections from the sheet, and `tempo_hint`, the tempo in BPM from your metadata, to correct a beat tracker that locked onto half or double time. `describe` chooses which moments get a description: `true` (the default) for every moment, `false` for none, or a list of moment types.\n\nThe response has the song's `sections`, its `moments` with `6`, `15` and `30` second `cuts` on the beat grid, and a per-second `energy_curve`. It also carries an extended measurement: loudness and peaks (`lufs`, `true_peak_dbtp`, `broadcast_ready`), the stereo image, a seven-band spectrum (`band_profile`), a six-axis sound `fingerprint`, `key`, `time_signature`, `valence` and `arousal`, `mute_drops`, a `chord_loop` estimate and typed `edit_points`. Store `measured_with` with each result: it changes whenever the measurement's results would change. The fingerprint formulas and the band reference split were calibrated on a small sample of songs, so treat them as comparable numbers within a version, not as norms.\n\nPricing: `$0.01` per song measured, plus the [analyze](https://docs.recoupable.dev/api-reference/songs/analyze) rate (`$0.05` per model call plus `$0.001166` per second of inference time) for each moment described. The balance must hold `$0.01` plus `$0.05` for every moment that may be described before anything runs, which is `$0.36` with the default `describe: true`, otherwise the response is `402`. A moment whose description fails comes back without a description and is not charged. If the measurement itself fails, nothing is charged.\n\nA request can take a few minutes when the measurement and model services are starting cold, up to a limit of 300 seconds.",
         "security": [
           {
             "apiKeyAuth": []
@@ -17705,8 +17696,7 @@ This operation requires one of the security alternatives in the specification be
               }
             }
           }
-        },
-        "x-recoup-availability": "pending"
+        }
       }
     }
   },
