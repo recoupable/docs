@@ -133,7 +133,7 @@ Open [Connected agents](https://app.recoupable.dev/oauth/connections) and discon
 | `503` | Retry later; do not weaken authentication or callback checks. |
 | Write timed out | Read back the target before retrying. Artist creation is not guaranteed idempotent; an automatic retry may create a duplicate. |
 
-For clients without OAuth, [API-key authentication](/mcp) remains available. Keep keys out of model prompts and shared configuration. A stdio-only client needs a separately maintained adapter; the remote URL is not itself a stdio command.
+For clients without OAuth, [API-key authentication](/mcp-server) remains available. Keep keys out of model prompts and shared configuration. A stdio-only client needs a separately maintained adapter; the remote URL is not itself a stdio command.
 
 For help, contact [agent@recoupable.dev](mailto:agent@recoupable.dev). Include the client name, time, and error text; never include tokens, passwords, or API keys.
 

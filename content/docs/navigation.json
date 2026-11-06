@@ -17,7 +17,7 @@
           "sdks",
           "cli",
           "claude",
-          "mcp",
+          "mcp-server",
           "public-website-api"
         ]
       },
