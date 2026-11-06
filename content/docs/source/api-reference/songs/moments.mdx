@@ -1,0 +1,63 @@
+---
+title: "Find song moments"
+description: "Find a song's sections and best short moments, with loudness, spectrum, key, drops and edit points measured from the audio."
+openapi: "/api-reference/openapi/releases.json POST /api/songs/moments"
+sidebarTitle: "Find song moments"
+---
+
+## Which to use
+
+Use this endpoint when you need to know when things happen in a song and how it measures: where the sections and best moments start and end, ready-made 6, 15 and 30 second cuts on the beat grid, loudness and peaks, the spectrum, key, and where to cut in and out. Those times and numbers come from measuring the audio, so they are repeatable.
+
+Use [`POST /api/songs/analyze`](/api-reference/songs/analyze) for judgments that need a listener: genre, mood, lyrics, mix feedback, sync fit. A single preset, `full_report` or a custom prompt answers one analysis at a time.
+
+Use [`POST /api/songs/analyze/batch`](/api-reference/songs/analyze-batch) to ask many short custom questions about one file in a single request.
+
+## Moment types
+
+A song has at most one moment of each type, and not every song has every type. When two moments overlap by more than 60%, the one that is kept lists the other in `also`.
+
+| Type | What it is |
+| --- | --- |
+| `intro` | The opening section, when it is an intro, up to 20 seconds. |
+| `vocal_hook` | The start of the first chorus, up to 15 seconds. |
+| `chorus_lift` | The loudest of the later choruses, up to 20 seconds. Needs more than one chorus. |
+| `build_up` | The strongest rise into a section: the lead-in plus a few seconds of the payoff. Only when the rise is clear. |
+| `climax` | The loudest 15 seconds of the song. |
+| `breakdown` | The longest stretch of 6 seconds or more that sits at least 4 dB under the song's median loudness, once the first chorus has started. |
+| `outro` | The end of the song, up to 20 seconds. |
+
+## Response fields
+
+The first group of fields is the base measurement: `measured_with`, `duration_seconds`, `tempo_bpm`, `loudness_lufs`, `ending`, `names_from`, `sections`, `moments`, `energy_curve` and `elapsed_seconds`. Moments that were described also carry `description`, `emotion`, `best_for` and `vocals`.
+
+The rest is the extended measurement. A result whose `measured_with` has no `+extended-` suffix was measured without these fields.
+
+| Field | Meaning |
+| --- | --- |
+| `lufs` | Integrated loudness of the stereo file, in LUFS. Same figure as `loudness_lufs`. |
+| `true_peak_dbtp`, `loudness_range_lu` | True peak and loudness range. `null` when the loudness meter could not read the file. |
+| `sample_peak_dbfs`, `crest_factor_db` | Highest sample level, and that peak minus the average level. |
+| `broadcast_ready` | `true` when the true peak is at or under -1 dBTP and the loudness is between -16 and -7 LUFS. `null` when the true peak is unknown. |
+| `stereo` | `lr_correlation` between the channels (1 is identical) and `side_to_mid` (0 is mono). |
+| `spectral_centroid_hz`, `rolloff95_hz` | Brightness: the mean centroid, and the frequency under which 95% of the energy lies. |
+| `band_profile` | Seven bands, `sub` to `air`. Each has `share_pct` of the mix's energy (the seven add up to about 100), `side_pct`, `level_pct` against a typical pop split (50 is on the reference) and `status`: `clear` within 4 dB of it, `heavy` above, `light` below. |
+| `fingerprint` | Six axes from 0 to 1: `organic_electronic`, `sparse_dense`, `dark_bright`, `intimate_anthemic`, `smooth_textured`, `slow_fast`. 0 is the left label, 1 the right. `fingerprint_inputs` holds the raw measurements. |
+| `key` | `tonic`, `mode` (`major` or `minor`) and `confidence`, a correlation up to 1. |
+| `time_signature` | `3/4` or `4/4`. |
+| `valence`, `arousal` | The measured half of mood, 0 to 1. Estimates, not listening judgments. |
+| `mute_drops` | Sudden drops in level: a `mute` is under two beats (a zero-bleed cut), a `breakdown` is two beats or more. Each has `start`, `end`, `beats`, `depth_db` and `mmss`. |
+| `chord_loop` | The most common four-bar chord cycle, `dominant_loop`, with `loop_share`, `distinct_chords` and `bars`. `confidence` is always `low`; treat it as one estimate, not a transcription. |
+| `edit_points` | Typed `in` and `out` points with a `name`, a `note` and `mmss`: the cold open, chorus entries and exits, the deepest mutes, breakdowns and their re-entry, and where a fade begins. |
+| `tempo_note` | How `tempo_bpm` was decided: the beat tracker alone, or reconciled to `tempo_hint`. |
+
+<Note>
+  The fingerprint formulas and the band reference split were calibrated on a small
+  sample of songs. Compare numbers within one `measured_with` version; they are not norms.
+</Note>
+
+Store `measured_with` with every result. It changes whenever the measurement's results would change, so it tells you which stored results to rerun.
+
+## Pricing
+
+`$0.01` per song measured, plus the [analyze](/api-reference/songs/analyze) rate for each moment described: `$0.05` per model call plus `$0.001166` per second of inference time. The balance must hold `$0.01` plus `$0.05` for every moment that may be described before anything runs: `$0.36` with the default `describe: true`, `$0.01` with `describe: false`, and `$0.01` plus `$0.05` per type with a list. Otherwise the response is `402` and nothing is charged. A moment whose description fails comes back without a description and is not charged, and a failed measurement is not charged. See [Credits](/credits).

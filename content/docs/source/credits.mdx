@@ -15,6 +15,8 @@ Some Recoup endpoints are billed in **credits** — primarily endpoints that hit
 | **Content generation** ([`/api/content/image`](/api-reference/content/generate-image), [`video`](/api-reference/content/generate-video), upscale, transcribe and analyze) | Yes | Model-specific generation and inference charges apply. Hosted pipelines charge their component operations; estimates are advisory. |
 | **AI Chat — streaming** ([`POST /api/chat`](/api-reference/chat/workflow)) | Yes | Variable cost based on model token usage, with a per-request minimum. |
 | **Music analysis** ([`POST /api/songs/analyze`](/api-reference/songs/analyze)) | Yes | \$0.05 per model call plus \$0.001166 per second of inference time; `full_report` is the sum of its 13 calls. |
+| **Music analysis batch** ([`POST /api/songs/analyze/batch`](/api-reference/songs/analyze-batch)) | Yes | \$0.05 once per batch plus \$0.001166 per second of the batch's inference time, however many prompts it carries. |
+| **Song moments** ([`POST /api/songs/moments`](/api-reference/songs/moments)) | Yes | \$0.01 per song measured, plus the music analysis rate for each moment described. |
 | **Social scrape** ([`/api/socials/{id}/scrape`](/api-reference/social/scrape), [`/api/artist/socials/scrape`](/api-reference/artist/socials-scrape)) | Yes | \$0.05, plus \$0.01 per post requested via `posts` — per social profile scraped. |
 | **Other operations** | Consult the endpoint contract | [Artist CRUD](/api-reference/artists/list), [sandboxes](/api-reference/sandboxes/list), [sessions](/api-reference/sessions/get), [scheduled tasks](/api-reference/tasks/get), [account/org management](/api-reference/accounts/id), [agent signup](/api-reference/agents/signup), [Spotify proxies](/api-reference/spotify/search), etc. Subscription gating may still apply. |
 
@@ -189,7 +191,7 @@ A card on the account is never charged on its own. Charging happens only when th
 
 Auto top-up is off for every account until it is turned on with [`PUT /api/accounts/{id}/auto-top-up`](/api-reference/accounts/auto-top-up-update), which needs three things chosen by the account: `enabled`, the `amountCents` to buy each time (5.00 to 1,000.00 USD), and the `thresholdCents` balance that triggers it. Both are USD cents; the `remaining_credits` balance above is in credit micro-dollars, so divide it by 10,000 to compare. Turning it on requires a card on file.
 
-Once on, the first credit deduction that leaves the balance below the threshold charges the card for the amount, grants the credits, records a usage event, and emails a receipt. Guardrails: at most one top-up per account per 10 minutes; a card decline turns auto top-up off, records the decline message as `lastError` (returned by [`GET /api/accounts/{id}/auto-top-up`](/api-reference/accounts/auto-top-up-get)), and emails the account instead of retrying; a successful selected-card removal turns it off before detachment, even when other cards remain. Auto top-up never creates a checkout session and never touches an invoiced (enterprise) plan. Saving a card does not turn auto top-up on by itself.
+Once on, a credit deduction classified as `web` can trigger a purchase when the balance falls below the threshold. API-sourced deductions, including plugin and API-triggered background work, spend existing credits and do not trigger auto-top-up, even when the account has enabled it. This does not change the account's saved settings. Eligible top-ups charge the card for the amount, grant credits, record a usage event and email a receipt. Guardrails: at most one top-up per account per 10 minutes; a card decline turns auto top-up off, records the decline message as `lastError` (returned by [`GET /api/accounts/{id}/auto-top-up`](/api-reference/accounts/auto-top-up-get)), and emails the account instead of retrying; a successful selected-card removal turns it off before detachment, even when other cards remain. Auto top-up never creates a checkout session and never touches an invoiced (enterprise) plan. Saving a card does not turn auto top-up on by itself.
 
 ### Remove a saved card
 
@@ -226,7 +228,8 @@ When the gate comes up short, billed endpoints return **HTTP 402** with a unifie
 **How to react:**
 
 - **Browser-driven UI** (e.g., the Recoup chat app): send the customer to `billingUrl`, or call [`POST /api/credits/sessions`](/api-reference/credits/sessions-create) inline and open the `url` it returns.
-- **Programmatic / LLM-driven client**: report `remaining_credits` and `required_credits`, and surface `billingUrl` as the link a human needs to visit. Do not treat a 402 as retryable; the balance will not change on its own until someone buys credits or the monthly refill lands.
+- **Direct REST client outside the plugin**: report `remaining_credits` and `required_credits` and handle `billingUrl` according to that client's billing interface. Do not treat a 402 as retryable.
+- **Recoup plugin / MCP workflow**: preserve the task and explain the missing entitlement. Do not surface billing or checkout links, advertise plans, start subscriptions or credit purchases, or use another connector to bypass the limit. Use only existing entitlements; resume only after access is independently available and the user asks to continue.
 
 ---
 
@@ -245,10 +248,12 @@ Current as of this revision of the page. The authoritative source is the per-end
 | [`POST /api/research/deep`](/api-reference/research/deep) | \$0.25 per call |
 | [`POST /api/image/generate`](/api-reference/image/generation) | Per-call price; see endpoint reference |
 | [`POST /api/songs/analyze`](/api-reference/songs/analyze) | `$0.05 + $0.001166 × elapsed_seconds` per model call; `full_report` = 13 calls |
+| [`POST /api/songs/analyze/batch`](/api-reference/songs/analyze-batch) | `$0.05 + $0.001166 × elapsed_seconds` once per batch, `elapsed_seconds` being the whole batch |
+| [`POST /api/songs/moments`](/api-reference/songs/moments) | `$0.01` per song measured, plus `$0.05 + $0.001166 × elapsed_seconds` per moment described |
 
 ## Billing recovery and units
 
-`insufficient_credits` returns `billingUrl`, a static app link, not a Stripe Checkout session. Stop and surface it; do not silently retry or initiate a charge. The separate historical measurement card-setup gate returns `checkoutUrl`; subscription Checkout returns `url`. Inspect the endpoint-specific error type.
+The REST `insufficient_credits` body retains `billingUrl`, a static app link, not a Stripe Checkout session. Plugin workflows must not surface that transactional recovery link or initiate a charge. The release-pack MCP adapter omits it from errors. The historical measurement gate returns `payment_method_required` and a neutral `message`, without `checkoutUrl` or session creation; subscription Checkout returns `url`. Inspect the endpoint-specific error type.
 
 Top-ups require `successUrl` on every request and a positive whole-cent multiple of 10,000 micro-dollar credits. For example, 2,500,000 credits buys $2.50 before fees; `totalCents` is 289 for that example. It is not a credit count. `isPro` means effective Pro only, and is false for paid Starter; use `plan` for paid-plan decisions.
 
