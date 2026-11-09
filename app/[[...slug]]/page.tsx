@@ -9,7 +9,8 @@ import { DocsSidebar } from '@/components/docs/docs-interactive';
 import { DocsContent } from '@/components/docs/docs-content';
 import { ApiReference } from '@/components/docs/api-reference';
 import { CopyPage } from '@/components/docs/copy-page';
-import { getDocSpec, resolveReference } from '@/lib/docs-server';
+import { getDocSpec } from "@/lib/docs-server";
+import { resolveReference } from "@/lib/docs/resolveReference";
 import '../docs.css';
 import './docs-mobile-toc.css';
 
