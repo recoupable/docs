@@ -12,11 +12,28 @@ export function buildCurl({method,endpoint,spec,operation,pathItem={}}:{method:s
   const value=parameter.example??parameter.schema?.example??parameter.schema?.default??`YOUR_${parameter.name.toUpperCase()}`;
   query.append(parameter.name,typeof value==='object'?JSON.stringify(value):String(value));
  }
+ const security = operation.security ?? spec.security;
+ const schemes = security == null
+  ? [{ type: 'apiKey', in: 'header', name: 'x-api-key' }]
+  : Object.keys(security[0] ?? {}).map(name => resolveReference(spec.components?.securitySchemes?.[name], spec));
+ const authHeaders = new Map<string, string>();
+ const cookies = new Map<string, string>();
+ for (const scheme of schemes) {
+  if (scheme.scheme === 'bearer') {
+   authHeaders.set('Authorization', 'Bearer YOUR_TOKEN');
+  } else if (scheme.type === 'apiKey' && scheme.in === 'query') {
+   query.set(scheme.name, 'YOUR_API_KEY');
+  } else if (scheme.type === 'apiKey' && scheme.in === 'cookie') {
+   cookies.set(scheme.name, 'YOUR_API_KEY');
+  } else {
+   authHeaders.set(scheme.name || 'x-api-key', 'YOUR_API_KEY');
+  }
+ }
  const lines=[`curl --request ${method}`,`  --url ${shellQuote(base+route+(query.size?`?${query}`:''))}`];
- const security=operation.security??spec.security;
- const scheme=security?.length?spec.components?.securitySchemes?.[Object.keys(security[0])[0]]:undefined;
- if(security?.length!==0)lines.push(`  --header ${shellQuote(scheme?.scheme==='bearer'?'Authorization: Bearer YOUR_TOKEN':`${scheme?.name||'x-api-key'}: YOUR_API_KEY`)}`);
- for(const parameter of parameters.filter(parameter=>parameter.in==='header'&&parameter.required&&parameter.name!==scheme?.name&&parameter.name.toLowerCase()!=='x-api-key'))lines.push(`  --header ${shellQuote(`${parameter.name}: ${parameter.example??parameter.schema?.example??'YOUR_VALUE'}`)}`);
+ for (const [name, value] of authHeaders) lines.push(`  --header ${shellQuote(`${name}: ${value}`)}`);
+ if (cookies.size) lines.push(`  --cookie ${shellQuote([...cookies].map(([name, value]) => `${name}=${value}`).join('; '))}`);
+ const authHeaderNames = new Set([...authHeaders.keys()].map(name => name.toLowerCase()));
+ for(const parameter of parameters.filter(parameter=>parameter.in==='header'&&parameter.required&&!authHeaderNames.has(parameter.name.toLowerCase())&&parameter.name.toLowerCase()!=='x-api-key'))lines.push(`  --header ${shellQuote(`${parameter.name}: ${parameter.example??parameter.schema?.example??'YOUR_VALUE'}`)}`);
  const body=resolveReference(operation.requestBody,spec);
  const mediaType=body.content?.['application/json']?'application/json':Object.keys(body.content||{})[0];
  const media=body.content?.[mediaType];
