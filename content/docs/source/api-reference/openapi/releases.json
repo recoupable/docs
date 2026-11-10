@@ -3407,7 +3407,7 @@
     "/api/songs/analyze": {
       "post": {
         "operationId": "postSongsAnalyze",
-        "description": "Analyze music with an audio language model that listens directly to the audio waveform.\n\nSend `audio_url` with exactly one of `preset` (a curated analysis, listed by [`GET /api/songs/analyze/presets`](/api-reference/songs/analyze-presets)) or `prompt` (a free-form question). `preset: \"full_report\"` runs all 13 sections and returns them together in `report`.\n\nA `full_report` response has `status: \"success\"` when every section returned and `status: \"partial\"` when some did not. A `partial` response is still HTTP `200`: `failed` lists the report keys of the sections that failed, and each of those keys holds `{ \"error\": \"Section failed: ...\" }` in place of its result. If every section failed, the response is `502` instead.\n\nPricing: `$0.05` per model call plus `$0.001166` per second of inference time. `full_report` makes 13 calls, so its base prices add up to `$0.65`. A call that fails is not charged: failed sections of a `partial` report and requests answered with `502` cost nothing for the failed work. To ask many short questions about one file, use [`POST /api/songs/analyze/batch`](/api-reference/songs/analyze-batch), which pays the base price once.",
+        "description": "Analyze music with an audio language model that listens directly to the audio waveform.\n\nSend `audio_url` with exactly one of `preset` (a curated analysis, listed by [`GET /api/songs/analyze/presets`](/api-reference/songs/analyze-presets)) or `prompt` (a free-form question). `preset: \"full_report\"` runs all 13 sections and returns them together in `report`.\n\nA `full_report` response has `status: \"success\"` when every section returned and `status: \"partial\"` when some did not. A `partial` response is still HTTP `200`: `failed` lists the report keys of the sections that failed, and each of those keys holds `{ \"error\": \"Section failed: ...\" }` in place of its result. If every section failed, the response is `502` instead.\n\nPricing: `$0.05` per model request plus `$0.001166` per second of inference time. `full_report` asks all 13 sections in one batched request, so it pays the `$0.05` base once, plus the seconds of the sections that returned. A section that fails is not charged: failed sections of a `partial` report and requests answered with `502` cost nothing for the failed work. To ask many short questions about one file, use [`POST /api/songs/analyze/batch`](/api-reference/songs/analyze-batch), which pays the base price once.",
         "security": [
           {
             "apiKeyAuth": []
@@ -3547,7 +3547,7 @@
             }
           },
           "402": {
-            "description": "Insufficient credits — the balance cannot cover the base price of this request (`$0.05` per model call, `$0.65` for `full_report`). The model is not called, nothing is charged, and no Stripe object is created. The body includes a static `billingUrl`.",
+            "description": "Insufficient credits — the balance cannot cover the base price of this request (`$0.05`, `full_report` included). The model is not called, nothing is charged, and no Stripe object is created. The body includes a static `billingUrl`.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3812,7 +3812,7 @@
       "post": {
         "operationId": "postSongsMoments",
         "summary": "Find a song's sections and moments",
-        "description": "Finds a song's sections and its best short moments for licensing and editing, with the measurements an edit or a sync pitch needs. Times and numbers come from measuring the audio itself (the beat grid, loudness, which passages repeat), not from a language model. An audio model then listens to a clip of each moment and adds a short description.\n\nSend `audio_url` (MP3, WAV or FLAC). Optionally send `section_order`, the section headers from a lyric sheet in order, to name the sections from the sheet, and `tempo_hint`, the tempo in BPM from your metadata, to correct a beat tracker that locked onto half or double time. `describe` chooses which moments get a description: `true` (the default) for every moment, `false` for none, or a list of moment types.\n\nThe response has the song's `sections`, its `moments` with `6`, `15` and `30` second `cuts` on the beat grid, and a per-second `energy_curve`. It also carries an extended measurement: loudness and peaks (`lufs`, `true_peak_dbtp`, `broadcast_ready`), the stereo image, a seven-band spectrum (`band_profile`), a six-axis sound `fingerprint`, `key`, `time_signature`, `valence` and `arousal`, `mute_drops`, a `chord_loop` estimate and typed `edit_points`. Store `measured_with` with each result: it changes whenever the measurement's results would change. The fingerprint formulas and the band reference split were calibrated on a small sample of songs, so treat them as comparable numbers within a version, not as norms.\n\nPricing: `$0.01` per song measured, plus the [analyze](/api-reference/songs/analyze) rate (`$0.05` per model call plus `$0.001166` per second of inference time) for each moment described. The balance must hold `$0.01` plus `$0.05` for every moment that may be described before anything runs, which is `$0.36` with the default `describe: true`, otherwise the response is `402`. A moment whose description fails comes back without a description and is not charged. If the measurement itself fails, nothing is charged.\n\nA request can take a few minutes when the measurement and model services are starting cold, up to a limit of 300 seconds.",
+        "description": "Finds a song's sections and its best short moments for licensing and editing, with the measurements an edit or a sync pitch needs. Times and numbers come from measuring the audio itself (the beat grid, loudness, which passages repeat), not from a language model. An audio model then listens to a clip of each moment and adds a short description.\n\nSend `audio_url` (MP3, WAV or FLAC). Optionally send `section_order`, the section headers from a lyric sheet in order, to name the sections from the sheet, and `tempo_hint`, the tempo in BPM from your metadata, to correct a beat tracker that locked onto half or double time. `describe` chooses which moments get a description: `true` (the default) for every moment, `false` for none, or a list of moment types.\n\nThe response has the song's `sections`, its `moments` with `6`, `15` and `30` second `cuts` on the beat grid, and a per-second `energy_curve`. It also carries an extended measurement: loudness and peaks (`lufs`, `true_peak_dbtp`, `broadcast_ready`), the stereo image, a seven-band spectrum (`band_profile`), a six-axis sound `fingerprint`, `key`, `time_signature`, `valence` and `arousal`, `mute_drops`, a `chord_loop` estimate and typed `edit_points`. Store `measured_with` with each result: it changes whenever the measurement's results would change. The fingerprint formulas and the band reference split were calibrated on a small sample of songs, so treat them as comparable numbers within a version, not as norms.\n\nPricing: `$0.01` per song measured, plus one batched [analyze](/api-reference/songs/analyze) request for the moments described: `$0.05` once plus `$0.001166` per second of inference time. The balance must hold `$0.01`, plus `$0.05` when any moment may be described, before anything runs, which is `$0.06` with the default `describe: true`, otherwise the response is `402`. A moment the model does not describe comes back without a description and is not charged. If the measurement itself fails, nothing is charged.\n\nA request can take a few minutes when the measurement and model services are starting cold, up to a limit of 300 seconds.",
         "security": [
           {
             "apiKeyAuth": []
@@ -4422,7 +4422,7 @@
             }
           },
           "402": {
-            "description": "Insufficient credits — the balance cannot cover the measurement (`$0.01`) plus a model base price (`$0.05`) for every moment that may be described. Nothing runs, nothing is charged, and no Stripe object is created. The body includes a static `billingUrl`.",
+            "description": "Insufficient credits — the balance cannot cover the measurement (`$0.01`) plus one model base price (`$0.05`) when any moment may be described. Nothing runs, nothing is charged, and no Stripe object is created. The body includes a static `billingUrl`.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4433,8 +4433,8 @@
                     "summary": "A balance that cannot cover the default request",
                     "value": {
                       "error": "insufficient_credits",
-                      "remaining_credits": 120000,
-                      "required_credits": 360000,
+                      "remaining_credits": 20000,
+                      "required_credits": 60000,
                       "billingUrl": "https://app.recoupable.dev"
                     }
                   }
@@ -6728,7 +6728,7 @@
           },
           "required_credits": {
             "type": "integer",
-            "description": "The base price of this request, in credits. Analyze: 50000 (`$0.05`) for a single preset or custom prompt, 650000 (`$0.65`) for `full_report`. Analyze batch: 50000, once for the whole batch. Song moments: 10000 (`$0.01`) plus 50000 for every moment that may be described, which is 360000 (`$0.36`) with the default `describe: true`. The per-second inference charge is added after the model returns.",
+            "description": "The base price of this request, in credits. Analyze: 50000 (`$0.05`) for a single preset, a custom prompt or `full_report`. Analyze batch: 50000, once for the whole batch. Song moments: 10000 (`$0.01`) plus 50000 when any moment may be described, which is 60000 (`$0.06`) with the default `describe: true`. The per-second inference charge is added after the model returns.",
             "example": 50000
           },
           "billingUrl": {
@@ -6769,7 +6769,7 @@
               "artist_development_notes",
               "full_report"
             ],
-            "description": "Name of a curated analysis preset. Use instead of prompt for structured, optimized output. The 'full_report' preset runs all 13 presets in parallel and returns a comprehensive report. See [List Analyze Presets](/api-reference/songs/analyze-presets) for the full list of available presets.",
+            "description": "Name of a curated analysis preset. Use instead of prompt for structured, optimized output. The 'full_report' preset runs all 13 presets in one batched request and returns a comprehensive report. See [List Analyze Presets](/api-reference/songs/analyze-presets) for the full list of available presets.",
             "example": "catalog_metadata"
           },
           "prompt": {
@@ -6843,7 +6843,7 @@
           "elapsed_seconds": {
             "type": "number",
             "format": "float",
-            "description": "Inference time in seconds. For `full_report` it is the wall time of the whole report, with its sections running in parallel."
+            "description": "Inference time in seconds. For `full_report` it is the wall time of the whole report, with its sections running one after another in one batch."
           },
           "failed": {
             "type": "array",
