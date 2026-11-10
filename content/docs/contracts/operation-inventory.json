@@ -1,5 +1,5 @@
 {
-  "apiSourceCommit": "83b330feb4dd0c6b4b17a71835374b608f7f982a",
+  "apiSourceCommit": "a15c2f9b2c545d8a7951e4bc634a87d2a2f2a7a7",
   "evidence": "Static source only; tool discovery and OAuth host verification remain separate. Conditional registration and scope filters mean this is not a promised catalog count.",
   "operations": [
     {
@@ -1652,6 +1652,22 @@
     },
     {
       "method": "GET",
+      "path": "/api/ingestion",
+      "implementation": "app/api/ingestion/route.ts",
+      "documentation": null,
+      "classification": "pending",
+      "reason": "Needs owning-route disposition."
+    },
+    {
+      "method": "POST",
+      "path": "/api/ingestion",
+      "implementation": "app/api/ingestion/route.ts",
+      "documentation": null,
+      "classification": "pending",
+      "reason": "Needs owning-route disposition."
+    },
+    {
+      "method": "GET",
       "path": "/api/internal/catalog-stream-maintenance",
       "implementation": "app/api/internal/catalog-stream-maintenance/route.ts",
       "documentation": null,
@@ -1673,6 +1689,14 @@
       "documentation": null,
       "classification": "internal/callback",
       "reason": "Internal scheduler, webhooks, callbacks or bot integrations; public omission not itself a defect"
+    },
+    {
+      "method": "GET",
+      "path": "/api/internal/missed-report-check",
+      "implementation": "app/api/internal/missed-report-check/route.ts",
+      "documentation": null,
+      "classification": "pending",
+      "reason": "Needs owning-route disposition."
     },
     {
       "method": "GET",
@@ -3667,6 +3691,10 @@
     {
       "name": "get_youtube_revenue",
       "source": "lib/mcp/tools/youtube/registerGetYouTubeRevenueTool.ts"
+    },
+    {
+      "name": "ingestion",
+      "source": "lib/mcp/tools/ingestion/registerIngestionTool.ts"
     },
     {
       "name": "insert_catalog_songs",
