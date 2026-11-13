@@ -1,0 +1,1 @@
+Screenshots for docs#38 verification comments.
