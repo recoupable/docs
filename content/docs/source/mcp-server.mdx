@@ -96,3 +96,31 @@ When deployed and exposed by the current grant, the pack catalog includes
 complete quotes and budget limits as REST. No existing artist or GitHub workspace
 is required. Use returned schemas and identifiers; preparation does not authorize
 paid generation. See [Release Packs](/release-packs) for first use and upload limits.
+
+## Social scrapes and posts
+
+Pending [api#1243](https://github.com/recoupable/api/pull/1243): until that release
+is deployed, these tools are absent from `tools/list`. When deployed, standard
+(API-key) MCP and `mcp:tools` grants expose three tools that mirror REST. The limited
+`mcp:read` / `mcp:write` grants do not include them.
+
+- `scrape_artist_socials` takes `artist_account_id` and optional `posts` (1-100), starts
+  one scrape per social profile linked to an artist you can access, and returns
+  `{ success, runs }` with one `{ runId, datasetId, error }` per profile. Like
+  [Scrape artist socials](/api-reference/artist/socials-scrape), it checks credits for
+  every linked profile first and charges $0.05 per started profile plus $0.01 per
+  requested post; no linked socials returns `runs: []`, and if every profile fails to
+  start the call returns a tool error listing each failure, with nothing charged. Each
+  call starts new paid runs, so do not retry a successful call to poll for results.
+- `get_scraper_results` takes a `runId` and returns `{ status, dataset_id }`, plus `data`
+  once the run has `SUCCEEDED`; call it again while the status is `READY` or `RUNNING`.
+  As with [Scraper results](/api-reference/apify/scraper), any valid credential can read
+  a run, because scrape datasets are public social content. Unlike REST, a failed or
+  empty run is reported in `status` rather than as an error.
+- `get_artist_posts` takes `artist_account_id` and optional `page` and `limit` (default
+  20, max 100). It returns the same `{ status, posts, pagination }` envelope as
+  [Get artist posts](/api-reference/posts/get): saved posts across the artist's linked
+  socials, most recently updated first. Scrapes save posts as their runs complete.
+
+Access errors, an unknown artist and insufficient credits return a tool error with
+`success: false` and a `message`; MCP has no HTTP status.
