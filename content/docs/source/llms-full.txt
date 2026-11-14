@@ -1088,8 +1088,7 @@ paid generation. See [Release Packs](https://docs.recoupable.dev/release-packs) 
 
 ## Social scrapes and posts
 
-Standard (API-key) MCP and `mcp:tools` grants expose three tools that mirror REST.
-The limited `mcp:read` / `mcp:write` grants do not include them.
+API-key MCP and `mcp:tools` grants expose three tools that mirror REST; `mcp:read` / `mcp:write` grants don't.
 
 - `scrape_artist_socials` takes `artist_account_id` and optional `posts` (1-100), starts
   one scrape per social profile linked to an artist you can access, and returns
