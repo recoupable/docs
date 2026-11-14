@@ -1,5 +1,5 @@
 {
-  "apiSourceCommit": "a15c2f9b2c545d8a7951e4bc634a87d2a2f2a7a7",
+  "apiSourceCommit": "60af564480c3433783884cf7c8ab3d2c520a5818",
   "evidence": "Static source only; tool discovery and OAuth host verification remain separate. Conditional registration and scope filters mean this is not a promised catalog count.",
   "operations": [
     {
@@ -3617,6 +3617,10 @@
       "source": "lib/mcp/tools/registerGetApiKeyTool.ts"
     },
     {
+      "name": "get_artist_posts",
+      "source": "lib/mcp/tools/artistSocials/registerGetArtistPostsTool.ts"
+    },
+    {
       "name": "get_artist_socials",
       "source": "lib/mcp/oauth/registerOAuthTools.ts"
     },
@@ -3659,6 +3663,10 @@
     {
       "name": "get_release_player_fans",
       "source": "lib/mcp/tools/players/registerGetReleasePlayerFansTool.ts"
+    },
+    {
+      "name": "get_scraper_results",
+      "source": "lib/mcp/tools/artistSocials/registerGetScraperResultsTool.ts"
     },
     {
       "name": "get_spotify_album",
@@ -3751,6 +3759,10 @@
     {
       "name": "save_catalog_case",
       "source": "lib/mcp/tools/context/registerCatalogCaseTools.ts"
+    },
+    {
+      "name": "scrape_artist_socials",
+      "source": "lib/mcp/tools/artistSocials/registerScrapeArtistSocialsTool.ts"
     },
     {
       "name": "search_google_images",

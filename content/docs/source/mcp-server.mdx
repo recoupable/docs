@@ -99,10 +99,7 @@ paid generation. See [Release Packs](/release-packs) for first use and upload li
 
 ## Social scrapes and posts
 
-Pending [api#1243](https://github.com/recoupable/api/pull/1243): until that release
-is deployed, these tools are absent from `tools/list`. When deployed, standard
-(API-key) MCP and `mcp:tools` grants expose three tools that mirror REST. The limited
-`mcp:read` / `mcp:write` grants do not include them.
+API-key MCP and `mcp:tools` grants expose three tools that mirror REST; `mcp:read` / `mcp:write` grants don't.
 
 - `scrape_artist_socials` takes `artist_account_id` and optional `posts` (1-100), starts
   one scrape per social profile linked to an artist you can access, and returns
