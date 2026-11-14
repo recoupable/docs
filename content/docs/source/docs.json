@@ -28,7 +28,7 @@
               "sdks",
               "cli",
               "claude",
-              "mcp",
+              "mcp-server",
               "public-website-api"
             ]
           },
@@ -177,7 +177,9 @@
               "api-reference/songs/songs",
               "api-reference/songs/create",
               "api-reference/songs/analyze",
-              "api-reference/songs/analyze-presets"
+              "api-reference/songs/analyze-presets",
+              "api-reference/songs/analyze-batch",
+              "api-reference/songs/moments"
             ]
           },
           {

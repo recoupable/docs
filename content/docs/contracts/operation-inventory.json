@@ -1,5 +1,5 @@
 {
-  "apiSourceCommit": "1e7f42692fad476cf17744338b6e9412dbb26b6b",
+  "apiSourceCommit": "60af564480c3433783884cf7c8ab3d2c520a5818",
   "evidence": "Static source only; tool discovery and OAuth host verification remain separate. Conditional registration and scope filters mean this is not a promised catalog count.",
   "operations": [
     {
@@ -1652,6 +1652,22 @@
     },
     {
       "method": "GET",
+      "path": "/api/ingestion",
+      "implementation": "app/api/ingestion/route.ts",
+      "documentation": null,
+      "classification": "pending",
+      "reason": "Needs owning-route disposition."
+    },
+    {
+      "method": "POST",
+      "path": "/api/ingestion",
+      "implementation": "app/api/ingestion/route.ts",
+      "documentation": null,
+      "classification": "pending",
+      "reason": "Needs owning-route disposition."
+    },
+    {
+      "method": "GET",
       "path": "/api/internal/catalog-stream-maintenance",
       "implementation": "app/api/internal/catalog-stream-maintenance/route.ts",
       "documentation": null,
@@ -1673,6 +1689,14 @@
       "documentation": null,
       "classification": "internal/callback",
       "reason": "Internal scheduler, webhooks, callbacks or bot integrations; public omission not itself a defect"
+    },
+    {
+      "method": "GET",
+      "path": "/api/internal/missed-report-check",
+      "implementation": "app/api/internal/missed-report-check/route.ts",
+      "documentation": null,
+      "classification": "pending",
+      "reason": "Needs owning-route disposition."
     },
     {
       "method": "GET",
@@ -3187,6 +3211,22 @@
       "reason": "Split OpenAPI contract exists; alignment outside packages 1\u20137 is not assessed."
     },
     {
+      "method": "OPTIONS",
+      "path": "/api/songs/analyze/batch",
+      "implementation": "app/api/songs/analyze/batch/route.ts",
+      "documentation": null,
+      "classification": "internal",
+      "reason": "HTTP preflight handler; no public operation contract."
+    },
+    {
+      "method": "POST",
+      "path": "/api/songs/analyze/batch",
+      "implementation": "app/api/songs/analyze/batch/route.ts",
+      "documentation": "content/docs/source/api-reference/openapi/releases.json",
+      "classification": "public",
+      "reason": "Split OpenAPI contract exists; alignment outside packages 1\u20137 is not assessed."
+    },
+    {
       "method": "GET",
       "path": "/api/songs/analyze/presets",
       "implementation": "app/api/songs/analyze/presets/route.ts",
@@ -3214,6 +3254,22 @@
       "method": "POST",
       "path": "/api/songs/analyze",
       "implementation": "app/api/songs/analyze/route.ts",
+      "documentation": "content/docs/source/api-reference/openapi/releases.json",
+      "classification": "public",
+      "reason": "Split OpenAPI contract exists; alignment outside packages 1\u20137 is not assessed."
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/songs/moments",
+      "implementation": "app/api/songs/moments/route.ts",
+      "documentation": null,
+      "classification": "internal",
+      "reason": "HTTP preflight handler; no public operation contract."
+    },
+    {
+      "method": "POST",
+      "path": "/api/songs/moments",
+      "implementation": "app/api/songs/moments/route.ts",
       "documentation": "content/docs/source/api-reference/openapi/releases.json",
       "classification": "public",
       "reason": "Split OpenAPI contract exists; alignment outside packages 1\u20137 is not assessed."
@@ -3561,6 +3617,10 @@
       "source": "lib/mcp/tools/registerGetApiKeyTool.ts"
     },
     {
+      "name": "get_artist_posts",
+      "source": "lib/mcp/tools/artistSocials/registerGetArtistPostsTool.ts"
+    },
+    {
       "name": "get_artist_socials",
       "source": "lib/mcp/oauth/registerOAuthTools.ts"
     },
@@ -3605,6 +3665,10 @@
       "source": "lib/mcp/tools/players/registerGetReleasePlayerFansTool.ts"
     },
     {
+      "name": "get_scraper_results",
+      "source": "lib/mcp/tools/artistSocials/registerGetScraperResultsTool.ts"
+    },
+    {
       "name": "get_spotify_album",
       "source": "lib/mcp/tools/spotify/registerGetSpotifyAlbumTool.ts"
     },
@@ -3635,6 +3699,10 @@
     {
       "name": "get_youtube_revenue",
       "source": "lib/mcp/tools/youtube/registerGetYouTubeRevenueTool.ts"
+    },
+    {
+      "name": "ingestion",
+      "source": "lib/mcp/tools/ingestion/registerIngestionTool.ts"
     },
     {
       "name": "insert_catalog_songs",
@@ -3691,6 +3759,10 @@
     {
       "name": "save_catalog_case",
       "source": "lib/mcp/tools/context/registerCatalogCaseTools.ts"
+    },
+    {
+      "name": "scrape_artist_socials",
+      "source": "lib/mcp/tools/artistSocials/registerScrapeArtistSocialsTool.ts"
     },
     {
       "name": "search_google_images",
@@ -3765,7 +3837,7 @@
     "content/docs/source/api-reference/openapi/context.json": "7784ee1d8c4b6753cc47bf518f468effa58d50fb9d0289009edf0caad3d05a67",
     "content/docs/source/api-reference/openapi/players.json": "4a4c90583fe1de6487444581b293a32b1cc04622fc929965ab90f365feb8bc94",
     "content/docs/source/api-reference/openapi/projects.json": "b059cf8baa83a7f73a3c15db19f54fa56e46a3840e91bd42979b83550f543ace",
-    "content/docs/source/api-reference/openapi/releases.json": "6294c1dfb36539d3279a2d4ae8b1f650dfcaf81f2611f44a5dfb928c3b141e22",
+    "content/docs/source/api-reference/openapi/releases.json": "67f4e67558bd9f44c3a41e7bfc34e0a9bb2524c50ce45ffa3a5c4dbef983866d",
     "content/docs/source/api-reference/openapi/research.json": "f301a714e994e99b1dbcfc63ee18824537cf42813d8df3906ac7c2436a481ae0",
     "content/docs/source/api-reference/openapi/sandbox.json": "c61a2bb965b9c9a1eade2e226fdc8af0cb1aa2213f23236d8607d13b65dbec15",
     "content/docs/source/api-reference/openapi/sessions.json": "85af56cc150374b28c25541c45db15849c71fdeb6288cf90dc2beb08f494e83e",

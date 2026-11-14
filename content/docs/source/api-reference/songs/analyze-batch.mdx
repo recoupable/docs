@@ -1,0 +1,31 @@
+---
+title: "Analyze a song with many prompts"
+description: "Ask up to 40 short questions about one audio file in a single request and pay the base price once."
+openapi: "/api-reference/openapi/releases.json POST /api/songs/analyze/batch"
+sidebarTitle: "Analyze with many prompts"
+---
+
+## Which to use
+
+Use a batch when you have several short questions about the same song, for example genre, tempo, instruments and vocal style as four prompts. The audio is downloaded once and the base price is paid once, so a batch of 36 prompts costs one base price plus the seconds it runs, not 36 base prices.
+
+Use [`POST /api/songs/analyze`](/api-reference/songs/analyze) for a curated preset, for `full_report`, or for a single question. Presets are not available in a batch.
+
+Use [`POST /api/songs/moments`](/api-reference/songs/moments) when you need the song's sections, moments and measurements. Those are measured from the audio, not answered by prompt.
+
+## Limits
+
+| Limit | Value |
+| --- | --- |
+| Prompts per batch | 1 to 40 |
+| `id` | 1 to 64 characters, unique within the batch |
+| `prompt` | 1 to 4,000 characters |
+| `max_new_tokens` | 1 to 2048 per prompt, default 400 |
+| `temperature` | 0 to 2, default 0.2, for every prompt |
+| `top_p` | 0 to 1, default 1, for every prompt |
+
+Answers come back in the order the prompts were sent, each under the `id` you gave it. A batch is all or nothing: if the model service rejects it, the response is `502` and no answers are returned.
+
+## Pricing
+
+`$0.05` once per batch plus `$0.001166` per second of the batch's total inference time, which is the response's top-level `elapsed_seconds`. It is charged once, after the batch succeeds, as a single usage row. For example, a batch that runs 90 seconds costs `$0.15494`. The balance must hold `$0.05` before the model runs; otherwise the response is `402` and nothing is charged. A batch the model service rejects is not charged. See [Credits](/credits).
