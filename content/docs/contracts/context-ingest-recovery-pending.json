@@ -1,6 +1,6 @@
 {
   "availability": "pending",
-  "apiSourceCommit": "7815162a62218142408663b2043ee32df656acbe",
+  "apiSourceCommit": "fd6e2906611bae281ec4a0a435c74d652eeb24be",
   "evidence": "Exact three-module pure failure formatter source only; no handlers, provider imports, requests or database operations.",
   "sourceHashes": {
     "lib/context/ContextIngestFailure.ts": "b4688375fb48e89f6558b8ebaa289ebaf70eb9b43957d9d4b19e86909ee9d92e",
