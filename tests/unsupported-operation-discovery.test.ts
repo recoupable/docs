@@ -93,3 +93,14 @@ test("valuation descriptions agree on the authorized effective account", () => {
   expect(properties.organization_id.description).toContain("is that organization or is a member");
   expect(properties.organization_id.description).toContain("403");
 });
+
+
+test("valuation 403 explains both effective-account authorization failures", () => {
+  const spec = JSON.parse(readFileSync(join(source, "api-reference/openapi/releases.json"), "utf8"));
+  const forbidden = spec.paths["/api/valuation"].post.responses["403"].description;
+  expect(forbidden).toContain("account_id override");
+  expect(forbidden).toContain("effective account");
+  expect(forbidden).toContain("organization_id");
+  expect(forbidden).toContain("neither that organization itself nor a member");
+  expect(forbidden).not.toContain("the caller is not a member");
+});

@@ -2762,7 +2762,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - the caller is not a member of the organization named by organization_id",
+            "description": "Forbidden - the requested account_id override is not authorized, or the effective account lacks access to the organization named by organization_id (it is neither that organization itself nor a member).",
             "content": {
               "application/json": {
                 "schema": {
