@@ -1,6 +1,6 @@
 {
   "availability": "pending",
-  "apiSourceCommit": "a72b47b729c3876350d07d0cbdbaaa96bb65281e",
+  "apiSourceCommit": "46a0ae73cf6d96941394b45bc04bd572274ee665",
   "evidence": "Exact pure API source only; no application handlers, services, hosted calls, authentication or provider execution.",
   "sourceHashes": {
     "lib/context/ContextOperationError.ts": "f5681cbf4c1d46d14e83b94df52ca45395ebf02e2cdfae174c4984341484ab6f",

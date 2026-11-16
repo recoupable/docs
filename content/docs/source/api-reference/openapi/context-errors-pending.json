@@ -6,7 +6,7 @@
     "description": "PENDING response addition for the existing POST /api/context and MCP Context operations. Component-only contract: no callable operation, server or playground. Current Context remains available with its existing documented error behavior. Release requires the matching API change; exact source checks do not prove hosted behavior."
   },
   "x-recoup-availability": "pending",
-  "x-recoup-api-source-commit": "a72b47b729c3876350d07d0cbdbaaa96bb65281e",
+  "x-recoup-api-source-commit": "46a0ae73cf6d96941394b45bc04bd572274ee665",
   "paths": {},
   "components": {
     "schemas": {
