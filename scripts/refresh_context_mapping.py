@@ -5,6 +5,12 @@ import re
 
 def refresh_context_mapping(document, path, check):
     context_operation = document['paths']['/api/context']['post']
+    availability = context_operation.get('x-recoup-action-availability', {})
+
+    def action_label(action):
+        pending = availability.get(action, {}).get('x-recoup-availability') == 'pending'
+        return f'`{action}`' + (' — **Pending**' if pending else '')
+
     mcp = context_operation['x-recoup-mcp-operations']
     standard_mcp = context_operation['x-recoup-standard-mcp-operations']
     if set(mcp) & set(standard_mcp):
@@ -12,7 +18,7 @@ def refresh_context_mapping(document, path, check):
     table = '\n'.join([
         '| REST action | Delegated OAuth tool | Classification |',
         '| --- | --- | --- |',
-        *[f'| `{action}` | `{item["name"]}` | {"Read-only hint" if item["readOnly"] else "Writes or dispatches"} |' for action, item in mcp.items()],
+        *[f'| {action_label(action)} | `{item["name"]}` | {"Read-only hint" if item["readOnly"] else "Writes or dispatches"} |' for action, item in mcp.items()],
     ])
     description = context_operation['description']
     table_start = '| REST action | Delegated OAuth tool | Classification |'
@@ -22,7 +28,7 @@ def refresh_context_mapping(document, path, check):
     standard_table = '\n'.join([
         standard_header,
         '| --- | --- | --- |',
-        *[f'| `{action}` | `{item["name"]}` | {"Read-only hint" if item["readOnly"] else "Writes"} |' for action, item in standard_mcp.items()],
+        *[f'| {action_label(action)} | `{item["name"]}` | {"Read-only hint" if item["readOnly"] else "Writes"} |' for action, item in standard_mcp.items()],
     ])
     standard_section = '\n'.join([
         '### Standard-only evidence and catalog tools',
@@ -47,7 +53,7 @@ def refresh_context_mapping(document, path, check):
     response_table = '\n'.join([
         response_header,
         '| --- | --- | --- |',
-        *[f'| `{action}` | {item["status"]} | `{item["schema"]["$ref"].rsplit("/", 1)[-1]}` |'
+        *[f'| {action_label(action)} | {item["status"]} | `{item["schema"]["$ref"].rsplit("/", 1)[-1]}` |'
           for action, item in context_operation['x-recoup-context-responses'].items()],
     ])
     expected_description = replace_table(expected_description, response_header, response_table)

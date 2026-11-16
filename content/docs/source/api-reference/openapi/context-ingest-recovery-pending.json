@@ -6,7 +6,7 @@
     "description": "PENDING source contract for the existing failed request.error string, not an HTTP/MCP operation error envelope. No new endpoint, action, field, state or RPC. Matching API release and current Docs acceptance are required."
   },
   "x-recoup-availability": "pending",
-  "x-recoup-api-source-commit": "fd6e2906611bae281ec4a0a435c74d652eeb24be",
+  "x-recoup-api-source-commit": "89c2e1a341ccefa25499e1ea70309c4a3a438edd",
   "paths": {},
   "components": {
     "schemas": {

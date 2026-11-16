@@ -24,7 +24,7 @@ test("current operation and global API pin remain distinct from pending backgrou
   expect(current.paths["/api/context"].post["x-recoup-availability"]).not.toBe("pending");
   expect(current.paths["/api/context"].post.responses["409"].description).toContain("Operation failed");
   const inventory=JSON.parse(read("content/docs/contracts/operation-inventory.json"));
-  expect(inventory.apiSourceCommit).toBe("086a3c8e68cc7364921ff1ce997b4b13b63635ec");
+  expect(inventory.apiSourceCommit).toBe("b7bddd14ff1d9e81b4e531ef7e152cf34cc6f728");
   const page=read("content/docs/source/api-reference/context/operate.mdx");
   for(const text of ["Current saved failure text", "Pending Spotify recovery guidance", "request.error", "not a transport error envelope", "404/410", "false", "400", "ingest_release", "fingerprint", "YouTube", "No automatic", "never copied into the stored guidance"]) expect(page).toContain(text);
   expect(page).toContain(binding.apiSourceCommit);
