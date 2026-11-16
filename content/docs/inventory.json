@@ -1,7 +1,7 @@
 {
-  "navigationPages": 243,
+  "navigationPages": 245,
   "guidePages": 25,
-  "apiPages": 218,
+  "apiPages": 220,
   "specifications": [
     "accounts.json",
     "ai.json",
