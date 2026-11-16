@@ -1,12 +1,12 @@
 {
   "availability": "pending",
-  "apiSourceCommit": "b845341594e75de2e5ef68488248e2009562f262",
+  "apiSourceCommit": "a72b47b729c3876350d07d0cbdbaaa96bb65281e",
   "evidence": "Exact pure API source only; no application handlers, services, hosted calls, authentication or provider execution.",
   "sourceHashes": {
     "lib/context/ContextOperationError.ts": "f5681cbf4c1d46d14e83b94df52ca45395ebf02e2cdfae174c4984341484ab6f",
     "lib/context/classifyContextOperationError.ts": "36c10e51834e42464c12e63eea4e1782573ee48fdd370d52c60b1d065f8f64c5",
     "lib/context/formatContextOperationError.ts": "d2cbddd275d01a83199b71c66c8b662c53555cc4fb21439c8c580a50b1837f8b",
-    "lib/context/getContextFailureMessage.ts": "d793fb975813eb6ea8dd01cf5d54645d3b4d7a8ad76c3f1b251f4d3e6f42e266",
+    "lib/context/getContextFailureMessage.ts": "af012ace560183470216d6e9f7d04ba09d1d5b50fbc861cb25090af5c90530a8",
     "lib/mcp/getCallToolResult.ts": "508f772fa23be88601699f66ee92d91c19ca6d018dad95c76f6cc71a3d1850e6",
     "lib/mcp/tools/context/getContextToolResultError.ts": "255187e08ac81fbab896094050591ecffdfceac2b5c302f7f7e5ef14520d9430"
   },

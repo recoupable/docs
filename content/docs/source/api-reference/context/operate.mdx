@@ -39,6 +39,13 @@ These reasons report the first failed check. They do not prove that a source was
 
 Omitting the flag or setting it to false preserves the exact existing response. Available results never include a reason, including with true. Permission and storage failures remain errors. The change adds no lookups, refresh or evidence writes.
 
+<Info>
+Catalog audit preparation is pending a coordinated API release and hosted acceptance.
+It reads a saved company-onboarding assessment into an unsaved audit draft. Review
+its selected evidence and coverage gaps, then explicitly save the case. Preparation
+does not verify rights, contact providers or complete a catalog audit.
+</Info>
+
 ## Current error behavior
 
 The existing operation remains available. Its current documented operation failures use a
@@ -51,7 +58,7 @@ a completed hosted workflow or provider readiness.
 
 <Warning>
 Pending API release. The response addition below is bound to API #1215 at
-`b845341594e75de2e5ef68488248e2009562f262`. It is not the current live response contract.
+`a72b47b729c3876350d07d0cbdbaaa96bb65281e`. It is not the current live response contract.
 The existing Context actions, success schemas and discovery remain available.
 </Warning>
 
