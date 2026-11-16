@@ -1,5 +1,5 @@
 {
-  "apiSourceCommit": "60af564480c3433783884cf7c8ab3d2c520a5818",
+  "apiSourceCommit": "489e402e44c01d31977bba01ceb05418ca6e3647",
   "evidence": "Static source only; tool discovery and OAuth host verification remain separate. Conditional registration and scope filters mean this is not a promised catalog count.",
   "operations": [
     {
