@@ -1,6 +1,6 @@
 {
   "evidence": "Provider-free request syntax and static contract claims only. URLs are placeholders; no provider, payment or customer workflow is exercised.",
-  "sourceHash": "f7fd93254087627c6b66b7fbf1eae2906431a09ce7b750edb0d12307322e91ba",
+  "sourceHash": "19b1b09399c06dca61c6cae3bfed6504ca4421adecad2f73b1aa53fe7f4aab55",
   "requestSchemas": [
     {
       "type": "object",
@@ -1137,6 +1137,33 @@
         "action"
       ],
       "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "prepare_catalog_audit"
+        },
+        "brief_id": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "description": "ID returned by save_brief for a company_onboarding assessment in the selected workspace. Superseded, unavailable, foreign and unlinked evidence is rejected."
+        },
+        "organization_id": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "description": "Optional organization workspace. Current membership and ownership are checked; omitting it uses personal scope."
+        }
+      },
+      "required": [
+        "action",
+        "brief_id"
+      ],
+      "additionalProperties": false,
+      "description": "Pending coordinated API release. Prepare a new, unsaved catalog audit from one authorized, current company_onboarding brief. Reads saved evidence only; no provider work, persistence, rights verification or registration."
     },
     {
       "type": "object",
@@ -2341,33 +2368,6 @@
         "purpose"
       ],
       "additionalProperties": false
-    },
-    {
-      "type": "object",
-      "properties": {
-        "action": {
-          "type": "string",
-          "const": "prepare_catalog_audit"
-        },
-        "brief_id": {
-          "type": "string",
-          "format": "uuid",
-          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
-          "description": "ID returned by save_brief for a company_onboarding assessment in the selected workspace. Superseded, unavailable, foreign and unlinked evidence is rejected."
-        },
-        "organization_id": {
-          "type": "string",
-          "format": "uuid",
-          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
-          "description": "Optional organization workspace. Current membership and ownership are checked; omitting it uses personal scope."
-        }
-      },
-      "required": [
-        "action",
-        "brief_id"
-      ],
-      "additionalProperties": false,
-      "description": "Pending coordinated API release. Prepare a new, unsaved catalog audit from one authorized, current company_onboarding brief. Reads saved evidence only; no provider work, persistence, rights verification or registration."
     }
   ],
   "undocumentedActions": [],
@@ -2494,6 +2494,10 @@
       "name": "list_music_evidence_attachments",
       "readOnly": true
     },
+    "prepare_catalog_audit": {
+      "name": "prepare_catalog_audit",
+      "readOnly": true
+    },
     "save_catalog_case": {
       "name": "save_catalog_case",
       "readOnly": false
@@ -2504,10 +2508,6 @@
     },
     "list_catalog_cases": {
       "name": "list_catalog_cases",
-      "readOnly": true
-    },
-    "prepare_catalog_audit": {
-      "name": "prepare_catalog_audit",
       "readOnly": true
     }
   },
