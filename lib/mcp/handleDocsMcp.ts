@@ -1,6 +1,7 @@
 import { createMcpHandler } from "@modelcontextprotocol/server";
 import { siteConfig } from "../config.ts";
 import { createDocsMcp } from "./createDocsMcp.ts";
+import { isBrowserPageRequest } from "./isBrowserPageRequest.ts";
 
 // Each HTTP exchange receives its own server; no session depends on a warm function.
 const handler = createMcpHandler(createDocsMcp, { maxRequestBodySize: 16_384 });
@@ -36,6 +37,11 @@ export async function handleDocsMcp(request: Request) {
     return Response.json({ error: "Unrecognized MCP host." }, { status: 403, headers: cors });
   }
   if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
+  if (isBrowserPageRequest(request)) {
+    // People following an old guide link land on the guide, not on a JSON-RPC error.
+    const location = new URL("/mcp-server", request.url).toString();
+    return new Response(null, { status: 308, headers: { ...cors, Location: location, Vary: "Accept" } });
+  }
   const response = await handler.fetch(request);
   for (const [name, value] of Object.entries(cors)) response.headers.set(name, value);
   return response;

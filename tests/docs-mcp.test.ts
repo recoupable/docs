@@ -35,6 +35,23 @@ test("a real MCP client lists both read-only tools, searches and reads a page", 
   }
 });
 
+test("a browser visiting /mcp is sent to the MCP server guide; MCP clients are not", async () => {
+  const browser = await handleDocsMcp(new Request("http://localhost:3000/mcp", {
+    headers: { accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "sec-fetch-dest": "document" },
+  }));
+  expect(browser.status).toBe(308);
+  expect(browser.headers.get("location")).toBe("http://localhost:3000/mcp-server");
+
+  const stream = await handleDocsMcp(new Request("http://localhost:3000/mcp", { headers: { accept: "text/event-stream" } }));
+  expect(stream.status).not.toBe(308);
+  const post = await handleDocsMcp(new Request("http://localhost:3000/mcp", {
+    method: "POST",
+    headers: { accept: "application/json, text/event-stream", "content-type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "ping" }),
+  }));
+  expect(post.status).not.toBe(308);
+});
+
 test("an untrusted host is refused and preflight is answered", async () => {
   const refused = await handleDocsMcp(new Request("https://evil.example/mcp", { method: "POST" }));
   expect(refused.status).toBe(403);
