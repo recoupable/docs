@@ -1,5 +1,5 @@
 {
-  "apiSourceCommit": "b7bddd14ff1d9e81b4e531ef7e152cf34cc6f728",
+  "apiSourceCommit": "28f860142522d6901e912ea2942d2b76b170a645",
   "evidence": "Static source only; tool discovery and OAuth host verification remain separate. Conditional registration and scope filters mean this is not a promised catalog count.",
   "operations": [
     {
@@ -3837,9 +3837,9 @@
     "content/docs/source/api-reference/openapi/accounts.json": "1a5a04f9ec358a15b8339b7029c9fed5fe69c6f042c8b03b6b4f03f3aafdeeed",
     "content/docs/source/api-reference/openapi/ai.json": "678f649fff58a1c49c81002ea2cbe66636ad5da1044ea66261e6ab4084600687",
     "content/docs/source/api-reference/openapi/applications.json": "07cf7c630ca81816d73e9198b863dc0a9c8e987f4e0794375951ead06e498ad6",
-    "content/docs/source/api-reference/openapi/content.json": "f790ee44d1b881709e393a65500bec23493e21a391c7b66555e0c78750f95239",
+    "content/docs/source/api-reference/openapi/content.json": "877afed1e0fb5c95afab8c5e294bae38fabdf48f50f226e0089b9ff50438870d",
     "content/docs/source/api-reference/openapi/context-errors-pending.json": "c5deb05d52bfa194a631c494953079e3ce7a5c400be7e52ea1868acb61223f1c",
-    "content/docs/source/api-reference/openapi/context-ingest-recovery-pending.json": "3a56db4583609dc16bfaf8a390214702a7af8fae43800eeff15e60a6bfad69ab",
+    "content/docs/source/api-reference/openapi/context-ingest-recovery-pending.json": "2e937f06d9bddc3a7c3d55b6c375476e7bfcc52a389e5da24c2e1686dbc26cf8",
     "content/docs/source/api-reference/openapi/context.json": "10b243ab1098a7428fb935dfb0780ff0f9a1c8885b96feda8e453acff4a1df17",
     "content/docs/source/api-reference/openapi/players.json": "4a4c90583fe1de6487444581b293a32b1cc04622fc929965ab90f365feb8bc94",
     "content/docs/source/api-reference/openapi/projects.json": "b059cf8baa83a7f73a3c15db19f54fa56e46a3840e91bd42979b83550f543ace",

@@ -6,7 +6,7 @@ import path from "node:path";
 import vm from "node:vm";
 import ts from "typescript";
 
-const head = "89c2e1a341ccefa25499e1ea70309c4a3a438edd";
+const head = "1fff5274fdab922aadbc254b23bfc96b0a2cb4d0";
 const apiIndex = process.argv.indexOf("--api");
 if (apiIndex < 0 || !process.argv[apiIndex + 1]) throw new Error("Provide --api with the exact reviewed API checkout");
 const api = path.resolve(process.argv[apiIndex + 1]);
