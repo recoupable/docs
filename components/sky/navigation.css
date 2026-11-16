@@ -1,0 +1,85 @@
+/* Header geometry for every route, including the homepage. */
+.ss-header {
+  --nav-wordmark-size: 28px;
+  --nav-brand-gap: 11px;
+  --nav-symbol-width: 23px;
+  --nav-symbol-height: 28px;
+  --nav-link-gap: 24px;
+}
+
+.sky-site .ss-header .ss-wordmark {
+  gap: var(--nav-brand-gap);
+  font-family: "DM Sans Variable", sans-serif;
+  font-size: var(--nav-wordmark-size);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -1.1px;
+  white-space: nowrap;
+}
+.sky-site .ss-header .ss-wordmark svg {
+  width: var(--nav-symbol-width);
+  height: var(--nav-symbol-height);
+  flex: none;
+}
+
+.sky-site .ss-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 24px;
+}
+.ss-header .ss-wordmark {
+  justify-self: start;
+}
+.ss-header .ss-contact {
+  justify-self: end;
+  font: 550 14px/1.4 var(--body);
+  letter-spacing: -0.01em;
+  text-transform: none;
+  min-height: 48px;
+  gap: 16px;
+}
+.ss-header .ss-desktop-nav {
+  margin-left: 0;
+  justify-self: center;
+  gap: var(--nav-link-gap);
+}
+.nav-cta-mobile {
+  display: none;
+}
+.ss-tool-menu > summary[data-current] {
+  color: #087bab;
+}
+.ss-desktop-nav .ss-tool-menu > div {
+  max-height: calc(100svh - 140px);
+  overflow-y: auto;
+}
+.ss-desktop-nav > a,
+.ss-tool-menu > summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 8px 0;
+  font: 500 14px/1.4 var(--body);
+  letter-spacing: -0.01em;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+@media (max-width: 1050px) {
+  .ss-header {
+    --nav-link-gap: 17px;
+  }
+}
+
+@media (max-width: 760px) {
+  .ss-header {
+    --nav-symbol-width: 17px;
+    --nav-symbol-height: 20px;
+  }
+}
+@media (max-width: 370px) {
+  .ss-header {
+    --nav-wordmark-size: 22px;
+    --nav-brand-gap: 8px;
+  }
+}

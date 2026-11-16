@@ -22,8 +22,8 @@ describe("docsTabs", () => {
 
   it("matches the twelve tabs of the published navigation", () => {
     expect(docsTabs(docs).map(tab => tab.name)).toEqual([
-      "Quickstart", "Artists", "Chats", "Research", "Catalog", "Content", "Social Media",
-      "Agents & Sandboxes", "Accounts", "Connectors", "Sites", "Players",
+      "Quickstart", "Artists", "Chats", "Research", "Catalog", "Content", "Social media",
+      "Agents & sandboxes", "Accounts", "Connectors", "Sites", "Players",
     ]);
   });
 });

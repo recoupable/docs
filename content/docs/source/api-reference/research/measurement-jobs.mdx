@@ -2,3 +2,8 @@
 title: 'Create measurement job'
 openapi: "/api-reference/openapi/research.json POST /api/research/measurement-jobs"
 ---
+
+Historical backfill requires an existing saved payment method. A missing method
+returns HTTP 402 with `error: "payment_method_required"` and a neutral `message`.
+The request does not create a checkout session or start card setup. Preserve the
+request and stop; do not poll the denied operation or initiate a purchase.

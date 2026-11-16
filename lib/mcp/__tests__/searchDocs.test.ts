@@ -7,7 +7,7 @@ describe("searchDocs", () => {
     const [first] = searchDocs(docs, "post stats", "https://docs.recoupable.dev");
     expect(first).toEqual({
       slug: "api-reference/publishing/stats",
-      title: "Get Post Stats",
+      title: "Get post stats",
       url: "https://docs.recoupable.dev/api-reference/publishing/stats",
       category: "Connectors",
       method: "GET",

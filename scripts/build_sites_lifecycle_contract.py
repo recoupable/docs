@@ -15,7 +15,7 @@ def build_sites_lifecycle_contract(text):
     pairs = lambda value: sorted(set(' '.join(item) for item in re.findall(
         r'\b(GET|POST|PATCH|PUT|DELETE|HEAD) (/api/sites(?:/[A-Za-z0-9_{}-]+)*)', value,
     )))
-    upgrade = example('### Upgrade required')
+    upgrade = example('### Entitlement required')
     return {
         'examples': {
             'generation': example('### Poll background generation'),

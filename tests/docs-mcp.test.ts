@@ -25,7 +25,7 @@ test("a real MCP client lists both read-only tools, searches and reads a page", 
 
     const read = await client.callTool({ name: "read_page", arguments: { page: results[0].url } });
     const { markdown } = read.structuredContent as { markdown: string };
-    expect(markdown).toMatch(/^# Get Post Stats\n\nSource: http:\/\/localhost:3000\/api-reference\/publishing\/stats\n/);
+    expect(markdown).toMatch(/^# Get post stats\n\nSource: http:\/\/localhost:3000\/api-reference\/publishing\/stats\n/);
     expect(markdown).toContain("## GET /api/posts/{id}/stats");
 
     const missing = await client.callTool({ name: "read_page", arguments: { page: "nope/never" } });
@@ -33,6 +33,23 @@ test("a real MCP client lists both read-only tools, searches and reads a page", 
   } finally {
     await client.close();
   }
+});
+
+test("a browser visiting /mcp is sent to the MCP server guide; MCP clients are not", async () => {
+  const browser = await handleDocsMcp(new Request("http://localhost:3000/mcp", {
+    headers: { accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "sec-fetch-dest": "document" },
+  }));
+  expect(browser.status).toBe(308);
+  expect(browser.headers.get("location")).toBe("http://localhost:3000/mcp-server");
+
+  const stream = await handleDocsMcp(new Request("http://localhost:3000/mcp", { headers: { accept: "text/event-stream" } }));
+  expect(stream.status).not.toBe(308);
+  const post = await handleDocsMcp(new Request("http://localhost:3000/mcp", {
+    method: "POST",
+    headers: { accept: "application/json, text/event-stream", "content-type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "ping" }),
+  }));
+  expect(post.status).not.toBe(308);
 });
 
 test("an untrusted host is refused and preflight is answered", async () => {

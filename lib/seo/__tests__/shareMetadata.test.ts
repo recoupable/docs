@@ -33,7 +33,7 @@ describe("share metadata Mintlify served", () => {
     expect(ogCardText(undefined, "api-reference")).toMatchObject({ eyebrow: "API REFERENCE", title: "API reference" });
     const stats = ogCardText(page("api-reference/publishing/stats"), "api-reference/publishing/stats");
     expect(stats.eyebrow).toBe("PUBLISHING");
-    expect(stats.title).toBe("Get Post Stats");
+    expect(stats.title).toBe("Get post stats");
     for (const item of docs) {
       const text = ogCardText(item, item.slug);
       expect(text.description.length).toBeLessThanOrEqual(150);
