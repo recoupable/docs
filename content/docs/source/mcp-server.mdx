@@ -31,6 +31,10 @@ Files or [release-pack source audio](/release-packs).
 
 ## Context results
 
+The [Context reference](/api-reference/context/operate#pending-spotify-recovery-guidance) also describes **pending** Spotify recovery guidance in the existing saved `request.error` string. It is distinct from an HTTP/MCP operation error envelope; current behavior and existing action discovery remain unchanged until the matching API release.
+
+The [Context reference](/api-reference/context/operate#pending-typed-error-responses) also describes a **pending** typed error addition. Existing actions remain discoverable; current generic errors stay in effect until the matching API release. The pending MCP result sets `isError: true` with authored code, message, retryability and guidance, without private diagnostics.
+
 The [Context reference](/api-reference/context/operate) pairs each supported action
 with its success status, response model and synthetic request/result examples.
 Use the status declared for that action: `ingest` returns 202, while the specific

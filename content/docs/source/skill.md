@@ -39,3 +39,7 @@ Keep credentials in environment variables or a secret store. Never print them.
 ## Reusable skills
 
 `npx skills add recoupable/skills` installs Recoup's maintained agent skills for these workflows.
+
+Context actions remain available under their existing contract. The [Context reference](https://docs.recoupable.dev/api-reference/context/operate) distinguishes current blanket operation errors from pending typed responses. [Pending components](https://docs.recoupable.dev/spec/context-errors-pending.json) define no callable operation and do not prove API release or hosted acceptance.
+
+The [Context reference](https://docs.recoupable.dev/api-reference/context/operate#pending-spotify-recovery-guidance) distinguishes current generic saved ingestion errors from pending authored Spotify recovery text. [Pending components](https://docs.recoupable.dev/spec/context-ingest-recovery-pending.json) add no operation and do not establish provider, database or retry acceptance.

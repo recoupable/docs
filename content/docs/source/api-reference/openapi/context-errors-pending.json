@@ -1,0 +1,1125 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Pending Context operation error responses",
+    "version": "0.1.0",
+    "description": "PENDING response addition for the existing POST /api/context and MCP Context operations. Component-only contract: no callable operation, server or playground. Current Context remains available with its existing documented error behavior. Release requires the matching API change; exact source checks do not prove hosted behavior."
+  },
+  "x-recoup-availability": "pending",
+  "x-recoup-api-source-commit": "4977dce3fe6320031bf09209d83240e85b2005de",
+  "paths": {},
+  "components": {
+    "schemas": {
+      "ContextOperationError": {
+        "description": "PENDING HTTP operation failure after validation/authentication. Current blanket 409 remains documented in context.json until matching API release.",
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "error",
+              "code",
+              "retryable",
+              "guidance"
+            ],
+            "properties": {
+              "error": {
+                "const": "Access denied to the selected context owner."
+              },
+              "code": {
+                "const": "permission_denied"
+              },
+              "retryable": {
+                "const": false
+              },
+              "guidance": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Authored guidance; keyed writes append action-specific replay instructions."
+              }
+            },
+            "additionalProperties": false,
+            "examples": [
+              {
+                "error": "Access denied to the selected context owner.",
+                "code": "permission_denied",
+                "retryable": false,
+                "guidance": "Check the authenticated account and current organization access before retrying."
+              }
+            ]
+          },
+          {
+            "type": "object",
+            "required": [
+              "error",
+              "code",
+              "retryable",
+              "guidance"
+            ],
+            "properties": {
+              "error": {
+                "const": "Context record not found in the selected workspace."
+              },
+              "code": {
+                "const": "not_found"
+              },
+              "retryable": {
+                "const": false
+              },
+              "guidance": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Authored guidance; keyed writes append action-specific replay instructions."
+              }
+            },
+            "additionalProperties": false,
+            "examples": [
+              {
+                "error": "Context record not found in the selected workspace.",
+                "code": "not_found",
+                "retryable": false,
+                "guidance": "Check the record ID and workspace scope. This response does not distinguish a missing record from one outside your access."
+              }
+            ]
+          },
+          {
+            "type": "object",
+            "required": [
+              "error",
+              "code",
+              "retryable",
+              "guidance"
+            ],
+            "properties": {
+              "error": {
+                "const": "The operation conflicts with saved state."
+              },
+              "code": {
+                "const": "conflict"
+              },
+              "retryable": {
+                "const": false
+              },
+              "guidance": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Authored guidance; keyed writes append action-specific replay instructions."
+              }
+            },
+            "additionalProperties": false,
+            "examples": [
+              {
+                "error": "The operation conflicts with saved state.",
+                "code": "conflict",
+                "retryable": false,
+                "guidance": "Read the current record and resolve the conflict before changing input."
+              }
+            ]
+          },
+          {
+            "type": "object",
+            "required": [
+              "error",
+              "code",
+              "retryable",
+              "guidance"
+            ],
+            "properties": {
+              "error": {
+                "const": "The input is not supported by this operation."
+              },
+              "code": {
+                "const": "unsupported_input"
+              },
+              "retryable": {
+                "const": false
+              },
+              "guidance": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Authored guidance; keyed writes append action-specific replay instructions."
+              }
+            },
+            "additionalProperties": false,
+            "examples": [
+              {
+                "error": "The input is not supported by this operation.",
+                "code": "unsupported_input",
+                "retryable": false,
+                "guidance": "Check the action's documented fields, supported sources and limits before retrying."
+              }
+            ]
+          },
+          {
+            "type": "object",
+            "required": [
+              "error",
+              "code",
+              "retryable",
+              "guidance"
+            ],
+            "properties": {
+              "error": {
+                "const": "The context request is not ready for this action."
+              },
+              "code": {
+                "const": "not_ready"
+              },
+              "retryable": {
+                "const": true
+              },
+              "guidance": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Authored guidance; keyed writes append action-specific replay instructions."
+              }
+            },
+            "additionalProperties": false,
+            "examples": [
+              {
+                "error": "The context request is not ready for this action.",
+                "code": "not_ready",
+                "retryable": true,
+                "guidance": "Read the request and retry only after the required state is reached. Inspect partial results and coverage gaps before using them."
+              }
+            ]
+          },
+          {
+            "type": "object",
+            "required": [
+              "error",
+              "code",
+              "retryable",
+              "guidance"
+            ],
+            "properties": {
+              "error": {
+                "const": "A required dependency or capability is unavailable."
+              },
+              "code": {
+                "const": "unavailable"
+              },
+              "retryable": {
+                "const": true
+              },
+              "guidance": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Authored guidance; keyed writes append action-specific replay instructions."
+              }
+            },
+            "additionalProperties": false,
+            "examples": [
+              {
+                "error": "A required dependency or capability is unavailable.",
+                "code": "unavailable",
+                "retryable": true,
+                "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery."
+              }
+            ]
+          },
+          {
+            "type": "object",
+            "required": [
+              "error",
+              "code",
+              "retryable",
+              "guidance"
+            ],
+            "properties": {
+              "error": {
+                "const": "The authorized budget for this operation is exhausted."
+              },
+              "code": {
+                "const": "budget_exhausted"
+              },
+              "retryable": {
+                "const": false
+              },
+              "guidance": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Authored guidance; keyed writes append action-specific replay instructions."
+              }
+            },
+            "additionalProperties": false,
+            "examples": [
+              {
+                "error": "The authorized budget for this operation is exhausted.",
+                "code": "budget_exhausted",
+                "retryable": false,
+                "guidance": "Check the operation's authorized budget and saved state before proceeding. This reserved code does not establish whether work has run or charges occurred."
+              }
+            ]
+          },
+          {
+            "type": "object",
+            "required": [
+              "error",
+              "code",
+              "retryable",
+              "guidance"
+            ],
+            "properties": {
+              "error": {
+                "const": "Context storage could not complete the operation."
+              },
+              "code": {
+                "const": "storage_failed"
+              },
+              "retryable": {
+                "const": false
+              },
+              "guidance": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Authored guidance; keyed writes append action-specific replay instructions."
+              }
+            },
+            "additionalProperties": false,
+            "examples": [
+              {
+                "error": "Context storage could not complete the operation.",
+                "code": "storage_failed",
+                "retryable": false,
+                "guidance": "Check the saved state before changing input. The storage failure is not recognized as transient; do not automatically retry it."
+              }
+            ]
+          },
+          {
+            "type": "object",
+            "required": [
+              "error",
+              "code",
+              "retryable",
+              "guidance"
+            ],
+            "properties": {
+              "error": {
+                "const": "Context operation failed."
+              },
+              "code": {
+                "const": "internal"
+              },
+              "retryable": {
+                "const": false
+              },
+              "guidance": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Authored guidance; keyed writes append action-specific replay instructions."
+              }
+            },
+            "additionalProperties": false,
+            "examples": [
+              {
+                "error": "Context operation failed.",
+                "code": "internal",
+                "retryable": false,
+                "guidance": "Check the saved state before changing input. Do not automatically retry an unclassified failure."
+              }
+            ]
+          }
+        ]
+      },
+      "ContextMcpOperationError": {
+        "description": "PENDING JSON body serialized in MCP content[0].text; the outer tool result also sets isError:true. SDK InvalidParams and authentication responses remain separate.",
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "success",
+              "code",
+              "message",
+              "retryable",
+              "guidance"
+            ],
+            "properties": {
+              "success": {
+                "const": false
+              },
+              "code": {
+                "const": "permission_denied"
+              },
+              "message": {
+                "const": "Access denied to the selected context owner."
+              },
+              "retryable": {
+                "const": false
+              },
+              "guidance": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Authored guidance; keyed writes append action-specific replay instructions."
+              }
+            },
+            "additionalProperties": false,
+            "examples": [
+              {
+                "success": false,
+                "code": "permission_denied",
+                "message": "Access denied to the selected context owner.",
+                "retryable": false,
+                "guidance": "Check the authenticated account and current organization access before retrying."
+              }
+            ]
+          },
+          {
+            "type": "object",
+            "required": [
+              "success",
+              "code",
+              "message",
+              "retryable",
+              "guidance"
+            ],
+            "properties": {
+              "success": {
+                "const": false
+              },
+              "code": {
+                "const": "not_found"
+              },
+              "message": {
+                "const": "Context record not found in the selected workspace."
+              },
+              "retryable": {
+                "const": false
+              },
+              "guidance": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Authored guidance; keyed writes append action-specific replay instructions."
+              }
+            },
+            "additionalProperties": false,
+            "examples": [
+              {
+                "success": false,
+                "code": "not_found",
+                "message": "Context record not found in the selected workspace.",
+                "retryable": false,
+                "guidance": "Check the record ID and workspace scope. This response does not distinguish a missing record from one outside your access."
+              }
+            ]
+          },
+          {
+            "type": "object",
+            "required": [
+              "success",
+              "code",
+              "message",
+              "retryable",
+              "guidance"
+            ],
+            "properties": {
+              "success": {
+                "const": false
+              },
+              "code": {
+                "const": "conflict"
+              },
+              "message": {
+                "const": "The operation conflicts with saved state."
+              },
+              "retryable": {
+                "const": false
+              },
+              "guidance": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Authored guidance; keyed writes append action-specific replay instructions."
+              }
+            },
+            "additionalProperties": false,
+            "examples": [
+              {
+                "success": false,
+                "code": "conflict",
+                "message": "The operation conflicts with saved state.",
+                "retryable": false,
+                "guidance": "Read the current record and resolve the conflict before changing input."
+              }
+            ]
+          },
+          {
+            "type": "object",
+            "required": [
+              "success",
+              "code",
+              "message",
+              "retryable",
+              "guidance"
+            ],
+            "properties": {
+              "success": {
+                "const": false
+              },
+              "code": {
+                "const": "unsupported_input"
+              },
+              "message": {
+                "const": "The input is not supported by this operation."
+              },
+              "retryable": {
+                "const": false
+              },
+              "guidance": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Authored guidance; keyed writes append action-specific replay instructions."
+              }
+            },
+            "additionalProperties": false,
+            "examples": [
+              {
+                "success": false,
+                "code": "unsupported_input",
+                "message": "The input is not supported by this operation.",
+                "retryable": false,
+                "guidance": "Check the action's documented fields, supported sources and limits before retrying."
+              }
+            ]
+          },
+          {
+            "type": "object",
+            "required": [
+              "success",
+              "code",
+              "message",
+              "retryable",
+              "guidance"
+            ],
+            "properties": {
+              "success": {
+                "const": false
+              },
+              "code": {
+                "const": "not_ready"
+              },
+              "message": {
+                "const": "The context request is not ready for this action."
+              },
+              "retryable": {
+                "const": true
+              },
+              "guidance": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Authored guidance; keyed writes append action-specific replay instructions."
+              }
+            },
+            "additionalProperties": false,
+            "examples": [
+              {
+                "success": false,
+                "code": "not_ready",
+                "message": "The context request is not ready for this action.",
+                "retryable": true,
+                "guidance": "Read the request and retry only after the required state is reached. Inspect partial results and coverage gaps before using them."
+              }
+            ]
+          },
+          {
+            "type": "object",
+            "required": [
+              "success",
+              "code",
+              "message",
+              "retryable",
+              "guidance"
+            ],
+            "properties": {
+              "success": {
+                "const": false
+              },
+              "code": {
+                "const": "unavailable"
+              },
+              "message": {
+                "const": "A required dependency or capability is unavailable."
+              },
+              "retryable": {
+                "const": true
+              },
+              "guidance": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Authored guidance; keyed writes append action-specific replay instructions."
+              }
+            },
+            "additionalProperties": false,
+            "examples": [
+              {
+                "success": false,
+                "code": "unavailable",
+                "message": "A required dependency or capability is unavailable.",
+                "retryable": true,
+                "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery."
+              }
+            ]
+          },
+          {
+            "type": "object",
+            "required": [
+              "success",
+              "code",
+              "message",
+              "retryable",
+              "guidance"
+            ],
+            "properties": {
+              "success": {
+                "const": false
+              },
+              "code": {
+                "const": "budget_exhausted"
+              },
+              "message": {
+                "const": "The authorized budget for this operation is exhausted."
+              },
+              "retryable": {
+                "const": false
+              },
+              "guidance": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Authored guidance; keyed writes append action-specific replay instructions."
+              }
+            },
+            "additionalProperties": false,
+            "examples": [
+              {
+                "success": false,
+                "code": "budget_exhausted",
+                "message": "The authorized budget for this operation is exhausted.",
+                "retryable": false,
+                "guidance": "Check the operation's authorized budget and saved state before proceeding. This reserved code does not establish whether work has run or charges occurred."
+              }
+            ]
+          },
+          {
+            "type": "object",
+            "required": [
+              "success",
+              "code",
+              "message",
+              "retryable",
+              "guidance"
+            ],
+            "properties": {
+              "success": {
+                "const": false
+              },
+              "code": {
+                "const": "storage_failed"
+              },
+              "message": {
+                "const": "Context storage could not complete the operation."
+              },
+              "retryable": {
+                "const": false
+              },
+              "guidance": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Authored guidance; keyed writes append action-specific replay instructions."
+              }
+            },
+            "additionalProperties": false,
+            "examples": [
+              {
+                "success": false,
+                "code": "storage_failed",
+                "message": "Context storage could not complete the operation.",
+                "retryable": false,
+                "guidance": "Check the saved state before changing input. The storage failure is not recognized as transient; do not automatically retry it."
+              }
+            ]
+          },
+          {
+            "type": "object",
+            "required": [
+              "success",
+              "code",
+              "message",
+              "retryable",
+              "guidance"
+            ],
+            "properties": {
+              "success": {
+                "const": false
+              },
+              "code": {
+                "const": "internal"
+              },
+              "message": {
+                "const": "Context operation failed."
+              },
+              "retryable": {
+                "const": false
+              },
+              "guidance": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Authored guidance; keyed writes append action-specific replay instructions."
+              }
+            },
+            "additionalProperties": false,
+            "examples": [
+              {
+                "success": false,
+                "code": "internal",
+                "message": "Context operation failed.",
+                "retryable": false,
+                "guidance": "Check the saved state before changing input. Do not automatically retry an unclassified failure."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "responses": {
+      "ContextError402": {
+        "description": "PENDING HTTP 402: budget_exhausted. Not the current blanket-409 operation contract.",
+        "x-recoup-availability": "pending",
+        "x-recoup-codes": [
+          "budget_exhausted"
+        ],
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ContextOperationError"
+                },
+                {
+                  "properties": {
+                    "code": {
+                      "enum": [
+                        "budget_exhausted"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "examples": {
+              "budget_exhausted": {
+                "value": {
+                  "error": "The authorized budget for this operation is exhausted.",
+                  "code": "budget_exhausted",
+                  "retryable": false,
+                  "guidance": "Check the operation's authorized budget and saved state before proceeding. This reserved code does not establish whether work has run or charges occurred."
+                }
+              }
+            }
+          }
+        }
+      },
+      "ContextError403": {
+        "description": "PENDING HTTP 403: permission_denied. Not the current blanket-409 operation contract.",
+        "x-recoup-availability": "pending",
+        "x-recoup-codes": [
+          "permission_denied"
+        ],
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ContextOperationError"
+                },
+                {
+                  "properties": {
+                    "code": {
+                      "enum": [
+                        "permission_denied"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "examples": {
+              "permission_denied": {
+                "value": {
+                  "error": "Access denied to the selected context owner.",
+                  "code": "permission_denied",
+                  "retryable": false,
+                  "guidance": "Check the authenticated account and current organization access before retrying."
+                }
+              }
+            }
+          }
+        }
+      },
+      "ContextError404": {
+        "description": "PENDING HTTP 404: not_found. Not the current blanket-409 operation contract.",
+        "x-recoup-availability": "pending",
+        "x-recoup-codes": [
+          "not_found"
+        ],
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ContextOperationError"
+                },
+                {
+                  "properties": {
+                    "code": {
+                      "enum": [
+                        "not_found"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "examples": {
+              "not_found": {
+                "value": {
+                  "error": "Context record not found in the selected workspace.",
+                  "code": "not_found",
+                  "retryable": false,
+                  "guidance": "Check the record ID and workspace scope. This response does not distinguish a missing record from one outside your access."
+                }
+              }
+            }
+          }
+        }
+      },
+      "ContextError409": {
+        "description": "PENDING HTTP 409: conflict, not_ready, storage_failed. Not the current blanket-409 operation contract.",
+        "x-recoup-availability": "pending",
+        "x-recoup-codes": [
+          "conflict",
+          "not_ready",
+          "storage_failed"
+        ],
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ContextOperationError"
+                },
+                {
+                  "properties": {
+                    "code": {
+                      "enum": [
+                        "conflict",
+                        "not_ready",
+                        "storage_failed"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "examples": {
+              "conflict": {
+                "value": {
+                  "error": "The operation conflicts with saved state.",
+                  "code": "conflict",
+                  "retryable": false,
+                  "guidance": "Read the current record and resolve the conflict before changing input."
+                }
+              },
+              "not_ready": {
+                "value": {
+                  "error": "The context request is not ready for this action.",
+                  "code": "not_ready",
+                  "retryable": true,
+                  "guidance": "Read the request and retry only after the required state is reached. Inspect partial results and coverage gaps before using them."
+                }
+              },
+              "storage_failed": {
+                "value": {
+                  "error": "Context storage could not complete the operation.",
+                  "code": "storage_failed",
+                  "retryable": false,
+                  "guidance": "Check the saved state before changing input. The storage failure is not recognized as transient; do not automatically retry it."
+                }
+              }
+            }
+          }
+        }
+      },
+      "ContextError422": {
+        "description": "PENDING HTTP 422: unsupported_input. Not the current blanket-409 operation contract.",
+        "x-recoup-availability": "pending",
+        "x-recoup-codes": [
+          "unsupported_input"
+        ],
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ContextOperationError"
+                },
+                {
+                  "properties": {
+                    "code": {
+                      "enum": [
+                        "unsupported_input"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "examples": {
+              "unsupported_input": {
+                "value": {
+                  "error": "The input is not supported by this operation.",
+                  "code": "unsupported_input",
+                  "retryable": false,
+                  "guidance": "Check the action's documented fields, supported sources and limits before retrying."
+                }
+              }
+            }
+          }
+        }
+      },
+      "ContextError500": {
+        "description": "PENDING HTTP 500: internal. Not the current blanket-409 operation contract.",
+        "x-recoup-availability": "pending",
+        "x-recoup-codes": [
+          "internal"
+        ],
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ContextOperationError"
+                },
+                {
+                  "properties": {
+                    "code": {
+                      "enum": [
+                        "internal"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "examples": {
+              "internal": {
+                "value": {
+                  "error": "Context operation failed.",
+                  "code": "internal",
+                  "retryable": false,
+                  "guidance": "Check the saved state before changing input. Do not automatically retry an unclassified failure."
+                }
+              }
+            }
+          }
+        }
+      },
+      "ContextError503": {
+        "description": "PENDING HTTP 503: unavailable. Not the current blanket-409 operation contract.",
+        "x-recoup-availability": "pending",
+        "x-recoup-codes": [
+          "unavailable"
+        ],
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ContextOperationError"
+                },
+                {
+                  "properties": {
+                    "code": {
+                      "enum": [
+                        "unavailable"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "examples": {
+              "unavailable": {
+                "value": {
+                  "error": "A required dependency or capability is unavailable.",
+                  "code": "unavailable",
+                  "retryable": true,
+                  "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-recoup-action-examples": [
+    {
+      "code": "unavailable",
+      "action": "read",
+      "http": {
+        "status": 503,
+        "body": {
+          "error": "A required dependency or capability is unavailable.",
+          "code": "unavailable",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery."
+        }
+      },
+      "mcp": {
+        "isError": true,
+        "body": {
+          "success": false,
+          "code": "unavailable",
+          "message": "A required dependency or capability is unavailable.",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery."
+        }
+      }
+    },
+    {
+      "code": "unavailable",
+      "action": "plan",
+      "http": {
+        "status": 503,
+        "body": {
+          "error": "A required dependency or capability is unavailable.",
+          "code": "unavailable",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery."
+        }
+      },
+      "mcp": {
+        "isError": true,
+        "body": {
+          "success": false,
+          "code": "unavailable",
+          "message": "A required dependency or capability is unavailable.",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery."
+        }
+      }
+    },
+    {
+      "code": "unavailable",
+      "action": "verify_release",
+      "http": {
+        "status": 503,
+        "body": {
+          "error": "A required dependency or capability is unavailable.",
+          "code": "unavailable",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery."
+        }
+      },
+      "mcp": {
+        "isError": true,
+        "body": {
+          "success": false,
+          "code": "unavailable",
+          "message": "A required dependency or capability is unavailable.",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery."
+        }
+      }
+    },
+    {
+      "code": "unavailable",
+      "action": "ingest",
+      "http": {
+        "status": 503,
+        "body": {
+          "error": "A required dependency or capability is unavailable.",
+          "code": "unavailable",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery. For an uncertain write, reuse the same idempotency key and unchanged input. Check saved state first; a new key is a new request, not a safe retry."
+        }
+      },
+      "mcp": {
+        "isError": true,
+        "body": {
+          "success": false,
+          "code": "unavailable",
+          "message": "A required dependency or capability is unavailable.",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery. For an uncertain write, reuse the same idempotency key and unchanged input. Check saved state first; a new key is a new request, not a safe retry."
+        }
+      }
+    },
+    {
+      "code": "unavailable",
+      "action": "attach_evidence",
+      "http": {
+        "status": 503,
+        "body": {
+          "error": "A required dependency or capability is unavailable.",
+          "code": "unavailable",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery. Evidence attachment could not complete. Check workspace, source retention and target access. Retry only the same source version, targets and idempotency key."
+        }
+      },
+      "mcp": {
+        "isError": true,
+        "body": {
+          "success": false,
+          "code": "unavailable",
+          "message": "A required dependency or capability is unavailable.",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery. Evidence attachment could not complete. Check workspace, source retention and target access. Retry only the same source version, targets and idempotency key."
+        }
+      }
+    },
+    {
+      "code": "unavailable",
+      "action": "save_catalog_case",
+      "http": {
+        "status": 503,
+        "body": {
+          "error": "A required dependency or capability is unavailable.",
+          "code": "unavailable",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery. Catalog case save could not complete. Check workspace, retained sources and expected revision. Retry an uncertain save only with the same idempotency key and unchanged payload; read the current revision before editing."
+        }
+      },
+      "mcp": {
+        "isError": true,
+        "body": {
+          "success": false,
+          "code": "unavailable",
+          "message": "A required dependency or capability is unavailable.",
+          "retryable": true,
+          "guidance": "Retry later with unchanged input after the dependency recovers or the capability becomes available. Retry eligibility is not a guarantee of recovery. Catalog case save could not complete. Check workspace, retained sources and expected revision. Retry an uncertain save only with the same idempotency key and unchanged payload; read the current revision before editing."
+        }
+      }
+    }
+  ],
+  "x-recoup-classification-examples": [
+    {
+      "input": "Context request not found",
+      "code": "not_found"
+    },
+    {
+      "input": "Access denied to context owner",
+      "code": "permission_denied"
+    },
+    {
+      "input": "Context storage operation failed: query returned no rows",
+      "code": "storage_failed"
+    },
+    {
+      "input": "Context storage operation failed: Catalog revision conflict",
+      "code": "conflict"
+    },
+    {
+      "input": "private-record unavailable",
+      "code": "internal"
+    }
+  ]
+}
