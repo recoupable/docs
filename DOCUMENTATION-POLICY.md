@@ -199,7 +199,7 @@ and keep deployment verification separate from contract checks.
 
 The `cli-guide` job in `.github/workflows/documentation-contract.yml` builds the
 immutable CLI source revision pinned in that workflow and runs its existing published-command guard against
-this PR's `content/docs/source/cli.mdx`. Marketing owns candidate-guide failures;
+this PR's `content/docs/source/cli.mdx`. Docs owns candidate-guide failures;
 CLI owns command behavior and the guard. The check covers email/song/cost-estimate examples,
 `--chat-id` request mapping, and rejection of retired `--room-id` before dispatch.
 Command requests are intercepted with synthetic credentials and never forwarded to an API.
