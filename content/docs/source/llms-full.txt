@@ -818,7 +818,12 @@ recoup whoami
 | Variable | Required | Default | Description |
 | --- | --- | --- | --- |
 | `RECOUP_API_KEY` | Yes | — | Your Recoup API key |
-| `RECOUP_API_URL` | No | `https://recoup-api.vercel.app` | API base URL override; set `https://api.recoupable.dev` to use the canonical API domain |
+| `RECOUP_API_URL` | No | `https://api.recoupable.dev` | API base URL override; use only an endpoint you trust with your API key |
+
+> **Note**
+> The default above describes the redirect-rejection [source revision `213de515`](https://github.com/recoupable/cli/commit/213de5156491e109c6b7243af4c8c17876370d93), not a verified npm release or installed client. Older CLI versions may default to `https://recoup-api.vercel.app` and follow redirects. Setting `RECOUP_API_URL` changes the initial origin; it does not add redirect rejection to an older version.
+>
+> The updated GET and POST client rejects redirects before sending a request to the redirect target. A 3xx response fails with `API redirect rejected. Use a trusted API URL that does not redirect.`; request URLs, redirect locations and request details are omitted from this error. Ordinary network and API errors retain their existing behavior. Confirm the installed artifact contains this change before relying on that behavior.
 
 All commands support `--json` for machine-readable output and `--help` for usage info.
 
