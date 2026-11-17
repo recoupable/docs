@@ -42,7 +42,7 @@ jobs:
         with:
           repository: recoupable/cli
           # Canonical origin and redirect-rejection guard; commands remain intercepted.
-          ref: b65a80727c033c091e2d4f2ecbe87e167048aa7b
+          ref: 213de5156491e109c6b7243af4c8c17876370d93
           path: .contract-cli
           persist-credentials: false
       - uses: pnpm/action-setup@v4
