@@ -214,7 +214,7 @@ update the workflow's exact CLI commit pin and the maintained guide together.
 Run the same check locally from that CLI checkout after `pnpm build`:
 
 ```sh
-RECOUP_CLI_REFERENCE_PATH=/absolute/path/to/marketing/content/docs/source/cli.mdx \
+RECOUP_CLI_REFERENCE_PATH=/absolute/path/to/docs/content/docs/source/cli.mdx \
   pnpm exec vitest run __tests__/publishedCommands.test.ts __tests__/config.test.ts __tests__/clientRedirects.test.ts
 ```
 
