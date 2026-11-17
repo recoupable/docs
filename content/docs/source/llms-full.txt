@@ -1111,6 +1111,27 @@ API-key MCP and `mcp:tools` grants expose three tools that mirror REST; `mcp:rea
 Access errors, an unknown artist and insufficient credits return a tool error with
 `success: false` and a `message`; MCP has no HTTP status.
 
+## Published posts and stats
+
+Pending [api#TBD](https://github.com/recoupable/api/pulls): until that release is
+deployed, these tools are absent from `tools/list`. When deployed, API-key MCP and
+`mcp:tools` grants expose two tools that mirror REST; `mcp:read` / `mcp:write` grants
+don't. They read posts Recoup published for you, not scraped posts, which
+`get_artist_posts` returns.
+
+- `get_published_posts` takes optional `artist_account_id`, `platform`, `status`,
+  `limit` (1-50, default 20) and `offset`. It returns the same `{ status, posts }`
+  envelope as [List posts](https://docs.recoupable.dev/api-reference/publishing/list): your account's posts,
+  newest first. Each post's `id` is what `get_published_post_stats` takes. Free.
+- `get_published_post_stats` takes a post `id` and returns the same `{ status, stats }`
+  envelope as [Get post stats](https://docs.recoupable.dev/api-reference/publishing/stats), read live from the
+  platform. Only published LinkedIn company-page posts have stats. Credits are checked
+  before LinkedIn is called, and a successful read charges $0.001; a failed read costs
+  nothing. Each call is a new paid read, so keep the result rather than polling.
+
+Where REST answers 400, 403, 404, 409, 422, 402 or 502, the tool returns a tool error
+with `success: false` and the same `message`; MCP has no HTTP status.
+
 
 # Recoup public website API
 
