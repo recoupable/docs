@@ -198,11 +198,14 @@ and keep deployment verification separate from contract checks.
 ## CLI guide compatibility
 
 The `cli-guide` job in `.github/workflows/documentation-contract.yml` builds the
-immutable CLI #28 merge and runs its existing published-command guard against
+immutable CLI source revision pinned in that workflow and runs its existing published-command guard against
 this PR's `content/docs/source/cli.mdx`. Marketing owns candidate-guide failures;
 CLI owns command behavior and the guard. The check covers email/song/cost-estimate examples,
 `--chat-id` request mapping, and rejection of retired `--room-id` before dispatch.
-Requests are intercepted with synthetic credentials and never forwarded to an API.
+Command requests are intercepted with synthetic credentials and never forwarded to an API.
+The same job checks the candidate guide default against CLI configuration and runs
+GET/POST redirect rejection fixtures on loopback HTTP servers with fake keys; no
+live API is contacted. These checks do not establish npm publication or installation.
 Cost-estimate examples must use GET without a body and preserve their default or
 explicit query flags. These checks do not verify real prices or create content.
 

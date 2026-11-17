@@ -40,7 +40,13 @@ Get an API key from the [API Keys page](https://chat.recoupable.dev/keys) or use
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `RECOUP_API_KEY` | Yes | — | Your Recoup API key |
-| `RECOUP_API_URL` | No | `https://recoup-api.vercel.app` | API base URL override; set `https://api.recoupable.dev` to use the canonical API domain |
+| `RECOUP_API_URL` | No | `https://api.recoupable.dev` | API base URL override; use only an endpoint you trust with your API key |
+
+<Note>
+The default above describes the redirect-rejection [source revision `b65a8072`](https://github.com/recoupable/cli/commit/b65a80727c033c091e2d4f2ecbe87e167048aa7b), not a verified npm release or installed client. Older CLI versions may default to `https://recoup-api.vercel.app` and follow redirects. Setting `RECOUP_API_URL` changes the initial origin; it does not add redirect rejection to an older version.
+
+The updated GET and POST client rejects redirects before sending a request to the redirect target. Confirm the installed artifact contains this change before relying on that behavior. A source check does not approve a client, replace an existing approved session, or authorize an identity request.
+</Note>
 
 All commands support `--json` for machine-readable output and `--help` for usage info.
 
