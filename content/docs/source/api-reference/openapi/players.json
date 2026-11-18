@@ -346,7 +346,7 @@
       "get": {
         "operationId": "getPlayersById",
         "summary": "Read a release player",
-        "description": "Read settings, revision and share/embed links. MCP: get_release_player.",
+        "description": "Read settings, revision and share/embed links. MCP: get_release_player. An optional capabilities v1 configuration projection is pending; it contains no fan eligibility or playback authorization.",
         "security": [
           {
             "apiKeyAuth": []
@@ -384,7 +384,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PlayerResource"
+                  "$ref": "#/components/schemas/PlayerReadResource"
                 }
               }
             }
@@ -909,7 +909,7 @@
       "get": {
         "operationId": "getPlayersPublicById",
         "summary": "Read public player metadata without creating a session",
-        "description": "Internal transport for the trusted Recoup browser player. Without provider, returns only public release settings. With provider, validates parent and creates or resumes a signed, provider-bound listening session. No owner, fan profile or email is exposed. The embedding website should use returned embed URLs rather than calling this API or handling credentials.",
+        "description": "Internal metadata transport for the trusted Recoup browser player; never creates or resumes a session. A provider is rejected; use POST /api/players/public/{id}/session to acquire a provider session. No owner, fan profile, email or provider credentials are exposed. The optional capabilities v1 projection is pending and reports configuration only. Embedding websites should use the returned embed URLs.",
         "security": [],
         "parameters": [
           {
@@ -1268,7 +1268,7 @@
     "/api/players/public/{id}/session": {
       "post": {
         "summary": "Acquire or resume a registered player session",
-        "description": "Internal transport for the trusted Recoup browser player. Without provider, returns only public release settings. With provider, validates parent and creates or resumes a signed, provider-bound listening session. No owner, fan profile or email is exposed. The embedding website should use returned embed URLs rather than calling this API or handling credentials.",
+        "description": "Internal transport for the trusted Recoup browser player; requires provider and parent. Validates registered configuration and creates or resumes a signed, provider-bound listening session. No owner, fan profile or email is exposed. Existing trusted-player OAuth configuration is unchanged; the optional credential-free capabilities v1 projection is pending and keeps fan observations unknown, including on resumed sessions. Embedding websites should use embed URLs rather than handling credentials.",
         "security": [],
         "parameters": [
           {
@@ -2043,6 +2043,11 @@
             ],
             "format": "uri",
             "description": "Included only in provider-session responses. Configured uploaded audio is provided for Spotify sessions in audio mode; otherwise null. Not included in chooser metadata."
+          },
+          "capabilities": {
+            "$ref": "#/components/schemas/PlayerCapabilitiesV1",
+            "x-recoup-availability": "pending",
+            "description": "Pending rollout. Optional for compatibility; absence or an unsupported version retains existing behavior. All fan-specific observations are unknown in v1."
           }
         },
         "required": [
@@ -2211,6 +2216,85 @@
             ]
           }
         }
+      },
+      "PlayerCapabilitiesV1": {
+        "type": "object",
+        "x-recoup-availability": "pending",
+        "description": "Pending additive v1 configuration projection for authorized reads and trusted player configuration. No credentials or verified fan observations. Not deployed availability or host sign-in proof.",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "const": 1
+          },
+          "spotify": {
+            "type": "object",
+            "properties": {
+              "clientConfiguration": {
+                "type": "string",
+                "enum": [
+                  "configured",
+                  "unconfigured"
+                ],
+                "description": "Presence of the existing Spotify client ID setting only; not validation of the ID, callback, provider approval or service availability."
+              },
+              "releaseConfigured": {
+                "type": "boolean",
+                "description": "Whether this player has a Spotify destination; not enablement or admission."
+              },
+              "premiumEligibility": {
+                "type": "string",
+                "const": "unknown",
+                "description": "No current fan or browser observation is available in this configuration response. Unknown grants no permission."
+              },
+              "tokenStatus": {
+                "type": "string",
+                "const": "unknown",
+                "description": "No current fan or browser observation is available in this configuration response. Unknown grants no permission."
+              },
+              "scopeStatus": {
+                "type": "string",
+                "const": "unknown",
+                "description": "No current fan or browser observation is available in this configuration response. Unknown grants no permission."
+              },
+              "playbackSupport": {
+                "type": "string",
+                "const": "unknown",
+                "description": "No current fan or browser observation is available in this configuration response. Unknown grants no permission."
+              }
+            },
+            "required": [
+              "clientConfiguration",
+              "releaseConfigured",
+              "premiumEligibility",
+              "tokenStatus",
+              "scopeStatus",
+              "playbackSupport"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "version",
+          "spotify"
+        ],
+        "additionalProperties": false
+      },
+      "PlayerReadResource": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PlayerResource"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "capabilities": {
+                "$ref": "#/components/schemas/PlayerCapabilitiesV1",
+                "x-recoup-availability": "pending",
+                "description": "Pending rollout. Optional for compatibility; absence or an unsupported version retains existing behavior. All fan-specific observations are unknown in v1."
+              }
+            }
+          }
+        ]
       }
     }
   }

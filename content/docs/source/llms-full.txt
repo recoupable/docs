@@ -81644,6 +81644,12 @@ These reports describe activity observed while the Recoup player is open. Playba
 
 Before promoting the link, test it on the phones and social browsers your fans use. Confirm that sign-in works, the correct music opens, playlist songs can be selected, and the Spotify Free fallback works. Then check fan and activity reports in the intended workspace.
 
+## Pending configuration observations
+
+The optional `capabilities` v1 response is a pending additive contract for `get_release_player`, authorized player GET, and trusted player metadata/session responses. It reports whether a Spotify client ID is configured and whether the player has a Spotify destination. Neither means provider approval, fan eligibility, playback permission or host login. Premium eligibility, token status, scope status and playback support are always `unknown` in this version. No credentials are included.
+
+Clients retain existing behavior when the field is absent or its version is unsupported. The planned chooser uses an explicit unconfigured result to offer Open Spotify; uploaded-audio mode retains an Open player link. This does not claim that either consumer is deployed. GET metadata never creates a session; provider acquisition requires POST with provider and parent. Existing authorization, session and fallback behavior remains separate.
+
 
 # Create a release player
 
@@ -82362,7 +82368,9 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/players/get
 
-Read settings, revision and share/embed links. MCP: get_release_player.
+Read settings, revision and share/embed links. MCP: get_release_player. An optional capabilities v1 configuration projection is pending; it contains no fan…
+
+The optional capabilities v1 configuration projection is pending. See [configuration observations](https://docs.recoupable.dev/essentials/release-player#pending-configuration-observations) for its unknown-state and compatibility limits.
 
 ## GET /api/players/{id}
 
@@ -82393,7 +82401,7 @@ This operation requires one of the security alternatives in the specification be
       "get": {
         "operationId": "getPlayersById",
         "summary": "Read a release player",
-        "description": "Read settings, revision and share/embed links. MCP: get_release_player.",
+        "description": "Read settings, revision and share/embed links. MCP: get_release_player. An optional capabilities v1 configuration projection is pending; it contains no fan eligibility or playback authorization.",
         "security": [
           {
             "apiKeyAuth": []
@@ -82431,7 +82439,7 @@ This operation requires one of the security alternatives in the specification be
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PlayerResource"
+                  "$ref": "#/components/schemas/PlayerReadResource"
                 }
               }
             }
@@ -82502,6 +82510,37 @@ This operation requires one of the security alternatives in the specification be
   },
   "components": {
     "schemas": {
+      "PlayerReadResource": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PlayerResource"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "capabilities": {
+                "$ref": "#/components/schemas/PlayerCapabilitiesV1",
+                "x-recoup-availability": "pending",
+                "description": "Pending rollout. Optional for compatibility; absence or an unsupported version retains existing behavior. All fan-specific observations are unknown in v1."
+              }
+            }
+          }
+        ]
+      },
+      "PlayerError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "error"
+        ]
+      },
       "PlayerResource": {
         "type": "object",
         "properties": {
@@ -82530,19 +82569,67 @@ This operation requires one of the security alternatives in the specification be
           "appleEmbedUrl"
         ]
       },
-      "PlayerError": {
+      "PlayerCapabilitiesV1": {
         "type": "object",
+        "x-recoup-availability": "pending",
+        "description": "Pending additive v1 configuration projection for authorized reads and trusted player configuration. No credentials or verified fan observations. Not deployed availability or host sign-in proof.",
         "properties": {
-          "error": {
-            "type": "string"
+          "version": {
+            "type": "integer",
+            "const": 1
           },
-          "status": {
-            "type": "string"
+          "spotify": {
+            "type": "object",
+            "properties": {
+              "clientConfiguration": {
+                "type": "string",
+                "enum": [
+                  "configured",
+                  "unconfigured"
+                ],
+                "description": "Presence of the existing Spotify client ID setting only; not validation of the ID, callback, provider approval or service availability."
+              },
+              "releaseConfigured": {
+                "type": "boolean",
+                "description": "Whether this player has a Spotify destination; not enablement or admission."
+              },
+              "premiumEligibility": {
+                "type": "string",
+                "const": "unknown",
+                "description": "No current fan or browser observation is available in this configuration response. Unknown grants no permission."
+              },
+              "tokenStatus": {
+                "type": "string",
+                "const": "unknown",
+                "description": "No current fan or browser observation is available in this configuration response. Unknown grants no permission."
+              },
+              "scopeStatus": {
+                "type": "string",
+                "const": "unknown",
+                "description": "No current fan or browser observation is available in this configuration response. Unknown grants no permission."
+              },
+              "playbackSupport": {
+                "type": "string",
+                "const": "unknown",
+                "description": "No current fan or browser observation is available in this configuration response. Unknown grants no permission."
+              }
+            },
+            "required": [
+              "clientConfiguration",
+              "releaseConfigured",
+              "premiumEligibility",
+              "tokenStatus",
+              "scopeStatus",
+              "playbackSupport"
+            ],
+            "additionalProperties": false
           }
         },
         "required": [
-          "error"
-        ]
+          "version",
+          "spotify"
+        ],
+        "additionalProperties": false
       },
       "ReleasePlayer": {
         "type": "object",
@@ -83966,7 +84053,9 @@ This operation requires one of the security alternatives in the specification be
 
 Source: https://docs.recoupable.dev/api-reference/complete/players/get-players-public-id
 
-Internal transport for the trusted Recoup browser player. Without provider, returns only public release settings.
+Internal metadata transport for the trusted Recoup browser player; never creates or resumes a session.
+
+The optional capabilities v1 configuration projection is pending. See [configuration observations](https://docs.recoupable.dev/essentials/release-player#pending-configuration-observations) for its unknown-state and compatibility limits.
 
 ## GET /api/players/public/{id}
 
@@ -83997,7 +84086,7 @@ This operation's specification permits a request without authentication.
       "get": {
         "operationId": "getPlayersPublicById",
         "summary": "Read public player metadata without creating a session",
-        "description": "Internal transport for the trusted Recoup browser player. Without provider, returns only public release settings. With provider, validates parent and creates or resumes a signed, provider-bound listening session. No owner, fan profile or email is exposed. The embedding website should use returned embed URLs rather than calling this API or handling credentials.",
+        "description": "Internal metadata transport for the trusted Recoup browser player; never creates or resumes a session. A provider is rejected; use POST /api/players/public/{id}/session to acquire a provider session. No owner, fan profile, email or provider credentials are exposed. The optional capabilities v1 projection is pending and reports configuration only. Embedding websites should use the returned embed URLs.",
         "security": [],
         "parameters": [
           {
@@ -84187,6 +84276,11 @@ This operation's specification permits a request without authentication.
             ],
             "format": "uri",
             "description": "Included only in provider-session responses. Configured uploaded audio is provided for Spotify sessions in audio mode; otherwise null. Not included in chooser metadata."
+          },
+          "capabilities": {
+            "$ref": "#/components/schemas/PlayerCapabilitiesV1",
+            "x-recoup-availability": "pending",
+            "description": "Pending rollout. Optional for compatibility; absence or an unsupported version retains existing behavior. All fan-specific observations are unknown in v1."
           }
         },
         "required": [
@@ -84211,6 +84305,68 @@ This operation's specification permits a request without authentication.
         "required": [
           "error"
         ]
+      },
+      "PlayerCapabilitiesV1": {
+        "type": "object",
+        "x-recoup-availability": "pending",
+        "description": "Pending additive v1 configuration projection for authorized reads and trusted player configuration. No credentials or verified fan observations. Not deployed availability or host sign-in proof.",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "const": 1
+          },
+          "spotify": {
+            "type": "object",
+            "properties": {
+              "clientConfiguration": {
+                "type": "string",
+                "enum": [
+                  "configured",
+                  "unconfigured"
+                ],
+                "description": "Presence of the existing Spotify client ID setting only; not validation of the ID, callback, provider approval or service availability."
+              },
+              "releaseConfigured": {
+                "type": "boolean",
+                "description": "Whether this player has a Spotify destination; not enablement or admission."
+              },
+              "premiumEligibility": {
+                "type": "string",
+                "const": "unknown",
+                "description": "No current fan or browser observation is available in this configuration response. Unknown grants no permission."
+              },
+              "tokenStatus": {
+                "type": "string",
+                "const": "unknown",
+                "description": "No current fan or browser observation is available in this configuration response. Unknown grants no permission."
+              },
+              "scopeStatus": {
+                "type": "string",
+                "const": "unknown",
+                "description": "No current fan or browser observation is available in this configuration response. Unknown grants no permission."
+              },
+              "playbackSupport": {
+                "type": "string",
+                "const": "unknown",
+                "description": "No current fan or browser observation is available in this configuration response. Unknown grants no permission."
+              }
+            },
+            "required": [
+              "clientConfiguration",
+              "releaseConfigured",
+              "premiumEligibility",
+              "tokenStatus",
+              "scopeStatus",
+              "playbackSupport"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "version",
+          "spotify"
+        ],
+        "additionalProperties": false
       }
     }
   }
@@ -84653,7 +84809,9 @@ This operation's specification permits a request without authentication.
 
 Source: https://docs.recoupable.dev/api-reference/complete/players/post-players-public-id-session
 
-Internal transport for the trusted Recoup browser player. Without provider, returns only public release settings.
+Internal transport for the trusted Recoup browser player; requires provider and parent.
+
+The optional capabilities v1 configuration projection is pending. See [configuration observations](https://docs.recoupable.dev/essentials/release-player#pending-configuration-observations) for its unknown-state and compatibility limits.
 
 ## POST /api/players/public/{id}/session
 
@@ -84683,7 +84841,7 @@ This operation's specification permits a request without authentication.
     "/api/players/public/{id}/session": {
       "post": {
         "summary": "Acquire or resume a registered player session",
-        "description": "Internal transport for the trusted Recoup browser player. Without provider, returns only public release settings. With provider, validates parent and creates or resumes a signed, provider-bound listening session. No owner, fan profile or email is exposed. The embedding website should use returned embed URLs rather than calling this API or handling credentials.",
+        "description": "Internal transport for the trusted Recoup browser player; requires provider and parent. Validates registered configuration and creates or resumes a signed, provider-bound listening session. No owner, fan profile or email is exposed. Existing trusted-player OAuth configuration is unchanged; the optional credential-free capabilities v1 projection is pending and keeps fan observations unknown, including on resumed sessions. Embedding websites should use embed URLs rather than handling credentials.",
         "security": [],
         "parameters": [
           {
@@ -84921,6 +85079,11 @@ This operation's specification permits a request without authentication.
             ],
             "format": "uri",
             "description": "Included only in provider-session responses. Configured uploaded audio is provided for Spotify sessions in audio mode; otherwise null. Not included in chooser metadata."
+          },
+          "capabilities": {
+            "$ref": "#/components/schemas/PlayerCapabilitiesV1",
+            "x-recoup-availability": "pending",
+            "description": "Pending rollout. Optional for compatibility; absence or an unsupported version retains existing behavior. All fan-specific observations are unknown in v1."
           }
         },
         "required": [
@@ -84945,6 +85108,68 @@ This operation's specification permits a request without authentication.
         "required": [
           "error"
         ]
+      },
+      "PlayerCapabilitiesV1": {
+        "type": "object",
+        "x-recoup-availability": "pending",
+        "description": "Pending additive v1 configuration projection for authorized reads and trusted player configuration. No credentials or verified fan observations. Not deployed availability or host sign-in proof.",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "const": 1
+          },
+          "spotify": {
+            "type": "object",
+            "properties": {
+              "clientConfiguration": {
+                "type": "string",
+                "enum": [
+                  "configured",
+                  "unconfigured"
+                ],
+                "description": "Presence of the existing Spotify client ID setting only; not validation of the ID, callback, provider approval or service availability."
+              },
+              "releaseConfigured": {
+                "type": "boolean",
+                "description": "Whether this player has a Spotify destination; not enablement or admission."
+              },
+              "premiumEligibility": {
+                "type": "string",
+                "const": "unknown",
+                "description": "No current fan or browser observation is available in this configuration response. Unknown grants no permission."
+              },
+              "tokenStatus": {
+                "type": "string",
+                "const": "unknown",
+                "description": "No current fan or browser observation is available in this configuration response. Unknown grants no permission."
+              },
+              "scopeStatus": {
+                "type": "string",
+                "const": "unknown",
+                "description": "No current fan or browser observation is available in this configuration response. Unknown grants no permission."
+              },
+              "playbackSupport": {
+                "type": "string",
+                "const": "unknown",
+                "description": "No current fan or browser observation is available in this configuration response. Unknown grants no permission."
+              }
+            },
+            "required": [
+              "clientConfiguration",
+              "releaseConfigured",
+              "premiumEligibility",
+              "tokenStatus",
+              "scopeStatus",
+              "playbackSupport"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "version",
+          "spotify"
+        ],
+        "additionalProperties": false
       }
     }
   }
