@@ -2,3 +2,9 @@
 title: "Read a release player"
 openapi: "/api-reference/openapi/players.json GET /api/players/{id}"
 ---
+
+## Pending configuration observations
+
+The optional `capabilities` v1 response is a pending additive contract for `get_release_player`, authorized player GET, and trusted player metadata/session responses. It reports whether a Spotify client ID is configured and whether the player has a Spotify destination. Neither means provider approval, fan eligibility, playback permission or host login. Premium eligibility, token status, scope status and playback support are always `unknown` in this version. No credentials are included.
+
+Clients retain existing behavior when the field is absent or its version is unsupported. The planned chooser uses an explicit unconfigured result to offer Open Spotify; uploaded-audio mode retains an Open player link. This does not claim that either consumer is deployed. GET metadata never creates or resumes a session; provider acquisition requires POST with provider and parent. Existing authorization, session and fallback behavior remains separate.
