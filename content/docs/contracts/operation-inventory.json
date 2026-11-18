@@ -1,5 +1,5 @@
 {
-  "apiSourceCommit": "28f860142522d6901e912ea2942d2b76b170a645",
+  "apiSourceCommit": "b4a17e98854c3998eb9f4eadb173b8d6b6370613",
   "evidence": "Static source only; tool discovery and OAuth host verification remain separate. Conditional registration and scope filters mean this is not a promised catalog count.",
   "operations": [
     {
@@ -3569,6 +3569,10 @@
       "source": "lib/mcp/tools/context/registerContextTool.ts"
     },
     {
+      "name": "create_application_registration",
+      "source": "lib/mcp/applications/registerCreateProposedRegistrationTool.ts"
+    },
+    {
       "name": "create_knowledge_base",
       "source": "lib/mcp/tools/files/registerCreateKnowledgeBaseTool.ts"
     },
@@ -3745,6 +3749,10 @@
       "source": "lib/mcp/tools/context/registerCatalogCaseTools.ts"
     },
     {
+      "name": "read_application_registration",
+      "source": "lib/mcp/applications/registerReadProposedRegistrationTool.ts"
+    },
+    {
       "name": "read_catalog_case",
       "source": "lib/mcp/tools/context/registerCatalogCaseTools.ts"
     },
@@ -3837,7 +3845,7 @@
     "content/docs/source/api-reference/openapi/accounts.json": "1a5a04f9ec358a15b8339b7029c9fed5fe69c6f042c8b03b6b4f03f3aafdeeed",
     "content/docs/source/api-reference/openapi/ai.json": "678f649fff58a1c49c81002ea2cbe66636ad5da1044ea66261e6ab4084600687",
     "content/docs/source/api-reference/openapi/applications.json": "07cf7c630ca81816d73e9198b863dc0a9c8e987f4e0794375951ead06e498ad6",
-    "content/docs/source/api-reference/openapi/content.json": "877afed1e0fb5c95afab8c5e294bae38fabdf48f50f226e0089b9ff50438870d",
+    "content/docs/source/api-reference/openapi/content.json": "71a7e58bd0ed3ee042105d9dea9f9989b05356700291f3d0f695b14e8423d249",
     "content/docs/source/api-reference/openapi/context.json": "10b243ab1098a7428fb935dfb0780ff0f9a1c8885b96feda8e453acff4a1df17",
     "content/docs/source/api-reference/openapi/players.json": "4a4c90583fe1de6487444581b293a32b1cc04622fc929965ab90f365feb8bc94",
     "content/docs/source/api-reference/openapi/projects.json": "b059cf8baa83a7f73a3c15db19f54fa56e46a3840e91bd42979b83550f543ace",

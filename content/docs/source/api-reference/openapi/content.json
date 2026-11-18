@@ -2474,7 +2474,7 @@
     "/api/content/packs": {
       "post": {
         "operationId": "prepareReleasePack",
-        "description": "Release rollout pending; discover current host capabilities before execution. Prepare a resumable pack brief. No artist profile or GitHub repository required; no paid generation.",
+        "description": "Release rollout pending; discover current host capabilities before execution. Prepare a resumable pack brief. No artist profile or GitHub repository required; no paid generation. Pending API #1288 adds optional strict brief.model_choices for applicable configured models only; no routing substitution or generation permission.",
         "security": [
           {
             "apiKeyAuth": []
@@ -2571,7 +2571,7 @@
     "/api/content/packs/{id}": {
       "get": {
         "operationId": "getReleasePack",
-        "description": "Release rollout pending; discover current host capabilities before execution. Read current owned job, assets, gaps and next action.",
+        "description": "Release rollout pending; discover current host capabilities before execution. Read current owned job, assets, gaps and next action. Pending API #1288 preserves historical job.quote.model_readiness and can separately return current readiness.model_readiness while awaiting approval with a quote plan; brief readiness is not permission to generate.",
         "security": [
           {
             "apiKeyAuth": []
@@ -2784,7 +2784,7 @@
     "/api/content/packs/{id}/estimate": {
       "post": {
         "operationId": "estimateReleasePack",
-        "description": "Release rollout pending; discover current host capabilities before execution. Quote complete scope at existing house image/video rates. Caption, inspection and composition are included at no additional customer charge.",
+        "description": "Release rollout pending; discover current host capabilities before execution. Quote complete scope at existing house image/video rates. Caption, inspection and composition are included at no additional customer charge. Pending API #1288 validates saved choices against configured routes and the original full-pack plan before source import or estimate persistence and records historical quote.model_readiness. Assessment is not authorization; fresh packs still need the currently restricted analysis.",
         "security": [
           {
             "apiKeyAuth": []
@@ -2892,7 +2892,7 @@
     "/api/content/packs/{id}/generate": {
       "post": {
         "operationId": "generateReleasePack",
-        "description": "Release rollout pending; discover current host capabilities before execution. Approve the current quote and budget ceiling. Start or resume the same job without duplicate submission.",
+        "description": "Release rollout pending; discover current host capabilities before execution. Approve the current quote and budget ceiling. Start or resume the same job without duplicate submission. Pending API #1288 refuses genuinely new work matching a server-recorded model/endpoint commercial restriction or retirement before credit checks, reservation or dispatch. Fresh packs currently require restricted analysis and cannot proceed. An already-funded running replay retains the existing idempotency path; each new provider effect remains checked.",
         "security": [
           {
             "apiKeyAuth": []
@@ -3000,7 +3000,7 @@
     "/api/content/packs/{id}/retry": {
       "post": {
         "operationId": "retryReleasePack",
-        "description": "Release rollout pending; discover current host capabilities before execution. Retry only the selected failed asset within approved scope and ceiling; retain successful work.",
+        "description": "Release rollout pending; discover current host capabilities before execution. Retry only the selected failed asset within approved scope and ceiling; retain successful work. Pending API #1288 checks matching server-recorded restrictions for the selected failed-asset new attempt, including new analysis before reservation. Valid retained completed analysis and accepted receipts are recovered without resubmission. Unknown evidence is not a grant or a new blanket block; local finishing/settlement and compatible legacy execution digests are unchanged.",
         "security": [
           {
             "apiKeyAuth": []
@@ -3205,7 +3205,7 @@
     "/api/content/packs/{id}/export": {
       "get": {
         "operationId": "exportReleasePack",
-        "description": "Release rollout pending; discover current host capabilities before execution. Retrieve an authenticated JSON manifest with captions, gaps and refreshed signed file URLs. Does not publish.",
+        "description": "Release rollout pending; discover current host capabilities before execution. Retrieve an authenticated JSON manifest with captions, gaps and refreshed signed file URLs. Does not publish. Pending API #1288 preserves the historical quote assessment and separately reports any current awaiting-approval model assessment; neither grants execution permission.",
         "security": [
           {
             "apiKeyAuth": []
@@ -5840,6 +5840,9 @@
           },
           "creative_context": {
             "$ref": "#/components/schemas/ReleasePackCreativeContext"
+          },
+          "model_choices": {
+            "$ref": "#/components/schemas/ReleasePackModelChoices"
           }
         },
         "additionalProperties": false
@@ -6663,7 +6666,7 @@
                   "object",
                   "null"
                 ],
-                "description": "Customer quote: maximum_usd and assets[].maximum_usd are customer charge ceilings; line_items[].usd and credits are customer charges, not measured provider expenses. Included zero-USD services have no additional customer fee. Concepts, contingency and refinements are not budgeted. Additive cost_accounting labels are pending the coordinated API release; older responses may omit them without changing these meanings.",
+                "description": "Customer quote: maximum_usd and assets[].maximum_usd are customer charge ceilings; line_items[].usd and credits are customer charges, not measured provider expenses. Included zero-USD services have no additional customer fee. Concepts, contingency and refinements are not budgeted. Additive cost_accounting labels are pending the coordinated API release; older responses may omit them without changing these meanings. Pending API #1288: optional model_readiness is the historical quote assessment, not permission to execute. New quote fingerprints bind its assessment digest; evidence changes alone do not change the existing route/settings/price execution digest or invalidate compatible legacy approvals.",
                 "properties": {
                   "maximum_usd": {
                     "type": "number",
@@ -6675,6 +6678,9 @@
                   },
                   "cost_accounting": {
                     "$ref": "#/components/schemas/ReleasePackCostAccounting"
+                  },
+                  "model_readiness": {
+                    "$ref": "#/components/schemas/ReleasePackModelReadiness"
                   }
                 }
               }
@@ -6691,7 +6697,8 @@
             "type": "object",
             "properties": {
               "ready": {
-                "type": "boolean"
+                "type": "boolean",
+                "description": "Brief completeness only; not model authorization or permission to generate."
               },
               "missing": {
                 "type": "array",
@@ -6704,6 +6711,10 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              "model_readiness": {
+                "$ref": "#/components/schemas/ReleasePackModelReadiness",
+                "description": "Pending API #1288: separate current assessment while awaiting approval with a quote asset plan. Does not overwrite job.quote.model_readiness; may be omitted for legacy plans or other states."
               }
             }
           },
@@ -7262,6 +7273,219 @@
           "provider_cost_usd"
         ],
         "additionalProperties": false
+      },
+      "ReleasePackModelChoices": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "image": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "image_edit": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "motion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "caption": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "still_inspection": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "video_inspection": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "analysis": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "description": "Pending API #1288. Optional strict brief model identifiers shared by REST and MCP. Omission keeps configured routes. Estimate validates saved original full-pack choices against configured routes and the original full plan before source import or estimate persistence; no substitution. Estimate/retry inputs accept no new choices. A narrowed retry or reused retained analysis does not delete historical motion/analysis choices just because those tasks are not reexecuted. Exact supplied choices remain in the brief fingerprint. These choices do not grant account access or commercial permission.",
+        "x-recoup-availability": "pending"
+      },
+      "ReleasePackModelReadiness": {
+        "type": "object",
+        "required": [
+          "version",
+          "reviewed_at",
+          "assessment_only",
+          "ready",
+          "execution_policy",
+          "tasks",
+          "digest"
+        ],
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "reviewed_at": {
+            "type": "string"
+          },
+          "assessment_only": {
+            "type": "boolean",
+            "const": true
+          },
+          "ready": {
+            "type": "boolean",
+            "description": "True only when the assessed applicable tasks have no reported issues. Assessment only, not authorization or hosted availability."
+          },
+          "execution_policy": {
+            "type": "string"
+          },
+          "tasks": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "image": {
+                "$ref": "#/components/schemas/ReleasePackModelTaskAssessment"
+              },
+              "image_edit": {
+                "$ref": "#/components/schemas/ReleasePackModelTaskAssessment"
+              },
+              "motion": {
+                "$ref": "#/components/schemas/ReleasePackModelTaskAssessment"
+              },
+              "caption": {
+                "$ref": "#/components/schemas/ReleasePackModelTaskAssessment"
+              },
+              "still_inspection": {
+                "$ref": "#/components/schemas/ReleasePackModelTaskAssessment"
+              },
+              "video_inspection": {
+                "$ref": "#/components/schemas/ReleasePackModelTaskAssessment"
+              },
+              "analysis": {
+                "$ref": "#/components/schemas/ReleasePackModelTaskAssessment"
+              }
+            },
+            "description": "Only tasks applicable to the assessed plan. A selected retry assesses its asset; valid retained analysis is reused and local composition needs no provider task."
+          },
+          "digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "description": "Canonical assessment digest, separate from the existing execution configuration digest."
+          }
+        },
+        "description": "Pending API #1288. Historical in job.quote.model_readiness; separately current in readiness.model_readiness while awaiting approval with a plan. Unknown evidence is not a verified grant and is not a new blanket admission block; deprecation alone is not retirement. Server-owned recorded commercial restrictions or retirement block matching genuinely new effects even after review expiry. Current configured analysis is restricted: fresh packs requiring it cannot proceed to generation. No commercial grant or production readiness is established.",
+        "x-recoup-availability": "pending"
+      },
+      "ReleasePackModelTaskAssessment": {
+        "type": "object",
+        "required": [
+          "model",
+          "evidence",
+          "issues",
+          "restriction"
+        ],
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "Configured model for this task."
+          },
+          "evidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReleasePackModelEvidence"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Retained server evidence entry or null. A mismatched model/analysis-endpoint binding is reported unknown; its permission is not transferred to the configured route."
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "restriction": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Matching recorded commercial restriction or retirement, otherwise null. Null is not a commercial or account-access grant."
+          }
+        }
+      },
+      "ReleasePackModelEvidence": {
+        "type": "object",
+        "required": [
+          "model",
+          "capability",
+          "commercial_basis",
+          "account_availability",
+          "lifecycle",
+          "valid_until",
+          "evidence"
+        ],
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string",
+            "description": "Optional endpoint binding; analysis evidence must match both configured model and endpoint."
+          },
+          "capability": {
+            "type": "string",
+            "enum": [
+              "verified",
+              "unknown",
+              "restricted"
+            ]
+          },
+          "commercial_basis": {
+            "type": "string",
+            "enum": [
+              "verified",
+              "unknown",
+              "restricted"
+            ]
+          },
+          "account_availability": {
+            "type": "string",
+            "enum": [
+              "verified",
+              "unknown",
+              "restricted"
+            ]
+          },
+          "lifecycle": {
+            "type": "string",
+            "enum": [
+              "supported",
+              "deprecated",
+              "retired",
+              "unknown"
+            ]
+          },
+          "valid_until": {
+            "type": "string",
+            "description": "Review horizon, not a provider retirement date. Expired or undated evidence is reported as an issue without erasing a recorded restriction."
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Retained source references; their presence alone is not account access or commercial authorization."
+          }
+        }
       }
     }
   }

@@ -31,6 +31,7 @@ Keep credentials in environment variables or a secret store. Never print them.
 
 - Artists: `GET /api/artists` lists the roster. Content calls take the artist's `account_id` as `artist_account_id`.
 - Content: `POST /api/content/create` returns `runIds`. Poll each with `GET /api/tasks/runs` until it reaches a terminal status.
+- Release packs: [Read the guide](https://docs.recoupable.dev/release-packs.md). Pending API #1288 adds configured-model choices and assessments, not alternative routing or execution permission; its recorded analysis restriction blocks fresh generation.
 - Public uploads: `POST /api/upload` accepts one supported file up to 4 MiB and returns a public URL. See [Public file upload](https://docs.recoupable.dev/api-reference/uploads/create.md). Do not substitute it for private Files or release-pack audio.
 - Research: `GET /api/research/lookup`, `/profile`, `/metrics` and `/similar` read artist data; `POST /api/research/web` and `/extract` research the open web.
 - Chats: `GET /api/chats` and `POST /api/chats`; see the Chat reference for streaming and stop.
