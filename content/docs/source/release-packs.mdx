@@ -7,6 +7,11 @@ description: "Turn a song and a campaign occasion into a coherent set of reviewe
 This contract accompanies the Release Packs first-use rollout. Availability depends
 on the deployed API and the tools exposed by your connected host. A plugin download
 or successful sign-in alone does not establish that generation is available.
+
+The model-choice and assessment companion below is pending API #1288. In that
+candidate, fresh packs require analysis that the configured model/endpoint's
+recorded commercial restriction refuses. A saved brief or quote does not mean
+that a fresh pack can proceed to generation.
 </Info>
 
 ## Start with the music
@@ -135,6 +140,52 @@ The older `GET /api/content/estimate` is an advisory per-video estimate. It is n
 a complete Release Packs quote. On insufficient credits the agent surfaces the
 returned `billingUrl`; it must not buy credits, switch accounts or retry paid
 generation automatically.
+
+### Model choices and assessments (pending)
+
+Connections implementing API #1288 accept optional `brief.model_choices`, shared
+by REST and MCP. Its only keys are `image`, `image_edit`, `motion`, `caption`,
+`still_inspection`, `video_inspection` and `analysis`; each supplied value is a
+model identifier of 1–200 characters. Omit a key to keep its configured route.
+This is not a model marketplace or a routing override: estimate validates the
+saved original full-pack brief's choices against its configured routes and full
+plan, before
+source import or saving the estimate. No alternative is silently substituted.
+Exact supplied choices remain part of the saved brief's fingerprint.
+
+Estimate and retry inputs do not accept new model choices. An artwork-only retry
+of an original mixed video/artwork pack retains its saved motion choice, although
+the narrowed retry assessment excludes motion. A saved analysis choice likewise
+remains when valid retained analysis means no new analysis is needed.
+
+New quotes retain a historical `job.quote.model_readiness` assessment. While a job
+awaits approval and has a quote plan, readback can separately include a current
+`readiness.model_readiness`; it does not overwrite the quote's assessment.
+Older quotes and other readback states can omit these fields. The existing
+`readiness.ready` still describes brief completeness.
+
+The model report records the applicable tasks, configured models, any endpoint
+binding, evidence sources, review dates, issues and an assessment digest.
+`assessment_only: true` means even a report with `ready: true` grants no permission
+to run. Unknown capability, commercial permission or account access is not a
+verified grant. The candidate does not introduce a blanket block for unknown
+evidence; deprecation alone is not retirement. Server-owned recorded commercial
+restrictions or retirement block genuinely new work on the matching current
+model/endpoint, and an expired review cannot erase a restriction.
+
+The candidate's current analysis restriction blocks fresh generation, including a
+failed-asset paid retry that needs new analysis, before credit checks, reservation
+or dispatch. Valid retained completed analysis is reused. A targeted retry assesses
+its selected asset; local composition has no provider-model task. Retained work
+does not make unknown evidence verified or establish a commercial grant.
+
+Evidence updates alone do not change the existing route/settings/price execution
+digest or invalidate a compatible legacy approved quote. New quote fingerprints
+also bind their recorded assessment digest. An already-funded running replay uses
+the existing approval/idempotency path; accepted provider receipts and retained
+captions are recovered rather than resubmitted. Local finishing and settlement do
+not require a new model grant. Each genuinely new provider effect still receives
+the applicable server restriction check; a funded quote is not an exemption.
 
 ## One job, with visible progress
 
