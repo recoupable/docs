@@ -1,4 +1,4 @@
-import type { ApiObject } from "@/lib/docs-server";
+import type { ApiObject } from "@/lib/docs/apiObject";
 import type { PlaygroundAuth } from "./types";
 
 /**

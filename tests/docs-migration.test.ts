@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { test, expect } from 'vitest';
-const { buildCurl, resolveReference }: typeof import('../lib/docs-server') = await import(new URL('../lib/docs-server.ts',import.meta.url).href);
+import { buildCurl } from "../lib/docs/buildCurl";
+import { resolveReference } from "../lib/docs/resolveReference";
 const { resolveDocsHref }: typeof import('../lib/docs-paths') = await import(new URL('../lib/docs-paths.ts',import.meta.url).href);
 const pages=JSON.parse(readFileSync(new URL('../content/docs/manifest.json',import.meta.url),'utf8'));
 const inventory=JSON.parse(readFileSync(new URL('../content/docs/inventory.json',import.meta.url),'utf8'));

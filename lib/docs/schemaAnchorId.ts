@@ -1,4 +1,4 @@
-import type { ApiObject } from "../docs-server.ts";
+import type { ApiObject } from "./apiObject.ts";
 import { anchorSlug } from "./anchorSlug.ts";
 
 /**

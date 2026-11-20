@@ -4,7 +4,8 @@ import { createProcessor } from "@mdx-js/mdx";
 import remarkGfm from "remark-gfm";
 import type { DocPage } from "./docs";
 import { resolveDocsHref } from "./docs-paths.ts";
-import { getDocSpec, type ApiObject } from "./docs-server.ts";
+import { getDocSpec } from "./docs-server.ts";
+import type { ApiObject } from "./docs/apiObject.ts";
 import { siteConfig } from "./config.ts";
 
 type MarkdownNode = {

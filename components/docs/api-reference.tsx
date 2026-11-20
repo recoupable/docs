@@ -1,7 +1,10 @@
 import { SkyArrow } from '@/components/sky/arrow';
 import Link from 'next/link';
 import type { DocPage } from '@/lib/docs';
-import { getDocSpec, resolveReference, buildCurl, type ApiObject } from '@/lib/docs-server';
+import { getDocSpec } from "@/lib/docs-server";
+import { resolveReference } from "@/lib/docs/resolveReference";
+import { buildCurl } from "@/lib/docs/buildCurl";
+import type { ApiObject } from "@/lib/docs/apiObject";
 import { DocsCode } from './docs-interactive';
 import { DocDescription, DocInlineDescription } from './docs-content';
 import { ApiPlayground } from './playground/api-playground';

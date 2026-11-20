@@ -1,4 +1,6 @@
-import { resolveReference, schemaExample, type ApiObject } from "@/lib/docs-server";
+import { resolveReference } from "@/lib/docs/resolveReference";
+import { schemaExample } from "@/lib/docs/schemaExample";
+import type { ApiObject } from "@/lib/docs/apiObject";
 import type { PlaygroundOperation } from "./types";
 
 /** Picks the JSON media type when offered, and prefills the editor from the example, the schema, or `{}`. */

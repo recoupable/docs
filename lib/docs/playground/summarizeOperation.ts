@@ -1,4 +1,5 @@
-import { resolveReference, type ApiObject } from "@/lib/docs-server";
+import { resolveReference } from "@/lib/docs/resolveReference";
+import type { ApiObject } from "@/lib/docs/apiObject";
 import { resolvePlaygroundAuth } from "./resolvePlaygroundAuth";
 import { summarizeBody } from "./summarizeBody";
 import type { PlaygroundOperation, PlaygroundParam } from "./types";
